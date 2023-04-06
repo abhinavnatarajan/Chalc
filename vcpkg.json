@@ -2,10 +2,6 @@
     "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
     "dependencies": [
         "cgal", 
-        "eigen3",
-        {
-            "name": "libtool",
-            "platform": "osx"
-        }
+        "eigen3"
     ]
 }
