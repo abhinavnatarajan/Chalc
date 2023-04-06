@@ -1,0 +1,79 @@
+name: Build
+
+on: [push, pull_request]
+
+jobs:
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+    steps:
+      - uses: actions/checkout@v3
+
+      # Install latest CMake.
+      - name: Get CMake
+        uses: lukka/get-cmake@latest
+      # Or pin to a specific CMake version:
+      # lukka/get-cmake@v3.21.2
+
+      # Setup vcpkg: ensures vcpkg is downloaded and built.
+      # Since vcpkg.json is being used later on to install the packages
+      # when `run-cmake` runs, no packages are installed at this time 
+      # (and vcpkg does not run).
+      - name: Setup Vcpkg
+        uses: lukka/run-vcpkg@v11
+        with:
+          # This is the default location of the directory containing vcpkg sources.
+          # Change it to the right location if needed.
+          vcpkgDirectory: '${{ github.workspace }}/extern/vcpkg'
+
+          # If not using a submodule for vcpkg sources, this specifies which commit
+          # id must be checkout from a Git repo. 
+          # Note: it must not be set if using a Git submodule for vcpkg.
+          # vcpkgGitCommitId: '${{ matrix.vcpkgCommitId }}'
+
+          # This is the glob expression used to locate the vcpkg.json. 
+          # Change it to match a single manifest file you want to use.
+          # Note: do not use `${{ github.context }}` to compose the value as it
+          # contains backslashes that would be misinterpreted. Instead
+          # compose a value relative to the root of the repository using
+          # `**/path/from/root/of/repo/to/vcpkg.json` to match the desired `vcpkg.json`.
+          vcpkgJsonGlob: '**/vcpkg.json'
+
+          # This is only needed if the command `vcpkg install` must run at this step.
+          # Instead it is highly suggested to let `run-cmake` to run vcpkg later on
+          # using the vcpkg.cmake toolchain. The default is `false`.
+          # runVcpkgInstall: true
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.12.1
+        env: 
+          VCPKG_ROOT_DIR: ${{ github.workspace }}/extern/vcpkg
+
+      # - name: Run CMake consuming CMakePreset.json and run vcpkg to build dependencies
+      #   uses: lukka/run-cmake@v10
+      #   with:
+      #     # This is the default path to the CMakeLists.txt along side the
+      #     # CMakePresets.json. Change if you need have CMakeLists.txt and CMakePresets.json
+      #     # located elsewhere.
+      #     # cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
+
+      #     # This is the name of the CMakePresets.json's configuration to use to generate
+      #     # the project files. This configuration leverages the vcpkg.cmake toolchain file to
+      #     # run vcpkg and install all dependencies specified in vcpkg.json.
+      #     configurePreset: 'ninja-multi-vcpkg'
+
+      #     # This is the name of the CMakePresets.json's configuration to build the project.
+      #     buildPreset: 'ninja-multi-vcpkg'
+
+    #env:
+    #  By default the action disables vcpkg's telemetry by defining VCPKG_DISABLE_METRICS.
+    #  This behavior can be disabled by defining `VCPKG_ENABLE_METRICS` as follows.
+    #  VCPKG_ENABLE_METRICS: 1
+    #
+    #  [OPTIONAL] Define the vcpkg's triplet you want to enforce, otherwise the default one
+    #  for the hosting system will be automatically choosen (x64 is the default on all
+    #  platforms, e.g. `x64-osx`).
+    #  VCPKG_DEFAULT_TRIPLET: ${{ matrix.triplet }}

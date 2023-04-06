@@ -1,0 +1,25 @@
+[build-system]
+requires = [
+    "scikit-build-core>=0.2.1", 
+    "pybind11"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "Chalc"
+version = "0.0.1"
+description="A package to compute the chromatic alpha complex of coloured point clouds in Euclidean space"
+readme = "README.md"
+authors = [
+  { name = "Abhinav Natarajan", email = "natarajan@maths.ox.ac.uk" },
+]
+requires-python = ">=3.7"
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+]
