@@ -5,7 +5,7 @@
         "eigen3",
         {
             "name": "libtool",
-            "platform": "x64-osx, arm64-osx"
+            "platform": "osx"
         }
     ]
 }
