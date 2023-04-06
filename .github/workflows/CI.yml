@@ -10,7 +10,10 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
 
       # Install latest CMake.
       - name: Get CMake
@@ -50,7 +53,7 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.12.1
         env: 
-          VCPKG_ROOT_DIR: ${{ github.workspace }}/extern/vcpkg
+          VCPKG_ROOT_DIR: '${{ github.workspace }}/extern/vcpkg'
 
       # - name: Run CMake consuming CMakePreset.json and run vcpkg to build dependencies
       #   uses: lukka/run-cmake@v10
