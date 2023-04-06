@@ -50,9 +50,6 @@ jobs:
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.12.1
-        env: 
-          CIBW_ENVIRONMENT: VCPKG_ROOT_DIR='${{ github.workspace }}/extern/vcpkg'
-          CIBW_ENVIRONMENT_PASS_LINUX: VCPKG_ROOT_DIR
       
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
