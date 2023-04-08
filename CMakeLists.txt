@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_BUILD_TYPE Release)
 
 set(VCPKG_TOOLCHAIN_FOUND OFF)
-if(DEFINED ENV{CI})
+if(DEFINED ENV{CI}) # build in CI mode using vcpkg
     if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/extern/vcpkg/scripts/buildsystems/vcpkg.cmake)
         message(STATUS "Using toolchain ${CMAKE_CURRENT_LIST_DIR}/extern/vcpkg/scripts/buildsystems/vcpkg.cmake")
         set(VCPKG_TOOLCHAIN_FOUND ON)
@@ -13,7 +13,7 @@ if(DEFINED ENV{CI})
     else()
         message(FATAL_ERROR "Vcpkg toolchain not found at expected location: $ENV{VCPKG_ROOT_DIR}/scripts/buildsystems/vcpkg.cmake")
     endif()
-elseif(DEFINED ENV{VCPKG_ROOT_DIR})
+elseif(DEFINED ENV{VCPKG_ROOT_DIR}) # build locally using vcpkg
     if(EXISTS $ENV{VCPKG_ROOT_DIR}/scripts/buildsystems/vcpkg.cmake)
             message(STATUS "Using toolchain $ENV{VCPKG_ROOT_DIR}/scripts/buildsystems/vcpkg.cmake")
             set(VCPKG_TOOLCHAIN_FOUND ON)
@@ -23,7 +23,7 @@ elseif(DEFINED ENV{VCPKG_ROOT_DIR})
     endif()
 endif()
 
-if (NOT VCPKG_TOOLCHAIN_FOUND)
+if (NOT VCPKG_TOOLCHAIN_FOUND) # build without vcpkg
     message(WARNING "Vcpkg not detected. Falling back to system libraries.")
 endif()
 

@@ -12,14 +12,23 @@ readme = "README.md"
 authors = [
   { name = "Abhinav Natarajan", email = "natarajan@maths.ox.ac.uk" },
 ]
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 classifiers = [
-  "Development Status :: 4 - Beta",
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
 ]
+
+[tool.cibuildwheel]
+archs = ["auto64"]
+
+[tool.cibuildwheel.linux]
+environment-pass = ["CI"]
+skip = "*-musllinux_*"
+
+[tool.cibuildwheel.macos]
+before-all = "brew install autoconf automake libtool"
+archs = ["x86_64", "arm64"]
