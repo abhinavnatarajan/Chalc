@@ -53,6 +53,7 @@ jobs:
         env:
           CIBW_ENVIRONMENT_PASS_LINUX: CI
           CIBW_BEFORE_ALL_MACOS: brew install autoconf automake libtool
+          CIBW_ARCHS: auto64
       
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
