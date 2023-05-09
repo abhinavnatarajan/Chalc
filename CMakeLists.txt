@@ -13,7 +13,7 @@ endif()
 if ($ENV{CI})
     message(STATUS "CI build detected.")
     set(ENV{VCPKG_INSTALLATION_ROOT} ${CMAKE_CURRENT_LIST_DIR}/vcpkg)
-    message(STATUS "Setting VCPKG_INSTALLATION_ROOT to ${CMAKE_CURRENT_LIST_DIR}/vcpkg")
+    message(STATUS "Setting VCPKG_INSTALLATION_ROOT=${CMAKE_CURRENT_LIST_DIR}/vcpkg")
 endif()
 
 # If Vcpkg is available and not explicitly disabled then use it
