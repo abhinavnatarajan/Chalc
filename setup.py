@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 from shutil import rmtree
 from os import environ
+from platform import system
 
 PROJECT_SOURCE_DIR = Path(__file__).parent
 # For some reason, running this file twice in a row causes the build to fail:
@@ -26,11 +27,11 @@ with open(PROJECT_SOURCE_DIR / "vcpkg.json") as f:
     PROJECT_VERSION_STRING = vcpkg_json["version-semver"]
     PROJECT_NAME = vcpkg_json["name"]
 
-# For a CI build we will change the GMP requirement to "fat"
+# For a CI non-Windows build we will change the GMP requirement to "fat"
 # This passes the --enable-fat flag while configuring GMP
 # See https://gmplib.org/manual/Build-Options
 # This ensures that wheels are built for a variety of platforms
-if environ.get("CI"):
+if environ.get("CI") and system() != 'Windows':
     for dep in vcpkg_json["dependencies"]:
         if dep["name"] == "gmp":
             dep["features"] = ["fat"]
