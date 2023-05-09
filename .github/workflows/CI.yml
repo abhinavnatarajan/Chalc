@@ -16,8 +16,8 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.12.1
         env:
-          CIBW_ENVIRONMENT_LINUX: VCPKG_INSTALLATION_ROOT="/host${VCPKG_INSTALLATION_ROOT}"
-          CINBW_ENVIRONMENT_PASS_LINUX: VCPKG_INSTALLATION_ROOT CI
+          CIBW_ENVIRONMENT_PASS_LINUX: VCPKG_INSTALLATION_ROOT CI
+          CIBW_BEFORE_BUILD_LINUX: VCPKG_INSTALLATION_ROOT=/host$VCPKG_INSTALLATION_ROOT
           # need the above modification on Linux because cibuildwheels uses Docker containers
           # with runner filesystem mounted at '/host'
       
