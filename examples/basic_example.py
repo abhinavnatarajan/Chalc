@@ -5,6 +5,10 @@ import numpy as np
 K = ch.standard_simplex(2)
 # Flatten out K
 K.flat_representation()
+# Change the filtration value of the vertex labelled [0, 1]
+K.simplices[1][0].filtration_value = 2.0
+# Check that the flat representation is sorted by filtration values
+K.flat_representation()
 
 # Delaunay triangulation of N points on the circle
 N = 999

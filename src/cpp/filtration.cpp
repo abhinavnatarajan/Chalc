@@ -262,18 +262,23 @@ namespace chalc {
     vector<tuple<vector<size_t>, value_t>> FilteredComplex::flat_representation() const {
         vector<tuple<vector<size_t>, value_t>> result(num_simplices);
         vector<map<size_t, size_t>> indices(cur_dim + 1);
-        // add all the vertices
-        size_t i = 0;
-        for (auto& [idx, vertex] : simplices[0]) {
-            indices[0][idx] = i;
-            result[i++] = tuple<vector<size_t>, value_t>{ vector<size_t>{}, vertex->value };
-        }
-        for (size_t dim = 1; dim <= cur_dim; dim++) {
-            for (auto& [label, simplex] : simplices[dim]) {
+        for (size_t d = 0, i = 0; d <= cur_dim; d++) {
+            // sort the d-dimensional simplices by filtration value
+            vector<shared_ptr<Simplex>> sort_by_val;
+            sort_by_val.reserve(simplices[d].size());
+            for (auto& s : simplices[d]) {
+                sort_by_val.push_back(s.second);
+            }
+            std::stable_sort(sort_by_val.begin(), sort_by_val.end(), 
+                [](const shared_ptr<Simplex>& s1, const shared_ptr<Simplex>& s2) {
+                    return (s1->value < s2->value); 
+                });
+            // iterate over the sorted simplices
+            for (auto& simplex : sort_by_val) {
                 // replace the labels of the faces with their corresponding indices in our result
-                vector<size_t> faces = simplex->get_facet_labels();
-                for (auto& f : faces) { f = indices[dim - 1][f]; }
-                indices[dim][label] = i;
+                vector<size_t> faces = simplex->get_facet_labels(); // empty if simplex is a vertex
+                for (auto& f : faces) { f = indices[d - 1][f]; }
+                indices[d][simplex->label] = i;
                 result[i++] = tuple{ faces, simplex->value };
             }
         }

@@ -181,6 +181,7 @@ PYBIND11_MODULE(core, m) {
                 Each list element is a tuple (f : list[int], v : float), 
                 corresponding to a simplex whose facets are the elements 
                 of the list at indices f, and whose filtration value is v.
+                Simplices appear in ascending order of dimension, then filtration value. 
             )docstring")
         .def("__repr__",
             [](const FilteredComplex& K) {
