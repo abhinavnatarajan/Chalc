@@ -20,12 +20,12 @@ jobs:
         run: brew install autoconf automake libtool
         if: ${{ matrix.os == 'macOS-latest' }}
       
-      - name: Setup vcpkg (it does not install any package yet)
+      - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
         with:
           # This is the default location of the directory containing vcpkg sources.
           # Change it to the right location if needed.
-          vcpkgDirectory: '${{ github.workspace }}/${{ github.repository }}/vcpkg'
+          vcpkgDirectory: '${{ github.workspace }}/vcpkg'
 
           # If not using a submodule for vcpkg sources, this specifies which commit
           # id must be checkout from a Git repo. 
