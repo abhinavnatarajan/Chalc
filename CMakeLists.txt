@@ -12,8 +12,9 @@ endif()
 
 # If Vcpkg is available then use it
 if (DEFINED ENV{VCPKG_INSTALLATION_ROOT} AND CMAKE_USE_VCPKG AND EXISTS $ENV{VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake)
-    set(CMAKE_TOOLCHAIN_FILE $ENV{VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake)
     message(STATUS "Using Vcpkg toolchain: ${CMAKE_TOOLCHAIN_FILE}")
+    set(CMAKE_TOOLCHAIN_FILE $ENV{VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake)
+# for local builds where vcpkg is not available
 elseif ((NOT DEFINED ENV{VCPKG_INSTALLATION_ROOT}) AND CMAKE_USE_VCPKG)
     message(STATUS "Fetching vcpkg. This could take some time...")
     include(FetchContent)
@@ -23,11 +24,8 @@ elseif ((NOT DEFINED ENV{VCPKG_INSTALLATION_ROOT}) AND CMAKE_USE_VCPKG)
         )
     FetchContent_MakeAvailable(vcpkg)
     message(STATUS "Fetching vcpkg -- done")
-    set(CMAKE_TOOLCHAIN_FILE
-        "${vcpkg_SOURCE_DIR}/scripts/buildsystems/vcpkg.cmake"
-        CACHE FILEPATH ""
-    )
-    message(STATUS "Using Vcpkg toolchain: $CMAKE_TOOLCHAIN_FILE")
+    message(STATUS "Using Vcpkg toolchain: ${CMAKE_TOOLCHAIN_FILE}")
+    set(CMAKE_TOOLCHAIN_FILE "${vcpkg_SOURCE_DIR}/scripts/buildsystems/vcpkg.cmake")
 else()
     message(WARNING "Proceeding without Vcpkg.")
 endif()
