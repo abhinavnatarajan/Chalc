@@ -48,8 +48,8 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.12.1
         env:
-          CIBW_BEFORE_ALL: VCPKG_INSTALLATION_ROOT='vcpkg'
-          CIBW_ENVIRONMENT_PASS_LINUX: CI
+          CIBW_BEFORE_ALL: VCPKG_INSTALLATION_ROOT=./vcpkg
+          CIBW_ENVIRONMENT_PASS_LINUX: CI VCPKG_INSTALLATION_ROOT
       
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
