@@ -10,16 +10,22 @@ else()
     set(CMAKE_USE_VCPKG ON)
 endif()
 
-# If Vcpkg is available then use it
-if (DEFINED ENV{VCPKG_DIR} AND CMAKE_USE_VCPKG)
-    if (EXISTS $ENV{VCPKG_DIR}/scripts/buildsystems/vcpkg.cmake)
+if ($ENV{CI})
+    message(STATUS "CI build detected.")
+    set(ENV{VCPKG_INSTALLATION_ROOT} ${CMAKE_CURRENT_LIST_DIR}/vcpkg)
+    message(STATUS "Setting VCPKG_INSTALLATION_ROOT to ${CMAKE_CURRENT_LIST_DIR}/vcpkg")
+endif()
+
+# If Vcpkg is available and not explicitly disabled then use it
+if (DEFINED ENV{VCPKG_INSTALLATION_ROOT} AND CMAKE_USE_VCPKG)
+    if (EXISTS $ENV{VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake)
         message(STATUS "Using Vcpkg toolchain: ${CMAKE_TOOLCHAIN_FILE}")
-        set(CMAKE_TOOLCHAIN_FILE $ENV{VCPKG_DIR}/scripts/buildsystems/vcpkg.cmake)
+        set(CMAKE_TOOLCHAIN_FILE $ENV{VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake)
     else ()
-        message(FATAL_ERROR "Did not find vcpkg at specified location: $ENV{VCPKG_DIR}")
+        message(FATAL_ERROR "Did not find vcpkg at specified location: $ENV{VCPKG_INSTALLATION_ROOT}")
     endif()
 # for local builds where vcpkg is not available
-elseif ((NOT DEFINED ENV{VCPKG_DIR}) AND CMAKE_USE_VCPKG)
+elseif ((NOT DEFINED ENV{VCPKG_INSTALLATION_ROOT}) AND CMAKE_USE_VCPKG)
     message(STATUS "Fetching vcpkg. This could take some time...")
     include(FetchContent)
         FetchContent_Declare(vcpkg
@@ -73,11 +79,11 @@ if(DEFINED SKBUILD)
     target_compile_definitions(${SUBMODULE_NAME} PRIVATE VERSION_INFO=${PROJECT_VERSION})
 
     if (CMAKE_USE_VCPKG) 
-        # List `vcpkg` dependencies from VCPKG_DIR so we can install them
+        # List `vcpkg` dependencies from VCPKG_INSTALLATION_ROOT so we can install them
         # together with the extension module.
         file(GLOB RUNTIME_VCPKG_DEPENDENCIES
-            RELATIVE "$ENV{VCPKG_DIR}/${VCPKG_TARGET_TRIPLET}/bin/"
-            "$ENV{VCPKG_DIR}/${VCPKG_TARGET_TRIPLET}/bin/*")
+            RELATIVE "$ENV{VCPKG_INSTALLATION_ROOT}/${VCPKG_TARGET_TRIPLET}/bin/"
+            "$ENV{VCPKG_INSTALLATION_ROOT}/${VCPKG_TARGET_TRIPLET}/bin/*")
 
         # Install the `vcpkg` dependencies that are used in our ${PROJECT_NAME}
         # library in the same DESTINATION as the python API. Note that it
