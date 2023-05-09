@@ -16,6 +16,10 @@ jobs:
       - name: Get CMake
         uses: lukka/get-cmake@v3.26.3
       
+      - name: Setup build tools on macOS
+        run: brew install autoconf automake libtool
+        if: ${{ matrix.os == 'macOS-latest' }}
+      
       - name: Setup vcpkg (it does not install any package yet)
         uses: lukka/run-vcpkg@v11
         with:
