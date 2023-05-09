@@ -29,7 +29,7 @@ elseif ((NOT DEFINED ENV{VCPKG_INSTALLATION_ROOT}) AND CMAKE_USE_VCPKG)
     )
     message(STATUS "Using Vcpkg toolchain: $CMAKE_TOOLCHAIN_FILE")
 else()
-    message(ERROR "Proceeding without Vcpkg.")
+    message(WARNING "Proceeding without Vcpkg.")
 endif()
 
 if (DEFINED SKBUILD)
