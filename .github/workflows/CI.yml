@@ -49,6 +49,7 @@ jobs:
         uses: pypa/cibuildwheel@v2.12.1
         env:
           CIBW_ENVIRONMENT_PASS_LINUX: CI
+          CIBW_BEFORE_ALL_LINUX: apt-get install zip -y
       
       - name: Upload artifacts
         uses: actions/upload-artifact@v3

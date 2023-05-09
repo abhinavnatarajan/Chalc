@@ -2,7 +2,7 @@
 #ifndef CHROMATIC_H
 #define CHROMATIC_H
 
-#include <Eigen/dense>
+#include <Eigen/Dense>
 #include "filtration.h"
 
 namespace chalc {
