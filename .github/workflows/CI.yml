@@ -21,12 +21,12 @@ jobs:
         with:
           # This is the default location of the directory containing vcpkg sources.
           # Change it to the right location if needed.
-          # vcpkgDirectory: '${{ github.workspace }}/vcpkg'
+          vcpkgDirectory: '${{ github.workspace }}/vcpkg'
 
           # If not using a submodule for vcpkg sources, this specifies which commit
           # id must be checkout from a Git repo. 
           # Note: it must not be set if using a Git submodule for vcpkg.
-          vcpkgGitCommitId: '1f7f116'
+          vcpkgGitCommitId: '1f7f116718637bb45cc5ce635483b92232a3eb36'
 
           # This is the glob expression used to locate the vcpkg.json. 
           # Change it to match a single manifest file you want to use.
@@ -34,7 +34,7 @@ jobs:
           # contains backslashes that would be misinterpreted. Instead
           # compose a value relative to the root of the repository using
           # `**/path/from/root/of/repo/to/vcpkg.json` to match the desired `vcpkg.json`.
-          # vcpkgJsonGlob: '**/vcpkg.json'
+          vcpkgJsonGlob: '**/vcpkg.json'
 
           # This is only needed if the command `vcpkg install` must run at this step.
           # Instead it is highly suggested to let `run-cmake` to run vcpkg later on
@@ -44,10 +44,8 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.12.1
         env:
-          CIBW_BEFORE_ALL_LINUX: VCPKG_INSTALLATION_ROOT=.
+          CIBW_BEFORE_ALL: VCPKG_INSTALLATION_ROOT=vcpkg
           CIBW_ENVIRONMENT_PASS_LINUX: VCPKG_INSTALLATION_ROOT CI
-          # need the above modification on Linux because cibuildwheels uses Docker containers
-          # with runner filesystem mounted at '/host'
       
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
