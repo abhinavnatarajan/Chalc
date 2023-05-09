@@ -1,26 +1,16 @@
 [build-system]
 requires = [
-    "scikit-build-core>=0.2.1", 
-    "pybind11"]
-build-backend = "scikit_build_core.build"
+    "setuptools>=42",
+    "scikit-build>=0.13",
+    "wheel",
+    "ninja",
+    "pybind11",
+]
+build-backend = "setuptools.build_meta"
 
-[project]
-name = "Chalc"
-version = "0.0.1"
-description="A package to compute the chromatic alpha complex of coloured point clouds in Euclidean space"
-readme = "README.md"
-authors = [
-  { name = "Abhinav Natarajan", email = "natarajan@maths.ox.ac.uk" },
-]
-requires-python = ">=3.8"
-classifiers = [
-  "License :: OSI Approved :: MIT License",
-  "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
-  "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11",
-]
+[tool.scikit-build]
+# cmake.verbose = true
+# logging.level = "INFO"
 
 [tool.cibuildwheel]
 archs = ["auto64"]
@@ -28,7 +18,3 @@ archs = ["auto64"]
 [tool.cibuildwheel.linux]
 environment-pass = ["CI"]
 skip = "*-musllinux_*"
-
-[tool.cibuildwheel.macos]
-before-all = "brew install autoconf automake libtool"
-archs = ["x86_64", "arm64"]

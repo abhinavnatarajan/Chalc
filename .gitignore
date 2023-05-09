@@ -1,4 +1,6 @@
-build
 .vscode
-*.egg-info
-wheelhouse
+CMakeCache.txt
+CMakeFiles
+_skbuild
+build
+*egg-info
