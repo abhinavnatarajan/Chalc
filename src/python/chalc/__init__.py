@@ -7,4 +7,5 @@ Also provides functionality to store and manipulate abstract simplicial complexe
 
 from __future__ import annotations
 
+from .core import __version__
 from .core import *
