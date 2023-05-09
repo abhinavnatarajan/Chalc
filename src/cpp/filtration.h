@@ -128,12 +128,12 @@ namespace chalc {
         const size_t label; // label for the simplex
         const size_t max_vertex; // largest vertex label
         const size_t dim; // number of vertices - 1
-
+        static constexpr value_t DEFAULT_FILT_VALUE = 0.0;
         /* PUBLIC METHODS OF Simplex */
 
         // Constructor
-        Simplex(size_t label, size_t max_vertex, size_t dim, value_t value,
-            const vector<shared_ptr<Simplex>>& facets);
+        Simplex(size_t label, size_t max_vertex, size_t dim = 0, value_t value = DEFAULT_FILT_VALUE,
+        const vector<shared_ptr<Simplex>>& facets = vector<shared_ptr<Simplex>>{});
 
         // Return the sorted vertex labels of the simplex
         // Assumes that the simplex has valid faces

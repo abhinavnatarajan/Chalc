@@ -3,8 +3,7 @@
 #include <stdexcept>
 #include <algorithm>
 namespace chalc {
-    constexpr value_t DEFAULT_FILT_VALUE = 0.0;
-
+    
     void check_overflow(size_t i) {
         if (i < 0)
             throw std::overflow_error("simplex index is too large");
@@ -27,8 +26,8 @@ namespace chalc {
         return B[n][k];
     }
 
-    FilteredComplex::Simplex::Simplex(size_t label = 0, size_t max_vertex = 0, size_t dim = 0, value_t value = DEFAULT_FILT_VALUE,
-        const vector<shared_ptr<Simplex>>& facets = vector<shared_ptr<Simplex>>{}) :
+    FilteredComplex::Simplex::Simplex(size_t label, size_t max_vertex, size_t dim, value_t value,
+        const vector<shared_ptr<Simplex>>& facets) :
         label(label), max_vertex(max_vertex), dim(dim), value(value), facets(facets) {}
 
     vector<size_t> FilteredComplex::Simplex::get_vertex_labels() const {
@@ -193,7 +192,7 @@ namespace chalc {
         return new_simplex;
     }
 
-    bool FilteredComplex::add_simplex(vector<size_t>& verts, const value_t filt_value = DEFAULT_FILT_VALUE) {
+    bool FilteredComplex::add_simplex(vector<size_t>& verts, const value_t filt_value = FilteredComplex::Simplex::DEFAULT_FILT_VALUE) {
         check_vertex_sequence_is_valid(verts);
         if (_has_simplex(verts)) {
             return false;

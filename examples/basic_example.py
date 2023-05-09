@@ -28,9 +28,9 @@ L = ch.weak_chromatic_alpha_complex(x, colours)
 print(L.num_simplices)
 # Check if L has the simplex [0, 4, 1, 5]
 L.has_simplex([0, 4, 1, 5])
-# Get the list of 3-simplices in L
-L.simplices[3]
-# Get handle to an arbitrary 3-simplex
+# Get the list of 2-simplices in L
+L.simplices[2]
+# Get handle to an arbitrary 2-simplex
 temp = np.random.randint(len(L.simplices[2]))
 s = L.simplices[2][list(L.simplices[2].keys())[temp]]
 # Get the vertex labels of s
