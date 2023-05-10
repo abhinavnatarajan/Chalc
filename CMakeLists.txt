@@ -84,11 +84,11 @@ if (CMAKE_USE_VCPKG)
     file(GLOB VCPKG_DYNAMIC_LIBRARIES
         RELATIVE "${VCPKG_INSTALLATION_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/bin/"
         "${VCPKG_INSTALLATION_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/bin/*")
-    install(CODE 
-        "if (NOT EXISTS ${VCPKG_INSTALLATION_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/bin/)
+    install(CODE
+        "message(STATUS \"Searching for runtime dependencies in ${VCPKG_INSTALLATION_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/bin/.\")
+        if (NOT EXISTS ${VCPKG_INSTALLATION_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/bin/)
             message(FATAL_ERROR \"Error when searching for runtime dependencies.\")
         endif()
-        message(STATUS \"Searching for runtime dependencies in ${VCPKG_INSTALLATION_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/bin/.\")
         file(GET_RUNTIME_DEPENDENCIES
             RESOLVED_DEPENDENCIES_VAR resolved_deps
             MODULES \"$<TARGET_FILE:${MODULE_NAME}>\"
