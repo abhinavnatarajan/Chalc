@@ -82,9 +82,9 @@ if(DEFINED SKBUILD)
     if (CMAKE_USE_VCPKG) 
         # List `vcpkg` dependencies from VCPKG_INSTALLATION_ROOT so we can install them
         # together with the extension module.
-        file(GLOB RUNTIME_VCPKG_DEPENDENCIES
-            RELATIVE "$ENV{VCPKG_INSTALLATION_ROOT}/${VCPKG_TARGET_TRIPLET}/bin/"
-            "$ENV{VCPKG_INSTALLATION_ROOT}/${VCPKG_TARGET_TRIPLET}/bin/*")
+        file(GLOB VCPKG_DYNAMIC_LIBRARIES
+            RELATIVE "$ENV{VCPKG_INSTALLATION_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/bin/"
+            "$ENV{VCPKG_INSTALLATION_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/bin/*")
 
         # Install the `vcpkg` dependencies that are used in our ${PROJECT_NAME}
         # library in the same DESTINATION as the python API. Note that it
@@ -92,7 +92,7 @@ if(DEFINED SKBUILD)
         # macOS platforms.
         install(TARGETS ${SUBMODULE_NAME}
             RUNTIME_DEPENDENCIES
-            PRE_INCLUDE_REGEXES ${RUNTIME_VCPKG_DEPENDENCIES}
+            PRE_INCLUDE_REGEXES ${VCPKG_DYNAMIC_LIBRARIES}
             PRE_EXCLUDE_REGEXES ".*"
             DESTINATION .)
     else()
