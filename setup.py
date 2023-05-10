@@ -68,7 +68,7 @@ setup(
     cmake_with_sdist = False,
     package_data = { packages[0] : ["*.dll"] },
     python_requires = ">=3.8",
-    cmake_args=["-DSKBUILD_PROJECT_NAME=" + PROJECT_NAME,
-                "-DSKBUILD_PROJECT_VERSION=" + PROJECT_VERSION_STRING,
-                "-DVCPKG_COMMIT_ID=" + VCPKG_COMMIT_ID]
+    cmake_args=["-DSKBUILD_PROJECT_NAME:STRING=" + PROJECT_NAME,
+                "-DSKBUILD_PROJECT_VERSION:STRING=" + PROJECT_VERSION_STRING,
+                "-DVCPKG_COMMIT_ID:STRING=" + VCPKG_COMMIT_ID]
 )
