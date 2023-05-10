@@ -1,13 +1,23 @@
 name: Build
 
-on:
-  push: 
-    paths-ignore: 
-      - 'examples/**'
-      - '.gitignore'
-      - 'README.md'
+on: push
 
 jobs:
+  build_sdist:
+    name: Build source distribution
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Build SDist
+        run: pipx run build --sdist
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          path: ./dist/*.tar.gz
+
   build_wheels:
     name: Build wheels
     strategy:
@@ -35,7 +45,7 @@ jobs:
           # If not using a submodule for vcpkg sources, this specifies which commit
           # id must be checkout from a Git repo. 
           # Note: it must not be set if using a Git submodule for vcpkg.
-          vcpkgGitCommitId: '1f7f116718637bb45cc5ce635483b92232a3eb36'
+          vcpkgGitCommitId: '6a3dd0874f153f8b375ec26210ea6d41dee3bb26'
 
           # This is the glob expression used to locate the vcpkg.json. 
           # Change it to match a single manifest file you want to use.
@@ -60,3 +70,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           path: ./wheelhouse/*.whl
+        

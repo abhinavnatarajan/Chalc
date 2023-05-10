@@ -1,0 +1,5 @@
+exclude .github/workflows/*
+exclude .gitignore
+include CMakeLists.txt
+include examples/basic_example.py
+include vcpkg.json

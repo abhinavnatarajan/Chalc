@@ -13,5 +13,20 @@
         {
             "name" : "cgal"
         }
+    ],
+    "builtin-baseline": "6a3dd0874f153f8b375ec26210ea6d41dee3bb26",
+    "overrides" : [
+        {
+            "name" : "eigen3",
+            "version" : "3.4.0#2"
+        },
+        {
+            "name" : "gmp",
+            "version" : "6.2.1#17"
+        },
+        {
+            "name" : "cgal",
+            "version" : "5.5.2"
+        }
     ]
 }

@@ -60,7 +60,7 @@ setup(
     packages = packages,
     package_dir = {"" : python_packages_root},
     cmake_install_dir = python_packages_root + "/" + packages[0],
-    cmake_with_sdist = True,
+    cmake_with_sdist = False,
     package_data = { packages[0] : ["*.dll"] },
     python_requires = ">=3.8",
     cmake_args=["-DSKBUILD_PROJECT_NAME=" + PROJECT_NAME,
