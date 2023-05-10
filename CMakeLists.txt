@@ -85,8 +85,8 @@ if (CMAKE_USE_VCPKG)
         RELATIVE "${VCPKG_INSTALLATION_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/bin/"
         "${VCPKG_INSTALLATION_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/bin/*")
     install(CODE
-        "message(STATUS \"Searching for runtime dependencies in ${VCPKG_INSTALLATION_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/bin/.\")
-        if (NOT EXISTS ${VCPKG_INSTALLATION_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/bin/)
+        "message(STATUS \"Searching for runtime dependencies in ${VCPKG_INSTALLATION_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/bin\")
+        if (NOT EXISTS ${VCPKG_INSTALLATION_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/bin)
             message(FATAL_ERROR \"Error when searching for runtime dependencies.\")
         endif()
         file(GET_RUNTIME_DEPENDENCIES
