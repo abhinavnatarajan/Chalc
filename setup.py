@@ -26,6 +26,7 @@ with open(PROJECT_SOURCE_DIR / "vcpkg.json") as f:
     # Required
     PROJECT_VERSION_STRING = vcpkg_json["version-semver"]
     PROJECT_NAME = vcpkg_json["name"]
+    VCPKG_COMMIT_ID = vcpkg_json["builtin-baseline"]
 
 # For a CI non-Windows build we will change the GMP requirement to "fat"
 # This passes the --enable-fat flag while configuring GMP
@@ -64,5 +65,6 @@ setup(
     package_data = { packages[0] : ["*.dll"] },
     python_requires = ">=3.8",
     cmake_args=["-DSKBUILD_PROJECT_NAME=" + PROJECT_NAME,
-                "-DSKBUILD_PROJECT_VERSION=" + PROJECT_VERSION_STRING]
+                "-DSKBUILD_PROJECT_VERSION=" + PROJECT_VERSION_STRING,
+                "-DVCPKG_COMMIT_ID=" + VCPKG_COMMIT_ID]
 )

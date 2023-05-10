@@ -34,7 +34,7 @@ elseif ((NOT DEFINED VCPKG_INSTALLATION_ROOT) AND CMAKE_USE_VCPKG)
     include(FetchContent)
         FetchContent_Declare(vcpkg
             GIT_REPOSITORY https://github.com/microsoft/vcpkg/
-            GIT_TAG 2022.09.27
+            GIT_TAG VCPKG_COMMIT_ID
         )
     FetchContent_MakeAvailable(vcpkg)
     message(STATUS "Fetching vcpkg -- done")
