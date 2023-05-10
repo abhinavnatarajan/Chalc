@@ -39,6 +39,9 @@ if environ.get("CI") and system() != 'Windows':
             break
     with open(PROJECT_SOURCE_DIR / "vcpkg.json", "w") as f:
         json.dump(vcpkg_json, f, indent = 4)
+
+# Read the project description from README.md
+long_description = (PROJECT_SOURCE_DIR / "README.md").read_text()
     
 # scikit-build will take care of puting our compiled C++ library together with
 # our python package so it can access it. The name of the python package will
@@ -53,7 +56,8 @@ packages = find_packages(python_packages_root)
 setup(
     name = PROJECT_NAME,
     version = PROJECT_VERSION_STRING,
-    description = "A package to compute the chromatic alpha complex of coloured point clouds in Euclidean space",
+    long_description = long_description,
+    long_description_content_type = "text/markdown",
     author = "Abhinav Natarajan",
     url = "https://github.com/abhinavnatarajan/chalc",
     download_url = "https://github.com/abhinavnatarajan/chalc",

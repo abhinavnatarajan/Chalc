@@ -178,10 +178,11 @@ PYBIND11_MODULE(core, m) {
         .def("flat_representation", &FilteredComplex::flat_representation,
             R"docstring(
                 Returns a serialised representation of the simplicial complex.
-                Each list element is a tuple (f : list[int], v : float), 
-                corresponding to a simplex whose facets are the elements 
-                of the list at indices f, and whose filtration value is v.
-                Simplices appear in ascending order of dimension, then filtration value. 
+                Each list element is a tuple (f : list[int], idx: int, v : float), 
+                corresponding to a simplex whose facets are the elements of the list 
+                at indices f, original label in the FilteredComplex is idx, and whose 
+                filtration value is v. Simplices appear in ascending order of dimension, 
+                then filtration value. 
             )docstring")
         .def("__repr__",
             [](const FilteredComplex& K) {

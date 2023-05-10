@@ -67,7 +67,7 @@ namespace chalc {
         size_t dimension() const noexcept;
 
         // Returns a flat vectorised representation of the complex
-        vector<tuple<vector<size_t>, value_t>> flat_representation() const;
+        vector<tuple<vector<size_t>, size_t, value_t>> flat_representation() const;
 
         // Returns the k-skeleton of the clique complex on n vertices
         static FilteredComplex clique_complex(const size_t n, const size_t k);
