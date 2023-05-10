@@ -78,7 +78,7 @@ pybind11_add_module(${PROJECT_MODULE_NAME} MODULE src/cpp/pybind11_bindings.cpp 
 target_link_libraries(${PROJECT_MODULE_NAME} PRIVATE Eigen3::Eigen CGAL::CGAL CGAL::Eigen3_support)
 target_compile_definitions(${PROJECT_MODULE_NAME} PRIVATE VERSION_INFO=${PROJECT_VERSION})
 
-if (CMAKE_USE_VCPKG)
+if (CMAKE_USE_VCPKG AND WIN32)
     file(GLOB VCPKG_SHARED_LIBRARIES
         RELATIVE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/"
         "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/*")
@@ -87,7 +87,7 @@ if (CMAKE_USE_VCPKG)
         message(STATUS \"Searching for runtime dependencies in: \")
         message(STATUS \"${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin\")
 
-        if (NOT EXISTS ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin)
+        if (NOT EXISTS \"${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin\")
             message(FATAL_ERROR \"Error when searching for runtime dependencies.\")
         endif()
 
