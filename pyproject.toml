@@ -1,16 +1,16 @@
 [build-system]
 requires = [
     "setuptools>=67",
-    "scikit-build>=0.17.0",
-    "wheel>=0.38",
+    "scikit-build>=0.17.3",
+    "wheel>=0.40",
     "ninja",
     "pybind11",
 ]
 build-backend = "setuptools.build_meta"
 
 [tool.scikit-build]
-# cmake.verbose = true
-# logging.level = "INFO"
+cmake-verbose = true
+logging-level = "INFO"
 
 [tool.cibuildwheel]
 archs = ["auto64"]

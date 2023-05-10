@@ -65,6 +65,7 @@ jobs:
         env:
           CIBW_ENVIRONMENT_PASS_LINUX: CI
           CIBW_BEFORE_ALL_LINUX: yum install -y zip
+          CIBW_BUILD_VERBOSITY: 3
       
       - name: Upload artifact
         uses: actions/upload-artifact@v3
