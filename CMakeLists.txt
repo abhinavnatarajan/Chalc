@@ -48,7 +48,7 @@ endif()
 message(STATUS "Project name: ${SKBUILD_PROJECT_NAME}")
 message(STATUS "Project version: ${SKBUILD_PROJECT_VERSION}")
 project(${SKBUILD_PROJECT_NAME} VERSION ${SKBUILD_PROJECT_VERSION} LANGUAGES CXX)
-set(SUBMODULE_NAME core)
+set(MODULE_NAME core)
 
 # Find dependencies
 find_package(Eigen3 CONFIG REQUIRED)
@@ -74,9 +74,9 @@ string(STRIP ${pybind11_DIR_RAW} pybind11_DIR)
 find_package(pybind11 CONFIG REQUIRED)
 
 # Create python extension module ###
-pybind11_add_module(${SUBMODULE_NAME} MODULE src/cpp/pybind11_bindings.cpp src/cpp/filtration.cpp src/cpp/chromatic.cpp)
-target_link_libraries(${SUBMODULE_NAME} PRIVATE Eigen3::Eigen CGAL::CGAL CGAL::Eigen3_support)
-target_compile_definitions(${SUBMODULE_NAME} PRIVATE VERSION_INFO=${PROJECT_VERSION})
+pybind11_add_module(${MODULE_NAME} MODULE src/cpp/pybind11_bindings.cpp src/cpp/filtration.cpp src/cpp/chromatic.cpp)
+target_link_libraries(${MODULE_NAME} PRIVATE Eigen3::Eigen CGAL::CGAL CGAL::Eigen3_support)
+target_compile_definitions(${MODULE_NAME} PRIVATE VERSION_INFO=${PROJECT_VERSION})
 
 if (CMAKE_USE_VCPKG) 
     # List `vcpkg` dependencies from VCPKG_INSTALLATION_ROOT so we can install them
@@ -84,17 +84,30 @@ if (CMAKE_USE_VCPKG)
     file(GLOB VCPKG_DYNAMIC_LIBRARIES
         RELATIVE "${VCPKG_INSTALLATION_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/bin/"
         "${VCPKG_INSTALLATION_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/bin/*")
-
+    install(CODE 
+        "if (NOT EXISTS ${VCPKG_INSTALLATION_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/bin/)
+            message(FATAL_ERROR \"Error when searching for runtime dependencies.\")
+        endif()
+        message(STATUS \"Searching for runtime dependencies in ${VCPKG_INSTALLATION_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/bin/.\")
+        file(GET_RUNTIME_DEPENDENCIES
+            RESOLVED_DEPENDENCIES_VAR resolved_deps
+            MODULES \"$<TARGET_FILE:${MODULE_NAME}>\"
+            PRE_INCLUDE_REGEXES ${VCPKG_DYNAMIC_LIBRARIES}
+            PRE_EXCLUDE_REGEXES \".*\"
+            DIRECTORIES \"${VCPKG_INSTALLATION_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/bin/\")
+        message(STATUS \"The following runtime dependencies will be copied into the distribution:\")
+        message(STATUS \$\{resolved_deps\})")
     # Install the `vcpkg` dependencies that are used in our ${PROJECT_NAME}
     # library in the same DESTINATION as the python API. Note that it
     # only supports collecting the runtime dependencies for Windows, Linux and
     # macOS platforms.
-    install(TARGETS ${SUBMODULE_NAME}
+    install(TARGETS ${MODULE_NAME}
         RUNTIME_DEPENDENCIES
         PRE_INCLUDE_REGEXES ${VCPKG_DYNAMIC_LIBRARIES}
         PRE_EXCLUDE_REGEXES ".*"
+        DIRECTORIES "${VCPKG_INSTALLATION_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/bin/"
         DESTINATION .)
 else()
     # we assume that runtime dependencies are system libraries or otherwise available in LD_LIBRARY_PATH
-    install(TARGETS ${SUBMODULE_NAME} DESTINATION .)
+    install(TARGETS ${MODULE_NAME} DESTINATION .)
 endif()
