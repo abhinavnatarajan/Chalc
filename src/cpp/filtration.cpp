@@ -26,9 +26,9 @@ namespace chalc {
         return B[n][k];
     }
 
-    FilteredComplex::Simplex::Simplex(size_t label, size_t max_vertex, size_t dim, value_t value,
-        const vector<shared_ptr<Simplex>>& facets) :
-        label(label), max_vertex(max_vertex), dim(dim), value(value), facets(facets) {}
+    FilteredComplex::Simplex::Simplex(size_t label, size_t max_vertex, size_t dim, size_t colours, 
+        value_t value, const vector<shared_ptr<Simplex>>& facets) :
+        label(label), max_vertex(max_vertex), dim(dim), value(value), colours(colours), facets(facets) {}
 
     vector<size_t> FilteredComplex::Simplex::get_vertex_labels() const {
         vector<size_t> result(dim + 1);
@@ -176,6 +176,7 @@ namespace chalc {
             // first we recursively add faces of the simplex
             vector<shared_ptr<Simplex>> facets(dim + 1);
             vector<size_t> facet_verts(dim);
+            size_t colours = 0;
             for (auto i = 0; i <= dim; i++) {
                 for (auto j = 0, k = 0; j < verts.size(); j++) {
                     if (j == i) continue;
@@ -183,16 +184,19 @@ namespace chalc {
                     k++;
                 }
                 facets[i] = _add_simplex(facet_verts, filt_value);
+                colours |= facets[i]->colours;
             }
             auto max_vertex = verts.back();
-            new_simplex = std::make_shared<Simplex>(label, max_vertex, dim, filt_value, std::move(facets));
+            new_simplex = std::make_shared<Simplex>(label, max_vertex, dim, 
+            colours, filt_value, std::move(facets));
             simplices[dim][label] = new_simplex;
             num_simplices++;
         }
         return new_simplex;
     }
 
-    bool FilteredComplex::add_simplex(vector<size_t>& verts, const value_t filt_value = FilteredComplex::Simplex::DEFAULT_FILT_VALUE) {
+    bool FilteredComplex::add_simplex(vector<size_t>& verts, 
+        value_t filt_value = FilteredComplex::Simplex::DEFAULT_FILT_VALUE) {
         check_vertex_sequence_is_valid(verts);
         if (_has_simplex(verts)) {
             return false;
@@ -200,11 +204,12 @@ namespace chalc {
         else {
             _add_simplex(verts, filt_value);
             cur_dim = std::max(cur_dim, verts.size() - 1);
+            cur_max_filt_value = std::max(cur_max_filt_value, filt_value);
             return true;
         }
     }
 
-    void FilteredComplex::propagate_filt_values_up(const size_t start_dim) {
+    void FilteredComplex::propagate_filt_values_up(const size_t start_dim) const {
         auto p = start_dim + 1;
         while (p <= cur_dim) {
             value_t tmp;
@@ -221,7 +226,7 @@ namespace chalc {
         }
     }
 
-    void FilteredComplex::propagate_filt_values_down(const size_t start_dim) {
+    void FilteredComplex::propagate_filt_values_down(const size_t start_dim) const {
         auto p = start_dim;
         while (p >= 1) {
             // iterate over the p-simplices
@@ -232,6 +237,17 @@ namespace chalc {
                 }
             }
             p--;
+        }
+    }
+
+    void FilteredComplex::propagate_colours() const {
+        for (size_t d = 1; d <= cur_dim; d++) {
+            for (auto& [idx, s] : simplices[d]) {
+                s->colours = 0;
+                for (auto& f : s->get_facets()) {
+                    s->colours |= f->colours;
+                }
+            }
         }
     }
 
@@ -258,8 +274,12 @@ namespace chalc {
         return cur_dim;
     }
 
-    vector<tuple<vector<size_t>, size_t, value_t>> FilteredComplex::flat_representation() const {
-        vector<tuple<vector<size_t>, size_t, value_t>> result(num_simplices);
+    value_t FilteredComplex::max_filt_value() const noexcept {
+        return cur_max_filt_value;
+    }
+
+    vector<tuple<vector<size_t>, size_t, value_t, size_t>> FilteredComplex::flat_representation() const {
+        vector<tuple<vector<size_t>, size_t, value_t, size_t>> result(num_simplices);
         vector<map<size_t, size_t>> indices(cur_dim + 1);
         for (size_t d = 0, i = 0; d <= cur_dim; d++) {
             // sort the d-dimensional simplices by filtration value
@@ -278,7 +298,7 @@ namespace chalc {
                 vector<size_t> faces = simplex->get_facet_labels(); // empty if simplex is a vertex
                 for (auto& f : faces) { f = indices[d - 1][f]; }
                 indices[d][simplex->label] = i;
-                result[i++] = tuple{ faces, simplex->label, simplex->value };
+                result[i++] = tuple{ faces, simplex->label, simplex->value, simplex->colours };
             }
         }
         return result;

@@ -66,11 +66,17 @@ namespace chalc {
         // Returns the current dimension
         size_t dimension() const noexcept;
 
+        // Returns the current maximum filtration value
+        value_t max_filt_value() const noexcept;
+
         // Returns a flat vectorised representation of the complex
-        vector<tuple<vector<size_t>, size_t, value_t>> flat_representation() const;
+        vector<tuple<vector<size_t>, size_t, value_t, size_t>> flat_representation() const;
 
         // Returns the k-skeleton of the clique complex on n vertices
         static FilteredComplex clique_complex(const size_t n, const size_t k);
+
+        // bitwise OR accumulates colours upwards from vertices
+        void propagate_colours() const;
 
     private:
 
@@ -78,8 +84,9 @@ namespace chalc {
 
         const BinomialCoeffTable binomial; // binomial coefficients
         vector<map<size_t, shared_ptr<Simplex>>> simplices; // vector whose kth element is a table of k-simplices, labelled by their lexicographic index
-        size_t num_simplices;
+        size_t num_simplices; // total number of simplices
         size_t cur_dim; // current maximum dimension of a maximal simplex
+        value_t cur_max_filt_value; // current maximum filtration value
 
         /* PRIVATE METHODS OF FilteredComplex */
 
@@ -106,11 +113,11 @@ namespace chalc {
 
         // min accumulate filtration values downwards from start_dim
         // Assumes that start_dim is valid
-        void propagate_filt_values_up(const size_t start_dim);
+        void propagate_filt_values_up(const size_t start_dim) const;
 
         // max accumulate filtration values upwards from start_dim
         // Assumes that start_dim is valid
-        void propagate_filt_values_down(const size_t start_dim);
+        void propagate_filt_values_down(const size_t start_dim) const;
     };
 
     class FilteredComplex::Simplex {
@@ -128,11 +135,15 @@ namespace chalc {
         const size_t label; // label for the simplex
         const size_t max_vertex; // largest vertex label
         const size_t dim; // number of vertices - 1
+        size_t colours; // bitmask representing the colours of its vertices
         static constexpr value_t DEFAULT_FILT_VALUE = 0.0;
+        static constexpr size_t DEFAULT_COLOUR = 0;
+
         /* PUBLIC METHODS OF Simplex */
 
         // Constructor
-        Simplex(size_t label, size_t max_vertex, size_t dim = 0, value_t value = DEFAULT_FILT_VALUE,
+        Simplex(size_t label, size_t max_vertex, size_t dim = 0, 
+        size_t colours = DEFAULT_COLOUR, value_t value = DEFAULT_FILT_VALUE, 
         const vector<shared_ptr<Simplex>>& facets = vector<shared_ptr<Simplex>>{});
 
         // Return the sorted vertex labels of the simplex

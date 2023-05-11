@@ -46,6 +46,16 @@ PYBIND11_MODULE(core, m) {
                 you are responsible for checking whether the parent filtered simplicial complex
                 satisfies the filtration property.
             )docstring")
+        .def_readwrite("colours", 
+            &FilteredComplex::Simplex::colours,
+            R"docstring(
+                Integer whose binary representation is the bitmask of colours
+                in the simplex. For example, this value is a power of two for
+                monochromatic simplices. If you change this value for a vertex, 
+                you should call FilteredComplex.propagate_colours() afterwards 
+                to ensure that colours of higher dimensional simplices are consistent
+                with the colours of their vertices.
+            )docstring")
         .def_property_readonly("facets", 
             &FilteredComplex::Simplex::get_facets, 
             R"docstring(
@@ -175,14 +185,21 @@ PYBIND11_MODULE(core, m) {
                 List of vertex labels of the simplex.
             )docstring",
             py::arg("vertices"))
+        .def("propagate_colours", &FilteredComplex::propagate_colours,
+            R"docstring(
+                Function to make sure that simplex colours are consistent with the colours 
+                of their vertices. You should call this whenever you change the colour of 
+                any vertex. 
+            )docstring")
         .def("flat_representation", &FilteredComplex::flat_representation,
             R"docstring(
                 Returns a serialised representation of the simplicial complex.
-                Each list element is a tuple (f : list[int], idx: int, v : float), 
-                corresponding to a simplex whose facets are the elements of the list 
-                at indices f, original label in the FilteredComplex is idx, and whose 
-                filtration value is v. Simplices appear in ascending order of dimension, 
-                then filtration value. 
+                Each list element is a tuple of the following signature:
+                (f : list[int], idx: int, v : float, c: int)
+                This corresponds to a simplex whose facets are the elements of the list 
+                at indices f, whose original label in the FilteredComplex is idx, whose 
+                filtration value is v, and whose colour bitmask is c. 
+                Simplices appear in ascending order of dimension, then filtration value. 
             )docstring")
         .def("__repr__",
             [](const FilteredComplex& K) {
@@ -211,7 +228,10 @@ PYBIND11_MODULE(core, m) {
             A numpy matrix whose columns are points in the point cloud.
         )docstring",
         py::arg("x"));
-    m.def("stratify", &stratify,
+    m.def("stratify", 
+        [](const MatrixXd& M, const Colouring& c) -> MatrixXd {
+            return stratify(M, c); // default third argument
+        },
         R"docstring(
             Returns the stratification of a point cloud by a sequence of colours.
             If s is the number of colours and d is the ambient dimension of the point cloud,
@@ -233,14 +253,17 @@ PYBIND11_MODULE(core, m) {
             This is a filtration of the Delaunay complex of the point cloud
             after stratification by the colours, where the filtration time
             of a simplex is the filtration time of that simplex in the 
-            Vietoris-Rips filtration of the non-stratified point cloud.
+            Vietoris-Rips filtration of the non-stratified point cloud. 
 
             Parameters
             ----------
             x :
             A numpy matrix whose columns are points in the point cloud.
             colours :
-            A list of integers.
+            A list of integers representing the colours of vertices.
+            Note that the actual colours of simplices in the output filtration
+            may not correspond to the input colours unless the set of values in
+            colours is contiguous and colours[0] = 0.
         )docstring",
         py::arg("x"), py::arg("colours"));
 

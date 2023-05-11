@@ -9,6 +9,12 @@ K.flat_representation()
 K.simplices[1][0].filtration_value = 2.0
 # Check that the flat representation is sorted by filtration values
 K.flat_representation()
+# Change the vertex colours
+K.simplices[0][0].colours = 1
+K.simplices[0][1].colours = 1
+K.simplices[0][2].colours = 2
+K.propagate_colours()
+K.flat_representation()
 
 # Delaunay triangulation of N points on the circle
 N = 999

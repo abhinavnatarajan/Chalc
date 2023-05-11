@@ -52,17 +52,36 @@ namespace chalc {
             : 0;
     }
 
+    // make a vector contiguous and start at zero
+    tuple<Colouring, size_t> canonicalise(const Colouring& colours) {
+        Colouring new_colours(colours.size());
+        map<size_t, size_t> colour_map;
+        for (auto [c, i] = tuple{colours.begin(), 0}; c != colours.end(); c++) {
+            if (!colour_map.contains(*c)) {
+                colour_map[*c] = i++;
+            }
+        }
+        for (size_t i = 0; i < colours.size(); i++) {
+            new_colours[i] = colour_map[colours[i]];
+        }
+        return tuple{new_colours, colour_map.size()};
+    }
+
+
     // Stratify a coloured point set
     // Points are provided as columns of a matrix
     // Colours are provided as a vector
-    MatrixXd stratify(const MatrixXd& points, const Colouring& colours) {
+    MatrixXd stratify(const MatrixXd& points, const Colouring& colours, size_t num_colours) {
         size_t dim = points.rows();
-        std::map<size_t, size_t> colours_map; // relabels the colours starting from 0 and removes gaps in the labelling
-        size_t num_colours = 0;
-        for (auto& c : colours) {
-            if (colours_map.insert({ c, num_colours }).second) { // c is a new colour that we have not seen before
-                num_colours++;
-            }
+        Colouring new_colours(colours.size());
+        // make sure colours are contiguous and start at zero
+        if (num_colours == -1) {
+            auto tmp = canonicalise(colours);
+            new_colours = std::get<0>(tmp);
+            num_colours = std::get<1>(tmp);
+        }
+        else {
+            new_colours = colours;
         }
         MatrixXd result(dim + num_colours - 1, points.cols());
         result.topRows(dim) = points;
@@ -70,13 +89,10 @@ namespace chalc {
         if (num_colours != 1) {
             result.bottomRows(num_colours - 1).setZero();
             for (auto i = 0; i < result.cols(); i++) {
-                if (colours_map[colours[i]] != 0) {
-                    result(dim - 1 + colours_map[colours[i]], i) = 1.0;
+                if (new_colours[i] != 0) {
+                    result(dim - 1 + new_colours[i], i) = 1.0;
                 }
             }
-            /*for (auto [i, j] = tuple{ colours.cbegin(), new_colours.begin() }; i != colours.cend(); i++, j++) {
-                *j = colours_map[*i];
-            }*/
         }
         return result;
     }
@@ -116,20 +132,26 @@ namespace chalc {
         return result;
     }
 
-     // Create the weak chromatic alpha complex
-     FilteredComplex weak_chromatic_alpha_complex(const MatrixXd& points, const Colouring& colours) {
-         MatrixXd stratified_points = stratify(points, colours);
-         auto delX = delaunay_complex(stratified_points);
-         // modify the filtration values
-         if (delX.max_dim >= 1) { 
-             for (auto& [idx, edge] : delX.get_simplices()[1]) {
-                 auto verts = edge->get_vertex_labels();
-                 edge->value = (points.col(verts[0]) - points.col(verts[1])).norm() / 2;
-             }
-             delX.propagate_filt_values(1, true);
-         }
-         return delX;
-     }
+    // Create the weak chromatic alpha complex
+    FilteredComplex weak_chromatic_alpha_complex(const MatrixXd& points, const Colouring& colours) {
+        auto [new_colours, num_colours] = canonicalise(colours);
+        MatrixXd stratified_points = stratify(points, colours, num_colours);
+        auto delX = delaunay_complex(stratified_points);
+        // modify the colours of the vertices
+        for (auto& [idx, vert] : delX.get_simplices()[0]) {
+            vert->colours = new_colours[idx];
+        }
+        delX.propagate_colours();
+        // modify the filtration values
+        if (delX.max_dim >= 1) { 
+            for (auto& [idx, edge] : delX.get_simplices()[1]) {
+                auto verts = edge->get_vertex_labels();
+                edge->value = (points.col(verts[0]) - points.col(verts[1])).norm();
+            }
+            delX.propagate_filt_values(1, true);
+        }
+        return delX;
+    }
 
     // Create the chromatic alpha complex
     // FilteredComplex chromatic_alpha_complex(const Matrix<double, 2, Dynamic>& points, const Colouring& colours) {

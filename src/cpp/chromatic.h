@@ -12,7 +12,7 @@ namespace chalc {
     // Stratify a coloured point set
     // Points are provided as columns of a matrix
     // Colours are provided as a vector
-    MatrixXd stratify(const MatrixXd& points, const Colouring& colours);
+    MatrixXd stratify(const MatrixXd& points, const Colouring& colours, size_t num_colours = -1);
 
     // Create a Delaunay triangulation from a collection of coordinate vectors
     FilteredComplex delaunay_complex(const MatrixXd& X);
