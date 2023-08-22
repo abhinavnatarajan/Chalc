@@ -77,10 +77,8 @@ jobs:
     name: Publish to TestPyPI and PyPI
     runs-on: ubuntu-latest
     needs: ['build_wheels', 'build_sdist']
-    # environment:
-    #   name: TestPyPI
-    # permissions:
-    #   id-token: write
+    permissions:
+      id-token: write
     steps:
       - name: Download build artifacts
         uses: actions/download-artifact@v3
@@ -97,5 +95,5 @@ jobs:
       - name: Upload to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags') }}
-        with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
+        # with:
+        #   password: ${{ secrets.PYPI_API_TOKEN }}
