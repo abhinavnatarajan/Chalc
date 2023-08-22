@@ -28,18 +28,6 @@ with open(PROJECT_SOURCE_DIR / "vcpkg.json") as f:
     PROJECT_NAME = vcpkg_json["name"]
     VCPKG_COMMIT_ID = vcpkg_json["builtin-baseline"]
 
-# For a CI non-Windows build we will change the GMP requirement to "fat"
-# This passes the --enable-fat flag while configuring GMP
-# See https://gmplib.org/manual/Build-Options
-# This ensures that wheels are built for a variety of platforms
-if environ.get("CI") and system() != 'Windows':
-    for dep in vcpkg_json["dependencies"]:
-        if dep["name"] == "gmp":
-            dep["features"] = ["fat"]
-            break
-    with open(PROJECT_SOURCE_DIR / "vcpkg.json", "w") as f:
-        json.dump(vcpkg_json, f, indent = 4)
-
 # Read the project description from README.md
 long_description = (PROJECT_SOURCE_DIR / "README.md").read_text()
     
