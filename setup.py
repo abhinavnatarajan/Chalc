@@ -61,7 +61,7 @@ setup(
     author = "Abhinav Natarajan",
     url = "https://github.com/abhinavnatarajan/chalc",
     download_url = "https://github.com/abhinavnatarajan/chalc",
-    license = "MIT",
+    license = "GPL",
     packages = packages,
     package_dir = {"" : python_packages_root},
     cmake_install_dir = python_packages_root + "/" + packages[0],
@@ -70,5 +70,6 @@ setup(
     python_requires = ">=3.8",
     cmake_args=["-DSKBUILD_PROJECT_NAME:STRING=" + PROJECT_NAME,
                 "-DSKBUILD_PROJECT_VERSION:STRING=" + PROJECT_VERSION_STRING,
-                "-DVCPKG_COMMIT_ID:STRING=" + VCPKG_COMMIT_ID]
+                "-DVCPKG_COMMIT_ID:STRING=" + VCPKG_COMMIT_ID,
+                "-DCMAKE_BUILD_TYPE:STRING=Release"]
 )

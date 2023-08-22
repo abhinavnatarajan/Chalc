@@ -17,8 +17,8 @@ K.propagate_colours()
 K.flat_representation()
 
 # Delaunay triangulation of N points on the circle
-N = 999
-x = np.array([(np.cos(theta), np.sin(theta)) for theta in np.array(range(N))/(2*np.pi)]).transpose()
+N = 99
+x = np.array([(np.cos(theta), np.sin(theta)) for theta in 2*np.pi*np.array(range(N))/N]).transpose()
 K = ch.delaunay_complex(x)
 
 # Split the points into two classes randomly
@@ -28,8 +28,12 @@ y = ch.stratify(x, colours)
 # y is now 3-dimensional
 y.shape
 
-# Weak alpha chromatic complex of x with previously chosen random colours
-L = ch.weak_chromatic_alpha_complex(x, colours)
+# Weak chromatic alpha complex of x with previously chosen random colours
+L = ch.chromatic_alpha_complex(x, colours)
+# Other options are possible:
+# M = ch.weak_chromatic_alpha_complex(x, colours)
+# N = ch.chromatic_delcech_complex(x, colours)
+
 # Get the number of simplices in L
 print(L.num_simplices)
 # Check if L has the simplex [0, 4, 1, 5]

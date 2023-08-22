@@ -1,3 +1,38 @@
+/*
+    This file is part of Chalc.
+
+    Chalc: Chromatic Alpha Complexes.
+    Based on: di Montesano et. al., “Persistent Homology of Chromatic Alpha Complexes”. 
+    Online preprint available at http://arxiv.org/abs/2212.03128. 
+    Accessed: 2023-02-28 22:07:23 UTC. 
+    DOI: 10.48550/arXiv.2212.03128.
+
+    Project homepage:    http://github.com/abhinavnatarajan/Chalc
+
+    Copyright (c) 2023 Abhinav Natarajan
+
+    Contributors:
+    Abhinav Natarajan
+
+    Licensing:
+    Chalc is released under the GNU General Public License ("GPL").
+
+    GNU General Public License ("GPL") copyright permissions statement:
+    **************************************************************************
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #pragma once
 #ifndef CHROMATIC_H
 #define CHROMATIC_H
@@ -7,22 +42,23 @@
 
 namespace chalc {
     using Eigen::Matrix, Eigen::MatrixXd, Eigen::Matrix2Xd, Eigen::Dynamic;
-    using Colouring = vector<size_t>;
 
     // Stratify a coloured point set
     // Points are provided as columns of a matrix
     // Colours are provided as a vector
-    MatrixXd stratify(const MatrixXd& points, const Colouring& colours, size_t num_colours = -1);
+    MatrixXd stratify(const MatrixXd& points, const vector<size_t>& colours, size_t num_colours = -1);
 
     // Create a Delaunay triangulation from a collection of coordinate vectors
     FilteredComplex delaunay_complex(const MatrixXd& X);
 
     // Create the weak chromatic alpha complex
-    FilteredComplex weak_chromatic_alpha_complex(const MatrixXd& points, const Colouring& colours);
+    FilteredComplex weak_chromatic_alpha_complex(const MatrixXd& points, const vector<size_t>& colours);
 
     // Create the chromatic alpha complex
-    // FilteredComplex chromatic_alpha_complex(const Matrix<double, 2, Dynamic>& points, const Colouring& colours);
+    FilteredComplex chromatic_alpha_complex(const MatrixXd& points, const vector<size_t>& colours);
 
+    // Create the chromatic Del-Cech complex
+    FilteredComplex chromatic_delcech_complex(const MatrixXd& points, const vector<size_t>& colours);
 }
 
 #endif

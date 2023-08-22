@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.23)
 cmake_policy(SET CMP0054 NEW)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_BUILD_TYPE Release)
 
 if (DEFINED ENV{CMAKE_USE_VCPKG})
     set(CMAKE_USE_VCPKG $ENV{CMAKE_USE_VCPKG})
@@ -75,6 +74,7 @@ find_package(pybind11 CONFIG REQUIRED)
 
 # Create python extension module ###
 pybind11_add_module(${PROJECT_MODULE_NAME} MODULE src/cpp/pybind11_bindings.cpp src/cpp/filtration.cpp src/cpp/chromatic.cpp)
+target_include_directories(${PROJECT_MODULE_NAME} PRIVATE src/cpp/ConstrainedMiniball/mpreal)
 target_link_libraries(${PROJECT_MODULE_NAME} PRIVATE Eigen3::Eigen CGAL::CGAL CGAL::Eigen3_support)
 target_compile_definitions(${PROJECT_MODULE_NAME} PRIVATE VERSION_INFO=${PROJECT_VERSION})
 

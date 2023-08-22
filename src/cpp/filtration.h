@@ -1,3 +1,38 @@
+/*
+    This file is part of Chalc.
+
+    Chalc: Chromatic Alpha Complexes.
+    Based on: di Montesano et. al., “Persistent Homology of Chromatic Alpha Complexes”. 
+    Online preprint available at http://arxiv.org/abs/2212.03128. 
+    Accessed: 2023-02-28 22:07:23 UTC. 
+    DOI: 10.48550/arXiv.2212.03128.
+
+    Project homepage:    http://github.com/abhinavnatarajan/Chalc
+
+    Copyright (c) 2023 Abhinav Natarajan
+
+    Contributors:
+    Abhinav Natarajan
+
+    Licensing:
+    Chalc is released under the GNU General Public License ("GPL").
+
+    GNU General Public License ("GPL") copyright permissions statement:
+    **************************************************************************
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #pragma once
 #ifndef FILTRATION_H
 #define FILTRATION_H
@@ -6,10 +41,13 @@
 #include <map>
 #include <tuple>
 #include <memory>
+#include <bitset>
 
 namespace chalc {
-    using std::vector, std::map, std::shared_ptr, std::tuple;
+    using std::vector, std::map, std::shared_ptr, std::tuple, std::bitset;
     typedef double value_t;
+    constexpr size_t MAX_NUM_COLOURS = 4;
+    typedef bitset<MAX_NUM_COLOURS> colours_t;
 
     class BinomialCoeffTable {
         vector<vector<size_t>> B;
@@ -70,7 +108,7 @@ namespace chalc {
         value_t max_filt_value() const noexcept;
 
         // Returns a flat vectorised representation of the complex
-        vector<tuple<vector<size_t>, size_t, value_t, size_t>> flat_representation() const;
+        vector<tuple<vector<size_t>, size_t, value_t, unsigned long>> flat_representation() const;
 
         // Returns the k-skeleton of the clique complex on n vertices
         static FilteredComplex clique_complex(const size_t n, const size_t k);
@@ -135,15 +173,14 @@ namespace chalc {
         const size_t label; // label for the simplex
         const size_t max_vertex; // largest vertex label
         const size_t dim; // number of vertices - 1
-        size_t colours; // bitmask representing the colours of its vertices
+        colours_t colours; // bitmask representing the colours of its vertices
         static constexpr value_t DEFAULT_FILT_VALUE = 0.0;
-        static constexpr size_t DEFAULT_COLOUR = 0;
 
         /* PUBLIC METHODS OF Simplex */
 
         // Constructor
         Simplex(size_t label, size_t max_vertex, size_t dim = 0, 
-        size_t colours = DEFAULT_COLOUR, value_t value = DEFAULT_FILT_VALUE, 
+        colours_t colours = colours_t(), value_t value = DEFAULT_FILT_VALUE, 
         const vector<shared_ptr<Simplex>>& facets = vector<shared_ptr<Simplex>>{});
 
         // Return the sorted vertex labels of the simplex

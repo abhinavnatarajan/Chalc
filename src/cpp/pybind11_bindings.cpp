@@ -1,7 +1,43 @@
+/*
+    This file is part of Chalc.
+
+    Chalc: Chromatic Alpha Complexes.
+    Based on: di Montesano et. al., “Persistent Homology of Chromatic Alpha Complexes”. 
+    Online preprint available at http://arxiv.org/abs/2212.03128. 
+    Accessed: 2023-02-28 22:07:23 UTC. 
+    DOI: 10.48550/arXiv.2212.03128.
+
+    Project homepage:    http://github.com/abhinavnatarajan/Chalc
+
+    Copyright (c) 2023 Abhinav Natarajan
+
+    Contributors:
+    Abhinav Natarajan
+
+    Licensing:
+    Chalc is released under the GNU General Public License ("GPL").
+
+    GNU General Public License ("GPL") copyright permissions statement:
+    **************************************************************************
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/eigen.h>
 #include <pybind11/attr.h>
+#include <pybind11/iostream.h>
 #include <string>
 
 #define STRINGIFY(x) #x
@@ -43,18 +79,43 @@ PYBIND11_MODULE(core, m) {
             &FilteredComplex::Simplex::value,
             R"docstring(
                 Filtration value of the simplex. If you change the value, 
-                you are responsible for checking whether the parent filtered simplicial complex
+                you are responsible for checking whether the parent complex
                 satisfies the filtration property.
             )docstring")
-        .def_readwrite("colours", 
-            &FilteredComplex::Simplex::colours,
+        .def_property_readonly("colours", 
+            [](const shared_ptr<FilteredComplex::Simplex>& s_ptr){
+                return s_ptr->colours.to_ulong();
+            },
             R"docstring(
-                Integer whose binary representation is the bitmask of colours
-                in the simplex. For example, this value is a power of two for
-                monochromatic simplices. If you change this value for a vertex, 
-                you should call FilteredComplex.propagate_colours() afterwards 
-                to ensure that colours of higher dimensional simplices are consistent
-                with the colours of their vertices.
+                Bitmask of colours in the simplex, where the rightmost
+                bit represents the smallest colour index. Returned as an integer.
+            )docstring")
+        .def("set_colour", 
+            [](const shared_ptr<FilteredComplex::Simplex>& s_ptr, unsigned long c) {
+                if (s_ptr->dim == 0) {
+                    if (c <= MAX_NUM_COLOURS) {
+                        s_ptr->colours.reset().set(c);
+                    }
+                    else {
+                        std::cerr << "Colour index too large." << std::endl;
+                    }
+                }
+                else {
+                    std::cerr << "Can't change colour unless simplex is a vertex." << std::endl;
+                }
+            },
+            R"docstring(
+                Change the colour of a vertex by passing in the colour as a 
+                non-negative integer. It is recommended to call the member function 
+                "propagate_colours()" of the parent simplicial complex after this.
+            )docstring",
+            py::arg("colour"))
+        .def_property_readonly("num_colours", 
+            [](const shared_ptr<FilteredComplex::Simplex>& s_ptr){
+                return s_ptr->colours.count();
+            },
+            R"docstring(
+                Number of unique colours in the simplex.
             )docstring")
         .def_property_readonly("facets", 
             &FilteredComplex::Simplex::get_facets, 
@@ -62,7 +123,7 @@ PYBIND11_MODULE(core, m) {
                 Returns a read-only list of handles to the facets of the simplex.
             )docstring")
         .def("__repr__",
-            [](const shared_ptr<FilteredComplex::Simplex> s_ptr) {
+            [](const shared_ptr<FilteredComplex::Simplex>& s_ptr) {
                 return "<" + std::to_string(s_ptr->dim) + "-simplex>";
             });
 
@@ -187,9 +248,9 @@ PYBIND11_MODULE(core, m) {
             py::arg("vertices"))
         .def("propagate_colours", &FilteredComplex::propagate_colours,
             R"docstring(
-                Function to make sure that simplex colours are consistent with the colours 
-                of their vertices. You should call this whenever you change the colour of 
-                any vertex. 
+                Function to make sure that simplex colours are consistent 
+                with the colours of their vertices. You should call this 
+                whenever you change the colour of any vertex. 
             )docstring")
         .def("flat_representation", &FilteredComplex::flat_representation,
             R"docstring(
@@ -229,15 +290,15 @@ PYBIND11_MODULE(core, m) {
         )docstring",
         py::arg("x"));
     m.def("stratify", 
-        [](const MatrixXd& M, const Colouring& c) -> MatrixXd {
+        [](const MatrixXd& M, const vector<size_t>& c) -> MatrixXd {
             return stratify(M, c); // default third argument
         },
         R"docstring(
             Returns the stratification of a point cloud by a sequence of colours.
-            If s is the number of colours and d is the ambient dimension of the point cloud,
-            then the points are translated along the vertices of the s-simplex whose
-            vertices are the origin and the last s-1 basis elements of 
-            R^(d + s)-dimensional Euclidean space. 
+            If s is the number of colours and d is the ambient dimension 
+            of the point cloud, then the points are translated along the 
+            vertices of the s-simplex whose vertices are the origin and the 
+            last s-1 basis elements of R^(d + s)-dimensional Euclidean space. 
 
             Parameters
             ----------
@@ -266,6 +327,44 @@ PYBIND11_MODULE(core, m) {
             colours is contiguous and colours[0] = 0.
         )docstring",
         py::arg("x"), py::arg("colours"));
+    m.def("chromatic_alpha_complex", &chromatic_alpha_complex,
+        R"docstring(
+            Returns the chromatic alpha complex of a coloured point cloud.
+            This is a filtration of the Delaunay complex of the point cloud
+            after stratification by the colours, and has the same 
+            persistent homotopy type as the Cech complex of the point cloud. 
+
+            Parameters
+            ----------
+            x :
+            A numpy matrix whose columns are points in the point cloud.
+            colours :
+            A list of integers representing the colours of vertices.
+            Note that the actual colours of simplices in the output filtration
+            may not correspond to the input colours unless the set of values in
+            colours is contiguous and colours[0] = 0.
+        )docstring",
+        py::arg("x"), py::arg("colours"));
+    m.def("chromatic_delcech_complex", &chromatic_delcech_complex,
+        R"docstring(
+            Returns the chromatic Del-Cech complex of a coloured point cloud.
+            This is a filtration of the Delaunay complex of the point cloud
+            after stratification by the colours, with filtration values from 
+            the Cech complex. 
+
+            Parameters
+            ----------
+            x :
+            A numpy matrix whose columns are points in the point cloud.
+            colours :
+            A list of integers representing the colours of vertices.
+            Note that the actual colours of simplices in the output filtration
+            may not correspond to the input colours unless the set of values in
+            colours is contiguous and colours[0] = 0.
+        )docstring",
+        py::arg("x"), py::arg("colours"));
+    
+    py::add_ostream_redirect(m);
 
 #ifdef VERSION_INFO
     m.attr("__version__") = MACRO_STRINGIFY(VERSION_INFO);
