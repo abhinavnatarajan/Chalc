@@ -1,9 +1,9 @@
-.vscode
+.vscode/
 CMakeCache.txt
 CMakeFiles
-_skbuild
-build
-*egg-info
-wheelhouse
-dist
-scratch_test
+_skbuild/
+build/
+*egg-info/
+wheelhouse/
+dist/
+scratch_test/

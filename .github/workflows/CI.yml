@@ -39,7 +39,7 @@ jobs:
         run: brew install automake
         if: ${{ matrix.os == 'macOS-latest' }}
       
-      - name: Setup vcpkg (without packages)
+      - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
         with:
           # If not using a submodule for vcpkg sources, this specifies which commit
