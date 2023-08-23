@@ -29,5 +29,6 @@
             "name" : "cgal",
             "version>=" : "5.6"
         }
-    ]
+    ],
+    "builtin-baseline": "417119555f155f6044dec7a379cd25466e339873"
 }
