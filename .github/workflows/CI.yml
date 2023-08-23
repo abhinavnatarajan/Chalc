@@ -46,6 +46,7 @@ jobs:
           # id must be checkout from a Git repo. 
           # Note: it must not be set if using a Git submodule for vcpkg.
           vcpkgGitCommitId: '417119555f155f6044dec7a379cd25466e339873'
+          runVcpkgInstall: true
     
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.12.1
