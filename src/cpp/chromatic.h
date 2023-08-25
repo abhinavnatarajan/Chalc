@@ -38,27 +38,22 @@
 #define CHROMATIC_H
 
 #include <Eigen/Dense>
+#include "common.h"
 #include "filtration.h"
 
 namespace chalc {
-    using Eigen::Matrix, Eigen::MatrixXd, Eigen::Matrix2Xd, Eigen::Dynamic;
-
-    // Stratify a coloured point set
-    // Points are provided as columns of a matrix
-    // Colours are provided as a vector
-    MatrixXd stratify(const MatrixXd& points, const vector<size_t>& colours, size_t num_colours = -1);
 
     // Create a Delaunay triangulation from a collection of coordinate vectors
-    FilteredComplex delaunay_complex(const MatrixXd& X);
+    FilteredComplex delaunay_complex(const Eigen::MatrixXd& X);
 
     // Create the weak chromatic alpha complex
-    FilteredComplex weak_chromatic_alpha_complex(const MatrixXd& points, const vector<size_t>& colours);
+    FilteredComplex chromatic_delrips_complex(const Eigen::MatrixXd& points, const std::vector<index_t>& colours);
 
     // Create the chromatic alpha complex
-    FilteredComplex chromatic_alpha_complex(const MatrixXd& points, const vector<size_t>& colours);
+    FilteredComplex chromatic_alpha_complex(const Eigen::MatrixXd& points, const std::vector<index_t>& colours);
 
     // Create the chromatic Del-Cech complex
-    FilteredComplex chromatic_delcech_complex(const MatrixXd& points, const vector<size_t>& colours);
+    FilteredComplex chromatic_delcech_complex(const Eigen::MatrixXd& points, const std::vector<index_t>& colours);
 }
 
 #endif

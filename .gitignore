@@ -3,6 +3,7 @@ CMakeCache.txt
 CMakeFiles
 _skbuild/
 build/
+docs/source/_autosummary/
 *egg-info/
 wheelhouse/
 dist/
