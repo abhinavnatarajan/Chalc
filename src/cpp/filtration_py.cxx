@@ -10,11 +10,11 @@ PYBIND11_MODULE(filtration, m)
     namespace py = pybind11;
     m.doc() =
         R"docstring(
-            Module containing utilities to store and manipulate filtered simplicial complexes. 
+            Module containing utilities to store and manipulate abstract filtered simplicial complexes. 
         )docstring";
 
     py::class_<FilteredComplex::Simplex, shared_ptr<FilteredComplex::Simplex>> simplex_class(m, "SimplexObject");
-    simplex_class.doc() =
+    simplex_class.doc() =   
         R"docstring(
             Class representing a simplex in a filtered simplicial complex.
         )docstring";
@@ -25,6 +25,11 @@ PYBIND11_MODULE(filtration, m)
         .def_readonly("label", &FilteredComplex::Simplex::label,
             R"docstring(
                 Label of the simplex in its parent filtered complex.
+                A :math:`k`-simplex :math:`\sigma` is labelled 
+                by the lexicographic index of :math:`\sigma` with respect 
+                to its vertex labels sorted in ascending order, 
+                counting all possible sorted subsequences of :math:`(0, ..., N-1)`
+                of length :math:`k`.
             )docstring")
         .def_property_readonly("vertices", static_cast<vector<index_t> (FilteredComplex::Simplex::*)() const>(&FilteredComplex::Simplex::get_vertex_labels),
             R"docstring(
@@ -77,19 +82,10 @@ PYBIND11_MODULE(filtration, m)
                 Tip
                 ---
                 It is recommended to call the member function 
-                :ref:`chalc.filtration.FilteredComplex.propagate_colours` 
-                of the parent simplicial complex after changing the colour of a vertex.
+                `propagate_colours` of the parent simplicial complex 
+                after changing the colour of a vertex.
             )docstring",
             py::arg("colour"))
-        .def_property_readonly(
-            "num_colours",
-            [](const shared_ptr<FilteredComplex::Simplex> &s_ptr)
-            {
-                return s_ptr->colours.count();
-            },
-            R"docstring(
-                Number of unique colours in the simplex.
-            )docstring")
         .def_property_readonly("facets",
                                &FilteredComplex::Simplex::get_facets,
             R"docstring(
@@ -121,34 +117,33 @@ PYBIND11_MODULE(filtration, m)
                 be changed after initialisation.
         )docstring",
         py::arg("n"), py::arg("k"))
-        .def(py::init<const FilteredComplex &, const index_t>(),
-            R"docstring(
-                Constructs a new simplicial complex from the 
-                :math:`k`-skeleton of an existing
-                (filtered) simplicial complex.
-                
-                Parameters
-                ----------
-                other : chalc.filtration.FilteredComplex
-                    Filtered simplicial complex.
-                k : int
-                    Integer determing the dimension of the skeleton.
-            )docstring",
-            py::arg("other"), py::arg("k"))
+    .def(py::init<const FilteredComplex &, const index_t>(),
+        R"docstring(
+            Returns a handle to the :math:`k`-skeleton 
+            of an existing (filtered) simplicial complex.
+            
+            Parameters
+            ----------
+            other : FilteredComplex
+                Filtered simplicial complex.
+            k : int
+                Skeleton dimension.
+        )docstring",
+        py::arg("other"), py::arg("k"))
         .def("add_simplex", &FilteredComplex::add_simplex,
             R"docstring(
                 Add a simplex to a filtered simplicial complex.
                 
                 Parameters
                 ----------
-                vertices : List[int]
+                vertices : list[int]
                     List of vertex labels corresponding to existing vertices 
                     in the complex.
                 filt_value : float
                     Filtration value to associate to the new simplex. 
                 
-                Notes
-                -----
+                Note
+                ----
                 Faces of the added simplex that are already present 
                 in the simplicial complex will have their filtration 
                 values reduced if necessary.                 
@@ -167,12 +162,12 @@ PYBIND11_MODULE(filtration, m)
             R"docstring(
                 Current maximum dimension of a maximal simplex in the complex.
             )docstring")
-        .def_readonly("max_dimension", &FilteredComplex::max_dim,
+        .def_property_readonly("max_dimension", &FilteredComplex::max_dim,
             R"docstring(
                 Maximum dimension of simplex that this complex can store.
                 Set during initialisation. 
             )docstring")
-        .def_readonly("num_vertices", &FilteredComplex::N,
+        .def_property_readonly("num_vertices", &FilteredComplex::N,
             R"docstring(
                 Number of vertices in the simplicial complex.
                 Set during initialisation.
@@ -198,32 +193,31 @@ PYBIND11_MODULE(filtration, m)
                 
                 Parameters
                 ----------
-                vertices : List[int]
+                vertices : list[int]
                     Vertex labels of the simplex to check for. 
             )docstring",
             py::arg("vertices"))
         .def_property_readonly("simplices", &FilteredComplex::get_simplices,
             R"docstring(
-                A list of dictionaries, where list[k] contains
-                the k-simplices of the complex. 
-
-                The key of a k-simplex in the [k]th dictionary is 
+                A list such that ``simplices[k]`` contains
+                the dictionary of :math:`k`-simplices of the complex. 
+                The key of a :math:`k`-simplex in ``simplices[k]`` is 
                 the lexicographic index of that simplex with respect 
                 to its vertex labels sorted in ascending order, 
-                counting all possible sorted subsequences of (0, ..., N-1)
-                of length k.
+                counting all possible sorted subsequences of :math:`(0, ..., N-1)`
+                of length :math:`k`.
             )docstring")
         .def("get_label_from_vertex_labels", &FilteredComplex::get_label_from_vertex_labels,
              R"docstring(
                 Returns the dictionary key of a simplex with respect to 
                 its vertex labels sorted in ascending order, counting all 
-                possible sorted subsequences of (0, ..., N-1) of length k, 
-                where N is the number of vertices in the complex. 
+                possible sorted subsequences of :math:`(0, ..., N-1)` of length :math:`k`, 
+                where :math:`N` is the number of vertices in the complex. 
                 The simplex need not be present in the simplicial complex.
                 
                 Parameters
                 ----------
-                vertices : List[int]
+                vertices : list[int]
                     List of vertex labels of the simplex.
             )docstring",
             py::arg("vertices"))
@@ -231,17 +225,24 @@ PYBIND11_MODULE(filtration, m)
              R"docstring(
                 Function to make sure that simplex colours are consistent 
                 with the colours of their vertices. You should call this 
-                whenever you change the colour of any vertex. 
+                whenever you change the colour of any vertices. 
             )docstring")
-        .def("flat_representation", &FilteredComplex::flat_representation,
+        .def("serialised", &FilteredComplex::serialised,
              R"docstring(
-                Returns a serialised representation of the simplicial complex.
-                Each list element is a tuple of the following signature:
-                (f : List[int], idx: int, v : float, c: int)
-                This corresponds to a simplex whose facets are the elements of the list 
-                at indices f, whose original label in the FilteredComplex is idx, whose 
-                filtration value is v, and whose colour bitmask is c. 
-                Simplices appear in ascending order of dimension, then filtration value. 
+                Serialised representation of the simplicial complex in a format
+                suitable for persistent homology computations.
+
+                Returns
+                -------
+                x : list[tuple[list[int], int, float, int]] 
+                    List of simplices in the simplicial complex ordered by dimension 
+                    followed by filtration time. Each simplex :math:`\sigma` is 
+                    represented by a tuple containing the following items.
+
+                    1.  A list containing the indices in ``x`` of the facets of :math:`\sigma`.
+                    2.  The lexicographic key of :math:`\sigma` in the simplicial complex.
+                    3.  The filtration time of :math:`\sigma`.
+                    4.  The colour bitmask of :math:`\sigma`.
             )docstring")
         .def("__repr__",
             [](const FilteredComplex &K)
@@ -250,16 +251,14 @@ PYBIND11_MODULE(filtration, m)
             });
     m.def("clique_complex", &FilteredComplex::clique_complex,
         R"docstring(
-            Returns the k-skeleton of the complete simplicial complex
-            on n vertices, with filtration values initialised to zero.
+            Returns the :math:`k`-skeleton of the complete simplicial complex
+            on :math:`n` vertices, with filtration values initialised to zero.
         )docstring",
         py::arg("n"), py::arg("k"));
     m.def("standard_simplex", &standard_simplex,
         R"docstring(
             Returns the simplicial complex corresponding to 
-            the standard abstract n-simplex.
+            the standard abstract :math:`n`-simplex.
         )docstring",
         py::arg("n"));
-    
-    py::add_ostream_redirect(m);
 }

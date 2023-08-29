@@ -4,7 +4,7 @@ requires = [
     "scikit-build>=0.17.3",
     "wheel>=0.40",
     "ninja",
-    "pybind11",
+    "pybind11>=2.11",
 ]
 build-backend = "setuptools.build_meta"
 

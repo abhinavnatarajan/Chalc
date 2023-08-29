@@ -78,51 +78,7 @@ pybind11_add_module(
 target_include_directories(chromatic PRIVATE src/cpp/ConstrainedMiniball/mpreal)
 target_link_libraries(chromatic PRIVATE Eigen3::Eigen CGAL::CGAL CGAL::Eigen3_support)
 
-pybind11_add_module(version MODULE src/cpp/version.cxx)
-target_compile_definitions(version PRIVATE VERSION_INFO=${PROJECT_VERSION})
+pybind11_add_module(_version MODULE src/cpp/version.cxx)
+target_compile_definitions(_version PRIVATE VERSION_INFO=${PROJECT_VERSION})
 
-if (CMAKE_USE_VCPKG AND WIN32)
-    # file(GLOB VCPKG_SHARED_LIBRARIES
-    #     RELATIVE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/"
-    #     "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/*")
-    # the following sets the variable VCPKG_SHARED_LIBRARIES
-    # install(CODE "
-    #     message(STATUS \"Searching for runtime dependencies in: \")
-    #     message(STATUS \"${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin\")
-
-    #     if (NOT EXISTS \"${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin\")
-    #         message(FATAL_ERROR \"Error when searching for runtime dependencies.\")
-    #     endif()
-    #     get_directory_property(targets PROPERTY BUILDSYSTEM_TARGETS)
-    #     set(resolved_deps \"\")
-    #     foreach(tgt \$\{targets\})
-    #         file(GET_RUNTIME_DEPENDENCIES
-    #             RESOLVED_DEPENDENCIES_VAR temp
-    #             MODULES $<TARGET_FILE:\$\{tgt\}>
-    #             PRE_INCLUDE_REGEXES ${VCPKG_SHARED_LIBRARIES}
-    #             PRE_EXCLUDE_REGEXES \".*\"
-    #             DIRECTORIES \"${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin\")
-    #         LIST(APPEND resolved_deps \$\{temp\})
-    #     endforeach()
-        
-    #     message(STATUS \"The following runtime dependencies will be copied into the distribution:\")
-    #     message(STATUS \$\{resolved_deps\})
-    #     ")
-    # Install the `vcpkg` dependencies that are used in our ${PROJECT_NAME}
-    # library in the same DESTINATION as the python API. Note that it
-    # only supports collecting the runtime dependencies for Windows, Linux and
-    # macOS platforms.
-    # install(TARGETS filtration chromatic version
-    #     RUNTIME_DEPENDENCIES
-    #     PRE_INCLUDE_REGEXES ${VCPKG_SHARED_LIBRARIES}
-    #     PRE_EXCLUDE_REGEXES ".*"
-    #     DIRECTORIES "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin"
-    #     DESTINATION .)
-#     install(TARGETS filtration chromatic version
-#         RUNTIME DESTINATION .
-#         LIBRARY DESTINATION .)
-# else()
-#     # we assume that runtime dependencies are system libraries or otherwise available in LD_LIBRARY_PATH
-#     install(TARGETS ${PROJECT_MODULE_NAME} DESTINATION .)
-endif()
-install(TARGETS chromatic filtration version DESTINATION .)
+install(TARGETS chromatic filtration _version DESTINATION .)

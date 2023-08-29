@@ -217,7 +217,7 @@ namespace chalc {
     }
 
     // Create the chromatic alpha complex
-    FilteredComplex chromatic_alpha_complex(const RealMatrix<double>& points, const vector<index_t>& colours) {
+    FilteredComplex chromatic_alpha_complex(const RealMatrix<double>& points, const vector<index_t>& colours, std::ostream& ostream) {
         typedef double Real_t;
         auto tol = Eigen::NumTraits<double>::dummy_precision();
         auto [new_colours, num_colours] = canonicalise(colours);
@@ -271,13 +271,13 @@ namespace chalc {
             }            
         }
         if (numerical_issues) {
-            std::cerr << "Warning: encountered numerical problems. Filtration values may be inaccurate." << std::endl;
+            ostream << "Warning: encountered numerical problems. Filtration values may be inaccurate." << std::endl;
         }
         return delX;
     }
 
     // Create the chromatic Del-Cech complex
-    FilteredComplex chromatic_delcech_complex(const RealMatrix<double>& points, const vector<index_t>& colours) {
+    FilteredComplex chromatic_delcech_complex(const RealMatrix<double>& points, const vector<index_t>& colours, std::ostream& ostream) {
         auto [new_colours, num_colours] = canonicalise(colours);
         RealMatrix<double> stratified_points = stratify(points, colours, num_colours);
         auto delX = delaunay_complex(stratified_points);
@@ -299,7 +299,7 @@ namespace chalc {
             }            
         }
         if (numerical_issues) {
-            std::cerr << "Warning: encountered numerical problems. Filtration values may be inaccurate." << std::endl;
+            ostream << "Warning: encountered numerical problems. Filtration values may be inaccurate." << std::endl;
         }
         return delX;
     }

@@ -11,7 +11,7 @@ PYBIND11_MODULE(chromatic, m)
     namespace py = pybind11;
     m.doc() =
         R"docstring(
-            Module containing routines to compute geometric filtered simplicial complexes. 
+            Module containing geometry routines to compute chromatic complexes. 
         )docstring";
     m.def("delaunay_complex", &delaunay_complex,
         R"docstring(
@@ -24,7 +24,7 @@ PYBIND11_MODULE(chromatic, m)
 
             Returns
             -------
-            K : FilteredComplex
+            FilteredComplex
                 The Delaunay triangulation.
         )docstring",
         py::arg("x"));
@@ -34,17 +34,17 @@ PYBIND11_MODULE(chromatic, m)
 
             Parameters
             ----------
-            x : numpy.ndarray[numpy.float64[m, n]]
+            x
                 A numpy matrix whose columns are points in the point cloud.
-            colours : List[int]
+            colours
                 A list of integers describing the colours of the points.
                 Note that the actual colours of vertices in the output filtration
                 may not correspond to the input colours unless the set of values in
-                `colours` is contiguous and `colours[0] = 0`.
+                ``colours`` is contiguous and ``colours[0] = 0``.
 
             Returns
             -------
-            K : FilteredComplex
+            FilteredComplex
                 The chromatic Delaunay-Rips complex.
 
             Notes
@@ -58,26 +58,33 @@ PYBIND11_MODULE(chromatic, m)
             chromatic_alpha_complex, chromatic_delcech_complex 
         )docstring",
         py::arg("x"), py::arg("colours"));
-    m.def("chromatic_alpha_complex", &chromatic_alpha_complex,
+    m.def("chromatic_alpha_complex", 
+    [](const Eigen::MatrixXd& points, const vector<index_t>& colours) {
+        std::ostringstream ostream;
+        auto res = chromatic_alpha_complex(points, colours, ostream);
+        if (ostream.tellp() > 0) {
+            PyErr_WarnEx(PyExc_RuntimeWarning, 
+                        ostream.str().c_str(), 
+                        1);
+        }
+        return res;
+    },
         R"docstring(
-            Computes the chromatic alpha complex of a coloured point cloud.
-            This is a filtration of the Delaunay complex of the point cloud
-            after stratification by the colours, and has the same 
-            persistent homotopy type as the Cech complex of the point cloud. 
+            Computes the chromatic alpha complex of a coloured point cloud. 
 
             Parameters
             ----------
             x : numpy.ndarray[numpy.float64[m, n]]
                 A numpy matrix whose columns are points in the point cloud.
-            colours : List[int]
+            colours : list[int]
                 A list of integers describing the colours of the points.
                 Note that the actual colours of vertices in the output filtration
                 may not correspond to the input colours unless the set of values in
-                `colours` is contiguous and `colours[0] = 0`.
+                ``colours`` is contiguous and ``colours[0] = 0``.
             
             Returns
             -------
-            K : FilteredComplex
+            FilteredComplex
                 The chromatic alpha complex.
 
             See Also
@@ -85,7 +92,17 @@ PYBIND11_MODULE(chromatic, m)
             chromatic_delrips_complex, chromatic_delcech_complex 
         )docstring",
         py::arg("x"), py::arg("colours"));
-    m.def("chromatic_delcech_complex", &chromatic_delcech_complex,
+    m.def("chromatic_delcech_complex", 
+    [](const Eigen::MatrixXd& points, const vector<index_t>& colours) {
+        std::ostringstream ostream;
+        auto res = chromatic_delcech_complex(points, colours, ostream);
+        if (ostream.tellp() > 0) {
+            PyErr_WarnEx(PyExc_RuntimeWarning, 
+                        ostream.str().c_str(), 
+                        1);
+        }
+        return res;
+    },
         R"docstring(
             Returns the chromatic Delaunay-Cech complex of a coloured point cloud.
 
@@ -93,15 +110,15 @@ PYBIND11_MODULE(chromatic, m)
             ----------
             x : numpy.ndarray[numpy.float64[m, n]]
                 A numpy matrix whose columns are points in the point cloud.
-            colours : List[int]
+            colours : list[int]
                 A list of integers describing the colours of the points.
                 Note that the actual colours of vertices in the output filtration
                 may not correspond to the input colours unless the set of values in
-                `colours` is contiguous and `colours[0] = 0`.
+                ``colours`` is contiguous and ``colours[0] = 0``.
 
             Returns
             -------
-            K : FilteredComplex
+            FilteredComplex
                 The chromatic Delaunay-Cech complex.
 
             Notes
@@ -115,6 +132,4 @@ PYBIND11_MODULE(chromatic, m)
             chromatic_alpha_complex, chromatic_delrips_complex 
         )docstring",
         py::arg("x"), py::arg("colours"));
-
-    py::add_ostream_redirect(m);
 }

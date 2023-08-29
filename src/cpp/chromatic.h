@@ -38,6 +38,7 @@
 #define CHROMATIC_H
 
 #include <Eigen/Dense>
+#include <iostream>
 #include "common.h"
 #include "filtration.h"
 
@@ -50,10 +51,10 @@ namespace chalc {
     FilteredComplex chromatic_delrips_complex(const Eigen::MatrixXd& points, const std::vector<index_t>& colours);
 
     // Create the chromatic alpha complex
-    FilteredComplex chromatic_alpha_complex(const Eigen::MatrixXd& points, const std::vector<index_t>& colours);
+    FilteredComplex chromatic_alpha_complex(const Eigen::MatrixXd& points, const std::vector<index_t>& colours, std::ostream& ostream = std::cerr);
 
     // Create the chromatic Del-Cech complex
-    FilteredComplex chromatic_delcech_complex(const Eigen::MatrixXd& points, const std::vector<index_t>& colours);
+    FilteredComplex chromatic_delcech_complex(const Eigen::MatrixXd& points, const std::vector<index_t>& colours, std::ostream& ostream = std::cerr);
 }
 
 #endif

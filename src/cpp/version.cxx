@@ -7,7 +7,7 @@ namespace
     namespace py = pybind11;
 }
 
-PYBIND11_MODULE(version, m) {
+PYBIND11_MODULE(_version, m) {
 #ifdef VERSION_INFO
     m.attr("__version__") = MACRO_STRINGIFY(VERSION_INFO);
 #else

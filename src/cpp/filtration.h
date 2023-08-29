@@ -100,7 +100,7 @@ namespace chalc
         value_t max_filt_value() const noexcept;
 
         // Returns a flat vectorised representation of the complex
-        std::vector<std::tuple<std::vector<index_t>, index_t, value_t, unsigned long>> flat_representation() const;
+        std::vector<std::tuple<std::vector<index_t>, index_t, value_t, unsigned long>> serialised() const;
 
         // Returns the k-skeleton of the clique complex on n vertices
         static FilteredComplex clique_complex(const index_t n, const index_t k);

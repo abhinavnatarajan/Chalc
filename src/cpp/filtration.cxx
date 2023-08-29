@@ -394,7 +394,7 @@ namespace chalc
         return cur_max_filt_value;
     }
 
-    vector<tuple<vector<index_t>, index_t, value_t, unsigned long>> FilteredComplex::flat_representation() const
+    vector<tuple<vector<index_t>, index_t, value_t, unsigned long>> FilteredComplex::serialised() const
     {
         vector<tuple<vector<index_t>, index_t, value_t, unsigned long>> result(num_simplices);
         vector<map<index_t, index_t>> indices(cur_dim + 1);
