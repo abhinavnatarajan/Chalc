@@ -63,12 +63,12 @@ namespace chalc
                 {
                     B[i][i] = 1;
                 }
-                assert(B[i][std::min(i >> 1, k)] >= 0, "Simplex index is too large.");
+                assert(("Simplex index is too large.", B[i][std::min(i >> 1, k)] >= 0));
             }
         }
         index_t operator()(index_t n, index_t k) const
         {
-            // assert(n < B.size() && k < B[n].size() && n >= k - 1);
+            assert(n < B.size() && k < B[n].size() && n >= k - 1);
             return B[n][k];
         }
     };

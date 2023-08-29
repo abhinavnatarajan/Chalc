@@ -162,12 +162,12 @@ PYBIND11_MODULE(filtration, m)
             R"docstring(
                 Current maximum dimension of a maximal simplex in the complex.
             )docstring")
-        .def_property_readonly("max_dimension", &FilteredComplex::max_dim,
+        .def_readonly("max_dimension", &FilteredComplex::max_dim,
             R"docstring(
                 Maximum dimension of simplex that this complex can store.
                 Set during initialisation. 
             )docstring")
-        .def_property_readonly("num_vertices", &FilteredComplex::N,
+        .def_readonly("num_vertices", &FilteredComplex::N,
             R"docstring(
                 Number of vertices in the simplicial complex.
                 Set during initialisation.
