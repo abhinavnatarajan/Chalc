@@ -195,8 +195,8 @@ PYBIND11_MODULE(filtration, m)
         .def_readwrite("filtration_value", &FilteredComplex::Simplex::value,
             R"docstring(
                 Filtration value of the simplex. If you modify this value, \
-                you must call `propagate_filtration_value` on the parent \
-                complex to ensure that filtration times remain monotonic.
+                you should call :meth:`propagate_filt_values() <chalc.filtration.FilteredComplex.propagate_filt_values>` \
+                from the parent complex to ensure that filtration times remain monotonic.
             )docstring")
         .def_property_readonly(
             "colours",
@@ -234,19 +234,20 @@ PYBIND11_MODULE(filtration, m)
                 Raises
                 ------
                 ValueError
-                    If the simplex is not a vertex or if `colour >= MAX_NUM_COLOURS`.
+                    If the simplex is not a vertex or if 
+                    `colour >=` :attr:`MAX_NUM_COLOURS <chalc.chromatic.MAX_NUM_COLOURS>`.
                 
                 Tip
                 ---
                 It is recommended to call the member function 
-                `propagate_colours` of the parent simplicial complex 
-                after changing the colour of a vertex.
+                :meth:`propagate_colours() <chalc.filtration.FilteredComplex.propagate_colours>` 
+                from the parent simplicial complex after changing the colour of a vertex.
             )docstring",
             py::arg("colour"))
         .def_property_readonly("facets",
                                &FilteredComplex::Simplex::get_facets,
             R"docstring(
-                Returns a read-only list of handles to the facets of the simplex.
+                Read-only list of handles to the facets of the simplex.
             )docstring")
         .def("__repr__",
              [](const shared_ptr<FilteredComplex::Simplex> &s_ptr)

@@ -10,7 +10,8 @@ Overview
    {% block methods %}
 
    {% if methods %}
-   .. rubric:: {{ _('Methods') }}
+   {{ _('Methods') }}
+   ^^^^^^^^^^^^^^^^^^
 
    .. autosummary::
       :nosignatures:
@@ -22,7 +23,8 @@ Overview
 
    {% block properties %}
    {% if properties %}
-   .. rubric:: {{ _('Properties') }}
+   {{ _('Properties') }}
+   ^^^^^^^^^^^^^^^^^^^^^
 
    {% for item in properties %}
    .. autoproperty:: {{ objname }}.{{ item }}
@@ -33,7 +35,8 @@ Overview
 
    {% block attributes %}
    {% if attributes %}
-   .. rubric:: {{ _('Attributes') }}
+   {{ _('Attributes') }}
+   ^^^^^^^^^^^^^^^^^^^^^
 
    {% for item in attributes %}
    .. autoattribute:: {{ name }}.{{ item }}
@@ -44,7 +47,8 @@ Overview
 
    {% block classes %}
    {% if classes %}
-   .. rubric:: {{ _('Classes') }}
+   {{ _('Classes') }}
+   ^^^^^^^^^^^^^^^^^^
 
    .. autosummary::
       :toctree:

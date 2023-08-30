@@ -12,6 +12,11 @@ PYBIND11_MODULE(chromatic, m)
     m.doc() =
         R"docstring(
             Module containing geometry routines to compute chromatic complexes. 
+
+            Attributes
+            ----------
+            MAX_NUM_COLOURS : int
+                Maximum number of colours that can be handled by the methods in this module.
         )docstring";
     m.attr("MAX_NUM_COLOURS") = MAX_NUM_COLOURS;
     m.def("delaunay_complex", &delaunay_complex,
@@ -41,7 +46,7 @@ PYBIND11_MODULE(chromatic, m)
                 A list of integers describing the colours of the points.
                 Note that the actual colours of vertices in the output filtration
                 may not correspond to the input colours unless the set of values in
-                `colours` is contiguous and `colours[0] = 0`.
+                ``colours`` is contiguous and ``colours[0] = 0``.
 
             Returns
             -------
@@ -51,7 +56,9 @@ PYBIND11_MODULE(chromatic, m)
             Raises
             ------
             ValueError
-                If the number of unique values in `colours` is greater than `MAX_NUM_COLOURS`.
+                If the number of unique values in ``colours`` is greater than 
+                :attr:`MAX_NUM_COLOURS <chalc.chromatic.MAX_NUM_COLOURS>`, 
+                or if number of colours does not match the number of points.
 
             Notes
             -----
@@ -86,7 +93,7 @@ PYBIND11_MODULE(chromatic, m)
                 A list of integers describing the colours of the points.
                 Note that the actual colours of vertices in the output filtration
                 may not correspond to the input colours unless the set of values in
-                `colours` is contiguous and `colours[0] = 0`.
+                ``colours`` is contiguous and ``colours[0] = 0``.
             
             Returns
             -------
@@ -96,7 +103,9 @@ PYBIND11_MODULE(chromatic, m)
             Raises
             ------
             ValueError
-                If the number of unique values in `colours` is greater than `MAX_NUM_COLOURS`.
+                If the number of unique values in ``colours`` is greater than 
+                :attr:`MAX_NUM_COLOURS <chalc.chromatic.MAX_NUM_COLOURS>`, 
+                or if number of colours does not match the number of points.
 
             See Also
             --------
@@ -125,7 +134,7 @@ PYBIND11_MODULE(chromatic, m)
                 A list of integers describing the colours of the points.
                 Note that the actual colours of vertices in the output filtration
                 may not correspond to the input colours unless the set of values in
-                `colours` is contiguous and `colours[0] = 0`.
+                ``colours`` is contiguous and ``colours[0] = 0``.
 
             Returns
             -------
@@ -135,7 +144,9 @@ PYBIND11_MODULE(chromatic, m)
             Raises
             ------
             ValueError
-                If the number of unique values in `colours` is greater than `MAX_NUM_COLOURS`.
+                If the number of unique values in ``colours`` is greater than 
+                :attr:`MAX_NUM_COLOURS <chalc.chromatic.MAX_NUM_COLOURS>`, 
+                or if number of colours does not match the number of points.
 
             Notes
             -----

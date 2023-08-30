@@ -232,6 +232,9 @@ namespace chalc
             throw std::domain_error("Too many colours. Number of colours must be <= " +
                 std::to_string(num_colours));
         }
+        if (colours.size() != points.cols()) {
+            throw std::domain_error("len(colours) must equal number of points.");
+        }
         RealMatrix<double> stratified_points = stratify(points, new_colours, num_colours);
         auto delX = delaunay_complex(stratified_points);
         // modify the colours of the vertices
@@ -266,6 +269,9 @@ namespace chalc
         {
             throw std::domain_error("Too many colours. Number of colours must be <= " +
                 std::to_string(num_colours));
+        }
+        if (colours.size() != points.cols()) {
+            throw std::domain_error("len(colours) must equal number of points.");
         }
         RealMatrix<double> stratified_points = stratify(points, new_colours, num_colours);
         auto delX = delaunay_complex(stratified_points);
@@ -344,6 +350,9 @@ namespace chalc
         {
             throw std::domain_error("Too many colours. Number of colours must be <= " +
                 std::to_string(num_colours));
+        }
+        if (colours.size() != points.cols()) {
+            throw std::domain_error("len(colours) must equal number of points.");
         }
         RealMatrix<double> stratified_points = stratify(points, colours, num_colours);
         auto delX = delaunay_complex(stratified_points);
