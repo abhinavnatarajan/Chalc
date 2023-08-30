@@ -1,10 +1,12 @@
 .vscode/
 CMakeCache.txt
-CMakeFiles
+CMakeFiles/
 _skbuild/
+__pycache__/
 build/
 docs/source/_autosummary/
 *egg-info/
 wheelhouse/
 dist/
 scratch_test/
+instructions_for_build.txt

@@ -1,0 +1,10 @@
+.underline {
+    text-decoration: underline;
+  }
+
+p.rubric {
+  border-bottom: 1px solid; 
+  margin-top: 20px;
+  font-weight: bold !important;
+  font-size: 100% !important;
+}

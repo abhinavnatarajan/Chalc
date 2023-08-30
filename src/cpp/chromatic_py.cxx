@@ -13,13 +13,14 @@ PYBIND11_MODULE(chromatic, m)
         R"docstring(
             Module containing geometry routines to compute chromatic complexes. 
         )docstring";
+    m.attr("MAX_NUM_COLOURS") = MAX_NUM_COLOURS;
     m.def("delaunay_complex", &delaunay_complex,
         R"docstring(
             Returns the Delaunay triangulation of a point cloud in Euclidean space.
 
             Parameters
             ----------
-            x : numpy.ndarray[numpy.float64[m, n]]
+            x :
                 A numpy matrix whose columns represent points.
 
             Returns
@@ -27,25 +28,30 @@ PYBIND11_MODULE(chromatic, m)
             FilteredComplex
                 The Delaunay triangulation.
         )docstring",
-        py::arg("x"));
-    m.def("chromatic_delrips_complex", &chromatic_delrips_complex,
+        py::arg("x"))
+    .def("chromatic_delrips_complex", &chromatic_delrips_complex,
         R"docstring(
             Computes the chromatic Delaunay-Rips complex of a coloured point cloud.
 
             Parameters
             ----------
-            x
+            x :
                 A numpy matrix whose columns are points in the point cloud.
-            colours
+            colours :
                 A list of integers describing the colours of the points.
                 Note that the actual colours of vertices in the output filtration
                 may not correspond to the input colours unless the set of values in
-                ``colours`` is contiguous and ``colours[0] = 0``.
+                `colours` is contiguous and `colours[0] = 0`.
 
             Returns
             -------
             FilteredComplex
                 The chromatic Delaunay-Rips complex.
+
+            Raises
+            ------
+            ValueError
+                If the number of unique values in `colours` is greater than `MAX_NUM_COLOURS`.
 
             Notes
             -----
@@ -57,8 +63,8 @@ PYBIND11_MODULE(chromatic, m)
             --------
             chromatic_alpha_complex, chromatic_delcech_complex 
         )docstring",
-        py::arg("x"), py::arg("colours"));
-    m.def("chromatic_alpha_complex", 
+        py::arg("x"), py::arg("colours"))
+    .def("chromatic_alpha_complex", 
     [](const Eigen::MatrixXd& points, const vector<index_t>& colours) {
         std::ostringstream ostream;
         auto res = chromatic_alpha_complex(points, colours, ostream);
@@ -74,25 +80,30 @@ PYBIND11_MODULE(chromatic, m)
 
             Parameters
             ----------
-            x : numpy.ndarray[numpy.float64[m, n]]
+            x : 
                 A numpy matrix whose columns are points in the point cloud.
-            colours : list[int]
+            colours :
                 A list of integers describing the colours of the points.
                 Note that the actual colours of vertices in the output filtration
                 may not correspond to the input colours unless the set of values in
-                ``colours`` is contiguous and ``colours[0] = 0``.
+                `colours` is contiguous and `colours[0] = 0`.
             
             Returns
             -------
             FilteredComplex
                 The chromatic alpha complex.
 
+            Raises
+            ------
+            ValueError
+                If the number of unique values in `colours` is greater than `MAX_NUM_COLOURS`.
+
             See Also
             --------
             chromatic_delrips_complex, chromatic_delcech_complex 
         )docstring",
-        py::arg("x"), py::arg("colours"));
-    m.def("chromatic_delcech_complex", 
+        py::arg("x"), py::arg("colours"))
+    .def("chromatic_delcech_complex", 
     [](const Eigen::MatrixXd& points, const vector<index_t>& colours) {
         std::ostringstream ostream;
         auto res = chromatic_delcech_complex(points, colours, ostream);
@@ -108,18 +119,23 @@ PYBIND11_MODULE(chromatic, m)
 
             Parameters
             ----------
-            x : numpy.ndarray[numpy.float64[m, n]]
+            x : 
                 A numpy matrix whose columns are points in the point cloud.
-            colours : list[int]
+            colours : 
                 A list of integers describing the colours of the points.
                 Note that the actual colours of vertices in the output filtration
                 may not correspond to the input colours unless the set of values in
-                ``colours`` is contiguous and ``colours[0] = 0``.
+                `colours` is contiguous and `colours[0] = 0`.
 
             Returns
             -------
             FilteredComplex
                 The chromatic Delaunay-Cech complex.
+
+            Raises
+            ------
+            ValueError
+                If the number of unique values in `colours` is greater than `MAX_NUM_COLOURS`.
 
             Notes
             -----
