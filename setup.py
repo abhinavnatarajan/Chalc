@@ -48,7 +48,7 @@ packages = find_packages(python_packages_root)
 
 setup(
     packages = packages,
-    package_dir = {"" : python_packages_root},
+    package_dir = {"" : str(python_packages_root)},
     cmake_install_dir = str(python_packages_root / packages[0]),
     cmake_with_sdist = False,
     package_data = { packages[0] : ["*.dll"] },
