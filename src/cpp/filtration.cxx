@@ -39,7 +39,7 @@
 #include <cassert>
 
 namespace {
-    using namespace chalc::common;
+    using namespace chalc::stl;
 }
 
 namespace chalc

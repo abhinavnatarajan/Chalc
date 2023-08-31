@@ -6,7 +6,7 @@
 PYBIND11_MODULE(filtration, m)
 {
     using namespace chalc;
-    using namespace chalc::common;
+    using namespace chalc::stl;
     namespace py = pybind11;
     m.doc() =
         R"docstring(

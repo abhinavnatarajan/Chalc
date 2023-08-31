@@ -50,7 +50,7 @@ include mpfr.h.
 namespace
 {
     using chalc::index_t;
-    using namespace chalc::common;
+    using namespace chalc::stl;
     using Eigen::lastN, Eigen::all;
     using Kernel_d = CGAL::Epick_d<CGAL::Dynamic_dimension_tag>;
     using Triangulation_data_structure = CGAL::Triangulation_data_structure<Kernel_d::Dimension,
@@ -177,7 +177,7 @@ namespace
     }
 }
 
-namespace chalc
+namespace chalc::chromatic 
 {
 
     // Create a Delaunay triangulation from a collection of coordinate vectors
@@ -206,13 +206,13 @@ namespace chalc
             // iterate over the top dimensional cells and add them to the filtration
             vector<index_t> max_cell_vertex_labels(dim + 1);
             for (auto cell_it = delX.finite_full_cells_begin();
-                 cell_it != delX.finite_full_cells_end();
-                 cell_it++)
+                    cell_it != delX.finite_full_cells_end();
+                    cell_it++)
             {
                 // iterate over the vertices of the cell and get their labels
                 for (auto [label_it, vert_it] = tuple{max_cell_vertex_labels.begin(), cell_it->vertices_begin()};
-                     vert_it != cell_it->vertices_end();
-                     label_it++, vert_it++)
+                        vert_it != cell_it->vertices_end();
+                        label_it++, vert_it++)
                 {
                     *label_it = (*vert_it)->data();
                 }
@@ -337,7 +337,7 @@ namespace chalc
         if (numerical_issues)
         {
             ostream << "Warning: encountered numerical problems. \
-                       Filtration values may be inaccurate." << std::endl;
+                        Filtration values may be inaccurate." << std::endl;
         }
         return delX;
     }
@@ -381,7 +381,7 @@ namespace chalc
         if (numerical_issues)
         {
             ostream << "Warning: encountered numerical problems. \
-                       Filtration values may be inaccurate." << std::endl;
+                        Filtration values may be inaccurate." << std::endl;
         }
         return delX;
     }

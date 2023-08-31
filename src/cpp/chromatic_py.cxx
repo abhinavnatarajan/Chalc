@@ -6,8 +6,9 @@
 
 PYBIND11_MODULE(chromatic, m)
 {
+    using namespace chalc::chromatic;
+    using namespace chalc::stl;
     using namespace chalc;
-    using namespace chalc::common;
     namespace py = pybind11;
     m.doc() =
         R"docstring(
@@ -15,10 +16,10 @@ PYBIND11_MODULE(chromatic, m)
 
             Attributes
             ----------
-            MAX_NUM_COLOURS : int
+            MaxColoursChromatic : int
                 Maximum number of colours that can be handled by the methods in this module.
         )docstring";
-    m.attr("MAX_NUM_COLOURS") = MAX_NUM_COLOURS;
+    m.attr("MaxColoursChromatic") = py::int_(MaxColoursChromatic);
     m.def("delaunay_complex", &delaunay_complex,
         R"docstring(
             Returns the Delaunay triangulation of a point cloud in Euclidean space.
@@ -57,7 +58,7 @@ PYBIND11_MODULE(chromatic, m)
             ------
             ValueError
                 If the number of unique values in ``colours`` is greater than 
-                :attr:`MAX_NUM_COLOURS <chalc.chromatic.MAX_NUM_COLOURS>`, 
+                :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>`, 
                 or if number of colours does not match the number of points.
 
             Notes
@@ -104,7 +105,7 @@ PYBIND11_MODULE(chromatic, m)
             ------
             ValueError
                 If the number of unique values in ``colours`` is greater than 
-                :attr:`MAX_NUM_COLOURS <chalc.chromatic.MAX_NUM_COLOURS>`, 
+                :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>`, 
                 or if number of colours does not match the number of points.
 
             See Also
@@ -145,7 +146,7 @@ PYBIND11_MODULE(chromatic, m)
             ------
             ValueError
                 If the number of unique values in ``colours`` is greater than 
-                :attr:`MAX_NUM_COLOURS <chalc.chromatic.MAX_NUM_COLOURS>`, 
+                :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>`, 
                 or if number of colours does not match the number of points.
 
             Notes
