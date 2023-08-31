@@ -5,8 +5,41 @@ requires = [
     "wheel>=0.40",
     "ninja",
     "pybind11>=2.11",
+    "toml==0.10.2;python_version<\"3.11\""
 ]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "chalc"
+authors = [
+    {name = "Abhinav Natarajana", email = "natarajan@maths.ox.ac.uk"},
+]
+readme = {file = "README.md", content-type = "text/markdown"}
+requires-python = ">=3.8"
+license = {file = "COPYING"}
+version = "0.3.0.post1"
+keywords = [
+    "topological data analysis",
+    "TDA",
+    "chromatic alpha complex",
+    "persistent homology"
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Programming Language :: C++", 
+    "Programming Language :: Python :: 3", 
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy"
+]
+
+[project.urls]
+Homepage = "https://abhinavnatarajan.github.io/Chalc"
+Documentation = "https://abhinavnatarajan.github.io/Chalc"
+Repository = "https://github.com/abhinavnatarajan/Chalc.git"
+
 
 [tool.scikit-build]
 cmake-verbose = true

@@ -7,7 +7,7 @@
 
 Chalc Documentation
 ===================
-Chalc is a Python package for computing the persistent homology of :underline:`ch`\ romatic :underline:`al`\ pha :underline:`c`\ omplexes of point clouds in Euclidean space. Chalc is written in C++ and relies on the `Computational Geometry Algorithms Library (CGAL) <https://www.cgal.org>`_ for fast and accurate geometric computations, and `Phimaker <https://github.com/tomchaplin/phimaker>`_ for persistent homology calculations. 
+Chalc is a Python package for computing the persistent homology of :underline:`ch`\ romatic :underline:`al`\ pha :underline:`c`\ omplexes of coloured point clouds in Euclidean space. Chalc is written in C++ and relies on the `Computational Geometry Algorithms Library (CGAL) <https://www.cgal.org>`_ for fast and accurate geometric computations, and `Phimaker <https://github.com/tomchaplin/phimaker>`_ for persistent homology calculations. 
 
 Documentation index
 -------------------
@@ -15,6 +15,7 @@ Documentation index
    :name: toc
    :maxdepth: 2
 
+   theory
    installation
    example
    API
@@ -25,19 +26,7 @@ Documentation index
 
    license
 
+
 See Also
 --------
-The Python package `chromatic-tda <https://pypi.org/project/chromatic-tda/>`_ provides similar functionality, but is currently limited to points in two dimensions with upto three colours.
-
-References
-----------
-
-#. di Montesano et. al., “Persistent Homology of Chromatic Alpha Complexes”.
-   Online preprint available at `<https://arxiv.org/abs/2212.03128>`_.
-   Accessed: 2023-02-28 22:07:23 UTC.
-   DOI: 10.48550/arXiv.2212.03128.
-
-#. E. Welzl, “Smallest enclosing disks (balls and ellipsoids),” 
-   in New Results and New Trends in Computer Science, H. Maurer, Ed., 
-   in Lecture Notes in Computer Science. Berlin, Heidelberg: Springer, 
-   1991, pp. 359–370. doi: `10.1007/BFb0038202 <https://doi.org/10.1007/BFb0038202>`_.
+The Python package `chromatic-tda <https://pypi.org/project/chromatic-tda/>`_ (written by the original authors of :ref:`[1] <di Montesano et. al.>`) provides similar functionality, but is currently limited to points in two dimensions with upto three colours. 

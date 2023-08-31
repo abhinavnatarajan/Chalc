@@ -1,8 +1,5 @@
 {
     "$schema" : "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
-    "name" : "chalc",
-    "version-semver" : "0.3.0",
-    "license" : "GPL-3.0",
     "description" : "A package to compute the chromatic alpha complex of coloured point clouds in Euclidean space",
     "dependencies" : [
         {
