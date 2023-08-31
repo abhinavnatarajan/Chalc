@@ -7,7 +7,7 @@
     Accessed: 2023-02-28 22:07:23 UTC.
     DOI: 10.48550/arXiv.2212.03128.
 
-    Project homepage:    http://github.com/abhinavnatarajan/Chalc
+    Project homepage:    http://abhinavnatarajan.github.io/Chalc
 
     Copyright (c) 2023 Abhinav Natarajan
 

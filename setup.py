@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 from shutil import rmtree
 
-project_root_dir = Path(__file__).parent.resolve()
+project_root_dir = Path(__file__).parent
 # For some reason, running this file twice in a row causes the build to fail:
 # fatal error C1083: Cannot open include file: 'io.h'
 # Therefore the workaround is to clean the `_skbuild` directory before running
