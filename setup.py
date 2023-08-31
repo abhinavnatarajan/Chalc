@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 from shutil import rmtree
 
-project_root_dir = Path(__file__).parent
+project_root_dir = Path(__file__).parent.resolve()
 # For some reason, running this file twice in a row causes the build to fail:
 # fatal error C1083: Cannot open include file: 'io.h'
 # Therefore the workaround is to clean the `_skbuild` directory before running
@@ -29,6 +29,7 @@ if parse(python_version()) >= parse('3.11'):
     from tomllib import loads as tomlread
 else:
     from toml import loads as tomlread
+
 with open(project_root_dir / "pyproject.toml") as f:
     proj_props = tomlread(f.read())['project']
 
@@ -48,7 +49,7 @@ packages = find_packages(python_packages_root)
 setup(
     packages = packages,
     package_dir = {"" : python_packages_root},
-    cmake_install_dir = python_packages_root + "/" + packages[0],
+    cmake_install_dir = str(python_packages_root / packages[0]),
     cmake_with_sdist = False,
     package_data = { packages[0] : ["*.dll"] },
     cmake_args=["-DSKBUILD_PROJECT_NAME:STRING=" + project,
