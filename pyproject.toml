@@ -5,7 +5,8 @@ requires = [
     "wheel>=0.40",
     "ninja",
     "pybind11>=2.11",
-    "toml==0.10.2;python_version<\"3.11\""
+    "toml==0.10.2;python_version<\"3.11\"",
+    "packaging"
 ]
 build-backend = "setuptools.build_meta"
 

@@ -1,6 +1,7 @@
-import sys, re
+import sys
 from pathlib import Path
 from platform import python_version
+from packaging.version import parse
 
 # Configuration file for the Sphinx documentation builder.
 #
@@ -13,7 +14,7 @@ from platform import python_version
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here.
 docs_path = Path(__file__).parent
-project_root = docs_path.parent
+project_root_dir = docs_path.parent
 stubs_path = str((docs_path / 'stubs' ).resolve())
 exts_path = str((docs_path / 'exts').resolve())
 sys.path.insert(0, stubs_path)
@@ -23,18 +24,15 @@ copyright = '2023, Abhinav Natarajan'
 author = 'Abhinav Natarajan'
 
 # Get the name and release from pyproject.toml
-# Get name and version for CMake from pyproject.toml
-if python_version() >= '3.11.0':
-    from tomllib import load as tomlread
-    with open(project_root / "pyproject.toml", "rb") as f:
-        proj_props = tomlread(f)['project']
+if parse(python_version()) >= parse('3.11'):
+    from tomllib import loads as tomlread
 else:
     from toml import loads as tomlread
-    with open(project_root / "pyproject.toml") as f:
-        proj_props = tomlread(f.read())['project']
+with open(project_root_dir / "pyproject.toml") as f:
+    proj_props = tomlread(f.read())['project']
 
 project = proj_props['name']
-release = proj_props['version']
+release = '.'.join(map(str, parse(proj_props['version']).release))
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
