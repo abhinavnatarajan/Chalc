@@ -1,0 +1,57 @@
+﻿filtration
+==========
+
+Overview
+--------
+
+.. automodule:: chalc.filtration
+
+
+   
+   
+   
+
+   
+   
+   Functions
+   ^^^^^^^^^^^^^^^^^^^^
+
+   .. autosummary::
+      :nosignatures:
+   
+      clique_complex
+      standard_simplex
+   
+   
+
+   
+   
+   Classes
+   ^^^^^^^^^^^^^^^^^^
+
+   .. autosummary::
+      :toctree:
+      :nosignatures:
+      :recursive:
+   
+      FilteredComplex
+      Simplex
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+Details
+-------
+.. currentmodule:: chalc.filtration
+
+
+.. autofunction:: clique_complex
+.. autofunction:: standard_simplex
