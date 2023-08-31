@@ -7,7 +7,7 @@
 
 Chalc Documentation
 ===================
-Chalc is a Python package for computing the persistent homology of :underline:`ch`\ romatic :underline:`al`\ pha :underline:`c`\ omplexes of point clouds in Euclidean space. Chalc is written in C++ and relies on the `Computational Geometry Algorithms Library (CGAL) <https://www.cgal.org>`_ for fast and accurate geometric computations, and the `Lockfree Persistent Homology Algorithm Toolbox (loPHAT) <https://github.com/tomchaplin/lophat>`_ for persistent homology calculations. 
+Chalc is a Python package for computing the persistent homology of :underline:`ch`\ romatic :underline:`al`\ pha :underline:`c`\ omplexes of point clouds in Euclidean space. Chalc is written in C++ and relies on the `Computational Geometry Algorithms Library (CGAL) <https://www.cgal.org>`_ for fast and accurate geometric computations, and `Phimaker <https://github.com/tomchaplin/phimaker>`_ for persistent homology calculations. 
 
 Documentation index
 -------------------
