@@ -43,7 +43,7 @@ release = '.'.join(map(str, parse(proj_props['version']).release))
 # `python_packages_root`.
 # In order to change the name of the package, the name of the folder that
 # contains the `__init__.py` file must be changed.
-python_packages_root = project_root_dir / 'src' / 'python'
+python_packages_root = Path() / 'src' / 'python'
 packages = find_packages(python_packages_root)
 
 setup(
