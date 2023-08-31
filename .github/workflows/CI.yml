@@ -111,7 +111,9 @@ jobs:
       - name: Install chalc from wheel
         run: pip install ./dist/chalc*cp311*manylinux2014_x86_64.whl
       - name: Build docs
-        run : ./build_docs.sh
+        run : |
+          chmod +x build_docs.sh
+          ./build_docs.sh
       - name: Deploy to GH pages
         uses: peaceiris/actions-gh-pages@v3
         with:
