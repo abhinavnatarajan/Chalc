@@ -157,6 +157,7 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../theory.html">Theory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../example.html">Example Usage</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../API.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
@@ -222,8 +223,8 @@
 <span id="overview"></span><h2>Overview<a class="headerlink" href="#module-chalc.chromatic" title="Link to this heading">#</a></h2>
 <p>Module containing geometry routines to compute chromatic complexes.</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="chalc.chromatic.MAX_NUM_COLOURS">
-<span class="sig-name descname"><span class="pre">MAX_NUM_COLOURS</span></span><a class="headerlink" href="#chalc.chromatic.MAX_NUM_COLOURS" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="chalc.chromatic.MaxColoursChromatic">
+<span class="sig-name descname"><span class="pre">MaxColoursChromatic</span></span><a class="headerlink" href="#chalc.chromatic.MaxColoursChromatic" title="Link to this definition">#</a></dt>
 <dd><p>Maximum number of colours that can be handled by the methods in this module.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -264,7 +265,7 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.25)"><em>numpy.ndarray</em></a><em>[</em><em>numpy.float64</em><em>[</em><em>m</em><em>, </em><em>n</em><em>]</em><em>]</em>) – A numpy matrix whose columns are points in the point cloud.</p></li>
-<li><p><strong>colours</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>]</em>) – A list of integers describing the colours of the points.
+<li><p><strong>colours</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>]</em>) – A list of integers describing the colours of the points.
 Note that the actual colours of vertices in the output filtration
 may not correspond to the input colours unless the set of values in
 <code class="docutils literal notranslate"><span class="pre">colours</span></code> is contiguous and <code class="docutils literal notranslate"><span class="pre">colours[0]</span> <span class="pre">=</span> <span class="pre">0</span></code>.</p></li>
@@ -278,7 +279,7 @@ may not correspond to the input colours unless the set of values in
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.11)"><strong>ValueError</strong></a> – If the number of unique values in <code class="docutils literal notranslate"><span class="pre">colours</span></code> is greater than
-    <a class="reference internal" href="#chalc.chromatic.MAX_NUM_COLOURS" title="chalc.chromatic.MAX_NUM_COLOURS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">MAX_NUM_COLOURS</span></code></a>,
+    <a class="reference internal" href="#chalc.chromatic.MaxColoursChromatic" title="chalc.chromatic.MaxColoursChromatic"><code class="xref py py-attr docutils literal notranslate"><span class="pre">MaxColoursChromatic</span></code></a>,
     or if number of colours does not match the number of points.</p>
 </dd>
 </dl>
@@ -296,7 +297,7 @@ may not correspond to the input colours unless the set of values in
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.25)"><em>numpy.ndarray</em></a><em>[</em><em>numpy.float64</em><em>[</em><em>m</em><em>, </em><em>n</em><em>]</em><em>]</em>) – A numpy matrix whose columns are points in the point cloud.</p></li>
-<li><p><strong>colours</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>]</em>) – A list of integers describing the colours of the points.
+<li><p><strong>colours</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>]</em>) – A list of integers describing the colours of the points.
 Note that the actual colours of vertices in the output filtration
 may not correspond to the input colours unless the set of values in
 <code class="docutils literal notranslate"><span class="pre">colours</span></code> is contiguous and <code class="docutils literal notranslate"><span class="pre">colours[0]</span> <span class="pre">=</span> <span class="pre">0</span></code>.</p></li>
@@ -310,7 +311,7 @@ may not correspond to the input colours unless the set of values in
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.11)"><strong>ValueError</strong></a> – If the number of unique values in <code class="docutils literal notranslate"><span class="pre">colours</span></code> is greater than
-    <a class="reference internal" href="#chalc.chromatic.MAX_NUM_COLOURS" title="chalc.chromatic.MAX_NUM_COLOURS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">MAX_NUM_COLOURS</span></code></a>,
+    <a class="reference internal" href="#chalc.chromatic.MaxColoursChromatic" title="chalc.chromatic.MaxColoursChromatic"><code class="xref py py-attr docutils literal notranslate"><span class="pre">MaxColoursChromatic</span></code></a>,
     or if number of colours does not match the number of points.</p>
 </dd>
 </dl>
@@ -332,7 +333,7 @@ but with Cech filtration times.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.25)"><em>numpy.ndarray</em></a><em>[</em><em>numpy.float64</em><em>[</em><em>m</em><em>, </em><em>n</em><em>]</em><em>]</em>) – A numpy matrix whose columns are points in the point cloud.</p></li>
-<li><p><strong>colours</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>]</em>) – A list of integers describing the colours of the points.
+<li><p><strong>colours</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>]</em>) – A list of integers describing the colours of the points.
 Note that the actual colours of vertices in the output filtration
 may not correspond to the input colours unless the set of values in
 <code class="docutils literal notranslate"><span class="pre">colours</span></code> is contiguous and <code class="docutils literal notranslate"><span class="pre">colours[0]</span> <span class="pre">=</span> <span class="pre">0</span></code>.</p></li>
@@ -346,7 +347,7 @@ may not correspond to the input colours unless the set of values in
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.11)"><strong>ValueError</strong></a> – If the number of unique values in <code class="docutils literal notranslate"><span class="pre">colours</span></code> is greater than
-    <a class="reference internal" href="#chalc.chromatic.MAX_NUM_COLOURS" title="chalc.chromatic.MAX_NUM_COLOURS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">MAX_NUM_COLOURS</span></code></a>,
+    <a class="reference internal" href="#chalc.chromatic.MaxColoursChromatic" title="chalc.chromatic.MaxColoursChromatic"><code class="xref py py-attr docutils literal notranslate"><span class="pre">MaxColoursChromatic</span></code></a>,
     or if number of colours does not match the number of points.</p>
 </dd>
 </dl>
@@ -437,7 +438,7 @@ but with Vietoris-Rips filtration times.</p>
             <ul>
 <li><a class="reference internal" href="#">chromatic</a><ul>
 <li><a class="reference internal" href="#module-chalc.chromatic">Overview</a><ul>
-<li><a class="reference internal" href="#chalc.chromatic.MAX_NUM_COLOURS"><code class="docutils literal notranslate"><span class="pre">MAX_NUM_COLOURS</span></code></a></li>
+<li><a class="reference internal" href="#chalc.chromatic.MaxColoursChromatic"><code class="docutils literal notranslate"><span class="pre">MaxColoursChromatic</span></code></a></li>
 <li><a class="reference internal" href="#functions">Functions</a></li>
 </ul>
 </li>

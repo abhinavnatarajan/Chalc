@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Simplex" href="_autosummary/chalc.filtration.Simplex.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Installation" href="installation.html" /><link rel="prev" title="Chalc Documentation" href="index.html" />
 
     <!-- Generated with Sphinx 7.2.4 and Furo 2023.08.19 -->
-        <title>License - chalc 0.3.0 documentation</title>
+        <title>Theory - chalc 0.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -156,8 +156,8 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul>
-<li class="toctree-l1"><a class="reference internal" href="theory.html">Theory</a></li>
+  <ul class="current">
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Theory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="example.html">Example Usage</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="API.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -171,10 +171,10 @@
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Links</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/abhinavnatarajan/chalc">GitHub</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/chalc">PyPI</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
 </ul>
 
 </div>
@@ -195,7 +195,7 @@
         </a>
         <div class="content-icon-container">
           <div class="edit-this-page">
-  <a class="muted-link" href="https://github.com/abhinavnatarajan/chalc/edit/master/docs/license.rst" title="Edit this page">
+  <a class="muted-link" href="https://github.com/abhinavnatarajan/chalc/edit/master/docs/theory.rst" title="Edit this page">
     <svg aria-hidden="true" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
@@ -217,21 +217,28 @@
           </label>
         </div>
         <article role="main">
-          <section id="license">
-<h1>License<a class="headerlink" href="#license" title="Link to this heading">#</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">chalc</span></code> is licensed under the GNU General Public License version 3.</p>
-<section id="gnu-general-public-license-gpl-copyright-permissions-statement">
-<h2>GNU General Public License (“GPL”) copyright permissions statement:<a class="headerlink" href="#gnu-general-public-license-gpl-copyright-permissions-statement" title="Link to this heading">#</a></h2>
-<p>This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.</p>
-<p>This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.</p>
-<p>You should have received a copy of the GNU General Public License
-along with this program. If not, see &lt;<a class="reference external" href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>&gt;.</p>
+          <section id="theory">
+<h1>Theory<a class="headerlink" href="#theory" title="Link to this heading">#</a></h1>
+<p>Given a point cloud <span class="math notranslate nohighlight">\(X\)</span> in <span class="math notranslate nohighlight">\(\mathbb{R}^d\)</span>, one can use the <a class="reference external" href="https://en.wikipedia.org/wiki/%C4%8Cech_complex">Čech complex</a> <span class="math notranslate nohighlight">\(\mathrm{\check{C}ech}_{\bullet}(X)\)</span> and its homology groups as a proxy for the spatial information contained in <span class="math notranslate nohighlight">\(X\)</span>. In many cases of interest, <span class="math notranslate nohighlight">\(X\)</span> comprises heterogenous data, i.e., there exists a semantically meaningful colouring <span class="math notranslate nohighlight">\(c:X \to \{0, \ldots, s\}\)</span>. In such cases one is often interested in capturing not just spatial information of <span class="math notranslate nohighlight">\(X\)</span> but also of spatial relations among subtypes within the data <a class="reference internal" href="#stolz-b-et-al"><span class="std std-ref">[3]</span></a>. The benefit of the Čech complex is that it is <em>functorial</em> with respect to inclusions; one could consider the induced maps among the subcomplexes of <span class="math notranslate nohighlight">\(\mathrm{\check{C}ech}_{\bullet}(X)\)</span> induced by inclusions among subsets of <span class="math notranslate nohighlight">\(X\)</span>. These induced maps provide spatial relation information, but the drawback is that computing these inclusion maps and the induced maps on persistent homology is a computationally expensive procedure.</p>
+<p>The chromatic alpha complex of <span class="math notranslate nohighlight">\(X\)</span> is a filtered simplicial complex <span class="math notranslate nohighlight">\(\mathrm{ChrAlpha}_{\bullet}(X, c)\)</span> with vertex set <span class="math notranslate nohighlight">\(X\)</span> that aims to address this drawback, defined and studied in <a class="reference internal" href="#di-montesano-et-al"><span class="std std-ref">[1]</span></a>. It is a generalisation of the alpha complex.</p>
+<ol class="arabic simple">
+<li><p><em>Functoriality</em>: In the Čech complex, every inclusion <span class="math notranslate nohighlight">\(A \hookrightarrow B\)</span> of subsets of <span class="math notranslate nohighlight">\(X\)</span> induces an inclusion of Čech complexes <span class="math notranslate nohighlight">\(\mathrm{\check{C}ech}_{\bullet}(A) \hookrightarrow \mathrm{\check{C}ech}_{\bullet}(B)\)</span>. In the chromatic alpha complex, this functoriality holds for a select family of subsets of <span class="math notranslate nohighlight">\(X\)</span>, namely those of the form  <span class="math notranslate nohighlight">\(X_I := \chi^{-1}(I)\)</span> where <span class="math notranslate nohighlight">\(I \subset \{0, \ldots, s\}\)</span>. To be more precise, let <span class="math notranslate nohighlight">\(c_I\)</span> denote the restriction of <span class="math notranslate nohighlight">\(c\)</span> to <span class="math notranslate nohighlight">\(X_I\)</span>. Then <span class="math notranslate nohighlight">\(\mathrm{ChrAlpha}_{\bullet}(X_I, c_I)\)</span> is the subcomplex of <span class="math notranslate nohighlight">\(\mathrm{ChrAlpha}_{\bullet}(X, c)\)</span> generated by <span class="math notranslate nohighlight">\(X_I\)</span>.</p></li>
+<li><p><em>Recovery of spatial information</em>: For every subset <span class="math notranslate nohighlight">\(I \subset \{0, \ldots, s\}\)</span> there is a filtration-preserving inclusion map <span class="math notranslate nohighlight">\(\mathrm{ChrAlpha}_{\bullet}(X_I, c_I) \hookrightarrow \mathrm{\check{C}ech}_{\bullet}(X_I)\)</span> into the Čech complex which is a level-wise homotopy equivalence. In particular <span class="math notranslate nohighlight">\(\mathrm{ChrAlpha}_{\bullet}(X, c) \simeq \mathrm{\check{C}ech}_{\bullet}(X)\)</span>, and the persistent homotopy type of the chromatic alpha complex does not depend on the colouring. This means that one can use the chromatic alpha complex as a substitute for the Čech for persistent homology calculations.</p></li>
+<li><p><em>Computational efficiency</em> The chromatic alpha complex typically has far fewer simplices than the Čech complex <a class="reference internal" href="#edelsbrunner-h-nikitenko-a-and-reitzner-m"><span class="std std-ref">[2]</span></a>. For example, if <span class="math notranslate nohighlight">\(I = \{m\}\)</span> for some <span class="math notranslate nohighlight">\(m \in \{0, \ldots s\}\)</span> then <span class="math notranslate nohighlight">\(\mathrm{ChrAlpha}_{\bullet}(X_I, c_I)\)</span> is the <a class="reference external" href="https://gudhi.inria.fr/doc/3.0.0/group__alpha__complex.html">alpha complex</a> of the <span class="math notranslate nohighlight">\(m\)</span>-coloured points. This means that the chromatic alpha complex has computational advantages over the Čech complex in persistent homology calculations when <span class="math notranslate nohighlight">\(d\)</span> is small and the number of points is large.</p></li>
+<li><p>The chromatic alpha complex includes as special cases the Čech complex when <span class="math notranslate nohighlight">\(c\)</span> is the colouring that gives every point a different colour, and the alpha complex when <span class="math notranslate nohighlight">\(c\)</span> gives every point the same colour. One can view the chromatic alpha complex as interpolating between the functorial properties of the Čech complex and the sparsity of the alpha complex while preserving overall spatial information.</p></li>
+</ol>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p><span class="target" id="di-montesano-et-al">di Montesano et. al.</span>, “Persistent Homology of Chromatic Alpha Complexes”.
+Online preprint available at <a class="reference external" href="https://arxiv.org/abs/2212.03128">https://arxiv.org/abs/2212.03128</a>. Accessed: 2023-02-28 22:07:23 UTC.</p></li>
+<li><p><span class="target" id="edelsbrunner-h-nikitenko-a-and-reitzner-m">Edelsbrunner H., Nikitenko A. and Reitzner M.</span>, “Expected Sizes of Poisson-Delaunay Mosaics and Their Discrete Morse Functions” (2017) in Advances in Applied Probability, 49(3) pp. 745-767. DOI: <a class="reference external" href="https://doi.org/10.1017/apr.2017.20">10.1017/apr.2017.20</a>.</p></li>
+<li><p><span class="target" id="stolz-b-et-al">Stolz, B. et. al.</span>, “Relational persistent homology for multispecies data with application to the tumor microenvironment” (2023). Online preprint available at <a class="reference external" href="https://arxiv.org/abs/2308.06205">https://arxiv.org/abs/2308.06205</a>. Accessed: 2023-08-31 22:07:23 16:04:05 UTC.</p></li>
+<li><p>E. Welzl, “Smallest enclosing disks (balls and ellipsoids),”
+in New Results and New Trends in Computer Science, H. Maurer, Ed.,
+in Lecture Notes in Computer Science. Berlin, Heidelberg: Springer,
+1991, pp. 359–370. DOI: <a class="reference external" href="https://doi.org/10.1007/BFb0038202">10.1007/BFb0038202</a>.</p></li>
+</ol>
 </section>
 </section>
 
@@ -240,15 +247,23 @@ along with this program. If not, see &lt;<a class="reference external" href="htt
       <footer>
         
         <div class="related-pages">
-          
-          <a class="prev-page" href="_autosummary/chalc.filtration.Simplex.html">
+          <a class="next-page" href="installation.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Installation</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="index.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Simplex</div>
+                <div class="title">Home</div>
                 
               </div>
             </a>
@@ -282,8 +297,8 @@ along with this program. If not, see &lt;<a class="reference external" href="htt
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">License</a><ul>
-<li><a class="reference internal" href="#gnu-general-public-license-gpl-copyright-permissions-statement">GNU General Public License (“GPL”) copyright permissions statement:</a></li>
+<li><a class="reference internal" href="#">Theory</a><ul>
+<li><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
 </ul>
@@ -301,5 +316,7 @@ along with this program. If not, see &lt;<a class="reference external" href="htt
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="_static/design-tabs.js?v=36754332"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Installation" href="installation.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Theory" href="theory.html" />
 
     <!-- Generated with Sphinx 7.2.4 and Furo 2023.08.19 -->
         <title>chalc 0.3.0 documentation</title>
@@ -157,6 +157,7 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
+<li class="toctree-l1"><a class="reference internal" href="theory.html">Theory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="example.html">Example Usage</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="API.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -218,11 +219,15 @@
         <article role="main">
           <section id="chalc-documentation">
 <h1>Chalc Documentation<a class="headerlink" href="#chalc-documentation" title="Link to this heading">#</a></h1>
-<p>Chalc is a Python package for computing the persistent homology of <span class="underline">ch</span>romatic <span class="underline">al</span>pha <span class="underline">c</span>omplexes of point clouds in Euclidean space. Chalc is written in C++ and relies on the <a class="reference external" href="https://www.cgal.org">Computational Geometry Algorithms Library (CGAL)</a> for fast and accurate geometric computations, and the <a class="reference external" href="https://github.com/tomchaplin/lophat">Lockfree Persistent Homology Algorithm Toolbox (loPHAT)</a> for persistent homology calculations.</p>
+<p>Chalc is a Python package for computing the persistent homology of <span class="underline">ch</span>romatic <span class="underline">al</span>pha <span class="underline">c</span>omplexes of coloured point clouds in Euclidean space. Chalc is written in C++ and relies on the <a class="reference external" href="https://www.cgal.org">Computational Geometry Algorithms Library (CGAL)</a> for fast and accurate geometric computations, and <a class="reference external" href="https://github.com/tomchaplin/phimaker">Phimaker</a> for persistent homology calculations.</p>
 <section id="documentation-index">
 <h2>Documentation index<a class="headerlink" href="#documentation-index" title="Link to this heading">#</a></h2>
 <div class="toctree-wrapper compound" id="toc">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="theory.html">Theory</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="theory.html#references">References</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#using-pip">Using pip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#build-from-source">Build from source</a></li>
@@ -242,20 +247,7 @@
 </section>
 <section id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading">#</a></h2>
-<p>The Python package <a class="reference external" href="https://pypi.org/project/chromatic-tda/">chromatic-tda</a> provides similar functionality, but is currently limited to points in two dimensions with upto three colours.</p>
-</section>
-<section id="references">
-<h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
-<ol class="arabic simple">
-<li><p>di Montesano et. al., “Persistent Homology of Chromatic Alpha Complexes”.
-Online preprint available at <a class="reference external" href="https://arxiv.org/abs/2212.03128">https://arxiv.org/abs/2212.03128</a>.
-Accessed: 2023-02-28 22:07:23 UTC.
-DOI: 10.48550/arXiv.2212.03128.</p></li>
-<li><p>E. Welzl, “Smallest enclosing disks (balls and ellipsoids),”
-in New Results and New Trends in Computer Science, H. Maurer, Ed.,
-in Lecture Notes in Computer Science. Berlin, Heidelberg: Springer,
-1991, pp. 359–370. doi: <a class="reference external" href="https://doi.org/10.1007/BFb0038202">10.1007/BFb0038202</a>.</p></li>
-</ol>
+<p>The Python package <a class="reference external" href="https://pypi.org/project/chromatic-tda/">chromatic-tda</a> (written by the original authors of <a class="reference internal" href="theory.html#di-montesano-et-al"><span class="std std-ref">[1]</span></a>) provides similar functionality, but is currently limited to points in two dimensions with upto three colours.</p>
 </section>
 </section>
 
@@ -264,12 +256,12 @@ in Lecture Notes in Computer Science. Berlin, Heidelberg: Springer,
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="installation.html">
+          <a class="next-page" href="theory.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Installation</div>
+                <div class="title">Theory</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -309,7 +301,6 @@ in Lecture Notes in Computer Science. Berlin, Heidelberg: Springer,
 </ul>
 </li>
 <li><a class="reference internal" href="#see-also">See Also</a></li>
-<li><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
 </ul>
