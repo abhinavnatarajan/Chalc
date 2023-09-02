@@ -55,6 +55,5 @@ setup(
     cmake_args=["-DSKBUILD_PROJECT_NAME:STRING=" + project,
                 "-DSKBUILD_PROJECT_VERSION:STRING=" + release,
                 "-DVCPKG_COMMIT_ID:STRING=" + VCPKG_COMMIT_ID,
-                "-DCMAKE_BUILD_TYPE:STRING=Release",
-                "-DPYBIND11_FINDPYTHON=ON"]
+                "-DCMAKE_BUILD_TYPE:STRING=Release"]
 )
