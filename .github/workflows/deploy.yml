@@ -1,7 +1,7 @@
 name: Deploy to PyPI
 on: 
   push:
-    tags: ['*']
+    tags: ['**']
 
 jobs:
   pypi-publish:
@@ -13,11 +13,15 @@ jobs:
       - name: Download build artifacts
         uses: dawidd6/action-download-artifact@v2
         with:
+          branch: master
           workflow: build.yml
           workflow_conclusion: success
           commit: ${{ github.sha }}
-          path: dist
-
+      - name: Prepare for upload
+        run: |
+          mkdir dist
+          mv sdist/* dist
+          mv wheels/* dist
       # - name: Upload to TestPyPI
       #   uses: pypa/gh-action-pypi-publish@release/v1
       #   with:

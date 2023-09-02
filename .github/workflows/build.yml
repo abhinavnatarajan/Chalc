@@ -1,6 +1,10 @@
 name: Build
-on: push
-
+on:
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - '**'
 jobs:
   build_sdist:
     if: ${{ github.event_name == 'push' }}
@@ -43,9 +47,6 @@ jobs:
       - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
         with:
-          # If not using a submodule for vcpkg sources, this specifies which commit
-          # id must be checkout from a Git repo. 
-          # Note: it must not be set if using a Git submodule for vcpkg.
           vcpkgGitCommitId: '417119555f155f6044dec7a379cd25466e339873'
           runVcpkgInstall: false
     

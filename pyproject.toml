@@ -18,7 +18,7 @@ authors = [
 readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.8"
 license = {file = "COPYING"}
-version = "0.3.0.post2"
+version = "0.3.0.post3"
 keywords = [
     "topological data analysis",
     "TDA",
