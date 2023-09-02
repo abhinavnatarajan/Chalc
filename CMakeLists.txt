@@ -63,6 +63,9 @@ execute_process(COMMAND ${PYTHON_EXECUTABLE} -m pybind11 --cmakedir
 string(STRIP ${pybind11_DIR_RAW} pybind11_DIR)
 
 find_package(pybind11 CONFIG REQUIRED)
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_compile_options(-fvisibility=hidden)
+endif()
 
 # Create python extension module ###
 pybind11_add_module(
