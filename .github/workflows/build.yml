@@ -1,0 +1,63 @@
+name: Build
+on: push
+
+jobs:
+  build_sdist:
+    if: ${{ github.event_name == 'push' }}
+    name: Build source distribution
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+
+      - name: Build SDist
+        run: pipx run build --sdist
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: sdist
+          path: ./dist/*.tar.gz
+
+  build_wheels:
+    name: Build wheels
+    strategy:
+      matrix: 
+        os: [windows-latest, macOS-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+
+      - name: Get CMake
+        uses: lukka/get-cmake@v3.26.3
+      
+      - name: Setup build tools on macOS
+        run: brew install automake
+        if: ${{ matrix.os == 'macOS-latest' }}
+      
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11
+        with:
+          # If not using a submodule for vcpkg sources, this specifies which commit
+          # id must be checkout from a Git repo. 
+          # Note: it must not be set if using a Git submodule for vcpkg.
+          vcpkgGitCommitId: '417119555f155f6044dec7a379cd25466e339873'
+          runVcpkgInstall: false
+    
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.12.1
+        env:
+          CIBW_ENVIRONMENT_PASS_LINUX: CI
+          CIBW_BEFORE_ALL_LINUX: yum install -y zip
+          CIBW_BUILD_VERBOSITY: 3
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: wheels
+          path: ./wheelhouse/*.whl

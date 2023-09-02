@@ -1,0 +1,56 @@
+name: Build and deploy docs
+on: 
+  push:
+    tags: ['*']
+
+jobs:
+  docs:
+    name: Build and deploy docs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Download build artifacts
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          name: wheels
+          workflow: build.yml
+          workflow_conclusion: success
+          commit: ${{ github.sha }}
+          path: dist
+      - name: Setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+          cache: 'pip' # caching pip dependencies
+      - name: Setup build environment
+        run: |
+          sudo apt install pandoc
+          pip install -r ./docs/requirements.txt 
+      - name: Install chalc from wheel
+        run: |
+          pip install packaging
+          wheel=$(python -c "
+          from pathlib import Path
+          from packaging.tags import sys_tags
+          from packaging.utils import parse_wheel_filename
+          tags = list(sys_tags())
+          wheels = list(Path.cwd().glob('dist/*.whl'))
+          for (i, tag) in enumerate(tags):
+            for wheel in wheels:
+              if tag in parse_wheel_filename(wheel.name)[-1]:
+                print(wheel)
+                break
+          ")
+          pip install ${wheel} --force-reinstall
+      - name: Build docs
+        run : |
+          chmod +x build_docs.sh
+          ./build_docs.sh
+      - name: Deploy to GH pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: ./docs/_build
+          branch: gh-pages
