@@ -44,7 +44,10 @@
 namespace chalc
 {
     constexpr index_t MAX_NUM_COLOURS = 4;
-    typedef std::bitset<MAX_NUM_COLOURS> colours_t;
+    struct colours_t : public std::bitset<MAX_NUM_COLOURS>
+    {
+        colours_t() : std::bitset<MAX_NUM_COLOURS>(1) {}
+    };
 
     class BinomialCoeffTable;
 

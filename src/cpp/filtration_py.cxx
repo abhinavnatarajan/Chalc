@@ -199,7 +199,10 @@ PYBIND11_MODULE(filtration, m)
             },
             R"docstring(
                 Bitmask of colours in the simplex, where the rightmost \
-                bit represents the smallest colour index. 
+                bit represents the smallest colour index. More precisely, \
+                :math:`\mathrm{bitmask} = \sum_{c \in \mathrm{colours}(\sigma)} 2^c`. \
+                For example, a simplex having vertices of colours 0 and 1 has a \
+                colour bitmask of 3. 
             )docstring")
         .def(
             "set_colour",
