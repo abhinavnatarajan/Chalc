@@ -16,7 +16,6 @@ jobs:
         uses: dawidd6/action-download-artifact@v2
         with:
           name: wheels
-          branch: master
           workflow: build.yml
           workflow_conclusion: success
           commit: ${{ github.sha }}

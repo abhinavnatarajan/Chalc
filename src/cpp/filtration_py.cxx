@@ -73,11 +73,6 @@ PYBIND11_MODULE(filtration, m)
             R"docstring(
                 The total number of simplices in the complex.
             )docstring")
-        .def("count_simplices_in_dim", &FilteredComplex::size_in_dim,
-            R"docstring(
-                Count the number of simplices of a given dimension.
-            )docstring",
-            py::arg("dimension"))
         .def_property_readonly("dimension", &FilteredComplex::dimension,
             R"docstring(
                 Current maximum dimension of a maximal simplex in the complex.
@@ -88,7 +83,6 @@ PYBIND11_MODULE(filtration, m)
             )docstring")
         .def_readonly("num_vertices", &FilteredComplex::N,
             R"docstring(
-
                 Number of vertices in the simplicial complex. Set during initialisation.
             )docstring")
         .def("propagate_filt_values", &FilteredComplex::propagate_filt_values,
@@ -118,14 +112,13 @@ PYBIND11_MODULE(filtration, m)
             py::arg("vertices"))
         .def_property_readonly("simplices", &FilteredComplex::get_simplices,
             R"docstring(
-
-                A list such that `simplices[k]` contains \
-                the dictionary of :math:`k`-simplices of the complex. \
-                The key of a :math:`k`-simplex in `simplices[k]` is \
+                A list such that ``simplices[k]`` is a dictionary \
+                of handles to the :math:`k`-simplices in the complex. \
+                The key of a :math:`k`-simplex in ``simplices[k]`` is \
                 the lexicographic index of that simplex with respect \
                 to its vertex labels sorted in ascending order, \
                 counting all possible sorted subsequences of :math:`(0, ..., N-1)` \
-                of length :math:`k`.
+                of length :math:`k`. 
             )docstring")
         .def("get_label_from_vertex_labels", &FilteredComplex::get_label_from_vertex_labels,
              R"docstring(
