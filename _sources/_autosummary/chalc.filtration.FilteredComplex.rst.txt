@@ -19,7 +19,6 @@ Overview
    
       ~FilteredComplex.__init__
       ~FilteredComplex.add_simplex
-      ~FilteredComplex.count_simplices_in_dim
       ~FilteredComplex.get_label_from_vertex_labels
       ~FilteredComplex.has_simplex
       ~FilteredComplex.propagate_colours
@@ -59,7 +58,6 @@ Details
    
    .. automethod:: FilteredComplex.__init__
    .. automethod:: FilteredComplex.add_simplex
-   .. automethod:: FilteredComplex.count_simplices_in_dim
    .. automethod:: FilteredComplex.get_label_from_vertex_labels
    .. automethod:: FilteredComplex.has_simplex
    .. automethod:: FilteredComplex.propagate_colours
