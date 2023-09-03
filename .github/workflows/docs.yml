@@ -44,7 +44,7 @@ jobs:
                 print(wheel)
                 break
           ")
-          pip install ${wheel} --force-reinstall
+          pip install ${wheel} -U --force-reinstall
       - name: Build docs
         run : |
           chmod +x build_docs.sh
