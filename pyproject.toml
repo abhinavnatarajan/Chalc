@@ -1,29 +1,31 @@
 [build-system]
 requires = [
     "setuptools>=67",
-    "scikit-build>=0.17.3",
-    "wheel>=0.40",
-    "ninja",
+    "scikit-build-core",
     "pybind11>=2.11",
-    "toml==0.10.2;python_version<\"3.11\"",
     "packaging"
 ]
-build-backend = "setuptools.build_meta"
+build-backend = "scikit_build_core.build"
 
 [project]
 name = "chalc"
+version = "0.4.1"
 authors = [
     {name = "Abhinav Natarajana", email = "natarajan@maths.ox.ac.uk"},
+    {name = "Thomas Chaplin", email = "tomrchaplin@gmail.com"}
 ]
 readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.8"
 license = {file = "COPYING"}
-version = "0.4.1"
 keywords = [
     "topological data analysis",
     "TDA",
     "chromatic alpha complex",
     "persistent homology"
+]
+dependencies = [
+    "numpy",
+    "phimaker"
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -41,10 +43,25 @@ Homepage = "https://abhinavnatarajan.github.io/Chalc"
 Documentation = "https://abhinavnatarajan.github.io/Chalc"
 Repository = "https://github.com/abhinavnatarajan/Chalc.git"
 
-
 [tool.scikit-build]
-cmake-verbose = true
-logging-level = "INFO"
+cmake.verbose = true
+cmake.build-type = "Release"
+logging.level = "DEBUG"
+cmake.minimum-version = "3.23"
+sdist.exclude = ["docs/", "build_docs.bat", "build_docs.sh", ".github/"]
+build-dir = "build/{wheel_tag}"
+wheel.packages = ["src/chalc"]
+wheel.install-dir = "chalc"
+
+[tool.scikit-build.cmake.define]
+VCPKG_COMMIT_ID = "417119555f155f6044dec7a379cd25466e339873"
+# CMAKE_INSTALL_PREFIX = "src/chalc"
+
+[[tool.scikit-build.generate]]
+path = "_version.py"
+template = '''
+__version__ = "${version}"
+'''
 
 [tool.cibuildwheel]
 archs = ["auto64"]

@@ -40,13 +40,19 @@
 
 namespace {
     using namespace chalc::stl;
+    using std::sort, std::stable_sort, 
+    std::min, std::max, 
+    std::move,
+    std::fill, 
+    std::adjacent_find, std::prev_permutation,
+    std::invalid_argument;
 }
 
 namespace chalc
 {
     class BinomialCoeffTable
     {
-        std::vector<std::vector<index_t>> B;
+        vector<vector<index_t>> B;
 
     public:
         BinomialCoeffTable(index_t n, index_t k) : B(n + 1)
@@ -55,7 +61,7 @@ namespace chalc
             {
                 B[i].resize(i + 1, 0);
                 B[i][0] = 1;
-                for (index_t j = 1; j < std::min(i, k + 1); ++j)
+                for (index_t j = 1; j < min(i, k + 1); ++j)
                 {
                     B[i][j] = B[i - 1][j - 1] + B[i - 1][j];
                 }
@@ -63,7 +69,7 @@ namespace chalc
                 {
                     B[i][i] = 1;
                 }
-                assert(("Simplex index is too large.", B[i][std::min(i >> 1, k)] >= 0));
+                assert(("Simplex index is too large.", B[i][min(i >> 1, k)] >= 0));
             }
         }
         index_t operator()(index_t n, index_t k) const
@@ -119,6 +125,11 @@ namespace chalc
         return facets;
     }
 
+    void FilteredComplex::Simplex::set_colour(index_t c) 
+    {
+        colours.reset().set(c);
+    }
+
     FilteredComplex::FilteredComplex(const index_t num_vertices, const index_t max_dimension) : binomial(make_shared<BinomialCoeffTable>(num_vertices, max_dimension + 1)), // we want nCk for all 0 <= n <= num_vertices and 0 <= k <= max_num_verts_in_a_simplex = max_dim + 1
                                                                                               simplices(max_dimension + 1),
                                                                                               N(num_vertices),
@@ -128,15 +139,15 @@ namespace chalc
     {
         if (max_dim < 0)
         {
-            throw std::invalid_argument("Dimension cannot be negative.");
+            throw invalid_argument("Dimension cannot be negative.");
         }
         if (N <= 0)
         {
-            throw std::invalid_argument("Number of points must be positive.");
+            throw invalid_argument("Number of points must be positive.");
         }
         if (max_dim >= N)
         {
-            throw std::invalid_argument("Dimension must be less than number of points.");
+            throw invalid_argument("Dimension must be less than number of points.");
         }
         for (index_t i = 0; i < N; i++)
         {
@@ -152,11 +163,11 @@ namespace chalc
     {
         if (k > max_dim)
         {
-            throw std::invalid_argument("Dimension of subcomplex must be less than max dimension of original complex.");
+            throw invalid_argument("Dimension of subcomplex must be less than max dimension of original complex.");
         }
         if (k < 0)
         {
-            throw std::invalid_argument("Dimension must be non-negative.");
+            throw invalid_argument("Dimension must be non-negative.");
         }
         num_simplices = 0;
         for (index_t d = 0; d <= k; d++)
@@ -173,12 +184,12 @@ namespace chalc
     void FilteredComplex::check_vertex_sequence_is_valid(vector<index_t> &verts) const
     {
         check_dimension_is_valid(verts.size() - 1);
-        std::sort(verts.begin(), verts.end());
+        sort(verts.begin(), verts.end());
         if (!(verts.back() < N &&
               verts.front() >= 0 &&
-              std::adjacent_find(verts.begin(), verts.end()) == verts.end()))
+              adjacent_find(verts.begin(), verts.end()) == verts.end()))
         {
-            throw std::invalid_argument("Invalid vertex sequence.");
+            throw invalid_argument("Invalid vertex sequence.");
         };
     }
 
@@ -186,7 +197,7 @@ namespace chalc
     {
         if (dim > max_dim || dim < 0)
         {
-            throw std::invalid_argument("Invalid dimension.");
+            throw invalid_argument("Invalid dimension.");
         }
     }
 
@@ -228,7 +239,7 @@ namespace chalc
         check_dimension_is_valid(dim);
         if (label < 0 || label >= (*binomial)(N, dim))
         {
-            throw std::invalid_argument("Invalid label.");
+            throw invalid_argument("Invalid label.");
         }
         return _has_simplex(dim, label);
     }
@@ -255,7 +266,7 @@ namespace chalc
         if (search_simplex != simplices[dim].end())
         { // the simplex already exists
             new_simplex = search_simplex->second;
-            new_simplex->value = std::min(filt_value, new_simplex->value);
+            new_simplex->value = min(filt_value, new_simplex->value);
         }
         else
         { // simplex does not exist so we need to add it
@@ -277,7 +288,7 @@ namespace chalc
             }
             auto max_vertex = verts.back();
             new_simplex = make_shared<Simplex>(label, max_vertex, dim,
-                                                    colours, filt_value, std::move(facets));
+                                                    colours, filt_value, move(facets));
             simplices[dim][label] = new_simplex;
             num_simplices++;
         }
@@ -295,8 +306,8 @@ namespace chalc
         else
         {
             _add_simplex(verts, filt_value);
-            cur_dim = std::max(static_cast<size_t>(cur_dim), verts.size() - 1);
-            cur_max_filt_value = std::max(cur_max_filt_value, filt_value);
+            cur_dim = max(static_cast<size_t>(cur_dim), verts.size() - 1);
+            cur_max_filt_value = max(cur_max_filt_value, filt_value);
             return true;
         }
     }
@@ -314,7 +325,7 @@ namespace chalc
                 // iterate over faces of simplex and get the maximum filtration value
                 for (const auto &facet : simplex->get_facets())
                 {
-                    tmp = std::max(tmp, facet->value);
+                    tmp = max(tmp, facet->value);
                 }
                 simplex->value = tmp;
             }
@@ -333,7 +344,7 @@ namespace chalc
                 // iterate over faces of simplex and modify the filtration value if needed
                 for (auto &facet : simplex->get_facets())
                 {
-                    facet->value = std::min(simplex->value, facet->value);
+                    facet->value = max(simplex->value, facet->value);
                 }
             }
             p--;
@@ -359,7 +370,7 @@ namespace chalc
     {
         if (start_dim > cur_dim || start_dim < 0)
         {
-            throw std::invalid_argument("Invalid starting dimension.");
+            throw invalid_argument("Invalid starting dimension.");
         }
         if (up)
         {
@@ -407,7 +418,7 @@ namespace chalc
             {
                 sort_by_val.push_back(s.second);
             }
-            std::stable_sort(sort_by_val.begin(), sort_by_val.end(),
+            stable_sort(sort_by_val.begin(), sort_by_val.end(),
                              [](const shared_ptr<Simplex> &s1, const shared_ptr<Simplex> &s2)
                              {
                                  return (s1->value < s2->value);
@@ -422,6 +433,7 @@ namespace chalc
                     f = indices[d - 1][f];
                 }
                 indices[d][simplex->label] = i;
+                sort(faces.begin(), faces.end());
                 result[i++] = tuple{faces, simplex->label, simplex->value, simplex->colours.to_ulong()};
             }
         }
@@ -432,15 +444,15 @@ namespace chalc
     {
         if (n <= 0)
         {
-            throw std::invalid_argument("number of vertices must be >= 0.");
+            throw invalid_argument("number of vertices must be >= 0.");
         }
         if (k < 0 || k >= n)
         {
-            throw std::invalid_argument("k must satisfy 0 <= k < n");
+            throw invalid_argument("k must satisfy 0 <= k < n");
         }
         FilteredComplex result(n, k);
         vector<bool> v(n);
-        std::fill(v.begin(), v.begin() + k + 1, true);
+        fill(v.begin(), v.begin() + k + 1, true);
         vector<index_t> verts(k + 1);
         do
         {
@@ -452,7 +464,7 @@ namespace chalc
                 }
             }
             result._add_simplex(verts, 0.0);
-        } while (std::prev_permutation(v.begin(), v.end()));
+        } while (prev_permutation(v.begin(), v.end()));
         result.cur_dim = k;
         return result;
     }

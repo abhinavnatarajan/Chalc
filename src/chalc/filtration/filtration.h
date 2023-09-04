@@ -37,7 +37,7 @@
 #ifndef FILTRATION_H
 #define FILTRATION_H
 
-#include "common.h"
+#include "../common.h"
 #include <memory>
 #include <bitset>
 
@@ -191,6 +191,8 @@ namespace chalc
 
         // Return a const reference to the facets
         const std::vector<std::shared_ptr<Simplex>> &get_facets() const;
+
+        void set_colour(index_t c);
     };
 
     // The simplicial complex associated to the standard n-simplex.

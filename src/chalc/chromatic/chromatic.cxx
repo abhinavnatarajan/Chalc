@@ -41,7 +41,7 @@ mpfr.h, without which there are compilation issues. Therefore
 mpreal.h must be included BEFORE any CGAL headers, which also
 include mpfr.h.
 */
-#include "ConstrainedMiniball/ConstrainedMiniball.h"
+#include "../../ConstrainedMiniball/ConstrainedMiniball.h"
 #include <CGAL/Epick_d.h>
 #include <CGAL/Dimension.h>
 #include <CGAL/Delaunay_triangulation.h>
@@ -181,7 +181,7 @@ namespace chalc::chromatic
 {
 
     // Create a Delaunay triangulation from a collection of coordinate vectors
-    FilteredComplex delaunay_complex(const RealMatrix<double> &X)
+    FilteredComplex delaunay(const RealMatrix<double> &X)
     {
         auto dim = X.rows();
         FilteredComplex result(X.cols(), dim);
@@ -223,7 +223,7 @@ namespace chalc::chromatic
     }
 
     // Create the chromatic Del-VR complex
-    FilteredComplex chromatic_delrips_complex(
+    FilteredComplex delrips(
         const RealMatrix<double> &points,
         const vector<index_t> &colours)
     {
@@ -236,11 +236,11 @@ namespace chalc::chromatic
             throw std::domain_error("len(colours) must equal number of points.");
         }
         RealMatrix<double> stratified_points = stratify(points, new_colours, num_colours);
-        auto delX = delaunay_complex(stratified_points);
+        auto delX = delaunay(stratified_points);
         // modify the colours of the vertices
         for (auto &[idx, vert] : delX.get_simplices()[0])
         {
-            vert->colours.set(new_colours[idx]);
+            vert->set_colour(new_colours[idx]);
         }
         delX.propagate_colours();
         // modify the filtration values
@@ -257,7 +257,7 @@ namespace chalc::chromatic
     }
 
     // Create the chromatic alpha complex
-    FilteredComplex chromatic_alpha_complex(
+    FilteredComplex alpha(
         const RealMatrix<double> &points,
         const vector<index_t> &colours,
         std::ostream &ostream)
@@ -274,11 +274,11 @@ namespace chalc::chromatic
             throw std::domain_error("len(colours) must equal number of points.");
         }
         RealMatrix<double> stratified_points = stratify(points, new_colours, num_colours);
-        auto delX = delaunay_complex(stratified_points);
+        auto delX = delaunay(stratified_points);
         // modify the colours of the vertices
         for (auto &[idx, vert] : delX.get_simplices()[0])
         {
-            vert->colours.set(new_colours[idx]);
+            vert->set_colour(new_colours[idx]);
         }
         delX.propagate_colours();
         // sort the points by colour
@@ -343,7 +343,7 @@ namespace chalc::chromatic
     }
 
     // Create the chromatic Del-Cech complex
-    FilteredComplex chromatic_delcech_complex(const RealMatrix<double> &points, const vector<index_t> &colours, std::ostream &ostream)
+    FilteredComplex delcech(const RealMatrix<double> &points, const vector<index_t> &colours, std::ostream &ostream)
     {
         auto [new_colours, num_colours] = canonicalise(colours);
         if (num_colours > MAX_NUM_COLOURS)
@@ -355,11 +355,11 @@ namespace chalc::chromatic
             throw std::domain_error("len(colours) must equal number of points.");
         }
         RealMatrix<double> stratified_points = stratify(points, colours, num_colours);
-        auto delX = delaunay_complex(stratified_points);
+        auto delX = delaunay(stratified_points);
         // modify the colours of the vertices
         for (auto &[idx, vert] : delX.get_simplices()[0])
         {
-            vert->colours.set(new_colours[idx]);
+            vert->set_colour(new_colours[idx]);
         }
         delX.propagate_colours();
         // modify the filtration values

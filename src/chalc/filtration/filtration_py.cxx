@@ -3,7 +3,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/iostream.h>
 
-PYBIND11_MODULE(filtration, m)
+PYBIND11_MODULE(_filtration, m)
 {
     using namespace chalc;
     using namespace chalc::stl;
@@ -150,7 +150,8 @@ PYBIND11_MODULE(filtration, m)
                     followed by filtration time. Each simplex :math:`\sigma` is 
                     represented by a tuple containing the following items.
 
-                    1.  A list containing the indices in `x` of the facets of :math:`\sigma`.
+                    1.  A list containing the indices in `x` of the facets of :math:`\sigma`, 
+                        sorted in ascending order.
                     2.  The lexicographic key of :math:`\sigma` in the simplicial complex.
                     3.  The filtration time of :math:`\sigma`.
                     4.  The colour bitmask of :math:`\sigma`.
@@ -206,13 +207,13 @@ PYBIND11_MODULE(filtration, m)
             )docstring")
         .def(
             "set_colour",
-            [](const shared_ptr<FilteredComplex::Simplex> &s_ptr, unsigned long c)
+            [](const shared_ptr<FilteredComplex::Simplex> &s_ptr, index_t c)
             {
                 if (s_ptr->dim == 0)
                 {
                     if (c < MAX_NUM_COLOURS)
                     {
-                        s_ptr->colours.reset().set(c);
+                        s_ptr->set_colour(c);
                     }
                     else
                     {

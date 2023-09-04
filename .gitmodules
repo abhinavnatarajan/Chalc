@@ -1,3 +1,3 @@
-[submodule "src/cpp/ConstrainedMiniball"]
-	path = src/cpp/ConstrainedMiniball
+[submodule "src/ConstrainedMiniball"]
+	path = src/ConstrainedMiniball
 	url = https://github.com/abhinavnatarajan/ConstrainedMiniball.git

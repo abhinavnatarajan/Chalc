@@ -26,10 +26,11 @@ if (NOT DEFINED ENV{NO_USE_VCPKG})
         execute_process(COMMAND ${VCPKG_INSTALLATION_ROOT}/bootstrap-vcpkg.bat)
     endif()
     if (EXISTS ${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake)
-        set(X_VCPKG_APPLOCAL_DEPS_INSTALL ON CACHE BOOL "Automatically copy dependencies into the install target directory for executables.")
+        # set(X_VCPKG_APPLOCAL_DEPS_INSTALL ON CACHE BOOL "Automatically copy dependencies into the install target directory for executables.")
         message(STATUS "Using Vcpkg toolchain: ${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake")
         set(CMAKE_TOOLCHAIN_FILE "${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake" 
         CACHE STRING "")
+        set(USING_VCPKG TRUE)
     else ()
         message(FATAL_ERROR "Did not find vcpkg at specified location: ${VCPKG_INSTALLATION_ROOT}")
     endif()
@@ -39,7 +40,7 @@ endif()
 
 message(STATUS "Project name: ${SKBUILD_PROJECT_NAME}")
 message(STATUS "Project version: ${SKBUILD_PROJECT_VERSION}")
-project(${SKBUILD_PROJECT_NAME} VERSION ${SKBUILD_PROJECT_VERSION} LANGUAGES CXX)
+project(${SKBUILD_PROJECT_NAME} LANGUAGES CXX)
 
 # Find dependencies
 find_package(Eigen3 CONFIG REQUIRED)
@@ -54,8 +55,6 @@ endif()
 
 # ----------------------------- Build python api ------------------------------
 
-message(STATUS "Building extension module...")
-
 message(STATUS "Python executable: ${PYTHON_EXECUTABLE}")
 # call pybind11-config to obtain the root of the cmake package
 execute_process(COMMAND ${PYTHON_EXECUTABLE} -m pybind11 --cmakedir
@@ -69,21 +68,28 @@ endif()
 
 # Create python extension module ###
 pybind11_add_module(
-    filtration 
+    _filtration 
     MODULE 
-        src/cpp/filtration_py.cxx 
-        src/cpp/filtration.cxx)
+        src/chalc/filtration/filtration_py.cxx 
+        src/chalc/filtration/filtration.cxx)
 
 pybind11_add_module(
-    chromatic 
+    _chromatic 
     MODULE 
-        src/cpp/chromatic_py.cxx 
-        src/cpp/chromatic.cxx 
-        src/cpp/filtration.cxx)
-target_include_directories(chromatic PRIVATE src/cpp/ConstrainedMiniball/mpreal)
-target_link_libraries(chromatic PRIVATE Eigen3::Eigen CGAL::CGAL CGAL::Eigen3_support)
+        src/chalc/chromatic/chromatic_py.cxx 
+        src/chalc/chromatic/chromatic.cxx 
+        src/chalc/filtration/filtration.cxx)
+target_include_directories(_chromatic PRIVATE src/ConstrainedMiniball/mpreal)
+target_link_libraries(_chromatic PRIVATE Eigen3::Eigen CGAL::CGAL CGAL::Eigen3_support)
 
-pybind11_add_module(_version MODULE src/cpp/version.cxx)
-target_compile_definitions(_version PRIVATE VERSION_INFO=${PROJECT_VERSION})
-
-install(TARGETS chromatic filtration _version DESTINATION .)
+install(TARGETS _filtration RUNTIME_DEPENDENCY_SET vcpkg_libs DESTINATION filtration)
+install(TARGETS _chromatic RUNTIME_DEPENDENCY_SET vcpkg_libs DESTINATION chromatic)
+if (USING_VCPKG AND WIN32)
+    file(GLOB VCPKG_SHARED_LIBRARIES
+            RELATIVE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/"
+            "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/*")
+    install(RUNTIME_DEPENDENCY_SET vcpkg_libs DESTINATION bin
+        PRE_INCLUDE_REGEXES ${VCPKG_SHARED_LIBRARIES}
+        PRE_EXCLUDE_REGEXES ".*"
+        DIRECTORIES "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/")
+endif()

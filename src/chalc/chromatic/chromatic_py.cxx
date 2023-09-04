@@ -4,7 +4,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/iostream.h>
 
-PYBIND11_MODULE(chromatic, m)
+PYBIND11_MODULE(_chromatic, m)
 {
     using namespace chalc::chromatic;
     using namespace chalc::stl;
@@ -19,8 +19,8 @@ PYBIND11_MODULE(chromatic, m)
             MaxColoursChromatic : int
                 Maximum number of colours that can be handled by the methods in this module.
         )docstring";
-    m.attr("MaxColoursChromatic") = py::int_(MaxColoursChromatic);
-    m.def("delaunay_complex", &delaunay_complex,
+    m.attr("MaxColoursChromatic") = py::int_(MAX_NUM_COLOURS);
+    m.def("delaunay", &delaunay,
         R"docstring(
             Returns the Delaunay triangulation of a point cloud in Euclidean space.
 
@@ -35,7 +35,7 @@ PYBIND11_MODULE(chromatic, m)
                 The Delaunay triangulation.
         )docstring",
         py::arg("x"))
-    .def("chromatic_delrips_complex", &chromatic_delrips_complex,
+    .def("delrips", &delrips,
         R"docstring(
             Computes the chromatic Delaunay-Rips complex of a coloured point cloud.
 
@@ -69,13 +69,13 @@ PYBIND11_MODULE(chromatic, m)
 
             See Also
             --------
-            chromatic_alpha_complex, chromatic_delcech_complex 
+            alpha, delcech
         )docstring",
         py::arg("x"), py::arg("colours"))
-    .def("chromatic_alpha_complex", 
+    .def("alpha", 
     [](const Eigen::MatrixXd& points, const vector<index_t>& colours) {
         std::ostringstream ostream;
-        auto res = chromatic_alpha_complex(points, colours, ostream);
+        auto res = alpha(points, colours, ostream);
         if (ostream.tellp() > 0) {
             PyErr_WarnEx(PyExc_RuntimeWarning, 
                         ostream.str().c_str(), 
@@ -110,13 +110,13 @@ PYBIND11_MODULE(chromatic, m)
 
             See Also
             --------
-            chromatic_delrips_complex, chromatic_delcech_complex 
+            delrips, delcech 
         )docstring",
         py::arg("x"), py::arg("colours"))
-    .def("chromatic_delcech_complex", 
+    .def("delcech", 
     [](const Eigen::MatrixXd& points, const vector<index_t>& colours) {
         std::ostringstream ostream;
-        auto res = chromatic_delcech_complex(points, colours, ostream);
+        auto res = delcech(points, colours, ostream);
         if (ostream.tellp() > 0) {
             PyErr_WarnEx(PyExc_RuntimeWarning, 
                         ostream.str().c_str(), 
@@ -157,7 +157,7 @@ PYBIND11_MODULE(chromatic, m)
 
             See Also
             --------
-            chromatic_alpha_complex, chromatic_delrips_complex 
+            alpha, delrips 
         )docstring",
         py::arg("x"), py::arg("colours"));
 }
