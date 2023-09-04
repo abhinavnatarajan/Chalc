@@ -25,7 +25,10 @@ keywords = [
 ]
 dependencies = [
     "numpy",
-    "phimaker"
+    "phimaker",
+    "pandas", 
+    "matplotlib", 
+    "seaborn"
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",

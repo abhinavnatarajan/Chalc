@@ -1,0 +1,76 @@
+from __future__ import annotations
+
+from .. import chromatic
+import numpy as np
+import numpy # for annotations
+from enum import Enum
+import functools
+
+
+class _Wrapper:
+    def __init__(self, function):
+        self.function = function
+        functools.update_wrapper(self, function)
+    def __call__(self,*args, **kwargs):
+        return self.function(*args, **kwargs)
+    def __repr__(self):
+        return self.function.__repr__()
+    
+class ChromaticMethod(Enum):
+    alpha = _Wrapper(chromatic.alpha)
+    delcech = _Wrapper(chromatic.delcech)
+    delrips = _Wrapper(chromatic.delrips)
+    def __call__(self, *args, **kwargs):
+        return self.value(*args, **kwargs)
+
+def get_boundary_matrix(x : numpy.ndarray[numpy.float64[m, n]], 
+                        colours : list[int], 
+                        *, # rest are keyword only
+                        dom : list[int] = None, 
+                        k : int = None,
+                        method : ChromaticMethod = ChromaticMethod.alpha, 
+                        max_dgm_dim : int = 2) -> tuple[numpy.ndarray[numpy.float64[m, n]], list[float], list[int]] :
+    
+    if dom is not None and k is None:
+        # new colours: 1 -> domain, 0 -> codomain
+        colours = np.isin(colours, dom).astype(np.int64)
+        def check_in_domain(bitmask : int) -> bool:
+            return bitmask == 2 # bitmask == 2 means colour 1
+        
+    elif k is not None and dom is None:
+        def check_in_domain(bitmask : int) -> bool:
+            return _num_colours_in_bitmask(bitmask) <= k # k-chromatic simplex
+    
+    else:
+        raise RuntimeError("Only one of k or dom is allowed")
+
+    # Compute chromatic complex
+    if isinstance(method, ChromaticMethod):
+        K = method(x, colours)
+    else:
+        raise RuntimeError("method must be an instance of ``SixPackMethod``.")
+
+    # Build up the matrix
+    matrix = []
+    entrance_times = []
+    dimensions = []
+    for column in K.serialised():
+        facet_idxs = column[0]
+        dimension = max(0, len(facet_idxs) - 1)
+        # Only need 2-skeleton
+        if dimension > max_dgm_dim + 1:
+            break
+        dimensions.append(dimension)
+        entrance_times.append(column[2])
+        in_domain = check_in_domain(column[3])
+
+        matrix.append((in_domain, dimension, facet_idxs))
+
+    return matrix, entrance_times, dimensions
+
+def _num_colours_in_bitmask(n : int) -> int :
+    sum = 0
+    while (n):
+        sum += (n & 1)
+        n >>= 1
+    return sum
