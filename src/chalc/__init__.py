@@ -13,4 +13,6 @@ with _os.add_dll_directory(_bindir):
     from . import chromatic
     from . import sixpack
 
+__all__ = ['chromatic', 'filtration', 'sixpack']
+
 __doc__ = "Chalc is a package to compute the persistent homology of chromatic complexes of points clouds in Euclidean space."

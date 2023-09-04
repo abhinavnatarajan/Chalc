@@ -1,8 +1,6 @@
 #include "chromatic.h"
-#include <pybind11/pybind11.h>
+#include "../common.h"
 #include <pybind11/eigen.h>
-#include <pybind11/stl.h>
-#include <pybind11/iostream.h>
 
 PYBIND11_MODULE(_chromatic, m)
 {
@@ -27,7 +25,7 @@ PYBIND11_MODULE(_chromatic, m)
             Parameters
             ----------
             x :
-                A numpy matrix whose columns represent points.
+                Numpy matrix whose columns are points in the point cloud.
 
             Returns
             -------
@@ -42,9 +40,9 @@ PYBIND11_MODULE(_chromatic, m)
             Parameters
             ----------
             x :
-                A numpy matrix whose columns are points in the point cloud.
+                Numpy matrix whose columns are points in the point cloud.
             colours :
-                A list of integers describing the colours of the points.
+                List of integers describing the colours of the points.
                 Note that the actual colours of vertices in the output filtration
                 may not correspond to the input colours unless the set of values in
                 ``colours`` is contiguous and ``colours[0] = 0``.
@@ -89,9 +87,9 @@ PYBIND11_MODULE(_chromatic, m)
             Parameters
             ----------
             x : 
-                A numpy matrix whose columns are points in the point cloud.
+                Numpy matrix whose columns are points in the point cloud.
             colours :
-                A list of integers describing the colours of the points.
+                List of integers describing the colours of the points.
                 Note that the actual colours of vertices in the output filtration
                 may not correspond to the input colours unless the set of values in
                 ``colours`` is contiguous and ``colours[0] = 0``.
@@ -130,9 +128,9 @@ PYBIND11_MODULE(_chromatic, m)
             Parameters
             ----------
             x : 
-                A numpy matrix whose columns are points in the point cloud.
+                Numpy matrix whose columns are points in the point cloud.
             colours : 
-                A list of integers describing the colours of the points.
+                List of integers describing the colours of the points.
                 Note that the actual colours of vertices in the output filtration
                 may not correspond to the input colours unless the set of values in
                 ``colours`` is contiguous and ``colours[0] = 0``.

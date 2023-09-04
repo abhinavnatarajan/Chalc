@@ -42,7 +42,7 @@ toc_object_entries_show_parents = 'hide'
 add_module_names = False
 master_doc = "index"
 templates_path = ['_templates']
-# exclude_patterns = ['example.ipynb']
+exclude_patterns = ['example.ipynb']
 
 extensions = [
     'sphinx.ext.autosectionlabel',
@@ -61,12 +61,17 @@ extensions = [
 autosectionlabel_prefix_document = True
 
 # autodoc options
+autodoc_default_options = {
+    'undoc-members': False,
+    'private-members': False,
+    'imported-members': False
+}
 autodoc_typehints = 'description'
 autodoc_typehints_description_target = "documented_params"
-autodoc_mock_imports = ['numpy']
 
 #autosummary options
-autosummary_generate = True
+autosummary_imported_members = True
+# autosummary_ignore_module_all = False
 
 # intersphinx options
 intersphinx_mapping = { 

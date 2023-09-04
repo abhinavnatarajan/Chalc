@@ -38,7 +38,6 @@
 #define FILTRATION_H
 
 #include "../common.h"
-#include <memory>
 #include <bitset>
 
 namespace chalc
@@ -51,13 +50,12 @@ namespace chalc
 
     class BinomialCoeffTable;
 
-    class FilteredComplex
+    struct PYBIND11_EXPORT FilteredComplex
     {
 
-    public:
         /* PUBLIC CLASSES OF FilteredComplex */
 
-        class Simplex;
+        struct Simplex;
 
         /* PUBLIC MEMBERS OF FilteredComplex */
 
@@ -152,15 +150,9 @@ namespace chalc
         void propagate_filt_values_down(const index_t start_dim) const;
     };
 
-    class FilteredComplex::Simplex
+    struct PYBIND11_EXPORT FilteredComplex::Simplex
     {
 
-        /* PRIVATE MEMBERS OF Simplex */
-
-        const std::vector<std::shared_ptr<Simplex>> facets; // pointers to the [i]th facets of the simplex
-        // std::vector<std::weak_ptr<Simplex>> cofacets; // pointers to the [i]th cofacets of the simplex
-
-    public:
         /* PUBLIC MEMBERS OF Simplex */
 
         value_t value;           // filtration value
@@ -193,6 +185,11 @@ namespace chalc
         const std::vector<std::shared_ptr<Simplex>> &get_facets() const;
 
         void set_colour(index_t c);
+
+        /* PRIVATE MEMBERS OF Simplex */
+    private:
+        const std::vector<std::shared_ptr<Simplex>> facets; // pointers to the [i]th facets of the simplex
+        // std::vector<std::weak_ptr<Simplex>> cofacets; // pointers to the [i]th cofacets of the simplex
     };
 
     // The simplicial complex associated to the standard n-simplex.

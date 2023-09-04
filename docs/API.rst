@@ -13,3 +13,4 @@ API Reference
 
       chromatic
       filtration
+      sixpack

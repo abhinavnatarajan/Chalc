@@ -1,7 +1,5 @@
 #include "filtration.h"
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-#include <pybind11/iostream.h>
+#include "../common.h"
 
 PYBIND11_MODULE(_filtration, m)
 {
@@ -97,7 +95,7 @@ PYBIND11_MODULE(_filtration, m)
                 start_dim :
                     Dimension from which to start propagating (exclusive). 
                 upwards :
-                    If true then values are propagated upwards, downwards otherwise.
+                    If true then values are propagated upwards, downwards otherwise, defaults to true.
             )docstring",
             py::arg("start_dim"), py::arg("upwards")=true)
         .def("has_simplex", static_cast<bool (FilteredComplex::*)(vector<index_t> &) const>(&FilteredComplex::has_simplex),

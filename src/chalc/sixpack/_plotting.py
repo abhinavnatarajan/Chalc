@@ -1,11 +1,37 @@
+from __future__ import annotations
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from numbers import Real
+from ._types import DiagramEnsemble
 
-def plot_sixpack(dgms, entrance_times, dimensions, truncation, max_diagram_dim):
+def plot_sixpack(dgms : DiagramEnsemble, 
+                 entrance_times : list[Real], 
+                 dimensions : list[int], 
+                 truncation : Real, 
+                 max_diagram_dim : int) -> None :
+    """
+    Plots the 6-pack of persistence diagrams returned by :func:`compute`.
+
+    Parameters
+    ----------
+    dgms : 
+        The persistence diagrams.
+    entrance_times :
+        The actual entrance-times of the simplices in the diagrams.
+    dimensions :
+        The dimensions of the simplices in the diagrams.
+    truncation :
+        The maximum entrance time for which the diagrams is plotted.
+    max_diagram_dim :
+        Maximum homological dimension for which the diagrams are plotted.
+
+    """
+
     fig, axes = plt.subplots(nrows=2, ncols=3, figsize=[3.5 * 3, 3.5 * 2])
-
+    
     def applied_plot(
         dgm, ax, title, dim_shift=0, max_dim=max_diagram_dim, legend=False
     ):
