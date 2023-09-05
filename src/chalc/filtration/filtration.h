@@ -67,8 +67,6 @@ namespace chalc
         // Constructors
         // 1. Create a vertex set.
         FilteredComplex(const index_t num_vertices, const index_t max_dimension);
-        // 2. k-skeleton of another complex
-        FilteredComplex(const FilteredComplex &other, const index_t k);
 
         // Get label of a simplex from the labels of its vertices
         index_t get_label_from_vertex_labels(std::vector<index_t> &verts) const;

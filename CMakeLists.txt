@@ -12,6 +12,9 @@ if (NOT DEFINED ENV{NO_USE_VCPKG})
         set(VCPKG_INSTALLATION_ROOT $ENV{VCPKG_INSTALLATION_ROOT})
         message(STATUS "VCPKG_INSTALLATION_ROOT is $ENV{VCPKG_INSTALLATION_ROOT}")
     else()
+        # get the vcpkg commit id from vcpkg.json
+        file(READ ${CMAKE_CURRENT_LIST_DIR}/vcpkg.json VCPKG_JSON_STRING)
+        string(JSON VCPKG_COMMIT_ID GET ${VCPKG_JSON_STRING} builtin-baseline)
         message(STATUS "Downloading vcpkg from https://github.com/microsoft/vcpkg/")
         message(STATUS "Commit SHA512: ${VCPKG_COMMIT_ID}")
         include(FetchContent)
@@ -68,22 +71,22 @@ endif()
 
 # Create python extension module ###
 pybind11_add_module(
-    _filtration 
+    filtration 
     MODULE 
         src/chalc/filtration/filtration_py.cxx 
         src/chalc/filtration/filtration.cxx)
 
 pybind11_add_module(
-    _chromatic 
+    chromatic 
     MODULE 
         src/chalc/chromatic/chromatic_py.cxx 
         src/chalc/chromatic/chromatic.cxx 
         src/chalc/filtration/filtration.cxx)
-target_include_directories(_chromatic PRIVATE src/ConstrainedMiniball/mpreal)
-target_link_libraries(_chromatic PRIVATE Eigen3::Eigen CGAL::CGAL CGAL::Eigen3_support)
+target_include_directories(chromatic PRIVATE src/ConstrainedMiniball/mpreal)
+target_link_libraries(chromatic PRIVATE Eigen3::Eigen CGAL::CGAL CGAL::Eigen3_support)
 
-install(TARGETS _filtration RUNTIME_DEPENDENCY_SET vcpkg_libs DESTINATION filtration)
-install(TARGETS _chromatic RUNTIME_DEPENDENCY_SET vcpkg_libs DESTINATION chromatic)
+install(TARGETS filtration RUNTIME_DEPENDENCY_SET vcpkg_libs DESTINATION .)
+install(TARGETS chromatic RUNTIME_DEPENDENCY_SET vcpkg_libs DESTINATION .)
 if (USING_VCPKG AND WIN32)
     file(GLOB VCPKG_SHARED_LIBRARIES
             RELATIVE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/"

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ._types import Diagram, DiagramEnsemble, save_diagrams
 from ._compute import compute
 from ._plotting import plot_sixpack
 

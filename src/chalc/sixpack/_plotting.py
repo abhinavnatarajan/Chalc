@@ -7,11 +7,9 @@ import seaborn as sns
 from numbers import Real
 from ._types import DiagramEnsemble
 
-def plot_sixpack(dgms : DiagramEnsemble, 
-                 entrance_times : list[Real], 
-                 dimensions : list[int], 
+def plot_sixpack(dgms : DiagramEnsemble,
                  truncation : Real, 
-                 max_diagram_dim : int) -> None :
+                 max_diagram_dim : int = 2) -> None :
     """
     Plots the 6-pack of persistence diagrams returned by :func:`compute`.
 
@@ -19,12 +17,8 @@ def plot_sixpack(dgms : DiagramEnsemble,
     ----------
     dgms : 
         The persistence diagrams.
-    entrance_times :
-        The actual entrance-times of the simplices in the diagrams.
-    dimensions :
-        The dimensions of the simplices in the diagrams.
     truncation :
-        The maximum entrance time for which the diagrams is plotted.
+        The maximum entrance time for which the diagrams are plotted.
     max_diagram_dim :
         Maximum homological dimension for which the diagrams are plotted.
 
@@ -37,8 +31,8 @@ def plot_sixpack(dgms : DiagramEnsemble,
     ):
         plot_diagram(
             dgm,
-            entrance_times,
-            dimensions,
+            dgms.entrance_times,
+            dgms.dimensions,
             truncation,
             ax=ax,
             title=title,
@@ -65,7 +59,7 @@ def plot_sixpack(dgms : DiagramEnsemble,
         "Cokernel",
     )
     applied_plot(
-        dgms.g,
+        dgms.cod,
         axes[1][0],
         "Domain",
     )
@@ -75,7 +69,7 @@ def plot_sixpack(dgms : DiagramEnsemble,
         "Image",
     )
     applied_plot(
-        dgms.f,
+        dgms.dom,
         axes[1][2],
         "Codomain",
         legend=True,
@@ -136,8 +130,3 @@ def plot_diagram(
         "m--",
         alpha=0.4,
     )
-
-
-def plot_subset(df, cell_types, ax=None):
-    sub_df = df[df["Celltype"].isin(cell_types)]
-    sns.scatterplot(sub_df, x="x", y="y", hue="Celltype", ax=ax)

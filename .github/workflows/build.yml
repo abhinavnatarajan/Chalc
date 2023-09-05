@@ -44,10 +44,19 @@ jobs:
         run: brew install automake
         if: ${{ matrix.os == 'macOS-latest' }}
       
+      - name: Get vcpkg commit ID from manifest
+        shell: bash
+        run: |
+          {
+            echo 'vcpkg_json<<EOF'
+            cat vcpkg.json
+            echo EOF
+          } >> "$GITHUB_ENV"
+
       - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
         with:
-          vcpkgGitCommitId: '417119555f155f6044dec7a379cd25466e339873'
+          vcpkgGitCommitId: ${{ fromJson(env.vcpkg_json).builtin-baseline }}
           runVcpkgInstall: false
     
       - name: Build wheels

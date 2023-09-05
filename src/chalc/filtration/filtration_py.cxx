@@ -1,53 +1,41 @@
 #include "filtration.h"
 #include "../common.h"
 
-PYBIND11_MODULE(_filtration, m)
+PYBIND11_MODULE(filtration, m)
 {
     using namespace chalc;
     using namespace chalc::stl;
     namespace py = pybind11;
     m.doc() =
         R"docstring(
-            Module containing utilities to store and manipulate abstract filtered simplicial complexes. 
+            Module containing utilities to store and manipulate 
+            abstract filtered simplicial complexes. 
         )docstring";
 
     // forward declare classes
     py::class_<FilteredComplex> filtered_complex(m, "FilteredComplex");
-    py::class_<FilteredComplex::Simplex, shared_ptr<FilteredComplex::Simplex>> simplex(m, "Simplex");
+    py::class_<FilteredComplex::Simplex, shared_ptr<FilteredComplex::Simplex>> 
+    simplex(m, "Simplex");
 
     /* FilteredComplex Interface */
     filtered_complex.doc() =
         R"docstring(
             Class representing a filtered simplicial complex.
-        )docstring";
-    filtered_complex.def(py::init<const index_t, const index_t>(),
-        R"docstring(
+
             Construct a discrete filtered simplicial complex 
             with default filtration time of 0.
-            
+
             Parameters
             ----------
-            n :
+            n : 
                 Number of vertices. Cannot be changed after initialisation.
-            k :
+            k : 
                 Maximum dimension of a simplex that the complex can have.
                 This parameter is required for memory efficiency, and cannot
                 be changed after initialisation.
-        )docstring",
+        )docstring";
+    filtered_complex.def(py::init<const index_t, const index_t>(),
         py::arg("n"), py::arg("k"))
-    .def(py::init<const FilteredComplex &, const index_t>(),
-        R"docstring(
-            Returns a handle to the :math:`k`-skeleton 
-            of an existing (filtered) simplicial complex.
-            
-            Parameters
-            ----------
-            other :
-                Filtered simplicial complex.
-            k :
-                Skeleton dimension.
-        )docstring",
-        py::arg("other"), py::arg("k"))
         .def("add_simplex", &FilteredComplex::add_simplex,
             R"docstring(
                 Add a simplex to a filtered simplicial complex.

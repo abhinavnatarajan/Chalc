@@ -2,7 +2,7 @@
 #include "../common.h"
 #include <pybind11/eigen.h>
 
-PYBIND11_MODULE(_chromatic, m)
+PYBIND11_MODULE(chromatic, m)
 {
     using namespace chalc::chromatic;
     using namespace chalc::stl;

@@ -155,32 +155,6 @@ namespace chalc
         }
     }
 
-    FilteredComplex::FilteredComplex(const FilteredComplex &other, const index_t k) : binomial(make_shared<BinomialCoeffTable>(other.size_in_dim(0), other.max_dim + 1)),
-                                                                                     simplices(other.max_dim + 1),
-                                                                                     N(other.size_in_dim(0)),
-                                                                                     max_dim(other.max_dim),
-                                                                                     cur_dim(k)
-    {
-        if (k > max_dim)
-        {
-            throw invalid_argument("Dimension of subcomplex must be less than max dimension of original complex.");
-        }
-        if (k < 0)
-        {
-            throw invalid_argument("Dimension must be non-negative.");
-        }
-        num_simplices = 0;
-        for (index_t d = 0; d <= k; d++)
-        {
-            auto &other_dsimplices = other.get_simplices()[d];
-            for (auto simplex = other_dsimplices.cbegin(); simplex != other_dsimplices.cend(); simplex++)
-            {
-                simplices[d][simplex->first] = simplex->second;
-            }
-            num_simplices += simplices[d].size();
-        }
-    }
-
     void FilteredComplex::check_vertex_sequence_is_valid(vector<index_t> &verts) const
     {
         check_dimension_is_valid(verts.size() - 1);

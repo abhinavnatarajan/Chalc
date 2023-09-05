@@ -37,7 +37,7 @@ release = '.'.join(map(str, parse(proj_props['version']).release))
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-maximum_signature_line_length = 80
+maximum_signature_line_length = 160
 toc_object_entries_show_parents = 'hide'
 add_module_names = False
 master_doc = "index"
@@ -60,11 +60,16 @@ extensions = [
 # autosectionlabel options
 autosectionlabel_prefix_document = True
 
+# napoleon options
+napolean_include_init_with_doc = True
+napoleon_attr_annotations = True
+
 # autodoc options
 autodoc_default_options = {
+    'special-members': '',
     'undoc-members': False,
     'private-members': False,
-    'imported-members': False
+    'imported-members': False,
 }
 autodoc_typehints = 'description'
 autodoc_typehints_description_target = "documented_params"

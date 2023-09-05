@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from .. import chromatic
-from ._types import DiagramEnsemble
+from ._types import DiagramEnsemble, Diagram
 import numpy as np
 import numpy
 from collections import defaultdict
@@ -80,7 +80,7 @@ def compute(x : numpy.ndarray[numpy.float64[m, n]],
             dom : typing.Optional[list[int]] = None, 
             k : typing.Optional[int] = None, 
             method : str = _ChromaticMethod.default_factory(), 
-            max_dgm_dim : int = 2) -> tuple[DiagramEnsemble, list[float], list[int]]:
+            max_dgm_dim : int = 2) -> DiagramEnsemble :
     """
     Compute the 6-pack of persistence diagrams of a coloured point-cloud.
 
@@ -90,44 +90,43 @@ def compute(x : numpy.ndarray[numpy.float64[m, n]],
 
     Parameters
     ----------
-        x : 
-            Numpy matrix whose columns are points.
-        colours :
-            List of integers describing the colours of the points.
-        dom : 
-            List of integers describing the colours of the points in the domain.
-        k :
-            If not ``None``, then the domain is taken to be the :math:`k`-chromatic 
-            subcomplex of :math:`L`, i.e., the subcomplex of simplices of at 
-            most :math:`k` colours.
-        method:
-            Filtration used to construct the chromatic complex. Must be one of 
-            ``${str(list(_ChromaticMethod.keys()))}``.
-        max_dgm_dim :
-            Maximum homological dimension for which the persistence diagrams are computed. 
+    x : 
+        Numpy matrix whose columns are points.
+    colours :
+        List of integers describing the colours of the points.
+
+    Keyword Args
+    ------------
+    dom : 
+        List of integers describing the colours of the points in the domain.
+    k :
+        If not ``None``, then the domain is taken to be the :math:`k`-chromatic 
+        subcomplex of :math:`L`, i.e., the subcomplex of simplices of at 
+        most :math:`k` colours.
+    method:
+        Filtration used to construct the chromatic complex. Must be one of 
+        ``${str(list(_ChromaticMethod.keys()))}``.
+    max_dgm_dim :
+        Maximum homological dimension for which the persistence diagrams are computed. 
     
     Returns
     -------
-        dgms : DiagramEnsemble
-            Diagrams corresponding to the following persistence modules (where 
-            :math:`H_*` is the persistent homology functor and :math:`f_*` is the 
-            induced map on persistent homology):
+    dgms : DiagramEnsemble
+        Diagrams corresponding to the following persistence modules (where 
+        :math:`H_*` is the persistent homology functor and :math:`f_*` is the 
+        induced map on persistent homology):
 
-            #. :math:`H_*(K)` (domain, ``dgms.dom``)
-            #. :math:`H_*(L)` (codomain, ``dgms.cod``)
-            #. :math:`\ker(f_*)` (kernel, ``dgms.ker``)
-            #. :math:`\mathrm{coker}(f_*)` (cokernel, ``dgm.cok``)
-            #. :math:`\mathrm{im}(f_*)` (image, ``dgms.im``)
-            #. :math:`H_*(L, K)` (relative homology, ``dgms.rel``)
+        #. :math:`H_*(K)` (domain)
+        #. :math:`H_*(L)` (codomain)
+        #. :math:`\ker(f_*)` (kernel)
+        #. :math:`\mathrm{coker}(f_*)` (cokernel)
+        #. :math:`\mathrm{im}(f_*)` (image)
+        #. :math:`H_*(L, K)` (relative homology)
 
-            Each diagram is represented by sets of ``paired`` and ``unpaired`` simplices.
-            For example, ``dgms.ker.paired`` is the set of tuples of paired simplices 
-            in the kernel diagram, and represents a single point in the diagram. Diagrams 
-            contain simplices of all dimensions. 
-        entrance_times : list[float] 
-            Entrance times of the simplices in the diagrams. 
-        dimensions : list[int]
-            Dimensions of the simplices in the diagrams. 
+        Each diagram is represented by sets of paired and unpaired simplices, 
+        and contain simplices of all dimensions. ``dgms`` also contains the 
+        entrance times of the simplices and their dimensions.
+
     """
     
     matrix, entrance_times, dimensions = _get_boundary_matrix(
@@ -136,7 +135,14 @@ def compute(x : numpy.ndarray[numpy.float64[m, n]],
         k=k, 
         method=method, 
         max_dgm_dim=max_dgm_dim)
-    dgms =  compute_ensemble(matrix)
-    dgms.dom = dgms.f
-    dgms.cod = dgms.g
-    return dgms, entrance_times, dimensions
+    d =  compute_ensemble(matrix)
+    dgms = DiagramEnsemble(
+        Diagram(d.ker), 
+        Diagram(d.cok), 
+        Diagram(d.f), 
+        Diagram(d.g), 
+        Diagram(d.im), 
+        Diagram(d.rel), 
+        entrance_times, 
+        dimensions)
+    return dgms

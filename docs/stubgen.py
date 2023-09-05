@@ -7,8 +7,8 @@ if __name__ == '__main__':
 
     # remove existing files to avoid error on windows while renaming
     stubs_path = (Path(__file__).parents[0].resolve() / 'stubs').resolve()
-    old_files = list(stubs_path.rglob('*.py'))
-    [os.remove(x) for x in old_files]
     stubs = list(stubs_path.rglob('*.pyi'))
     for x in stubs:
+        if x.with_suffix('.py').is_file():
+            os.remove(x.with_suffix('.py'))
         x.rename(x.with_suffix('.py'))
