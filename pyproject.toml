@@ -28,7 +28,8 @@ dependencies = [
     "phimaker",
     "pandas", 
     "matplotlib", 
-    "seaborn"
+    "seaborn", 
+    "h5py"
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
