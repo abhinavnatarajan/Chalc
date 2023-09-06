@@ -142,8 +142,9 @@ def _plot_diagram(
 def animate_filtration(
         K : FilteredComplex, 
         points : numpy.ndarray[numpy.float64[m, n]],
+        *,
         filtration_times : list[float],
-        length : float):
+        animation_length : float):
     """
     Create animation of 2-skeleton of filtered simplicial complex.
 
@@ -153,9 +154,12 @@ def animate_filtration(
         A filtered complex.
     points : 
         The vertices of ``K`` as a (2, N) numpy matrix.
+
+    Keyword Args
+    ------------
     filtration_times :
         List of filtration times for which to draw animation frames.
-    length :  
+    animation_length :  
         Total length of the animation in seconds. 
 
     Returns
@@ -180,9 +184,11 @@ def animate_filtration(
         if _num_colours_in_bitmask(simplex.colours) == 1:
             i = int(np.round(np.log2(simplex.colours)))
             colour = plot_colours[i]
+            alpha = 0.5
         else:
-            colour = 'grey'
-        lines[idx] = ax.plot([], [], c=colour, alpha=0.5, linewidth=1)[0]
+            colour = 'black'
+            alpha = 0.2
+        lines[idx] = ax.plot([], [], c=colour, alpha=alpha, linewidth=1)[0]
 
     for idx, simplex in K.simplices[2].items():
         if _num_colours_in_bitmask(simplex.colours) == 1:
@@ -191,6 +197,9 @@ def animate_filtration(
         else:
             colour = 'grey'
         patches[idx] = ax.fill([], [], c=colour, alpha=0.2)[0]
+    
+    ax.set_aspect('equal')
+    ax.set_xlabel('Time = ' + f"{0.0:.4f}")
 
     def update(time):
         for idx, simplex in K.simplices[1].items():
@@ -201,8 +210,10 @@ def animate_filtration(
         for idx, simplex in K.simplices[2].items():
             if simplex.filtration_value <= time:
                 patches[idx].set_xy(points[:, simplex.vertices].T)
+        
+        ax.set_xlabel(f'Time = {time:.4f}')
 
-    interval = int(np.round(duration * 1000 / len(filtration_times)))
+    interval = int(np.round(animation_length * 1000 / len(filtration_times)))
     return animation.FuncAnimation(
         fig=fig, func=update, 
         frames=filtration_times, 

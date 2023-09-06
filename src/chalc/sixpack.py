@@ -6,10 +6,9 @@ from . import chromatic
 import numpy as np
 from collections import defaultdict
 from phimaker import compute_ensemble
-import typing, re
 from dataclasses import dataclass, fields, field
 from numbers import Real
-import h5py
+import typing, re, h5py
 
 _ChromaticMethod = defaultdict(lambda : "chromatic alpha", 
                                {
@@ -74,7 +73,7 @@ def _num_colours_in_bitmask(n : int) -> int :
     while (n):
         sum += (n & 1)
         n >>= 1
-    return sum
+    return sum  
 
 @_format_docstring
 def compute(x : numpy.ndarray[numpy.float64[m, n]], 
@@ -138,7 +137,7 @@ def compute(x : numpy.ndarray[numpy.float64[m, n]],
         k=k, 
         method=method, 
         max_dgm_dim=max_dgm_dim)
-    d =  compute_ensemble(matrix)
+    d = compute_ensemble(matrix)
     dgms = DiagramEnsemble(
         Diagram._fromPhimaker(d.ker), 
         Diagram._fromPhimaker(d.cok), 

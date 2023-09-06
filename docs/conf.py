@@ -1,4 +1,4 @@
-import sys
+import sys, os
 from pathlib import Path
 from platform import python_version
 from packaging.version import parse
@@ -42,7 +42,7 @@ toc_object_entries_show_parents = 'hide'
 add_module_names = False
 master_doc = "index"
 templates_path = ['_templates']
-# exclude_patterns = ['example.ipynb']
+exclude_patterns = ['_build', '_templates', 'exts', '_static']
 
 extensions = [
     'sphinx.ext.autosectionlabel',
@@ -83,6 +83,10 @@ intersphinx_mapping = {
     'python' : ('https://docs.python.org/3/', None),
     'numpy' : ('https://numpy.org/doc/stable', None),
     'matplotlib' : ('https://matplotlib.org/stable', None)}
+
+# nbsphinx options
+nbsphinx_execute = 'always'
+os.environ['PYDEVD_DISABLE_FILE_VALIDATION'] = '1'
 
 # toolbox.github options
 github_username = 'abhinavnatarajan'
