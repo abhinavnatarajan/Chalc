@@ -48,6 +48,8 @@ Documentation = "https://abhinavnatarajan.github.io/Chalc"
 Repository = "https://github.com/abhinavnatarajan/Chalc.git"
 
 [tool.scikit-build]
+cmake.verbose = true
+logging.level = "DEBUG"
 cmake.build-type = "Release"
 cmake.minimum-version = "3.23"
 sdist.exclude = ["docs/", "build_docs.bat", "build_docs.sh", ".github/"]
@@ -64,10 +66,6 @@ __version__ = "${version}"
 
 [tool.cibuildwheel]
 archs = ["auto64"]
-
-[tool.cibuildwheel.config-settings]
-cmake.verbose = true
-logging.level = "DEBUG"
 
 [tool.cibuildwheel.linux]
 environment-pass = ["CI"]
