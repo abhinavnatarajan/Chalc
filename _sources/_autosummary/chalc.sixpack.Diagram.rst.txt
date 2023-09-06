@@ -1,0 +1,52 @@
+Diagram
+=======
+
+.. currentmodule:: chalc.sixpack
+
+Overview
+--------
+
+.. autoclass:: Diagram
+
+   
+
+   
+   Methods
+   ^^^^^^^^^^^^^^^^^^
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~Diagram.__init__
+      ~Diagram.paired_as_matrix
+   
+   
+
+   
+   
+   
+
+   
+   
+   Attributes
+   ^^^^^^^^^^^^^^^^^^^^^
+
+   
+   .. autoattribute:: Diagram.paired
+   .. autoattribute:: Diagram.unpaired
+   
+   
+
+   
+   
+   
+
+
+Details
+-------
+.. class:: Diagram
+   :noindex:
+   
+   
+   .. automethod:: Diagram.__init__
+   .. automethod:: Diagram.paired_as_matrix

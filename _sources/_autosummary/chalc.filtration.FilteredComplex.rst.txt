@@ -35,6 +35,7 @@ Overview
    
    .. autoproperty:: FilteredComplex.dimension
    .. autoproperty:: FilteredComplex.max_dimension
+   .. autoproperty:: FilteredComplex.max_filtration_time
    .. autoproperty:: FilteredComplex.num_simplices
    .. autoproperty:: FilteredComplex.num_vertices
    .. autoproperty:: FilteredComplex.simplices

@@ -39,26 +39,19 @@ If you have vcpkg installed on your system, make sure that the environment varia
    
 .. tab-set::
 
-   .. tab-item:: Cmd
-      :sync: cmd
-
-      .. code-block:: batch
-
-         > set VCPKG_INSTALLATION_ROOT=/path/to/vcpkg/dir
-
-   .. tab-item:: Powershell
-      :sync: powershell
-
-      .. code-block:: powershell
-
-         > $VCPKG_INSTALLATION_ROOT=/path/to/vcpkg/dir
-
    .. tab-item:: Bash
       :sync: bash
 
       .. code-block:: bash
 
          $ export VCPKG_INSTALLATION_ROOT=/path/to/vcpkg/dir
+
+   .. tab-item:: Powershell
+      :sync: powershell
+
+      .. code-block:: powershell
+
+         > $Env:VCPKG_INSTALLATION_ROOT = 'C:\path\to\vcpkg\dir'
 
 If you do not have vcpkg installed, the build process will automatically download vcpkg into a temporary directory and fetch the required dependencies.
 
@@ -67,26 +60,19 @@ If you do not have vcpkg installed, the build process will automatically downloa
    
    .. tab-set::
 
-      .. tab-item:: Cmd
-         :sync: cmd
-
-         .. code-block:: batch
-
-            > set NO_USE_VPKG
-      
-      .. tab-item:: Powershell
-         :sync: powershell
-
-         .. code-block:: powershell
-
-            > $NO_USE_VPKG=$null
-
       .. tab-item:: Bash
          :sync: bash
 
          .. code-block:: bash
 
             $ export NO_USE_VPKG
+      
+      .. tab-item:: Powershell
+         :sync: powershell
+
+         .. code-block:: powershell
+
+            > $Env:NO_USE_VPKG = $null
 
 Build the package wheel using ``pip wheel`` and install the compiled binary.
 

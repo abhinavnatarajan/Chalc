@@ -1,0 +1,46 @@
+﻿plotting
+========
+
+Overview
+--------
+
+.. automodule:: chalc.plotting
+
+
+   
+   
+   
+
+   
+   
+   Functions
+   ^^^^^^^^^^^^^^^^^^^^
+
+   .. autosummary::
+      :nosignatures:
+   
+      animate_filtration
+      plot_sixpack
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+Details
+-------
+.. currentmodule:: chalc.plotting
+
+
+.. autofunction:: animate_filtration
+.. autofunction:: plot_sixpack

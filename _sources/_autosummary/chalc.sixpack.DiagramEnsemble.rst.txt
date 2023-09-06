@@ -1,0 +1,56 @@
+DiagramEnsemble
+===============
+
+.. currentmodule:: chalc.sixpack
+
+Overview
+--------
+
+.. autoclass:: DiagramEnsemble
+
+   
+
+   
+   Methods
+   ^^^^^^^^^^^^^^^^^^
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~DiagramEnsemble.__init__
+   
+   
+
+   
+   
+   
+
+   
+   
+   Attributes
+   ^^^^^^^^^^^^^^^^^^^^^
+
+   
+   .. autoattribute:: DiagramEnsemble.ker
+   .. autoattribute:: DiagramEnsemble.cok
+   .. autoattribute:: DiagramEnsemble.dom
+   .. autoattribute:: DiagramEnsemble.cod
+   .. autoattribute:: DiagramEnsemble.im
+   .. autoattribute:: DiagramEnsemble.rel
+   .. autoattribute:: DiagramEnsemble.entrance_times
+   .. autoattribute:: DiagramEnsemble.dimensions
+   
+   
+
+   
+   
+   
+
+
+Details
+-------
+.. class:: DiagramEnsemble
+   :noindex:
+   
+   
+   .. automethod:: DiagramEnsemble.__init__

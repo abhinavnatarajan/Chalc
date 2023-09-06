@@ -19,10 +19,10 @@ Overview
    .. autosummary::
       :nosignatures:
    
-      chromatic_alpha_complex
-      chromatic_delcech_complex
-      chromatic_delrips_complex
-      delaunay_complex
+      alpha
+      delaunay
+      delcech
+      delrips
    
    
 
@@ -44,7 +44,7 @@ Details
 .. currentmodule:: chalc.chromatic
 
 
-.. autofunction:: chromatic_alpha_complex
-.. autofunction:: chromatic_delcech_complex
-.. autofunction:: chromatic_delrips_complex
-.. autofunction:: delaunay_complex
+.. autofunction:: alpha
+.. autofunction:: delaunay
+.. autofunction:: delcech
+.. autofunction:: delrips

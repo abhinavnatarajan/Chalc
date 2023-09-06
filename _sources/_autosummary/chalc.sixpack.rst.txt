@@ -1,0 +1,59 @@
+﻿sixpack
+=======
+
+Overview
+--------
+
+.. automodule:: chalc.sixpack
+
+
+   
+   
+   
+
+   
+   
+   Functions
+   ^^^^^^^^^^^^^^^^^^^^
+
+   .. autosummary::
+      :nosignatures:
+   
+      compute
+      load_diagrams
+      save_diagrams
+   
+   
+
+   
+   
+   Classes
+   ^^^^^^^^^^^^^^^^^^
+
+   .. autosummary::
+      :toctree:
+      :nosignatures:
+      :recursive:
+   
+      Diagram
+      DiagramEnsemble
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+Details
+-------
+.. currentmodule:: chalc.sixpack
+
+
+.. autofunction:: compute
+.. autofunction:: load_diagrams
+.. autofunction:: save_diagrams
