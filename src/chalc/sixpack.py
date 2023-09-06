@@ -1,12 +1,15 @@
 from __future__ import annotations
 
-from .. import chromatic
-from ._types import DiagramEnsemble, Diagram
+__doc__ = "Module with routines for computing and visualising six-packs of persistence diagrams."
+
+from . import chromatic
 import numpy as np
-import numpy
 from collections import defaultdict
 from phimaker import compute_ensemble
 import typing, re
+from dataclasses import dataclass, fields, field
+from numbers import Real
+import h5py
 
 _ChromaticMethod = defaultdict(lambda : "chromatic alpha", 
                                {
@@ -16,7 +19,7 @@ _ChromaticMethod = defaultdict(lambda : "chromatic alpha",
                                }
 )
 
-def format_docstring(func):
+def _format_docstring(func):
     docstring = func.__doc__.replace('{', '{{').replace('}', '}}')
     docstring = re.sub(r'\${{([^{}]*)}}', r'{\1}', docstring)
     func.__doc__ = eval('f"""' + docstring + '"""')
@@ -31,7 +34,7 @@ def _get_boundary_matrix(x : numpy.ndarray[numpy.float64[m, n]],
                         max_dgm_dim : int = 2) -> tuple[numpy.ndarray[numpy.float64[m, n]], list[float], list[int]] :
     if dom is not None and k is None:
         # new colours: 1 -> domain, 0 -> codomain
-        colours = np.isin(colours, dom).astype(np.int64)
+        new_colours = np.isin(colours, dom).astype(np.int64)
         def check_in_domain(bitmask : int) -> bool:
             return bitmask == 2 # bitmask == 2 means colour 1
         
@@ -44,7 +47,7 @@ def _get_boundary_matrix(x : numpy.ndarray[numpy.float64[m, n]],
 
     # Compute chromatic complex
     if method in _ChromaticMethod.keys():
-        K = _ChromaticMethod[method](x, colours)
+        K = _ChromaticMethod[method](x, new_colours)
     else:
         raise RuntimeError(f"method must be one of {_ChromaticMethod.keys()}")
 
@@ -55,7 +58,7 @@ def _get_boundary_matrix(x : numpy.ndarray[numpy.float64[m, n]],
     for column in K.serialised():
         facet_idxs = column[0]
         dimension = max(0, len(facet_idxs) - 1)
-        # Only need 2-skeleton
+        # Only need k-skeleton for k <= max_dgm_dim + 1
         if dimension > max_dgm_dim + 1:
             break
         dimensions.append(dimension)
@@ -73,7 +76,7 @@ def _num_colours_in_bitmask(n : int) -> int :
         n >>= 1
     return sum
 
-@format_docstring
+@_format_docstring
 def compute(x : numpy.ndarray[numpy.float64[m, n]], 
             colours : list[int], 
             *, # rest are keyword only
@@ -137,12 +140,98 @@ def compute(x : numpy.ndarray[numpy.float64[m, n]],
         max_dgm_dim=max_dgm_dim)
     d =  compute_ensemble(matrix)
     dgms = DiagramEnsemble(
-        Diagram(d.ker), 
-        Diagram(d.cok), 
-        Diagram(d.f), 
-        Diagram(d.g), 
-        Diagram(d.im), 
-        Diagram(d.rel), 
+        Diagram._fromPhimaker(d.ker), 
+        Diagram._fromPhimaker(d.cok), 
+        Diagram._fromPhimaker(d.f), 
+        Diagram._fromPhimaker(d.g), 
+        Diagram._fromPhimaker(d.im), 
+        Diagram._fromPhimaker(d.rel), 
         entrance_times, 
         dimensions)
+    return dgms
+
+
+@dataclass
+class Diagram:
+    """ 
+    Persistence diagram object, represented by a 
+    set of simplex pairings and a set of unpaired simplices.
+    """
+    #: Set of tuples of indices of paired simplices. 
+    paired: set[tuple[int, int]] = field(default_factory=lambda:{})
+    #: Set of indices of unpaired simplices.
+    unpaired: set[int] = field(default_factory=lambda:{})
+
+    @classmethod
+    def _fromPhimaker(cls, obj):
+        return cls(obj.paired, obj.unpaired)
+    
+    @classmethod
+    def _from_matrices(cls, p, u):
+        paired = set((p[i, 0], p[i, 1]) for i in range(p.shape[0]))
+        unpaired = set(u)
+        return cls(paired, unpaired)
+
+    def paired_as_matrix(self):
+        return np.concatenate(
+            list(self.paired)).reshape((len(self.paired), 2))
+    
+
+
+@dataclass
+class DiagramEnsemble:
+    """
+    Six pack of persistence diagrams.
+    """
+    #: Kernel
+    ker: Diagram = field(default_factory = lambda : Diagram())
+    #: Cokernel
+    cok: Diagram = field(default_factory = lambda : Diagram())
+    #: Domain
+    dom: Diagram = field(default_factory = lambda : Diagram())
+    #: Codomain
+    cod: Diagram = field(default_factory = lambda : Diagram())
+    #: Image
+    im: Diagram = field(default_factory = lambda : Diagram())
+    #: Relative
+    rel: Diagram = field(default_factory = lambda : Diagram())
+    #: Entrance times of the simplices
+    entrance_times : list[Real] = field(default_factory = lambda : [])
+    #: Dimensions of the simplices
+    dimensions: list[int] = field(default_factory = lambda : [])
+
+def save_diagrams(dgms : DiagramEnsemble, file : h5py.Group) -> None :
+    """
+    Save a six-pack of persistence diagrams to a HDF5 file or group.
+
+    Parameters
+    ----------
+    dgms :
+        6-pack of diagrams to save to file/group.
+    file :
+        A h5py file or group.
+    """
+    file.create_dataset(
+        'entrance_times', data=np.array(dgms.entrance_times))
+    file.create_dataset(
+        'dimensions', data=np.array(dgms.dimensions))
+    dgm_types = (f.name for f in fields(dgms) if f.name not in ['entrance_times', 'dimensions'])
+    for dgm in dgm_types:
+        grp = file.create_group(dgm)
+        grp.create_dataset('paired', data = getattr(dgms, dgm).paired_as_matrix())
+        grp.create_dataset('unpaired', data = np.array(list(getattr(dgms, dgm).unpaired)))
+
+def load_diagrams(file : h5py.Group) -> DiagramEnsemble :
+    """
+    Load a six-pack of persistence diagrams from a HDF5 file or group.
+    """
+    dgms = DiagramEnsemble()
+    dgms.entrance_times = list(file['entrance_times'])
+    dgms.dimensions = list(file['dimensions'])
+    dgm_types = (f.name for f in fields(DiagramEnsemble) 
+                 if f.name not in ['entrance_times', 'dimensions'])
+    for dgm in dgm_types:
+        grp = file[dgm]
+        setattr(dgms, dgm, Diagram._from_matrices(grp['paired'], grp['unpaired']))
+        
     return dgms

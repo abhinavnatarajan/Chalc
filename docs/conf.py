@@ -75,13 +75,14 @@ autodoc_typehints = 'description'
 autodoc_typehints_description_target = "documented_params"
 
 #autosummary options
-autosummary_imported_members = True
+# autosummary_imported_members = True
 # autosummary_ignore_module_all = False
 
 # intersphinx options
 intersphinx_mapping = { 
     'python' : ('https://docs.python.org/3/', None),
-    'numpy' : ('https://numpy.org/doc/stable', None)}
+    'numpy' : ('https://numpy.org/doc/stable', None),
+    'matplotlib' : ('https://matplotlib.org/stable', None)}
 
 # toolbox.github options
 github_username = 'abhinavnatarajan'

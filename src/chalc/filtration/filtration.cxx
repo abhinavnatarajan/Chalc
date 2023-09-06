@@ -32,20 +32,26 @@
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
 #include "filtration.h"
 #include <stdexcept>
 #include <algorithm>
 #include <cassert>
 
-namespace {
+namespace
+{
     using namespace chalc::stl;
-    using std::sort, std::stable_sort, 
-    std::min, std::max, 
-    std::move,
-    std::fill, 
-    std::adjacent_find, std::prev_permutation,
-    std::invalid_argument;
+    using 
+        std::sort,
+        std::stable_sort,
+        std::min,
+        std::max,
+        std::move,
+        std::fill,
+        std::adjacent_find,
+        std::prev_permutation,
+        std::invalid_argument,
+        std::runtime_error,
+        std::bad_weak_ptr;
 }
 
 namespace chalc
@@ -79,13 +85,37 @@ namespace chalc
         }
     };
 
-    FilteredComplex::Simplex::Simplex(index_t label, index_t max_vertex, index_t dim, colours_t colours,
-                                      value_t value, const vector<shared_ptr<Simplex>> &facets) : label(label),
-                                                                                                  max_vertex(max_vertex),
-                                                                                                  dim(dim),
-                                                                                                  value(value),
-                                                                                                  colours(colours),
-                                                                                                  facets(facets) {}
+    shared_ptr<FilteredComplex::Simplex> FilteredComplex::Simplex::make_Simplex(
+        index_t label,
+        index_t max_vertex,
+        value_t value,
+        const vector<shared_ptr<Simplex>> &facets)
+    {
+        auto self = shared_ptr<Simplex>(new Simplex(label, max_vertex, value, facets));
+        for (auto &f : self->facets)
+        {
+            f->cofacets.push_back(self->get_handle());
+            self->add_colours(f->colours);
+        }
+        return self;
+    }
+
+    FilteredComplex::Simplex::Simplex(
+        index_t label,
+        index_t max_vertex,
+        value_t value,
+        const vector<shared_ptr<Simplex>> &facets) : label(label),
+                                                     max_vertex(max_vertex),
+                                                     dim(facets.size() == 0 ? 0 : facets.size() - 1),
+                                                     value(value),
+                                                     facets(facets)
+    {
+    }
+
+    shared_ptr<FilteredComplex::Simplex> FilteredComplex::Simplex::get_handle()
+    {
+        return shared_from_this();
+    }
 
     vector<index_t> FilteredComplex::Simplex::get_vertex_labels() const
     {
@@ -97,7 +127,7 @@ namespace chalc
     template <typename OutputIterator>
     void FilteredComplex::Simplex::get_vertex_labels(OutputIterator &&buf) const
     {
-        if (dim != 0)
+        if (dim > 0)
         {
             // vertices of a simplex are the vertices of its last face along with its last vertex
             facets.back()->get_vertex_labels(buf);
@@ -120,22 +150,57 @@ namespace chalc
         return result;
     }
 
-    const vector<shared_ptr<FilteredComplex::Simplex>> &FilteredComplex::Simplex::get_facets() const
+    const vector<shared_ptr<FilteredComplex::Simplex>> &
+    FilteredComplex::Simplex::get_facets() const
     {
         return facets;
     }
 
-    void FilteredComplex::Simplex::set_colour(index_t c) 
+    const vector<weak_ptr<FilteredComplex::Simplex>> &
+    FilteredComplex::Simplex::get_cofacets() const
+    {
+        return cofacets;
+    }
+
+    inline void FilteredComplex::Simplex::add_colour(index_t c)
+    {
+        colours.set(c);
+    }
+
+    inline void FilteredComplex::Simplex::add_colours(colours_t c)
+    {
+        colours |= c;
+    }
+
+    inline void FilteredComplex::Simplex::set_colours(colours_t c)
+    {
+        colours.reset();
+        add_colours(c);
+    }
+
+    inline void FilteredComplex::Simplex::make_colourless()
+    {
+        colours.reset();
+    }
+
+    void FilteredComplex::Simplex::set_colour(index_t c)
     {
         colours.reset().set(c);
     }
 
-    FilteredComplex::FilteredComplex(const index_t num_vertices, const index_t max_dimension) : binomial(make_shared<BinomialCoeffTable>(num_vertices, max_dimension + 1)), // we want nCk for all 0 <= n <= num_vertices and 0 <= k <= max_num_verts_in_a_simplex = max_dim + 1
-                                                                                              simplices(max_dimension + 1),
-                                                                                              N(num_vertices),
-                                                                                              max_dim(max_dimension),
-                                                                                              num_simplices(num_vertices),
-                                                                                              cur_dim(0)
+    unsigned long long int FilteredComplex::Simplex::get_colours_as_int()
+    {
+        return colours.to_ullong();
+    }
+
+    FilteredComplex::FilteredComplex(
+        const index_t num_vertices,
+        const index_t max_dimension) : binomial(make_shared<BinomialCoeffTable>(num_vertices, max_dimension + 1)), // we want nCk for all 0 <= n <= num_vertices and 0 <= k <= max_num_verts_in_a_simplex = max_dim + 1
+                                       simplices(max_dimension + 1),
+                                       N(num_vertices),
+                                       max_dim(max_dimension),
+                                       num_simplices(num_vertices),
+                                       cur_dim(0)
     {
         if (max_dim < 0)
         {
@@ -151,7 +216,10 @@ namespace chalc
         }
         for (index_t i = 0; i < N; i++)
         {
-            simplices[0][i] = make_shared<Simplex>(i, i);
+            simplices[0][i] = Simplex::make_Simplex(i, i, 0.0);
+            // simplices are initialised with colours unset
+            // so we set them here
+            simplices[0][i]->set_colour(0);
         }
     }
 
@@ -231,23 +299,29 @@ namespace chalc
         return (_has_simplex(verts));
     }
 
-    shared_ptr<FilteredComplex::Simplex> FilteredComplex::_add_simplex(const vector<index_t> &verts, const value_t filt_value)
+    shared_ptr<FilteredComplex::Simplex>
+    FilteredComplex::_add_simplex(
+        const vector<index_t> &verts,
+        const value_t filt_value)
     {
         shared_ptr<Simplex> new_simplex;
         auto dim = verts.size() - 1;
         auto label = _get_label_from_vertex_labels(verts);
         auto search_simplex = simplices[dim].find(label);
         if (search_simplex != simplices[dim].end())
-        { // the simplex already exists
+        {
+            // the simplex already exists
             new_simplex = search_simplex->second;
-            new_simplex->value = min(filt_value, new_simplex->value);
+            new_simplex->value = min(
+                max(filt_value, static_cast<value_t>(0)),
+                new_simplex->value);
         }
         else
-        { // simplex does not exist so we need to add it
+        {
+            // simplex does not exist so we need to add it
             // first we recursively add faces of the simplex
             vector<shared_ptr<Simplex>> facets(dim + 1);
             vector<index_t> facet_verts(dim);
-            colours_t colours; // all bits are zero
             for (auto i = 0; i <= dim; i++)
             {
                 for (auto j = 0, k = 0; j < verts.size(); j++)
@@ -258,19 +332,19 @@ namespace chalc
                     k++;
                 }
                 facets[i] = _add_simplex(facet_verts, filt_value);
-                colours |= facets[i]->colours;
             }
             auto max_vertex = verts.back();
-            new_simplex = make_shared<Simplex>(label, max_vertex, dim,
-                                                    colours, filt_value, move(facets));
+            new_simplex = Simplex::make_Simplex(
+                label, max_vertex, filt_value, move(facets));
             simplices[dim][label] = new_simplex;
             num_simplices++;
         }
         return new_simplex;
     }
 
-    bool FilteredComplex::add_simplex(vector<index_t> &verts,
-                                      value_t filt_value = FilteredComplex::Simplex::DEFAULT_FILT_VALUE)
+    bool FilteredComplex::add_simplex(
+        vector<index_t> &verts,
+        value_t filt_value = FilteredComplex::Simplex::DEFAULT_FILT_VALUE)
     {
         check_vertex_sequence_is_valid(verts);
         if (_has_simplex(verts))
@@ -286,55 +360,69 @@ namespace chalc
         }
     }
 
-    void FilteredComplex::propagate_filt_values_up(const index_t start_dim) const
+    void FilteredComplex::propagate_filt_values_up(const index_t start_dim)
     {
         auto p = start_dim + 1;
         while (p <= cur_dim)
         {
-            value_t tmp;
+            value_t max_facet_filt_value;
             // iterate over the p-simplices
             for (auto &[label, simplex] : simplices[p])
             {
-                tmp = -1;
+                max_facet_filt_value = simplex->get_facets()[0]->value;
                 // iterate over faces of simplex and get the maximum filtration value
                 for (const auto &facet : simplex->get_facets())
                 {
-                    tmp = max(tmp, facet->value);
+                    max_facet_filt_value = max(max_facet_filt_value, facet->value);
                 }
-                simplex->value = tmp;
+                simplex->value = max_facet_filt_value;
             }
             p++;
         }
     }
 
-    void FilteredComplex::propagate_filt_values_down(const index_t start_dim) const
+    void FilteredComplex::propagate_filt_values_down(const index_t start_dim)
     {
-        auto p = start_dim;
+        int p = static_cast<int>(start_dim) - 1;
         while (p >= 1)
         {
             // iterate over the p-simplices
-            for (const auto &[label, simplex] : simplices[p - 1])
+            for (const auto &[label, simplex] : simplices[p])
             {
-                // iterate over faces of simplex and modify the filtration value if needed
-                for (auto &facet : simplex->get_facets())
+                // iterate over cofacets of simplex and
+                // modify the filtration value of simplex if needed
+                auto& cofacets = simplex->get_cofacets();
+                if (cofacets.size() == 0)
                 {
-                    facet->value = max(simplex->value, facet->value);
+                    continue;
+                }
+                try
+                {
+                    simplex->value = cofacets[0].lock()->value;
+                    for (auto &cofacet : cofacets)
+                    {
+                        simplex->value = min(simplex->value, cofacet.lock()->value);
+                    }
+                }
+                catch (const bad_weak_ptr &e)
+                {
+                    throw runtime_error("Tried to dereference expired cofacet handle.");
                 }
             }
             p--;
         }
     }
 
-    void FilteredComplex::propagate_colours() const
+    void FilteredComplex::propagate_colours()
     {
         for (index_t d = 1; d <= cur_dim; d++)
         {
             for (auto &[idx, s] : simplices[d])
             {
-                s->colours.reset();
+                s->make_colourless();
                 for (auto &f : s->get_facets())
                 {
-                    s->colours |= f->colours;
+                    s->add_colours(f->colours);
                 }
             }
         }
@@ -363,12 +451,6 @@ namespace chalc
 
     index_t FilteredComplex::size() const noexcept { return num_simplices; }
 
-    index_t FilteredComplex::size_in_dim(const index_t dim) const
-    {
-        check_dimension_is_valid(dim);
-        return simplices[dim].size();
-    }
-
     index_t FilteredComplex::dimension() const noexcept
     {
         return cur_dim;
@@ -379,9 +461,18 @@ namespace chalc
         return cur_max_filt_value;
     }
 
-    vector<tuple<vector<index_t>, index_t, value_t, unsigned long>> FilteredComplex::serialised() const
+    vector<
+        tuple<
+            vector<index_t>, index_t, value_t, unsigned long long int>>
+    FilteredComplex::serialised() const
     {
-        vector<tuple<vector<index_t>, index_t, value_t, unsigned long>> result(num_simplices);
+        vector<
+            tuple<
+                vector<index_t>,
+                index_t,
+                value_t,
+                unsigned long long int>>
+            result(num_simplices);
         vector<map<index_t, index_t>> indices(cur_dim + 1);
         for (index_t d = 0, i = 0; d <= cur_dim; d++)
         {
@@ -393,22 +484,28 @@ namespace chalc
                 sort_by_val.push_back(s.second);
             }
             stable_sort(sort_by_val.begin(), sort_by_val.end(),
-                             [](const shared_ptr<Simplex> &s1, const shared_ptr<Simplex> &s2)
-                             {
-                                 return (s1->value < s2->value);
-                             });
+                        [](const shared_ptr<Simplex> &s1, const shared_ptr<Simplex> &s2)
+                        {
+                            return (s1->value < s2->value);
+                        });
             // iterate over the sorted simplices
             for (auto &simplex : sort_by_val)
             {
                 // replace the labels of the faces with their corresponding indices in our result
-                vector<index_t> faces = simplex->get_facet_labels(); // empty if simplex is a vertex
+                // faces is empty if simplex is a vertex
+                vector<index_t> faces = simplex->get_facet_labels();
                 for (auto &f : faces)
                 {
                     f = indices[d - 1][f];
                 }
                 indices[d][simplex->label] = i;
                 sort(faces.begin(), faces.end());
-                result[i++] = tuple{faces, simplex->label, simplex->value, simplex->colours.to_ulong()};
+                result[i++] =
+                    tuple{
+                        faces,
+                        simplex->label,
+                        simplex->value,
+                        simplex->get_colours_as_int()};
             }
         }
         return result;

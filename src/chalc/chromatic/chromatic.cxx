@@ -35,23 +35,27 @@
 #include "chromatic.h"
 /*
 DO NOT MOVE THE NEXT INCLUDE.
-ConstrainedMiniball.h includes (by proxy) mpreal.h
-mpreal.h defines a macro MPFR_USE_NO_MACRO before including
-mpfr.h, without which there are compilation issues. Therefore
-mpreal.h must be included BEFORE any CGAL headers, which also
-include mpfr.h.
+mpreal must be included before CGAL due to
+preprocessor macro clashes
 */
+#include "../../mpreal/mpreal.h"
+#include <unsupported/Eigen/MPRealSupport>
 #include "../../ConstrainedMiniball/ConstrainedMiniball.h"
 #include <CGAL/Epick_d.h>
 #include <CGAL/Dimension.h>
 #include <CGAL/Delaunay_triangulation.h>
 #include <CGAL/Triangulation.h>
+#include <stdexcept>
 
 namespace
 {
-    using chalc::index_t;
     using namespace chalc::stl;
-    using Eigen::lastN, Eigen::all;
+    using chalc::index_t,
+        Eigen::lastN,
+        Eigen::all,
+        std::min,
+        std::runtime_error,
+        std::bad_weak_ptr;
     using Kernel_d = CGAL::Epick_d<CGAL::Dynamic_dimension_tag>;
     using Triangulation_data_structure = CGAL::Triangulation_data_structure<Kernel_d::Dimension,
                                                                             CGAL::Triangulation_vertex<Kernel_d, size_t>,
@@ -64,6 +68,12 @@ namespace
 
     template <class Real_t>
     using RealMatrix = Eigen::Matrix<Real_t, Eigen::Dynamic, Eigen::Dynamic>;
+
+    template <class Derived>
+    concept MatrixXpr = requires { typename Eigen::MatrixBase<Derived>; };
+
+    template <class Derived, class Real_t>
+    concept RealMatrixXpr = MatrixXpr<Derived> && std::same_as<typename Derived::Scalar, Real_t>;
 
     // Convert a collection of coordinate vectors to a vector of CGAL points
     vector<Point_d> coordvecs_to_points(const RealMatrix<double> &x_arr)
@@ -128,29 +138,58 @@ namespace
         return tuple{new_vec, m.size()};
     }
 
-    template <class Derived>
-    tuple<RealMatrix<typename Derived::Scalar>, RealVector<typename Derived::Scalar>> equidistant_subspace(const Eigen::MatrixBase<Derived> &X)
+    /*
+    Return the affine subspace of n points equidistant from a given
+    set of points in R^d. The points are input as columns of a (d, n)
+    matrix or matrix expression, and the subspace is returned as
+    a tuple (E, b), where
+        E is an (n - 1, d) matrix
+        b is a vector in R^(n-1)
+    such that
+        E * x = b
+    defines the desired subspace.
+
+    If (x_1, ..., x_n) are the points, then for any point x in the
+    desired subspace we have for all 1 < i <= n
+
+        |x_1 - x|^2 = |x_i - x|^2
+    --> |x_1|^2 + |x|^2 - 2<x_1, x> = |x_i|^2 + |x|^2 - 2<x_i, x>
+    --> 2<x_i - x_1, x> = |x_i|^2 - |x_1|^2
+
+    The last line is a linear constraint, so we add a row
+        x_i - x_1
+    to the matrix E, and we add a corresponding entry
+        0.5 * (|x_i|^2 - |x_1|^2)
+    to the vector b.
+    */
+    template <typename Real_t, RealMatrixXpr<Real_t> Derived>
+    tuple<
+        RealMatrix<Real_t>,
+        RealVector<Real_t>>
+    equidistant_subspace(const Eigen::MatrixBase<Derived> &X)
     {
-        int n = X.cols();
-        typedef typename Derived::Scalar Real_t;
-        RealMatrix<Real_t> E(n - 1, X.rows());
+        int n = X.cols(); // number of points
+        int d = X.rows(); // dimension of ambient space
+        RealMatrix<Real_t> E(n - 1, d);
         RealVector<Real_t> b(n - 1);
         if (n > 1)
         {
-            b = (X.rightCols(n - 1).colwise().squaredNorm().array() - X.col(0).squaredNorm()).transpose();
+            b = 0.5 * (X.rightCols(n - 1).colwise().squaredNorm().array() - X.col(0).squaredNorm()).transpose();
             E = (X.rightCols(n - 1).colwise() - X.col(0)).transpose();
         }
-        return tuple{E, b};
+        return tuple{E.eval(), b.eval()};
     }
 
-    // Stratify a coloured point set
-    // Points are provided as columns of a matrix
-    // Colours are provided as a vector
+    /*
+    Stratify a coloured point set.
+    Points are provided as columns of a matrix or matrix expression.
+    Colours are provided as a vector.
+    */
     RealMatrix<double> stratify(const RealMatrix<double> &points, const vector<index_t> &colours, index_t num_colours)
     {
         index_t dim = points.rows();
         vector<index_t> new_colours;
-        // make sure colours are contiguous and start at zero
+        // Make sure colours are contiguous and start at zero
         if (num_colours == -1)
         {
             tie(new_colours, num_colours) = canonicalise(colours);
@@ -177,7 +216,7 @@ namespace
     }
 }
 
-namespace chalc::chromatic 
+namespace chalc::chromatic
 {
 
     // Create a Delaunay triangulation from a collection of coordinate vectors
@@ -206,13 +245,13 @@ namespace chalc::chromatic
             // iterate over the top dimensional cells and add them to the filtration
             vector<index_t> max_cell_vertex_labels(dim + 1);
             for (auto cell_it = delX.finite_full_cells_begin();
-                    cell_it != delX.finite_full_cells_end();
-                    cell_it++)
+                 cell_it != delX.finite_full_cells_end();
+                 cell_it++)
             {
                 // iterate over the vertices of the cell and get their labels
                 for (auto [label_it, vert_it] = tuple{max_cell_vertex_labels.begin(), cell_it->vertices_begin()};
-                        vert_it != cell_it->vertices_end();
-                        label_it++, vert_it++)
+                     vert_it != cell_it->vertices_end();
+                     label_it++, vert_it++)
                 {
                     *label_it = (*vert_it)->data();
                 }
@@ -228,11 +267,13 @@ namespace chalc::chromatic
         const vector<index_t> &colours)
     {
         auto [new_colours, num_colours] = canonicalise(colours);
-        if (num_colours > MAX_NUM_COLOURS) {
+        if (num_colours > MAX_NUM_COLOURS)
+        {
             throw std::domain_error("Too many colours. Number of colours must be <= " +
-                std::to_string(num_colours));
+                                    std::to_string(num_colours));
         }
-        if (colours.size() != points.cols()) {
+        if (colours.size() != points.cols())
+        {
             throw std::domain_error("len(colours) must equal number of points.");
         }
         RealMatrix<double> stratified_points = stratify(points, new_colours, num_colours);
@@ -244,7 +285,7 @@ namespace chalc::chromatic
         }
         delX.propagate_colours();
         // modify the filtration values
-        if (delX.max_dim >= 1)
+        if (delX.dimension() >= 1)
         {
             for (auto &[idx, edge] : delX.get_simplices()[1])
             {
@@ -262,82 +303,158 @@ namespace chalc::chromatic
         const vector<index_t> &colours,
         std::ostream &ostream)
     {
-        typedef double Real_t;
-        auto tol = Eigen::NumTraits<double>::dummy_precision();
+        // input checks
         auto [new_colours, num_colours] = canonicalise(colours);
         if (num_colours > MAX_NUM_COLOURS)
         {
             throw std::domain_error("Too many colours. Number of colours must be <= " +
-                std::to_string(num_colours));
+                                    std::to_string(num_colours));
         }
-        if (colours.size() != points.cols()) {
+        if (colours.size() != points.cols())
+        {
             throw std::domain_error("len(colours) must equal number of points.");
         }
+
+        // Start
+        // Stratify the points by colour
         RealMatrix<double> stratified_points = stratify(points, new_colours, num_colours);
+        // Get the delaunay triangulation
         auto delX = delaunay(stratified_points);
-        // modify the colours of the vertices
+        // Modify the colours of the vertices and simplices
         for (auto &[idx, vert] : delX.get_simplices()[0])
         {
             vert->set_colour(new_colours[idx]);
         }
         delX.propagate_colours();
-        // sort the points by colour
+
+        // Partition the vertices by colour
+        // We will need this later to check if stacks are empty
         map<index_t, vector<index_t>> verts_by_colour;
         for (index_t i = 0; i < points.cols(); i++)
         {
             verts_by_colour[new_colours[i]].push_back(i);
         }
-        // modify the filtration values
-        bool numerical_issues = false;
-        if (delX.max_dim >= 1)
+
+        if (delX.dimension() >= 1)
         {
-            for (int p = delX.max_dim; p >= 1; p--)
+            // Now comes the hard bit
+            // Modify the filtration values
+            // We will use an arbitrary precision scalar type
+            // for the geometric computation
+            using mpfr::mpreal;
+            mpreal::set_default_prec(mpfr::digits2bits(25));
+            RealMatrix<mpreal> X = points.template cast<mpreal>();
+
+            bool numerical_instability = false; // flag to check numerical instability
+
+            // Start at the maximum dimension
+            for (int p = delX.dimension(); p >= 1; p--)
             {
+                // Iterate over p-simplices
                 for (auto &[idx, simplex] : delX.get_simplices()[p])
                 {
                     auto verts = simplex->get_vertex_labels();
+
+                    // Partition the vertices of this simplex by colour
                     map<index_t, vector<index_t>> verts_by_colour_in_simplex;
-                    RealMatrix<Real_t> E(0, points.rows());
-                    RealVector<Real_t> b;
                     for (auto v : verts)
                     {
                         verts_by_colour_in_simplex[new_colours[v]].push_back(v);
                     }
+
+                    /*
+                    For each colour j in the simplex, find the affine subspace
+                    of points equidistant to the vertices of colour j in the simplex.
+                    Suppose this subspace is E_j and is defined by a matrix equation:
+                        E_j * x = b_j
+                    We append E_j and b_j to the bottom of a matrix E and a vector b.
+                    Then the solution set E of the matrix equation
+                        E * x = b
+                    is the intersection over all j of the affine subspaces E_j
+                    */
+                    RealMatrix<mpreal> E(0, X.rows());
+                    RealVector<mpreal> b;
                     for (auto &[j, verts_j] : verts_by_colour_in_simplex)
                     {
                         index_t num_new_rows = verts_j.size() - 1;
                         E.conservativeResize(E.rows() + num_new_rows, Eigen::NoChange);
                         b.conservativeResize(b.rows() + num_new_rows);
-                        RealMatrix<Real_t>::BlockXpr E_new_rows = E.bottomRows(num_new_rows);
-                        Eigen::VectorBlock<RealVector<Real_t>> b_new_rows = b(lastN(num_new_rows));
-                        tie(E_new_rows, b_new_rows) = equidistant_subspace(points(all, verts_j));
+                        RealMatrix<mpreal>::BlockXpr E_new_rows = E.bottomRows(num_new_rows);
+                        Eigen::VectorBlock<RealVector<mpreal>> b_new_rows = b(lastN(num_new_rows));
+                        tie(E_new_rows, b_new_rows) =
+                            equidistant_subspace<mpreal>(X(all, verts_j));
                     }
+
+                    /*
+                    Get the smallest bounding ball of the points
+                    in the simplex, with the added constraint that
+                    the centre x of the ball must satisfy the equation
+                        E * x = b
+                    i.e., it lies in the affine subspace E
+                    */
                     auto [centre, sqRadius, success] =
-                        cmb::constrained_miniball<double>(points.rows(), points(all, verts), E, b);
-                    numerical_issues |= !success;
-                    // check if the stack is empty
+                        cmb::constrained_miniball<mpreal>(
+                            X(all, verts), E, b);
+                    // Check if there were any numerical issues
+                    numerical_instability |= !success;
+
+                    // Check if the stack is empty
                     bool stack_is_empty = true;
                     for (auto &[j, verts_j] : verts_by_colour_in_simplex)
                     {
-                        // radius of sphere of colour j
-                        double rj =
-                            (points(all, verts_j).colwise() - centre).colwise().squaredNorm().minCoeff();
-                        double distance_to_nearest_point_of_colour_j =
-                            (points(all, verts_by_colour[j]).colwise() - centre).colwise().squaredNorm().minCoeff();
-                        stack_is_empty &= distance_to_nearest_point_of_colour_j - rj >= -tol;
+                        /*
+                        Compute the radius r_j of the sphere of colour j.
+                        Take all points of colour j in the simplex
+                        and find the minimum distance of any of those
+                        points from the centre of the bounding ball.
+                        Theoretically they should all be equal, but
+                        we have to account for floating point errors.
+                        We choose the radius this way to ensure that
+                        if any j-coloured point from the dataset lies
+                        in the sphere of radius r_j, then it is closer
+                        to the centre than every  j-coloured point in the
+                        simplex. In this case there is a high chance that
+                        the stack is not empty.
+                        */
+                        mpreal rj_squared =
+                            (X(all, verts_j).colwise() - centre)
+                                .colwise()
+                                .squaredNorm()
+                                .minCoeff();
+                        mpreal squared_dist_to_nearest_pt_of_colour_j =
+                            (X(all, verts_by_colour[j]).colwise() - centre).colwise().squaredNorm().minCoeff();
+
+                        stack_is_empty &=
+                            (squared_dist_to_nearest_pt_of_colour_j >= rj_squared);
                     }
+                    // If the stack is empty, assign the filtration value
                     if (stack_is_empty)
                     {
-                        simplex->value = sqrt(sqRadius);
+                        simplex->value = static_cast<double>(sqrt(sqRadius));
+                        // We need to take into account floating point issues
+                        // so we make sure that we satisfy the filtration property
+                        try
+                        {
+                            for (auto &cofacet : simplex->get_cofacets())
+                            {
+                                simplex->value = min(simplex->value, cofacet.lock()->value);
+                            }
+                        }
+                        catch (bad_weak_ptr &e)
+                        {
+                            throw runtime_error("Tried to dereference expired cofacet handle.");
+                        }
                     }
                 }
+                // Propagate filtration values down
                 delX.propagate_filt_values(p, false);
             }
-        }
-        if (numerical_issues)
-        {
-            ostream << "Warning: encountered numerical problems. \
-                        Filtration values may be inaccurate." << std::endl;
+            if (numerical_instability)
+            {
+                ostream << "Warning: encountered numerical problems. \
+                            Filtration values may be inaccurate."
+                        << std::endl;
+            }
         }
         return delX;
     }
@@ -349,9 +466,10 @@ namespace chalc::chromatic
         if (num_colours > MAX_NUM_COLOURS)
         {
             throw std::domain_error("Too many colours. Number of colours must be <= " +
-                std::to_string(num_colours));
+                                    std::to_string(num_colours));
         }
-        if (colours.size() != points.cols()) {
+        if (colours.size() != points.cols())
+        {
             throw std::domain_error("len(colours) must equal number of points.");
         }
         RealMatrix<double> stratified_points = stratify(points, colours, num_colours);
@@ -363,25 +481,44 @@ namespace chalc::chromatic
         }
         delX.propagate_colours();
         // modify the filtration values
-        bool numerical_issues = false;
-        if (delX.max_dim >= 1)
+        bool numerical_instability = false;
+        if (delX.dimension() >= 1)
         {
-            for (int p = delX.max_dim; p >= 1; p--)
+            for (int p = delX.dimension(); p >= 1; p--)
             {
                 for (auto &[idx, simplex] : delX.get_simplices()[p])
                 {
                     auto verts = simplex->get_vertex_labels();
                     auto [centre, sqRadius, success] =
-                        cmb::miniball<double>(points.rows(), points(all, verts));
-                    numerical_issues |= !success;
+                        cmb::miniball<double>(points(all, verts));
+                    numerical_instability |= !success;
                     simplex->value = sqrt(sqRadius);
+                    auto cofacets = simplex->get_cofacets();
+                    if (cofacets.size() == 0)
+                    {
+                        continue;
+                    }
+                    try
+                    {
+                        for (auto &cofacet : simplex->get_cofacets())
+                        {
+                            simplex->value = min(simplex->value, cofacet.lock()->value);
+                        }
+                    }
+                    catch (bad_weak_ptr &e)
+                    {
+                        throw runtime_error("Tried to dereference expired cofacet handle.");
+                    }
                 }
+                // Propagate filtration values down
+                delX.propagate_filt_values(p, false);
             }
         }
-        if (numerical_issues)
+        if (numerical_instability)
         {
             ostream << "Warning: encountered numerical problems. \
-                        Filtration values may be inaccurate." << std::endl;
+                        Filtration values may be inaccurate."
+                    << std::endl;
         }
         return delX;
     }

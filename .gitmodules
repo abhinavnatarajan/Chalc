@@ -1,3 +1,6 @@
 [submodule "src/ConstrainedMiniball"]
 	path = src/ConstrainedMiniball
 	url = https://github.com/abhinavnatarajan/ConstrainedMiniball.git
+[submodule "src/mpreal"]
+	path = src/mpreal
+	url = https://github.com/advanpix/mpreal

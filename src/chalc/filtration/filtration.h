@@ -43,16 +43,12 @@
 namespace chalc
 {
     constexpr index_t MAX_NUM_COLOURS = 4;
-    struct colours_t : public std::bitset<MAX_NUM_COLOURS>
-    {
-        colours_t() : std::bitset<MAX_NUM_COLOURS>(1) {}
-    };
+    typedef std::bitset<MAX_NUM_COLOURS> colours_t;
 
     class BinomialCoeffTable;
 
     struct PYBIND11_EXPORT FilteredComplex
     {
-
         /* PUBLIC CLASSES OF FilteredComplex */
 
         struct Simplex;
@@ -84,7 +80,11 @@ namespace chalc
         void propagate_filt_values(const index_t start_dim, const bool upwards);
 
         // Returns a handle to the simplices
-        const std::vector<std::map<index_t, std::shared_ptr<Simplex>>> &get_simplices() const noexcept;
+        const std::vector<
+            std::map<
+                index_t,
+                std::shared_ptr<Simplex>>> &
+        get_simplices() const noexcept;
 
         // Returns the number of simplices in the complex
         index_t size() const noexcept;
@@ -99,22 +99,27 @@ namespace chalc
         value_t max_filt_value() const noexcept;
 
         // Returns a flat vectorised representation of the complex
-        std::vector<std::tuple<std::vector<index_t>, index_t, value_t, unsigned long>> serialised() const;
+        std::vector<
+            std::tuple<
+                std::vector<index_t>,
+                index_t, value_t,
+                unsigned long long int>>
+        serialised() const;
 
         // Returns the k-skeleton of the clique complex on n vertices
         static FilteredComplex clique_complex(const index_t n, const index_t k);
 
         // bitwise OR accumulates colours upwards from vertices
-        void propagate_colours() const;
+        void propagate_colours();
 
     private:
         /* PRIVATE MEMBERS OF FilteredComplex */
 
-        const std::shared_ptr<const BinomialCoeffTable> binomial;          // binomial coefficients
+        const std::shared_ptr<const BinomialCoeffTable> binomial;           // binomial coefficients
         std::vector<std::map<index_t, std::shared_ptr<Simplex>>> simplices; // std::vector whose kth element is a table of k-simplices, labelled by their lexicographic index
         index_t num_simplices;                                              // total number of simplices
         index_t cur_dim;                                                    // current maximum dimension of a maximal simplex
-        value_t cur_max_filt_value;                                        // current maximum filtration value
+        value_t cur_max_filt_value;                                         // current maximum filtration value
 
         /* PRIVATE METHODS OF FilteredComplex */
 
@@ -141,31 +146,37 @@ namespace chalc
 
         // min accumulate filtration values downwards from start_dim
         // Assumes that start_dim is valid
-        void propagate_filt_values_up(const index_t start_dim) const;
+        void propagate_filt_values_up(const index_t start_dim);
 
         // max accumulate filtration values upwards from start_dim
         // Assumes that start_dim is valid
-        void propagate_filt_values_down(const index_t start_dim) const;
+        void propagate_filt_values_down(const index_t start_dim);
     };
 
-    struct PYBIND11_EXPORT FilteredComplex::Simplex
+    struct PYBIND11_EXPORT FilteredComplex::Simplex : public std::enable_shared_from_this<FilteredComplex::Simplex>
     {
 
         /* PUBLIC MEMBERS OF Simplex */
 
-        value_t value;           // filtration value
         const index_t label;      // label for the simplex
         const index_t max_vertex; // largest vertex label
         const index_t dim;        // number of vertices - 1
-        colours_t colours;       // bitmask representing the colours of its vertices
+        value_t value;            // filtration value
+        colours_t colours;        // bitmask representing the colours of its vertices
         static constexpr value_t DEFAULT_FILT_VALUE = 0.0;
 
         /* PUBLIC METHODS OF Simplex */
+        // Factory method - only way to create new simplex
+        static std::shared_ptr<Simplex> make_Simplex(
+            index_t label,
+            index_t max_vertex,
+            value_t value = DEFAULT_FILT_VALUE,
+            const std::vector<std::shared_ptr<Simplex>> &facets =
+                std::vector<std::shared_ptr<Simplex>>{}
+        );
 
-        // Constructor
-        Simplex(index_t label, index_t max_vertex, index_t dim = 0,
-                colours_t colours = colours_t(), value_t value = DEFAULT_FILT_VALUE,
-                const std::vector<std::shared_ptr<Simplex>> &facets = std::vector<std::shared_ptr<Simplex>>{});
+        // Get a handle to this simplex
+        std::shared_ptr<Simplex> get_handle();
 
         // Return the sorted vertex labels of the simplex
         // Assumes that the simplex has valid faces
@@ -182,12 +193,33 @@ namespace chalc
         // Return a const reference to the facets
         const std::vector<std::shared_ptr<Simplex>> &get_facets() const;
 
-        void set_colour(index_t c);
+        // Return a const reference to the cofacets
+        const std::vector<std::weak_ptr<Simplex>> &get_cofacets() const;
+
+        void set_colour(index_t c); // not inline since we export this
+
+        unsigned long long int get_colours_as_int();
+
+        inline void set_colours(colours_t c);
+
+        inline void add_colour(index_t c);
+
+        inline void add_colours(colours_t c);
+
+        inline void make_colourless();
 
         /* PRIVATE MEMBERS OF Simplex */
     private:
         const std::vector<std::shared_ptr<Simplex>> facets; // pointers to the [i]th facets of the simplex
-        // std::vector<std::weak_ptr<Simplex>> cofacets; // pointers to the [i]th cofacets of the simplex
+        std::vector<std::weak_ptr<Simplex>> cofacets;       // pointers to the cofacets of the simplex
+        // Constructor
+        Simplex(
+            index_t label,
+            index_t max_vertex,
+            value_t value,
+            const std::vector<std::shared_ptr<Simplex>> &facets);
+        // Delete the default constructor
+        Simplex() = delete;
     };
 
     // The simplicial complex associated to the standard n-simplex.

@@ -20,7 +20,7 @@ if (NOT DEFINED ENV{NO_USE_VCPKG})
         include(FetchContent)
             FetchContent_Declare(vcpkg
                 GIT_REPOSITORY https://github.com/microsoft/vcpkg/
-                GIT_TAG VCPKG_COMMIT_ID
+                GIT_TAG ${VCPKG_COMMIT_ID}
             )
         FetchContent_MakeAvailable(vcpkg)
         message(STATUS "Downloading vcpkg -- done")
@@ -82,7 +82,7 @@ pybind11_add_module(
         src/chalc/chromatic/chromatic_py.cxx 
         src/chalc/chromatic/chromatic.cxx 
         src/chalc/filtration/filtration.cxx)
-target_include_directories(chromatic PRIVATE src/ConstrainedMiniball/mpreal)
+target_include_directories(chromatic PRIVATE src/mpreal)
 target_link_libraries(chromatic PRIVATE Eigen3::Eigen CGAL::CGAL CGAL::Eigen3_support)
 
 install(TARGETS filtration RUNTIME_DEPENDENCY_SET vcpkg_libs DESTINATION .)

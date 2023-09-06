@@ -55,21 +55,30 @@ PYBIND11_MODULE(filtration, m)
                 values reduced if necessary.                 
             )docstring",
             py::arg("vertices"), py::arg("filt_value"))
-        .def_property_readonly("num_simplices", &FilteredComplex::size,
+        .def_property_readonly("num_simplices", 
+        &FilteredComplex::size,
             R"docstring(
                 The total number of simplices in the complex.
             )docstring")
-        .def_property_readonly("dimension", &FilteredComplex::dimension,
+        .def_property_readonly("dimension", 
+        &FilteredComplex::dimension,
+            R"docstring(
+                Current maximum dimension of a maximal simplex in the complex.
+            )docstring")
+        .def_property_readonly("max_filtration_time", 
+        &FilteredComplex::max_filt_value,
             R"docstring(
                 Current maximum dimension of a maximal simplex in the complex.
             )docstring")
         .def_readonly("max_dimension", &FilteredComplex::max_dim,
             R"docstring(
-                Maximum dimension of simplex that this complex can store. Set during initialisation. 
+                Maximum dimension of simplex that this complex can store. \
+                Set during initialisation. 
             )docstring")
         .def_readonly("num_vertices", &FilteredComplex::N,
             R"docstring(
-                Number of vertices in the simplicial complex. Set during initialisation.
+                Number of vertices in the simplicial complex. \
+                Set during initialisation.
             )docstring")
         .def("propagate_filt_values", &FilteredComplex::propagate_filt_values,
             R"docstring(
@@ -83,7 +92,8 @@ PYBIND11_MODULE(filtration, m)
                 start_dim :
                     Dimension from which to start propagating (exclusive). 
                 upwards :
-                    If true then values are propagated upwards, downwards otherwise, defaults to true.
+                    If true then values are propagated upwards, downwards otherwise.
+                    , defaults to true.
             )docstring",
             py::arg("start_dim"), py::arg("upwards")=true)
         .def("has_simplex", static_cast<bool (FilteredComplex::*)(vector<index_t> &) const>(&FilteredComplex::has_simplex),
@@ -180,10 +190,7 @@ PYBIND11_MODULE(filtration, m)
             )docstring")
         .def_property_readonly(
             "colours",
-            [](const shared_ptr<FilteredComplex::Simplex> &s_ptr)
-            {
-                return s_ptr->colours.to_ulong();
-            },
+            &FilteredComplex::Simplex::get_colours_as_int,
             R"docstring(
                 Bitmask of colours in the simplex, where the rightmost \
                 bit represents the smallest colour index. More precisely, \
@@ -218,7 +225,7 @@ PYBIND11_MODULE(filtration, m)
                 ------
                 ValueError
                     If the simplex is not a vertex or if 
-                    `colour >=` :attr:`MAX_NUM_COLOURS <chalc.chromatic.MAX_NUM_COLOURS>`.
+                    `colour >=` :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>`.
                 
                 Tip
                 ---

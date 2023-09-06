@@ -14,3 +14,4 @@ API Reference
       chromatic
       filtration
       sixpack
+      plotting
