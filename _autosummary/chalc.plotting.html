@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="License" href="../license.html" /><link rel="prev" title="DiagramEnsemble" href="chalc.sixpack.DiagramEnsemble.html" />
 
     <!-- Generated with Sphinx 7.2.4 and Furo 2023.08.19 -->
-        <title>plotting - chalc 0.5.0 documentation</title>
+        <title>plotting - chalc 0.5.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">chalc 0.5.0 documentation</div></a>
+      <a href="../index.html"><div class="brand">chalc 0.5.2 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -148,7 +148,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">chalc 0.5.0 documentation</span>
+  <span class="sidebar-brand-text">chalc 0.5.2 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -159,6 +159,7 @@
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../theory.html">Theory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example.html">Example Usage</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../API.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="chalc.chromatic.html">chromatic</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="chalc.filtration.html">filtration</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of filtration</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -226,6 +227,7 @@
 <h1>plotting<a class="headerlink" href="#plotting" title="Link to this heading">#</a></h1>
 <section id="module-chalc.plotting">
 <span id="overview"></span><h2>Overview<a class="headerlink" href="#module-chalc.plotting" title="Link to this heading">#</a></h2>
+<p>Plotting and visualisation utilities.</p>
 <section id="functions">
 <h3>Functions<a class="headerlink" href="#functions" title="Link to this heading">#</a></h3>
 <div class="table-wrapper autosummary longtable docutils container">
@@ -246,19 +248,23 @@
 <h2>Details<a class="headerlink" href="#details" title="Link to this heading">#</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="chalc.plotting.animate_filtration">
-<span class="sig-name descname"><span class="pre">animate_filtration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filtration_times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.plotting.animate_filtration" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">animate_filtration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filtration_times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">animation_length</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.plotting.animate_filtration" title="Link to this definition">#</a></dt>
 <dd><p>Create animation of 2-skeleton of filtered simplicial complex.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>K</strong> (<a class="reference internal" href="chalc.filtration.FilteredComplex.html#chalc.filtration.FilteredComplex" title="chalc.filtration.FilteredComplex"><em>FilteredComplex</em></a>) – A filtered complex.</p></li>
 <li><p><strong>points</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.25)"><em>numpy.ndarray</em></a><em>[</em><em>numpy.float64</em><em>[</em><em>m</em><em>, </em><em>n</em><em>]</em><em>]</em>) – The vertices of <code class="docutils literal notranslate"><span class="pre">K</span></code> as a (2, N) numpy matrix.</p></li>
-<li><p><strong>filtration_times</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>]</em>) – List of filtration times for which to draw animation frames.</p></li>
-<li><p><strong>length</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – Total length of the animation in seconds.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.animation.FuncAnimation.html#matplotlib.animation.FuncAnimation" title="(in Matplotlib v3.7.2)">matplotlib.animation.FuncAnimation</a></p>
+<dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>filtration_times</strong> – List of filtration times for which to draw animation frames.</p></li>
+<li><p><strong>animation_length</strong> – Total length of the animation in seconds.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.animation.FuncAnimation.html#matplotlib.animation.FuncAnimation" title="(in Matplotlib v3.7.2)">matplotlib.animation.FuncAnimation</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -357,7 +363,7 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=1dd76d02"></script>
+</div><script src="../_static/documentation_options.js?v=8e576371"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
