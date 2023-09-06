@@ -2,6 +2,7 @@ name: Build and deploy docs
 on: 
   push:
     tags: ['**']
+    # run on all tags
 
 jobs:
   docs:

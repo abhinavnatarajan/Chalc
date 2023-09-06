@@ -5,8 +5,15 @@ on:
       - '**'
     paths-ignore:
       - 'docs'
+      - '.github/workflows/deploy.yml'
+      - '.github/workflows/docs.yml'
     tags-ignore:
       - '**'
+  # only run on branch push
+  # ignore tags
+  # ignore changes to docs
+  # ignore changes to CI files except for this one
+
 jobs:
   build_sdist:
     if: ${{ github.event_name == 'push' }}
