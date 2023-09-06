@@ -50,7 +50,7 @@ jobs:
           {
             echo 'vcpkg_json<<EOF'
             cat vcpkg.json
-            echo EOF
+            echo 'EOF'
           } >> "$GITHUB_ENV"
 
       - name: Setup vcpkg
