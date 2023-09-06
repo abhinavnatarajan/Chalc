@@ -202,7 +202,7 @@ def animate_filtration(
             if simplex.filtration_value <= time:
                 patches[idx].set_xy(points[:, simplex.vertices].T)
 
-    interval = int(np.round(len(filtration_times) / length))
+    interval = int(np.round(duration * 1000 / len(filtration_times)))
     return animation.FuncAnimation(
         fig=fig, func=update, 
         frames=filtration_times, 

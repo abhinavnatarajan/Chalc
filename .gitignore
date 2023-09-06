@@ -83,3 +83,4 @@ instructions_for_build.txt
 scratch_test/
 stubs/
 *.h5
+vcpkg_installed/
