@@ -47,6 +47,7 @@ jobs:
       - name: Get vcpkg commit ID from manifest
         shell: bash
         run: |
+          sed -i -e '$a\' vcpkg.json  
           {
             echo 'vcpkg_json<<EOF'
             cat vcpkg.json
