@@ -9,7 +9,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "chalc"
-version = "0.5.0"
+version = "0.5.1.post1"
 authors = [
     {name = "Abhinav Natarajana", email = "natarajan@maths.ox.ac.uk"},
     {name = "Thomas Chaplin", email = "tomrchaplin@gmail.com"}

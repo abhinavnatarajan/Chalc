@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-__doc__ = "Module with routines for computing and visualising six-packs of persistence diagrams."
+__doc__ = "Routines for computing six-packs of persistence diagrams."
 
 from . import chromatic
 import numpy as np

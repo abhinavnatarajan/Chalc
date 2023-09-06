@@ -13,6 +13,8 @@ plt.rcParams["animation.html"] = "jshtml"
 
 # __all__ = ['plot_sixpack', 'animate_filtration']
 
+__doc__ = 'Plotting and visualisation utilities.'
+
 def plot_sixpack(dgms : DiagramEnsemble,
                  truncation : Real, 
                  max_diagram_dim : int = 2) -> None :

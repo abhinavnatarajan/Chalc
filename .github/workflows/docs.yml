@@ -18,7 +18,8 @@ jobs:
           name: wheels
           workflow: build.yml
           workflow_conclusion: success
-          commit: ${{ github.sha }}
+          check_artifacts: true
+          branch: 'master'
           path: wheels
       - name: Setup python
         uses: actions/setup-python@v4
