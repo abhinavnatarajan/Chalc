@@ -66,8 +66,8 @@ __version__ = "${version}"
 archs = ["auto64"]
 
 [tool.cibuildwheel.config-settings]
-"cmake.verbose" = true
-"logging.level" = "DEBUG"
+cmake.verbose = true
+logging.level = "DEBUG"
 
 [tool.cibuildwheel.linux]
 environment-pass = ["CI"]
