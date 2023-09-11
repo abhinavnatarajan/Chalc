@@ -20,6 +20,7 @@ Overview
       :nosignatures:
    
       animate_filtration
+      draw_filtration
       plot_sixpack
    
    
@@ -43,4 +44,5 @@ Details
 
 
 .. autofunction:: animate_filtration
+.. autofunction:: draw_filtration
 .. autofunction:: plot_sixpack
