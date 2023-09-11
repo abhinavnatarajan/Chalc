@@ -29,7 +29,7 @@ jobs:
           cache: 'pip' # caching pip dependencies
       - name: Setup build environment
         run: |
-          sudo apt install pandoc
+          sudo apt-get install pandoc
           pip install -r ./docs/requirements.txt 
       - name: Install chalc from wheel
         run: |
@@ -49,8 +49,7 @@ jobs:
           pip install ${wheel} -U --force-reinstall
       - name: Build docs
         run : |
-          chmod +x build_docs.sh
-          ./build_docs.sh
+          bash build_docs.sh
       - name: Deploy to GH pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:

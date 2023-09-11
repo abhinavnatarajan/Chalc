@@ -84,3 +84,4 @@ scratch_test/
 stubs/
 *.h5
 vcpkg_installed/
+build_requirements.txt

@@ -46,6 +46,7 @@ preprocessor macro clashes
 #include <CGAL/Delaunay_triangulation.h>
 #include <CGAL/Triangulation.h>
 #include <stdexcept>
+#include <algorithm>
 
 namespace
 {
@@ -55,7 +56,9 @@ namespace
         Eigen::all,
         std::min,
         std::runtime_error,
-        std::bad_weak_ptr;
+        std::bad_weak_ptr,
+        std::sort,
+        std::unique;
     using Kernel_d = CGAL::Epick_d<CGAL::Dynamic_dimension_tag>;
     using Triangulation_data_structure = CGAL::Triangulation_data_structure<Kernel_d::Dimension,
                                                                             CGAL::Triangulation_vertex<Kernel_d, size_t>,
@@ -185,22 +188,13 @@ namespace
     Points are provided as columns of a matrix or matrix expression.
     Colours are provided as a vector.
     */
-    RealMatrix<double> stratify(const RealMatrix<double> &points, const vector<index_t> &colours, index_t num_colours)
+    RealMatrix<double> stratify(const RealMatrix<double> &points, const vector<index_t> &colours)
     {
         index_t dim = points.rows();
-        vector<index_t> new_colours;
         // Make sure colours are contiguous and start at zero
-        if (num_colours == -1)
-        {
-            tie(new_colours, num_colours) = canonicalise(colours);
-        }
-        else
-        {
-            new_colours = colours;
-        }
+        auto [new_colours, num_colours] = canonicalise(colours);
         RealMatrix<double> result(dim + num_colours - 1, points.cols());
         result.topRows(dim) = points;
-        // vector<index_t> new_colours(colours);
         if (num_colours != 1)
         {
             result.bottomRows(num_colours - 1).setZero();
@@ -214,6 +208,14 @@ namespace
         }
         return result;
     }
+
+    int num_unique(const vector<index_t> &vec) 
+    {
+        vector<index_t> temp(vec);
+        sort(temp.begin(), temp.end());
+        return unique(temp.begin(), temp.end()) - temp.begin();
+    }
+    
 }
 
 namespace chalc::chromatic
@@ -266,7 +268,8 @@ namespace chalc::chromatic
         const RealMatrix<double> &points,
         const vector<index_t> &colours)
     {
-        auto [new_colours, num_colours] = canonicalise(colours);
+        // input checks
+        int num_colours = num_unique(colours);
         if (num_colours > MAX_NUM_COLOURS)
         {
             throw std::domain_error("Too many colours. Number of colours must be <= " +
@@ -276,12 +279,15 @@ namespace chalc::chromatic
         {
             throw std::domain_error("len(colours) must equal number of points.");
         }
-        RealMatrix<double> stratified_points = stratify(points, new_colours, num_colours);
+
+        // Start
+        // Stratify the points by colour
+        RealMatrix<double> stratified_points = stratify(points, colours);
         auto delX = delaunay(stratified_points);
         // modify the colours of the vertices
         for (auto &[idx, vert] : delX.get_simplices()[0])
         {
-            vert->set_colour(new_colours[idx]);
+            vert->set_colour(colours[idx]);
         }
         delX.propagate_colours();
         // modify the filtration values
@@ -304,7 +310,7 @@ namespace chalc::chromatic
         std::ostream &ostream)
     {
         // input checks
-        auto [new_colours, num_colours] = canonicalise(colours);
+        int num_colours = num_unique(colours);
         if (num_colours > MAX_NUM_COLOURS)
         {
             throw std::domain_error("Too many colours. Number of colours must be <= " +
@@ -317,13 +323,13 @@ namespace chalc::chromatic
 
         // Start
         // Stratify the points by colour
-        RealMatrix<double> stratified_points = stratify(points, new_colours, num_colours);
+        RealMatrix<double> stratified_points = stratify(points, colours);
         // Get the delaunay triangulation
         auto delX = delaunay(stratified_points);
         // Modify the colours of the vertices and simplices
         for (auto &[idx, vert] : delX.get_simplices()[0])
         {
-            vert->set_colour(new_colours[idx]);
+            vert->set_colour(colours[idx]);
         }
         delX.propagate_colours();
 
@@ -332,7 +338,7 @@ namespace chalc::chromatic
         map<index_t, vector<index_t>> verts_by_colour;
         for (index_t i = 0; i < points.cols(); i++)
         {
-            verts_by_colour[new_colours[i]].push_back(i);
+            verts_by_colour[colours[i]].push_back(i);
         }
 
         if (delX.dimension() >= 1)
@@ -359,7 +365,7 @@ namespace chalc::chromatic
                     map<index_t, vector<index_t>> verts_by_colour_in_simplex;
                     for (auto v : verts)
                     {
-                        verts_by_colour_in_simplex[new_colours[v]].push_back(v);
+                        verts_by_colour_in_simplex[colours[v]].push_back(v);
                     }
 
                     /*
@@ -462,7 +468,8 @@ namespace chalc::chromatic
     // Create the chromatic Del-Cech complex
     FilteredComplex delcech(const RealMatrix<double> &points, const vector<index_t> &colours, std::ostream &ostream)
     {
-        auto [new_colours, num_colours] = canonicalise(colours);
+        // input checks
+        int num_colours = num_unique(colours);
         if (num_colours > MAX_NUM_COLOURS)
         {
             throw std::domain_error("Too many colours. Number of colours must be <= " +
@@ -472,12 +479,15 @@ namespace chalc::chromatic
         {
             throw std::domain_error("len(colours) must equal number of points.");
         }
-        RealMatrix<double> stratified_points = stratify(points, colours, num_colours);
+
+        // Start
+        // Stratify the points by colour
+        RealMatrix<double> stratified_points = stratify(points, colours);
         auto delX = delaunay(stratified_points);
         // modify the colours of the vertices
         for (auto &[idx, vert] : delX.get_simplices()[0])
         {
-            vert->set_colour(new_colours[idx]);
+            vert->set_colour(colours[idx]);
         }
         delX.propagate_colours();
         // modify the filtration values

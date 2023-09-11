@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from numbers import Real
-from .sixpack import DiagramEnsemble, _num_colours_in_bitmask
+from .sixpack import DiagramEnsemble, _num_colours_in_bitmask, _bitmask_to_colours, _colours_are_subset, _colours_to_bitmask
 from .filtration import FilteredComplex
 
 plt.rcParams["animation.html"] = "jshtml"
@@ -35,7 +35,7 @@ def plot_sixpack(dgms : DiagramEnsemble,
     fig, axes = plt.subplots(nrows=2, ncols=3, figsize=[3.5 * 3, 3.5 * 2])
     
     def applied_plot(
-        dgm, ax, title, dim_shift=0, max_dim=max_diagram_dim, legend=False
+        dgm, ax, title, dim_shift=0, max_dim=max_diagram_dim, legend=False, **kwargs
     ):
         _plot_diagram(
             dgm,
@@ -47,6 +47,7 @@ def plot_sixpack(dgms : DiagramEnsemble,
             dim_shift=dim_shift,
             max_dim=max_dim,
             legend=legend,
+            **kwargs
         )
 
     applied_plot(
@@ -60,6 +61,7 @@ def plot_sixpack(dgms : DiagramEnsemble,
         axes[0][1],
         "Relative",
         max_dim=max_diagram_dim + 1,
+        legend=True
     )
     applied_plot(
         dgms.cok,
@@ -67,7 +69,7 @@ def plot_sixpack(dgms : DiagramEnsemble,
         "Cokernel",
     )
     applied_plot(
-        dgms.cod,
+        dgms.dom,
         axes[1][0],
         "Domain",
     )
@@ -77,7 +79,7 @@ def plot_sixpack(dgms : DiagramEnsemble,
         "Image",
     )
     applied_plot(
-        dgms.dom,
+        dgms.cod,
         axes[1][2],
         "Codomain",
         legend=True,
@@ -95,7 +97,9 @@ def _plot_diagram(
     title=None,
     legend=True,
     dim_shift=0,
+    **kwargs
 ):
+    plot_colours = plt.rcParams['axes.prop_cycle'].by_key()['color'][2 : ]
     # Truncate all times
     entrance_times = [
         et if et <= truncation * 1.05 else truncation * 1.05 for et in entrance_times
@@ -123,7 +127,7 @@ def _plot_diagram(
     )
     df = pd.DataFrame(data=list(all_pts), columns=["Birth", "Death", "Dimension"])
     ret_ax = sns.scatterplot(
-        data=df, x="Birth", y="Death", hue="Dimension", ax=ax, legend=legend
+        data=df, x="Birth", y="Death", hue="Dimension", ax=ax, legend=legend, palette=plot_colours, **kwargs
     )
     ret_ax.set(xlabel=None)
     ret_ax.set(ylabel=None)
@@ -138,6 +142,80 @@ def _plot_diagram(
         "m--",
         alpha=0.4,
     )
+
+def draw_filtration(
+        K : FilteredComplex, 
+        points : numpy.ndarray[numpy.float64[m, n]],
+        time :  float, 
+        *,
+        include_colours : list[int] = None):
+    """
+    Visualise a filtration at given time, optionally including only certain colours.
+
+    Parameters
+    ----------
+    K : 
+        A filtered complex.
+    points : 
+        The vertices of ``K`` as a (2, N) numpy matrix.
+    time :
+        Filtration times for which to draw simplices.
+
+    Keyword Args
+    ------------
+    
+    include_colours :  
+        Optional list of colours to include. If not specified then all colours will be drawn.
+
+    Returns
+    -------
+    matplotlib.figure.Figure, matplotlib.axes.Axes
+    """
+    if len(points.shape) != 2:
+        raise NotImplementedError
+
+    if include_colours is None:
+        include_colours = list(set([_bitmask_to_colours(vertex.colours)[0] for vertex in K.simplices[0].values()]))
+    
+    include_colours_bitmask = _colours_to_bitmask(include_colours)
+
+    fig, ax = plt.subplots()
+    plot_colours = np.array(plt.rcParams['axes.prop_cycle'].by_key()['color'])
+
+    # Plot the vertices
+    vertex_colours = []
+    vertices_to_plot = []
+    for idx, vertex in K.simplices[0].items():
+        if (_colours_are_subset(vertex.colours, include_colours_bitmask)) and vertex.filtration_value <= time:
+            vertex_colours += _bitmask_to_colours(vertex.colours)
+            vertices_to_plot.append(idx)
+
+    vertex_colours = np.array(vertex_colours)
+    ax.scatter(points[0, vertices_to_plot], points[1, vertices_to_plot], c=plot_colours[vertex_colours], s=10)
+
+    # Plot the edges
+    for idx, simplex in K.simplices[1].items():
+        if _colours_are_subset(simplex.colours, include_colours_bitmask) and simplex.filtration_value <= time:
+            if _num_colours_in_bitmask(simplex.colours) == 1:
+                colour = plot_colours[_bitmask_to_colours(simplex.colours)[0]]
+                alpha = 0.5
+            else:
+                colour = 'black'
+                alpha = 0.2
+            ax.plot(points[0, simplex.vertices], points[1, simplex.vertices], c=colour, alpha=alpha, linewidth=1)
+
+    for idx, simplex in K.simplices[2].items():
+        if _colours_are_subset(simplex.colours, include_colours_bitmask) and simplex.filtration_value <= time:
+            if _num_colours_in_bitmask(simplex.colours) == 1:
+                colour = plot_colours[_bitmask_to_colours(simplex.colours)[0]]
+            else:
+                colour = 'grey'
+            ax.fill(points[0, simplex.vertices], points[1, simplex.vertices], c=colour, alpha=0.2)
+    
+    ax.set_aspect('equal')
+    # ax.set_xlabel('Time = ' + f"{0.0:.4f}")
+
+    return fig, ax
 
 def animate_filtration(
         K : FilteredComplex, 
@@ -173,7 +251,7 @@ def animate_filtration(
     plot_colours = np.array(plt.rcParams['axes.prop_cycle'].by_key()['color'])
     vertex_colours = []
     for idx, simplex in K.simplices[0].items():
-        i = int(np.round(np.log2(simplex.colours)))
+        i = _bitmask_to_colours(simplex.colours)[0]
         vertex_colours.append(i)
     
     ax.scatter(points[0, :], points[1, :], c=plot_colours[vertex_colours], s=10)
@@ -182,7 +260,7 @@ def animate_filtration(
     patches = dict()
     for idx, simplex in K.simplices[1].items():
         if _num_colours_in_bitmask(simplex.colours) == 1:
-            i = int(np.round(np.log2(simplex.colours)))
+            i = _bitmask_to_colours(simplex.colours)[0]
             colour = plot_colours[i]
             alpha = 0.5
         else:
@@ -192,7 +270,7 @@ def animate_filtration(
 
     for idx, simplex in K.simplices[2].items():
         if _num_colours_in_bitmask(simplex.colours) == 1:
-            i = int(np.round(np.log2(simplex.colours)))
+            i = _bitmask_to_colours(simplex.colours)[0]
             colour = plot_colours[i]
         else:
             colour = 'grey'

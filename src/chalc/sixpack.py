@@ -34,12 +34,10 @@ def _get_boundary_matrix(x : numpy.ndarray[numpy.float64[m, n]],
     if dom is not None and k is None:
         # new colours: 1 -> domain, 0 -> codomain
         new_colours = np.isin(colours, dom).astype(np.int64)
-        def check_in_domain(bitmask : int) -> bool:
-            return bitmask == 2 # bitmask == 2 means colour 1
+        check_in_domain = lambda b : b == 2
         
     elif k is not None and dom is None:
-        def check_in_domain(bitmask : int) -> bool:
-            return _num_colours_in_bitmask(bitmask) <= k # k-chromatic simplex
+        check_in_domain = lambda b: _num_colours_in_bitmask(b) <= k # k-chromatic simplex
     
     else:
         raise RuntimeError("Only one of k or dom is allowed")
@@ -68,12 +66,25 @@ def _get_boundary_matrix(x : numpy.ndarray[numpy.float64[m, n]],
 
     return matrix, entrance_times, dimensions
 
-def _num_colours_in_bitmask(n : int) -> int :
-    sum = 0
-    while (n):
-        sum += (n & 1)
-        n >>= 1
-    return sum  
+def _colours_to_bitmask(colours : list[int]) -> int :
+    return sum(2**i for i in colours)
+
+def _bitmask_to_colours(b : int) -> list[int] :
+    i = 0
+    res = []
+    while (b) :
+        if (b & 1):
+            res.append(i)            
+        i += 1
+        b >>= 1
+    return res
+
+def _num_colours_in_bitmask(b : int) -> int :
+    return len(_bitmask_to_colours(b))
+
+# check if the colours specified by bitmask b1 are a subset of those specified by b2
+def _colours_are_subset(b1 : int, b2 : int) -> bool :
+    return not (~b2 & b1)
 
 @_format_docstring
 def compute(x : numpy.ndarray[numpy.float64[m, n]], 
@@ -141,8 +152,8 @@ def compute(x : numpy.ndarray[numpy.float64[m, n]],
     dgms = DiagramEnsemble(
         Diagram._fromPhimaker(d.ker), 
         Diagram._fromPhimaker(d.cok), 
-        Diagram._fromPhimaker(d.f), 
         Diagram._fromPhimaker(d.g), 
+        Diagram._fromPhimaker(d.f), 
         Diagram._fromPhimaker(d.im), 
         Diagram._fromPhimaker(d.rel), 
         entrance_times, 

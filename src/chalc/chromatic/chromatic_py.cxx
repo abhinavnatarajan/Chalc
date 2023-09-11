@@ -90,9 +90,6 @@ PYBIND11_MODULE(chromatic, m)
                 Numpy matrix whose columns are points in the point cloud.
             colours :
                 List of integers describing the colours of the points.
-                Note that the actual colours of vertices in the output filtration
-                may not correspond to the input colours unless the set of values in
-                ``colours`` is contiguous and ``colours[0] = 0``.
             
             Returns
             -------
