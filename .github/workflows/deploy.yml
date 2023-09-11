@@ -1,7 +1,6 @@
 name: Deploy to PyPI
 on: 
   push:
-    tags: ['**']
     tags-ignore: ['*.docs*'] 
     # only run on tags, and only if they don't end with docs
 
