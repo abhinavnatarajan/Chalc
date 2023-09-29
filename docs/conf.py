@@ -63,6 +63,7 @@ autosectionlabel_prefix_document = True
 # napoleon options
 napolean_include_init_with_doc = True
 napoleon_attr_annotations = True
+napolean_use_keyword = True
 
 # autodoc options
 autodoc_default_options = {
@@ -79,10 +80,12 @@ autodoc_typehints_description_target = "documented_params"
 # autosummary_ignore_module_all = False
 
 # intersphinx options
-intersphinx_mapping = { 
+intersphinx_mapping = {
     'python' : ('https://docs.python.org/3/', None),
     'numpy' : ('https://numpy.org/doc/stable', None),
-    'matplotlib' : ('https://matplotlib.org/stable', None)}
+    'matplotlib' : ('https://matplotlib.org/stable', None),
+    'h5py' : ('https://docs.h5py.org/en/stable/', None)
+}
 
 # nbsphinx options
 nbsphinx_execute = 'always'

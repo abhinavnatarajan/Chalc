@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+from matplotlib.figure import FigureBase
+from matplotlib.axes import Axes
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import numpy as np
+from numpy.typing import NDArray
+from typing import Annotated, Any
 import pandas as pd
 import seaborn as sns
-from numbers import Real
 from .sixpack import DiagramEnsemble, _num_colours_in_bitmask, _bitmask_to_colours, _colours_are_subset, _colours_to_bitmask
 from .filtration import FilteredComplex
 
@@ -16,24 +19,19 @@ plt.rcParams["animation.html"] = "jshtml"
 __doc__ = 'Plotting and visualisation utilities.'
 
 def plot_sixpack(dgms : DiagramEnsemble,
-                 truncation : Real, 
-                 max_diagram_dim : int = 2) -> None :
+                 truncation : float,
+                 max_diagram_dim : int = 2) -> tuple[FigureBase, Annotated[NDArray, "Axes"]] :
     """
     Plots the 6-pack of persistence diagrams returned by :func:`compute <.sixpack.compute>`.
 
-    Parameters
-    ----------
-    dgms : 
-        The persistence diagrams.
-    truncation :
-        The maximum entrance time for which the diagrams are plotted.
-    max_diagram_dim :
-        Maximum homological dimension for which the diagrams are plotted.
-
+    Args:
+        dgms : The persistence diagrams.
+        truncation : The maximum entrance time for which the diagrams are plotted.
+        max_diagram_dim : Maximum homological dimension for which the diagrams are plotted.
     """
 
     fig, axes = plt.subplots(nrows=2, ncols=3, figsize=[3.5 * 3, 3.5 * 2])
-    
+
     def applied_plot(
         dgm, ax, title, dim_shift=0, max_dim=max_diagram_dim, legend=False, **kwargs
     ):
@@ -144,41 +142,38 @@ def _plot_diagram(
     )
 
 def draw_filtration(
-        K : FilteredComplex, 
-        points : numpy.ndarray[numpy.float64[m, n]],
-        time :  float, 
+        K : FilteredComplex,
+        points : NDArray[np.float64],
+        time :  float,
         *,
-        include_colours : list[int] = None):
+        include_colours : list[int] | None = None) -> tuple[FigureBase, Axes] :
     """
     Visualise a filtration at given time, optionally including only certain colours.
 
     Parameters
     ----------
-    K : 
+    K :
         A filtered complex.
-    points : 
-        The vertices of ``K`` as a (2, N) numpy matrix.
+    points :
+        The vertices of ``K`` as a :math:`2\\times N` numpy matrix.
     time :
         Filtration times for which to draw simplices.
 
     Keyword Args
     ------------
-    
-    include_colours :  
+    include_colours :
         Optional list of colours to include. If not specified then all colours will be drawn.
-
-    Returns
-    -------
-    matplotlib.figure.Figure, matplotlib.axes.Axes
     """
     if len(points.shape) != 2:
         raise NotImplementedError
 
     if include_colours is None:
         include_colours = list(set([_bitmask_to_colours(vertex.colours)[0] for vertex in K.simplices[0].values()]))
-    
+
     include_colours_bitmask = _colours_to_bitmask(include_colours)
 
+    fig : FigureBase
+    ax : Axes
     fig, ax = plt.subplots()
     plot_colours = np.array(plt.rcParams['axes.prop_cycle'].by_key()['color'])
 
@@ -211,49 +206,47 @@ def draw_filtration(
             else:
                 colour = 'grey'
             ax.fill(points[0, simplex.vertices], points[1, simplex.vertices], c=colour, alpha=0.2)
-    
+
     ax.set_aspect('equal')
     # ax.set_xlabel('Time = ' + f"{0.0:.4f}")
 
     return fig, ax
 
 def animate_filtration(
-        K : FilteredComplex, 
-        points : numpy.ndarray[numpy.float64[m, n]],
+        K : FilteredComplex,
+        points : NDArray[np.float64],
         *,
         filtration_times : list[float],
-        animation_length : float):
+        animation_length : float) -> animation.FuncAnimation :
     """
     Create animation of 2-skeleton of filtered simplicial complex.
 
     Parameters
     ----------
-    K : 
+    K :
         A filtered complex.
-    points : 
-        The vertices of ``K`` as a (2, N) numpy matrix.
+    points :
+        The vertices of ``K`` as a :math:`2\\times N` numpy matrix.
 
     Keyword Args
     ------------
     filtration_times :
         List of filtration times for which to draw animation frames.
-    animation_length :  
-        Total length of the animation in seconds. 
-
-    Returns
-    -------
-    matplotlib.animation.FuncAnimation
+    animation_length :
+        Total length of the animation in seconds.
     """
     if len(points.shape) != 2:
         raise NotImplementedError
-    
+
+    fig : FigureBase
+    ax : Axes
     fig, ax = plt.subplots()
     plot_colours = np.array(plt.rcParams['axes.prop_cycle'].by_key()['color'])
     vertex_colours = []
     for idx, simplex in K.simplices[0].items():
         i = _bitmask_to_colours(simplex.colours)[0]
         vertex_colours.append(i)
-    
+
     ax.scatter(points[0, :], points[1, :], c=plot_colours[vertex_colours], s=10)
 
     lines = dict()
@@ -275,11 +268,11 @@ def animate_filtration(
         else:
             colour = 'grey'
         patches[idx] = ax.fill([], [], c=colour, alpha=0.2)[0]
-    
+
     ax.set_aspect('equal')
     ax.set_xlabel('Time = ' + f"{0.0:.4f}")
 
-    def update(time):
+    def update(time : float) -> None:
         for idx, simplex in K.simplices[1].items():
             if simplex.filtration_value <= time:
                 lines[idx].set_xdata(points[0, simplex.vertices])
@@ -288,12 +281,11 @@ def animate_filtration(
         for idx, simplex in K.simplices[2].items():
             if simplex.filtration_value <= time:
                 patches[idx].set_xy(points[:, simplex.vertices].T)
-        
+
         ax.set_xlabel(f'Time = {time:.4f}')
 
     interval = int(np.round(animation_length * 1000 / len(filtration_times)))
     return animation.FuncAnimation(
-        fig=fig, func=update, 
-        frames=filtration_times, 
+        fig=fig, func=update,
+        frames=filtration_times,
         interval=interval)
-    
