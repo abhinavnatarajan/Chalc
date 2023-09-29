@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="plotting" href="chalc.plotting.html" /><link rel="prev" title="Diagram" href="chalc.sixpack.Diagram.html" />
 
     <!-- Generated with Sphinx 7.2.4 and Furo 2023.08.19 -->
-        <title>DiagramEnsemble - chalc 0.5.3 documentation</title>
+        <title>DiagramEnsemble - chalc 0.5.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">chalc 0.5.3 documentation</div></a>
+      <a href="../index.html"><div class="brand">chalc 0.5.4 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -148,7 +148,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">chalc 0.5.3 documentation</span>
+  <span class="sidebar-brand-text">chalc 0.5.4 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -239,6 +239,9 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble.__init__" title="chalc.sixpack.DiagramEnsemble.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a></p></td>
 <td><p></p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble.get" title="chalc.sixpack.DiagramEnsemble.get"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get</span></code></a></p></td>
+<td><p>Get a specific diagram as a matrix of birth and death times.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -283,7 +286,7 @@
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="chalc.sixpack.DiagramEnsemble.entrance_times">
-<span class="sig-name descname"><span class="pre">entrance_times</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/numbers.html#numbers.Real" title="(in Python v3.11)"><span class="pre">Real</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.sixpack.DiagramEnsemble.entrance_times" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">entrance_times</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.sixpack.DiagramEnsemble.entrance_times" title="Link to this definition">#</a></dt>
 <dd><p>Entrance times of the simplices</p>
 </dd></dl>
 
@@ -323,6 +326,26 @@
 
 <span class="sig-paren">)</span><a class="headerlink" href="#chalc.sixpack.DiagramEnsemble.__init__" title="Link to this definition">#</a></dt>
 <dd><dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chalc.sixpack.DiagramEnsemble.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">diagram</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.sixpack.DiagramEnsemble.get" title="Link to this definition">#</a></dt>
+<dd><p>Get a specific diagram as a matrix of birth and death times.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>diagram</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – One of ‘ker’, ‘cok’, ‘dom’, ‘cod’, ‘im’, or ‘rel’.</p></li>
+<li><p><strong>dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – Dimension of the diagram desired.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An <span class="math notranslate nohighlight">\(m \times 2\)</span> matrix whose rows are a pair of birth and death times.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><em>Any</em></a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.26)"><em>dtype</em></a>[<em>float64</em>]]</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -403,6 +426,7 @@
 </li>
 <li><a class="reference internal" href="#details">Details</a><ul>
 <li><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble.__init__"><code class="docutils literal notranslate"><span class="pre">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble.get"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -416,11 +440,13 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=2a2fe768"></script>
+</div><script src="../_static/documentation_options.js?v=e1a677a5"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../_static/design-tabs.js?v=36754332"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

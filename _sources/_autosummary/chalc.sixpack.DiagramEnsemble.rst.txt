@@ -18,6 +18,7 @@ Overview
       :nosignatures:
    
       ~DiagramEnsemble.__init__
+      ~DiagramEnsemble.get
    
    
 
@@ -54,3 +55,4 @@ Details
    
    
    .. automethod:: DiagramEnsemble.__init__
+   .. automethod:: DiagramEnsemble.get
