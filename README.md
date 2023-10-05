@@ -1,5 +1,5 @@
 # Chalc
-Chalc is a C++ library with Python bindings to compute the persistent homology of chromatic alpha complex of coloured point clouds in Euclidean space.
+Chalc is a C++ library with Python bindings to compute the persistent homology of chromatic alpha complexes of coloured point clouds in Euclidean space.
 
 ![PyPI - Version](https://img.shields.io/pypi/v/chalc?labelColor=222222)
 ![Documentation](https://img.shields.io/badge/docs-stable-blue?labelColor=222222&link=https%3A%2F%2Fabhinavnatarajan.github.io%2FChalc)

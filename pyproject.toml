@@ -9,10 +9,9 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "chalc"
-version = "0.5.4"
+version = "0.5.5"
 authors = [
-    {name = "Abhinav Natarajana", email = "natarajan@maths.ox.ac.uk"},
-    {name = "Thomas Chaplin", email = "tomrchaplin@gmail.com"}
+    {name = "Abhinav Natarajan", email = "natarajan@maths.ox.ac.uk"},
 ]
 readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.8"
@@ -25,7 +24,7 @@ keywords = [
 ]
 dependencies = [
     "numpy",
-    "phimaker",
+    "phimaker@git+https://github.com/abhinavnatarajan/phimaker",
     "pandas",
     "matplotlib",
     "seaborn",

@@ -6,15 +6,13 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import numpy as np
 from numpy.typing import NDArray
-from typing import Annotated, Any
+from typing import Annotated
 import pandas as pd
 import seaborn as sns
 from .sixpack import DiagramEnsemble, _num_colours_in_bitmask, _bitmask_to_colours, _colours_are_subset, _colours_to_bitmask
 from .filtration import FilteredComplex
 
 plt.rcParams["animation.html"] = "jshtml"
-
-# __all__ = ['plot_sixpack', 'animate_filtration']
 
 __doc__ = 'Plotting and visualisation utilities.'
 
@@ -186,7 +184,7 @@ def draw_filtration(
             vertices_to_plot.append(idx)
 
     vertex_colours = np.array(vertex_colours)
-    ax.scatter(points[0, vertices_to_plot], points[1, vertices_to_plot], c=plot_colours[vertex_colours], s=10)
+    ax.scatter(points[0, vertices_to_plot], points[1, vertices_to_plot], c=list(plot_colours[vertex_colours]), s=10)
 
     # Plot the edges
     for idx, simplex in K.simplices[1].items():
@@ -247,7 +245,7 @@ def animate_filtration(
         i = _bitmask_to_colours(simplex.colours)[0]
         vertex_colours.append(i)
 
-    ax.scatter(points[0, :], points[1, :], c=plot_colours[vertex_colours], s=10)
+    ax.scatter(points[0, :], points[1, :], c=list(plot_colours[vertex_colours]), s=10)
 
     lines = dict()
     patches = dict()
