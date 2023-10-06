@@ -220,6 +220,8 @@ class DiagramEnsemble:
         Returns:
             An :math:`m \\times 2` matrix whose rows are a pair of birth and death times.
         """
+        if diagram == 'ker':
+            dim = dim+1 # a p-dimensional homology class is captured by a pairing of (p+1) simplices for kernels
         dgm = getattr(self, diagram)
         entrance_times = np.array(self.entrance_times)
         paired_list = np.array([pair for pair in dgm.paired if self.dimensions[pair[0]] == dim], dtype = int)
