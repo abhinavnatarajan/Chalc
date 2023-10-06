@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="sixpack" href="chalc.sixpack.html" /><link rel="prev" title="FilteredComplex" href="chalc.filtration.FilteredComplex.html" />
 
     <!-- Generated with Sphinx 7.2.4 and Furo 2023.08.19 -->
-        <title>Simplex - chalc 0.5.4 documentation</title>
+        <title>Simplex - chalc 0.5.5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">chalc 0.5.4 documentation</div></a>
+      <a href="../index.html"><div class="brand">chalc 0.5.5 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -148,7 +148,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">chalc 0.5.4 documentation</span>
+  <span class="sidebar-brand-text">chalc 0.5.5 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -250,31 +250,31 @@
 <h3>Properties<a class="headerlink" href="#properties" title="Link to this heading">#</a></h3>
 <dl class="py property">
 <dt class="sig sig-object py" id="chalc.filtration.Simplex.colours">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">colours</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></em><a class="headerlink" href="#chalc.filtration.Simplex.colours" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">colours</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></em><a class="headerlink" href="#chalc.filtration.Simplex.colours" title="Link to this definition">#</a></dt>
 <dd><p>Bitmask of colours in the simplex, where the rightmost                         bit represents the smallest colour index. More precisely,                         <span class="math notranslate nohighlight">\(\mathrm{bitmask} = \sum_{c \in \mathrm{colours}(\sigma)} 2^c\)</span>.                         For example, a simplex having vertices of colours 0 and 1 has a                         colour bitmask of 3.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="chalc.filtration.Simplex.dimension">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dimension</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></em><a class="headerlink" href="#chalc.filtration.Simplex.dimension" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dimension</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></em><a class="headerlink" href="#chalc.filtration.Simplex.dimension" title="Link to this definition">#</a></dt>
 <dd><p>Dimension of the simplex.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="chalc.filtration.Simplex.facets">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">facets</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#chalc.filtration.Simplex" title="chalc.filtration.Simplex"><span class="pre">Simplex</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.filtration.Simplex.facets" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">facets</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#chalc.filtration.Simplex" title="chalc.filtration.Simplex"><span class="pre">Simplex</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.filtration.Simplex.facets" title="Link to this definition">#</a></dt>
 <dd><p>Read-only list of handles to the facets of the simplex.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="chalc.filtration.Simplex.filtration_value">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">filtration_value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><span class="pre">float</span></a></em><a class="headerlink" href="#chalc.filtration.Simplex.filtration_value" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">filtration_value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></em><a class="headerlink" href="#chalc.filtration.Simplex.filtration_value" title="Link to this definition">#</a></dt>
 <dd><p>Filtration value of the simplex. If you modify this value,                         you should call <a class="reference internal" href="chalc.filtration.FilteredComplex.html#chalc.filtration.FilteredComplex.propagate_filt_values" title="chalc.filtration.FilteredComplex.propagate_filt_values"><code class="xref py py-meth docutils literal notranslate"><span class="pre">propagate_filt_values()</span></code></a>                         from the parent complex to ensure that filtration times remain monotonic.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="chalc.filtration.Simplex.label">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">label</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></em><a class="headerlink" href="#chalc.filtration.Simplex.label" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">label</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></em><a class="headerlink" href="#chalc.filtration.Simplex.label" title="Link to this definition">#</a></dt>
 <dd><p>Label of the simplex in its parent filtered complex.                         A <span class="math notranslate nohighlight">\(k\)</span>-simplex <span class="math notranslate nohighlight">\(\sigma\)</span> is labelled
 by the lexicographic index of <span class="math notranslate nohighlight">\(\sigma\)</span> with respect
 to its vertex labels sorted in ascending order,
@@ -284,7 +284,7 @@ of length <span class="math notranslate nohighlight">\(k\)</span>.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="chalc.filtration.Simplex.vertices">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">vertices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.filtration.Simplex.vertices" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">vertices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.filtration.Simplex.vertices" title="Link to this definition">#</a></dt>
 <dd><p>List of (sorted, ascending) vertex labels of the simplex.</p>
 </dd></dl>
 
@@ -308,7 +308,7 @@ of length <span class="math notranslate nohighlight">\(k\)</span>.</p>
 <dd><p>Change the colour of a vertex.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.11)"><strong>ValueError</strong></a> – If the simplex is not a vertex or if
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If the simplex is not a vertex or if
     <cite>colour &gt;=</cite> <a class="reference internal" href="chalc.chromatic.html#chalc.chromatic.MaxColoursChromatic" title="chalc.chromatic.MaxColoursChromatic"><code class="xref py py-attr docutils literal notranslate"><span class="pre">MaxColoursChromatic</span></code></a>.</p>
 </dd>
 </dl>
@@ -409,7 +409,7 @@ from the parent simplicial complex after changing the colour of a vertex.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=e1a677a5"></script>
+</div><script src="../_static/documentation_options.js?v=45def3bc"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
