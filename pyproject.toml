@@ -24,7 +24,7 @@ keywords = [
 ]
 dependencies = [
     "numpy",
-    "phimaker@git+https://github.com/abhinavnatarajan/phimaker",
+    "phimaker",
     "pandas",
     "matplotlib",
     "seaborn",
