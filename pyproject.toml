@@ -9,10 +9,11 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "chalc"
-version = "0.5.5"
+version = "0.5.6"
 authors = [
     {name = "Abhinav Natarajan", email = "natarajan@maths.ox.ac.uk"},
 ]
+description = "Persistent homology of chromatic alpha complexes"
 readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.8"
 license = {file = "COPYING"}
@@ -24,7 +25,7 @@ keywords = [
 ]
 dependencies = [
     "numpy",
-    "phimaker",
+    "phimaker >= 0.1.2",
     "pandas",
     "matplotlib",
     "seaborn",
