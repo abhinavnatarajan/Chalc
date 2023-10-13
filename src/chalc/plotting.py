@@ -11,38 +11,45 @@ import pandas as pd
 import seaborn as sns
 from .sixpack import DiagramEnsemble, _num_colours_in_bitmask, _bitmask_to_colours, _colours_are_subset, _colours_to_bitmask
 from .filtration import FilteredComplex
+from ._utils import interpolate_docstring
+import scipy
 
 plt.rcParams["animation.html"] = "jshtml"
 
 __doc__ = 'Plotting and visualisation utilities.'
 
 def plot_sixpack(dgms : DiagramEnsemble,
-                 truncation : float,
-                 max_diagram_dim : int = 2) -> tuple[FigureBase, Annotated[NDArray, "Axes"]] :
+                 *,
+                 truncation : float | None = None,
+                 max_diagram_dimension : int | None = None) -> tuple[FigureBase, Annotated[NDArray, "Axes"]] :
     """
     Plots the 6-pack of persistence diagrams returned by :func:`compute <.sixpack.compute>`.
 
     Args:
-        dgms : The persistence diagrams.
-        truncation : The maximum entrance time for which the diagrams are plotted.
-        max_diagram_dim : Maximum homological dimension for which the diagrams are plotted.
+        dgms : The six-pack of persistence diagrams.
+
+    Keyword Args:
+        truncation : The maximum entrance time for which the diagrams are plotted. A sensible default will be calculated if not provided.
+        max_diagram_dimension : The maximum homological dimension for which to plot points. If not provided, all dimensions will be included in the plots.
     """
-
+    if truncation is None:
+        truncation = _get_truncation(dgms.entrance_times)
+    if max_diagram_dimension is None:
+        max_diagram_dimension = max(dgms.dimensions)
     fig, axes = plt.subplots(nrows=2, ncols=3, figsize=[3.5 * 3, 3.5 * 2])
-
     def applied_plot(
-        dgm, ax, title, dim_shift=0, max_dim=max_diagram_dim, legend=False, **kwargs
+        dgm, ax, title, dim_shift=0, max_dim=max_diagram_dimension, legend=False, **kwargs
     ):
         _plot_diagram(
             dgm,
             dgms.entrance_times,
             dgms.dimensions,
             truncation,
-            ax=ax,
-            title=title,
-            dim_shift=dim_shift,
-            max_dim=max_dim,
-            legend=legend,
+            ax        = ax,
+            title     = title,
+            dim_shift = dim_shift,
+            max_dim   = max_dim,
+            legend    = legend,
             **kwargs
         )
 
@@ -56,8 +63,8 @@ def plot_sixpack(dgms : DiagramEnsemble,
         dgms.rel,
         axes[0][1],
         "Relative",
-        max_dim=max_diagram_dim + 1,
-        legend=True
+        max_dim = max_diagram_dimension + 1,
+        legend  = True
     )
     applied_plot(
         dgms.cok,
@@ -78,21 +85,66 @@ def plot_sixpack(dgms : DiagramEnsemble,
         dgms.cod,
         axes[1][2],
         "Codomain",
-        legend=True,
+        legend = True,
     )
     return fig, axes
 
+@interpolate_docstring
+def plot_diagram(dgms: DiagramEnsemble,
+                 diagram_name: str,
+                 *,
+                 truncation : float | None = None,
+                 max_diagram_dimension : int | None = None ,
+                 ) -> tuple[FigureBase, Annotated[NDArray, "Axes"]] :
+    """
+    Plot a specific diagram from a sixpack.
+
+    Args:
+        dgms : The six-pack of persistence diagrams.
+        diagram_name : One of ``${str(DiagramEnsemble.diagram_names)}``.
+
+    Keyword Args:
+        truncation : The maximum entrance time for which the diagrams are plotted. A sensible default will be calculated if not provided.
+        max_diagram_dimension : The maximum homological dimension for which to plot points. If not provided, all dimensions will be included in the plots.
+    """
+    if not diagram_name in DiagramEnsemble.diagram_names:
+        raise KeyError("Invalid diagram name!")
+    titles = {
+        'ker': 'Kernel',
+        'cok': 'Cokernel',
+        'im' : 'Image',
+        'dom': 'Domain',
+        'cod': 'Codomain',
+        'rel': 'Relative',
+    }
+    if truncation is None:
+        truncation = _get_truncation(dgms.entrance_times)
+    if max_diagram_dimension is None:
+        max_diagram_dimension = max(dgms.dimensions)
+    fig, ax = plt.subplots()
+    _plot_diagram(
+        getattr(dgms, diagram_name),
+        dgms.entrance_times,
+        dgms.dimensions,
+        truncation,
+        ax        = ax,
+        dim_shift = 1 if diagram_name == 'ker' else 0,
+        legend    = True,
+        title     = titles[diagram_name],
+        max_dim   = max_diagram_dimension
+    )
+    return fig, ax
 
 def _plot_diagram(
     diagram,
     entrance_times,
     dimensions,
     truncation,
-    max_dim=2,
-    ax=None,
-    title=None,
-    legend=True,
-    dim_shift=0,
+    max_dim   = 2,
+    ax        = None,
+    title     = None,
+    legend    = True,
+    dim_shift = 0,
     **kwargs
 ):
     plot_colours = plt.rcParams['axes.prop_cycle'].by_key()['color'][2 : ]
@@ -128,6 +180,7 @@ def _plot_diagram(
     ret_ax.set(xlabel=None)
     ret_ax.set(ylabel=None)
     ret_ax.set(title=title)
+    ret_ax.set_aspect('equal')
     if legend:
         sns.move_legend(ret_ax, "lower right")
     handle = ax if ax is not None else plt
@@ -284,6 +337,11 @@ def animate_filtration(
 
     interval = int(np.round(animation_length * 1000 / len(filtration_times)))
     return animation.FuncAnimation(
-        fig=fig, func=update,
-        frames=filtration_times,
-        interval=interval)
+        fig      = fig,
+        func     = update,
+        frames   = filtration_times,
+        interval = interval)
+
+def _get_truncation(entrance_times : list[float]) :
+    ub = scipy.stats.scoreatpercentile(entrance_times, 95)
+    return ub if (m := max(entrance_times) > 1.5 * ub) else m
