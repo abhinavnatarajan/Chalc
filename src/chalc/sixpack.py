@@ -224,7 +224,7 @@ class DiagramEnsemble:
 
 		Args:
 			diagram_name : One of 'ker', 'cok', 'dom', 'cod', 'im', or 'rel'.
-			dim : Dimension(s) of the diagram desired. If a list is provided then a list of matrices is returned, with the order of matrices respecting the order of entries of `dim`. If `dim` is not provided then the returned matrix will contain persistent features from all homological dimensions from zero to max(self.dimensions).
+			dim : Dimension(s) of the diagram desired. If a list is provided then a list of matrices is returned, with the order of matrices respecting the order of entries of `dim`. If `dim` is not provided then the returned matrix will contain persistent features from all homological dimensions from zero to `max(self.dimensions)`.
 
 		Returns:
 			An :math:`m \\times 2` matrix whose rows are a pair of birth and death times.
