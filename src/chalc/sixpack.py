@@ -77,7 +77,7 @@ def _num_colours_in_bitmask(b : int) -> int :
 def _colours_are_subset(b1 : int, b2 : int) -> bool :
 	return not (~b2 & b1)
 
-@interpolate_docstring
+@interpolate_docstring()
 def compute(x : NDArray[np.float64],
 			colours : list[int],
 			*, # rest are keyword only
@@ -164,6 +164,9 @@ class Diagram:
 	def _fromPhimaker(cls, obj) -> Diagram :
 		return cls(obj.paired, obj.unpaired)
 
+	def __str__(self):
+		return f"Paired: {self.paired}\nUnpaired: {self.unpaired}"
+
 	@classmethod
 	def _from_matrices(cls, p : NDArray[np.int64], u : NDArray[np.int64]) -> Diagram :
 		paired : set[tuple[int, int]] = set(tuple(p[i, :]) for i in range(p.shape[0]))
@@ -212,22 +215,23 @@ class DiagramEnsemble:
 
 	@overload
 	def get(self, diagram_name : str, dim : int) -> NDArray[np.float64] :
-		pass
+		...
 
 	@overload
-	def get(self, diagram_name : str, dim : list[int] | None) -> list[NDArray[np.float64]] :
-		pass
+	def get(self, diagram_name : str, dim : list[int] | None = None) -> list[NDArray[np.float64]] :
+		...
 
-	def get(self, diagram_name : str, dim : int | list[int] | None = None) -> NDArray[np.float64] | list[NDArray[np.float64]] :
+	@interpolate_docstring({'diagram_names' : diagram_names})
+	def get(self, diagram_name, dim = None):
 		"""
 		Get a specific diagram as a matrix of birth and death times.
 
 		Args:
-			diagram_name : One of 'ker', 'cok', 'dom', 'cod', 'im', or 'rel'.
-			dim : Dimension(s) of the diagram desired. If a list is provided then a list of matrices is returned, with the order of matrices respecting the order of entries of `dim`. If `dim` is not provided then the returned matrix will contain persistent features from all homological dimensions from zero to `max(self.dimensions)`.
+			diagram_name : One of ``${str(diagram_names)}``.
+			dim : Dimension(s) of the diagram desired. If a list is provided then a list of matrices is returned, with the order of matrices respecting the order of entries of `dim`. If `dim` is not provided then the returned matrix will contain persistent features from all homological dimensions from zero to ``max(self.dimensions)``.
 
 		Returns:
-			An :math:`m \\times 2` matrix whose rows are a pair of birth and death times.
+			An :math:`m \\times 2` matrix whose rows are a pair of birth and death times, or a list of such matrices.
 		"""
 		if dim is None:
 			dim = list(range(max(set(self.dimensions))))

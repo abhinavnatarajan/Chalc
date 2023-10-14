@@ -1,11 +1,14 @@
 import re
 from typing import Callable
 
-def interpolate_docstring(func : Callable) -> Callable:
-    docstring : str | None = func.__doc__
-    if docstring is not None:
-        docstring = docstring.replace('{', '{{').replace('}', '}}')
-        docstring = re.sub(r'\${{([^{}]*)}}', r'{\1}', docstring)
-        func.__doc__ = eval('f"""' + docstring + '"""', func.__globals__)
-    return func
+def interpolate_docstring(names : dict = dict()) -> Callable :
+    def inner(func : Callable) -> Callable:
+        docstring : str | None = func.__doc__
+        if docstring is not None:
+            docstring = docstring.replace('{', '{{').replace('}', '}}')
+            docstring = re.sub(r'\${{([^{}]*)}}', r'{\1}', docstring)
+            g = { **func.__globals__, **names }
+            func.__doc__ = eval('rf"""' + docstring + '"""', g)
+        return func
+    return inner
 
