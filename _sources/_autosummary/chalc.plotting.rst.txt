@@ -21,6 +21,7 @@ Overview
    
       animate_filtration
       draw_filtration
+      plot_diagram
       plot_sixpack
    
    
@@ -45,4 +46,5 @@ Details
 
 .. autofunction:: animate_filtration
 .. autofunction:: draw_filtration
+.. autofunction:: plot_diagram
 .. autofunction:: plot_sixpack

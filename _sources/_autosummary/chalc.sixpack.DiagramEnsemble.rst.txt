@@ -32,6 +32,7 @@ Overview
    ^^^^^^^^^^^^^^^^^^^^^
 
    
+   .. autoattribute:: DiagramEnsemble.diagram_names
    .. autoattribute:: DiagramEnsemble.ker
    .. autoattribute:: DiagramEnsemble.cok
    .. autoattribute:: DiagramEnsemble.dom
