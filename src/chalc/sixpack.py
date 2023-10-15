@@ -9,12 +9,12 @@ from numpy.typing import NDArray
 from typing import Optional, ClassVar, overload
 from phimaker import compute_ensemble
 from dataclasses import dataclass, field, fields
-import h5py
+from h5py import Group, Dataset
 
 ChromaticMethod = {
-	"chromatic alpha" : chromatic.alpha,
-	"chromatic delcech" : chromatic.delcech,
-	"chromatic delrips" : chromatic.delrips
+	"chromatic alpha":   chromatic.alpha,
+	"chromatic delcech": chromatic.delcech,
+	"chromatic delrips": chromatic.delrips
 }
 
 BdMatType = list[tuple[bool, int, NDArray[np.int64]]]
@@ -50,8 +50,7 @@ def _get_boundary_matrix(x : NDArray[np.float64],
 		facet_idxs = column[0]
 		dimension = max(0, len(facet_idxs) - 1)
 		# Only need k-skeleton for k <= max_dgm_dim + 1
-		if dimension > max_dgm_dim + 1:
-			break
+		if dimension > max_dgm_dim + 1: break
 		dimensions.append(dimension)
 		entrance_times.append(column[2])
 		matrix.append((check_in_domain(column[3]), dimension, facet_idxs))
@@ -169,13 +168,14 @@ class Diagram:
 
 	@classmethod
 	def _from_matrices(cls, p : NDArray[np.int64], u : NDArray[np.int64]) -> Diagram :
+		if p.shape[1] != 2:
+			raise ValueError(f"p must be a (m, 2) matrix, but received a matrix of size {p.shape}")
 		paired : set[tuple[int, int]] = set(tuple(p[i, :]) for i in range(p.shape[0]))
 		unpaired = set(u)
 		return cls(paired, unpaired)
 
 	def paired_as_matrix(self) -> NDArray[np.int64] :
-		return np.concatenate(
-			list(self.paired)).reshape((-1, 2))
+		return np.concatenate(list(self.paired)).reshape((-1, 2))
 
 	def __eq__(self, other) -> bool :
 		if isinstance(other, Diagram):
@@ -214,12 +214,10 @@ class DiagramEnsemble:
 			return NotImplemented
 
 	@overload
-	def get(self, diagram_name : str, dim : int) -> NDArray[np.float64] :
-		...
+	def get(self, diagram_name : str, dim : int) -> NDArray[np.float64] : ...
 
 	@overload
-	def get(self, diagram_name : str, dim : list[int] | None = None) -> list[NDArray[np.float64]] :
-		...
+	def get(self, diagram_name : str, dim : list[int] | None = None) -> list[NDArray[np.float64]] : ...
 
 	@interpolate_docstring({'diagram_names' : diagram_names})
 	def get(self, diagram_name, dim = None):
@@ -236,8 +234,8 @@ class DiagramEnsemble:
 		if dim is None:
 			dim = list(range(max(set(self.dimensions))))
 		if isinstance(dim, int):
-			if diagram_name == 'ker':
-				dim += 1 # a p-dimensional homology class is captured by a pairing of (p+1) simplices for kernels
+			# a p-dimensional homology class is captured by a pairing of (p+1) simplices for kernels
+			if diagram_name == 'ker': dim += 1
 			diagram = getattr(self, diagram_name)
 			entrance_times = np.array(self.entrance_times)
 			paired_list = np.array([pair for pair in diagram.paired if self.dimensions[pair[0]] == dim], dtype = int)
@@ -250,7 +248,7 @@ class DiagramEnsemble:
 		elif isinstance(dim, list):
 			return [self.get(diagram_name, d) for d in dim]
 
-def save_diagrams(dgms : DiagramEnsemble, file : h5py.Group) -> None :
+def save_diagrams(dgms : DiagramEnsemble, file : Group) -> None :
 	"""
 	Save a six-pack of persistence diagrams to a HDF5 file or group.
 
@@ -265,14 +263,29 @@ def save_diagrams(dgms : DiagramEnsemble, file : h5py.Group) -> None :
 		grp['unpaired'] = np.array(list(getattr(dgms, diagram_name).unpaired), dtype=np.int64)
 		grp['paired'] = getattr(dgms, diagram_name).paired_as_matrix()
 
-def load_diagrams(file : h5py.Group) -> DiagramEnsemble :
+def load_diagrams(file : Group) -> DiagramEnsemble :
 	"""
 	Load a six-pack of persistence diagrams from a HDF5 file or group.
 	"""
 	dgms = DiagramEnsemble()
-	dgms.entrance_times = list(file['entrance_times'])
-	dgms.dimensions = list(file['dimensions'])
+	if any(f.name not in file for f in fields(DiagramEnsemble)):
+		raise RuntimeError("Invalid file: missing fields")
+
+	dgms.entrance_times = (list(entrance_times)
+		if isinstance((entrance_times := file['entrance_times']), Dataset)
+		and entrance_times.dtype == np.float64
+		else [])
+	dgms.dimensions = (list(dimensions)
+		if isinstance((dimensions := file['dimensions']), Dataset)
+		and dimensions.dtype == np.int64
+		else [])
 	for diagram_name in DiagramEnsemble.diagram_names:
 		grp = file[diagram_name]
-		setattr(dgms, diagram_name, Diagram._from_matrices(grp['paired'], grp['unpaired']))
+		if isinstance(grp, Group) and all(name in list(grp.keys()) for name in ['paired', 'unpaired']):
+			paired = grp['paired']
+			unpaired = grp['unpaired']
+			if isinstance(paired, Dataset) and paired.dtype == np.int64 and isinstance(unpaired, Dataset) and unpaired.dtype == np.int64 :
+				setattr(dgms, diagram_name, Diagram._from_matrices(paired[...], unpaired[...]))
+			else:
+				raise RuntimeError("Invalid file: missing fields")
 	return dgms

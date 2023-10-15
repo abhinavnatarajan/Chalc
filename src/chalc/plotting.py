@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from matplotlib.figure import FigureBase
+from matplotlib.figure import Figure
 from matplotlib.axes import Axes
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
@@ -21,7 +21,7 @@ __doc__ = 'Plotting and visualisation utilities.'
 def plot_sixpack(dgms : DiagramEnsemble,
 				 *,
 				 truncation : float | None = None,
-				 max_diagram_dimension : int | None = None) -> tuple[FigureBase, Annotated[NDArray, "Axes"]] :
+				 max_diagram_dimension : int | None = None) -> tuple[Figure, Annotated[NDArray, "Axes"]] :
 	"""
 	Plots the 6-pack of persistence diagrams returned by :func:`compute <.sixpack.compute>`.
 
@@ -99,7 +99,7 @@ def plot_diagram(dgms: DiagramEnsemble,
 				 *,
 				 truncation : float | None = None,
 				 max_diagram_dimension : int | None = None ,
-				 ) -> tuple[FigureBase, Annotated[NDArray, "Axes"]] :
+				 ) -> tuple[Figure, Annotated[NDArray, "Axes"]] :
 	"""
 	Plot a specific diagram from a sixpack.
 
@@ -208,7 +208,7 @@ def draw_filtration(
 	points : NDArray[np.float64],
 	time :	float,
 	*,
-		include_colours : list[int] | None = None) -> tuple[FigureBase, Axes] :
+	include_colours : list[int] | None = None) -> tuple[Figure, Axes] :
 	"""
 	Visualise a filtration at given time, optionally including only certain colours.
 
@@ -234,7 +234,7 @@ def draw_filtration(
 
 	include_colours_bitmask = _colours_to_bitmask(include_colours)
 
-	fig : FigureBase
+	fig : Figure
 	ax : Axes
 	fig, ax = plt.subplots()
 	plot_colours = np.array(plt.rcParams['axes.prop_cycle'].by_key()['color'])
@@ -300,7 +300,7 @@ def animate_filtration(
 	if len(points.shape) != 2:
 		raise NotImplementedError
 
-	fig : FigureBase
+	fig : Figure
 	ax : Axes
 	fig, ax = plt.subplots()
 	plot_colours = np.array(plt.rcParams['axes.prop_cycle'].by_key()['color'])
@@ -348,9 +348,9 @@ def animate_filtration(
 
 	interval = int(np.round(animation_length * 1000 / len(filtration_times)))
 	return animation.FuncAnimation(
-		fig		 = fig,
-		func	 = update,
-		frames	 = filtration_times,
+		fig      = fig,
+		func     = update,
+		frames   = filtration_times,
 		interval = interval)
 
 def _get_truncation(entrance_times : list[float]) :
