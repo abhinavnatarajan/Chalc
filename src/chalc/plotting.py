@@ -18,15 +18,18 @@ plt.rcParams["animation.html"] = "jshtml"
 
 __doc__ = 'Plotting and visualisation utilities.'
 
-def plot_sixpack(dgms : DiagramEnsemble,
-				 *,
-				 truncation : float | None = None,
-				 max_diagram_dimension : int | None = None) -> tuple[Figure, Annotated[NDArray, "Axes"]] :
+def plot_sixpack(
+	dgms                  : DiagramEnsemble,
+	*,
+	truncation            : float | None = None,
+	max_diagram_dimension : int | None   = None
+	) -> tuple[Figure, Annotated[NDArray, "Axes"]] :
+	
 	"""
 	Plots the 6-pack of persistence diagrams returned by :func:`compute <.sixpack.compute>`.
 
 	Args:
-		dgms : The six-pack of persistence diagrams.
+		dgms : The 6-pack of persistence diagrams.
 
 	Keyword Args:
 		truncation : The maximum entrance time for which the diagrams are plotted. A sensible default will be calculated if not provided.
@@ -53,35 +56,35 @@ def plot_sixpack(dgms : DiagramEnsemble,
 
 	applied_plot(
 		dgms.ker,
-		ax = axes[0, 0],
-		title = "Kernel",
+		ax        = axes[0, 0],
+		title     = "Kernel",
 		dim_shift = 1,
 	)
 	applied_plot(
 		dgms.rel,
-		ax = axes[0, 1],
-		title = "Relative",
-		max_dim = max_diagram_dimension + 1,
-		points_legend  = True
+		ax            = axes[0, 1],
+		title         = "Relative",
+		max_dim       = max_diagram_dimension + 1,
+		points_legend = True
 	)
 	applied_plot(
 		dgms.cok,
-		ax = axes[0, 2],
+		ax    = axes[0, 2],
 		title = "Cokernel",
 	)
 	applied_plot(
 		dgms.dom,
-		ax = axes[1, 0],
+		ax    = axes[1, 0],
 		title = "Domain",
 	)
 	applied_plot(
 		dgms.im,
-		ax = axes[1, 1],
+		ax    = axes[1, 1],
 		title = "Image",
 	)
 	applied_plot(
 		dgms.cod,
-		ax = axes[1, 2],
+		ax    = axes[1, 2],
 		title = "Codomain",
 	)
 	legends = dict()
@@ -94,17 +97,18 @@ def plot_sixpack(dgms : DiagramEnsemble,
 	return fig, axes
 
 @interpolate_docstring()
-def plot_diagram(dgms: DiagramEnsemble,
-				 diagram_name: str,
-				 *,
-				 truncation : float | None = None,
-				 max_diagram_dimension : int | None = None ,
-				 ) -> tuple[Figure, Annotated[NDArray, "Axes"]] :
+def plot_diagram(
+	dgms                  : DiagramEnsemble,
+	diagram_name          : str,
+	*,
+	truncation            : float | None = None,
+	max_diagram_dimension : int | None   = None ,
+	) -> tuple[Figure, Annotated[NDArray, "Axes"]] :
 	"""
-	Plot a specific diagram from a sixpack.
+	Plot a specific diagram from a 6-pack.
 
 	Args:
-		dgms : The six-pack of persistence diagrams.
+		dgms : The 6-pack of persistence diagrams.
 		diagram_name : One of ``${str(DiagramEnsemble.diagram_names)}``.
 
 	Keyword Args:
@@ -131,12 +135,12 @@ def plot_diagram(dgms: DiagramEnsemble,
 		dgms.entrance_times,
 		dgms.dimensions,
 		truncation,
-		ax			  = ax,
-		dim_shift	  = 1 if diagram_name == 'ker' else 0,
+		ax            = ax,
+		dim_shift     = 1 if diagram_name == 'ker' else 0,
 		points_legend = True,
 		lines_legend  = True,
-		title		  = titles[diagram_name],
-		max_dim		  = max_diagram_dimension
+		title         = titles[diagram_name],
+		max_dim       = max_diagram_dimension
 	)
 	return fig, ax
 
@@ -145,14 +149,14 @@ def _plot_diagram(
 	entrance_times,
 	dimensions,
 	truncation,
-	max_dim		  = 2,
-	ax			  = None,
-	title		  = None,
+	max_dim       = 2,
+	ax            = None,
+	title         = None,
 	points_legend = False,
 	lines_legend  = False,
-	dim_shift	  = 0,
+	dim_shift     = 0,
 	**kwargs
-	):
+	) -> None :
 	# Truncate all times
 	truncate_level = truncation * 1.04
 	inf_level = truncation * 1.08
@@ -181,17 +185,17 @@ def _plot_diagram(
 	df = pd.DataFrame(data=all_pts, columns=["Birth", "Death", "Dimension"])
 	df["Dimension"] = df["Dimension"].astype("category")
 	ret_ax = sns.scatterplot(
-		data	= df,
-		x		= "Birth",
-		y		= "Death",
-		hue		= "Dimension",
-		ax		= ax,
-		legend	= points_legend,
+		data   = df,
+		x      = "Birth",
+		y      = "Death",
+		hue    = "Dimension",
+		ax     = ax,
+		legend = points_legend,
 		**kwargs
 	)
 	ret_ax.set(xlabel = None)
 	ret_ax.set(ylabel = None)
-	ret_ax.set(title = title)
+	ret_ax.set(title  = title)
 	ret_ax.set_aspect('equal')
 	if points_legend:
 		sns.move_legend(ret_ax, "lower right")
@@ -204,11 +208,12 @@ def _plot_diagram(
 		handle.legend()
 
 def draw_filtration(
-	K : FilteredComplex,
-	points : NDArray[np.float64],
-	time :	float,
+	K               : FilteredComplex,
+	points          : NDArray[np.float64],
+	time            : float,
 	*,
-	include_colours : list[int] | None = None) -> tuple[Figure, Axes] :
+	include_colours : list[int] | None = None
+	) -> tuple[Figure, Axes] :
 	"""
 	Visualise a filtration at given time, optionally including only certain colours.
 
@@ -275,8 +280,8 @@ def draw_filtration(
 	return fig, ax
 
 def animate_filtration(
-	K : FilteredComplex,
-	points : NDArray[np.float64],
+	K                : FilteredComplex,
+	points           : NDArray[np.float64],
 	*,
 	filtration_times : list[float],
 	animation_length : float) -> animation.FuncAnimation :

@@ -51,7 +51,9 @@ preprocessor macro clashes
 namespace
 {
     using namespace chalc::stl;
-    using chalc::index_t,
+    using 
+        chalc::index_t,
+        chalc::MAX_NUM_COLOURS,
         Eigen::lastN,
         Eigen::all,
         std::min,
@@ -209,18 +211,14 @@ namespace
         return result;
     }
 
-    int num_unique(const vector<index_t> &vec) 
+    bool bad_colour(const index_t& colour)
     {
-        vector<index_t> temp(vec);
-        sort(temp.begin(), temp.end());
-        return unique(temp.begin(), temp.end()) - temp.begin();
+        return (colour >= MAX_NUM_COLOURS || colour < 0);
     }
-    
 }
 
 namespace chalc::chromatic
 {
-
     // Create a Delaunay triangulation from a collection of coordinate vectors
     FilteredComplex delaunay(const RealMatrix<double> &X)
     {
@@ -269,11 +267,9 @@ namespace chalc::chromatic
         const vector<index_t> &colours)
     {
         // input checks
-        int num_colours = num_unique(colours);
-        if (num_colours > MAX_NUM_COLOURS)
+        if (std::any_of(colours.begin(), colours.end(), bad_colour))
         {
-            throw std::domain_error("Too many colours. Number of colours must be <= " +
-                                    std::to_string(num_colours));
+            throw std::domain_error("All colours must be between 0 and " + std::to_string(MAX_NUM_COLOURS-1));
         }
         if (colours.size() != points.cols())
         {
@@ -310,11 +306,9 @@ namespace chalc::chromatic
         std::ostream &ostream)
     {
         // input checks
-        int num_colours = num_unique(colours);
-        if (num_colours > MAX_NUM_COLOURS)
+        if (std::any_of(colours.begin(), colours.end(), bad_colour))
         {
-            throw std::domain_error("Too many colours. Number of colours must be <= " +
-                                    std::to_string(num_colours));
+            throw std::domain_error("All colours must be between 0 and " + std::to_string(MAX_NUM_COLOURS-1));
         }
         if (colours.size() != points.cols())
         {
@@ -469,11 +463,9 @@ namespace chalc::chromatic
     FilteredComplex delcech(const RealMatrix<double> &points, const vector<index_t> &colours, std::ostream &ostream)
     {
         // input checks
-        int num_colours = num_unique(colours);
-        if (num_colours > MAX_NUM_COLOURS)
+        if (std::any_of(colours.begin(), colours.end(), bad_colour))
         {
-            throw std::domain_error("Too many colours. Number of colours must be <= " +
-                                    std::to_string(num_colours));
+            throw std::domain_error("All colours must be between 0 and " + std::to_string(MAX_NUM_COLOURS-1));
         }
         if (colours.size() != points.cols())
         {

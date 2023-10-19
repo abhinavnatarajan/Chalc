@@ -40,12 +40,11 @@
 namespace
 {
     using namespace chalc::stl;
-    using 
+    using
         std::sort,
         std::stable_sort,
         std::min,
         std::max,
-        std::move,
         std::fill,
         std::adjacent_find,
         std::prev_permutation,
@@ -186,6 +185,11 @@ namespace chalc
     void FilteredComplex::Simplex::set_colour(index_t c)
     {
         colours.reset().set(c);
+    }
+
+    colours_t FilteredComplex::Simplex::get_colours()
+    {
+        return colours;
     }
 
     unsigned long long int FilteredComplex::Simplex::get_colours_as_int()
@@ -335,7 +339,7 @@ namespace chalc
             }
             auto max_vertex = verts.back();
             new_simplex = Simplex::make_Simplex(
-                label, max_vertex, filt_value, move(facets));
+                label, max_vertex, filt_value, std::move(facets));
             simplices[dim][label] = new_simplex;
             num_simplices++;
         }
@@ -422,7 +426,7 @@ namespace chalc
                 s->make_colourless();
                 for (auto &f : s->get_facets())
                 {
-                    s->add_colours(f->colours);
+                    s->add_colours(f->get_colours());
                 }
             }
         }

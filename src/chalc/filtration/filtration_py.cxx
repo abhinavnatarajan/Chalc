@@ -9,12 +9,12 @@ PYBIND11_MODULE(filtration, m)
     m.doc() =
         R"docstring(
             Module containing utilities to store and manipulate 
-            abstract filtered simplicial complexes. 
+            abstract filtered simplicial complexes.
         )docstring";
 
     // forward declare classes
     py::class_<FilteredComplex> filtered_complex(m, "FilteredComplex");
-    py::class_<FilteredComplex::Simplex, shared_ptr<FilteredComplex::Simplex>> 
+    py::class_<FilteredComplex::Simplex, shared_ptr<FilteredComplex::Simplex>>
     simplex(m, "Simplex");
 
     /* FilteredComplex Interface */
@@ -27,9 +27,9 @@ PYBIND11_MODULE(filtration, m)
 
             Parameters
             ----------
-            n : 
+            n :
                 Number of vertices. Cannot be changed after initialisation.
-            k : 
+            k :
                 Maximum dimension of a simplex that the complex can have.
                 This parameter is required for memory efficiency, and cannot
                 be changed after initialisation.
@@ -46,26 +46,26 @@ PYBIND11_MODULE(filtration, m)
                     List of vertex labels corresponding to existing vertices 
                     in the complex.
                 filt_value :
-                    Filtration value to associate to the new simplex. 
+                    Filtration value to associate to the new simplex.
                 
                 Note
                 ----
                 Faces of the added simplex that are already present 
                 in the simplicial complex will have their filtration 
-                values reduced if necessary.                 
+                values reduced if necessary.
             )docstring",
             py::arg("vertices"), py::arg("filt_value"))
-        .def_property_readonly("num_simplices", 
+        .def_property_readonly("num_simplices",
         &FilteredComplex::size,
             R"docstring(
                 The total number of simplices in the complex.
             )docstring")
-        .def_property_readonly("dimension", 
+        .def_property_readonly("dimension",
         &FilteredComplex::dimension,
             R"docstring(
                 Current maximum dimension of a maximal simplex in the complex.
             )docstring")
-        .def_property_readonly("max_filtration_time", 
+        .def_property_readonly("max_filtration_time",
         &FilteredComplex::max_filt_value,
             R"docstring(
                 Current maximum dimension of a maximal simplex in the complex.
@@ -73,7 +73,7 @@ PYBIND11_MODULE(filtration, m)
         .def_readonly("max_dimension", &FilteredComplex::max_dim,
             R"docstring(
                 Maximum dimension of simplex that this complex can store. \
-                Set during initialisation. 
+                Set during initialisation.
             )docstring")
         .def_readonly("num_vertices", &FilteredComplex::N,
             R"docstring(
@@ -90,7 +90,7 @@ PYBIND11_MODULE(filtration, m)
                 Parameters
                 ----------
                 start_dim :
-                    Dimension from which to start propagating (exclusive). 
+                    Dimension from which to start propagating (exclusive).
                 upwards :
                     If true then values are propagated upwards, downwards otherwise.
                     , defaults to true.
@@ -102,8 +102,8 @@ PYBIND11_MODULE(filtration, m)
                 
                 Parameters
                 ----------
-                vertices : 
-                    Vertex labels of the simplex to check for. 
+                vertices :
+                    Vertex labels of the simplex to check for.
             )docstring",
             py::arg("vertices"))
         .def_property_readonly("simplices", &FilteredComplex::get_simplices,
@@ -114,7 +114,7 @@ PYBIND11_MODULE(filtration, m)
                 the lexicographic index of that simplex with respect \
                 to its vertex labels sorted in ascending order, \
                 counting all possible sorted subsequences of :math:`(0, ..., N-1)` \
-                of length :math:`k`. 
+                of length :math:`k`.
             )docstring")
         .def("get_label_from_vertex_labels", &FilteredComplex::get_label_from_vertex_labels,
              R"docstring(
@@ -126,7 +126,7 @@ PYBIND11_MODULE(filtration, m)
                 
                 Parameters
                 ----------
-                vertices : 
+                vertices :
                     List of vertex labels of the simplex.
             )docstring",
             py::arg("vertices"))
@@ -134,7 +134,7 @@ PYBIND11_MODULE(filtration, m)
              R"docstring(
                 Function to make sure that simplex colours are consistent 
                 with the colours of their vertices. You should call this 
-                whenever you change the colour of any vertices. 
+                whenever you change the colour of any vertices.
             )docstring")
         .def("serialised", &FilteredComplex::serialised,
              R"docstring(
@@ -176,7 +176,7 @@ PYBIND11_MODULE(filtration, m)
                 counting all possible sorted subsequences of :math:`(0, ..., N-1)`
                 of length :math:`k`.
             )docstring")
-        .def_property_readonly("vertices", 
+        .def_property_readonly("vertices",
         static_cast<vector<index_t> (FilteredComplex::Simplex::*)() const>(
             &FilteredComplex::Simplex::get_vertex_labels),
             R"docstring(
@@ -196,7 +196,7 @@ PYBIND11_MODULE(filtration, m)
                 bit represents the smallest colour index. More precisely, \
                 :math:`\mathrm{bitmask} = \sum_{c \in \mathrm{colours}(\sigma)} 2^c`. \
                 For example, a simplex having vertices of colours 0 and 1 has a \
-                colour bitmask of 3. 
+                colour bitmask of 3.
             )docstring")
         .def(
             "set_colour",

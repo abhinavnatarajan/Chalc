@@ -1,64 +1,30 @@
 from __future__ import annotations
 
-__doc__ = "Routines for computing six-packs of persistence diagrams."
+__doc__ = "Routines for computing 6-packs of persistence diagrams."
 
-from . import chromatic
+from .chromatic import alpha, delcech, delrips
+from .filtration import FilteredComplex
 from ._utils import interpolate_docstring
 import numpy as np
 from numpy.typing import NDArray
-from typing import Optional, ClassVar, overload
+from typing import Optional, Callable, ClassVar, overload
 from phimaker import compute_ensemble
 from dataclasses import dataclass, field, fields
 from h5py import Group, Dataset
 
 ChromaticMethod = {
-	"chromatic alpha":   chromatic.alpha,
-	"chromatic delcech": chromatic.delcech,
-	"chromatic delrips": chromatic.delrips
+	"chromatic alpha":   alpha,
+	"chromatic delcech": delcech,
+	"chromatic delrips": delrips
 }
 
 BdMatType = list[tuple[bool, int, NDArray[np.int64]]]
 
-def _get_boundary_matrix(x : NDArray[np.float64],
-						 colours : list[int],
-						 *, # rest are keyword only
-						 dom : list[int] | None = None,
-						 k : int | None = None,
-						 method : str = "chromatic alpha",
-						 max_dgm_dim : int = 2) -> tuple[BdMatType, list[float], list[int]] :
-	if dom is not None and k is None:
-		# new colours: 1 -> domain, 0 -> codomain
-		new_colours = np.isin(colours, dom).astype(np.int64)
-		check_in_domain = lambda b : b == 2
-	elif k is not None and dom is None:
-		check_in_domain = lambda b: _num_colours_in_bitmask(b) <= k # k-chromatic simplex
-		new_colours = colours
-	else:
-		raise RuntimeError("Only one of k or dom is allowed")
-
-	# Compute chromatic complex
-	if method in ChromaticMethod.keys():
-		K = ChromaticMethod[method](x, new_colours)
-	else:
-		raise RuntimeError(f"method must be one of {ChromaticMethod.keys()}")
-
-	# Build up the matrix
-	matrix : BdMatType = []
-	entrance_times : list[float] = []
-	dimensions : list[int] = []
-	for column in K.serialised():
-		facet_idxs = column[0]
-		dimension = max(0, len(facet_idxs) - 1)
-		# Only need k-skeleton for k <= max_dgm_dim + 1
-		if dimension > max_dgm_dim + 1: break
-		dimensions.append(dimension)
-		entrance_times.append(column[2])
-		matrix.append((check_in_domain(column[3]), dimension, facet_idxs))
-	return matrix, entrance_times, dimensions
-
+# bitmask that represents a list of colours
 def _colours_to_bitmask(colours : list[int]) -> int :
 	return sum(2**i for i in colours)
 
+# list of colours represented by a bitmask
 def _bitmask_to_colours(b : int) -> list[int] :
 	i = 0
 	res = []
@@ -69,6 +35,7 @@ def _bitmask_to_colours(b : int) -> list[int] :
 		b >>= 1
 	return res
 
+# number of colours specified by a bitmask
 def _num_colours_in_bitmask(b : int) -> int :
 	return len(_bitmask_to_colours(b))
 
@@ -76,66 +43,23 @@ def _num_colours_in_bitmask(b : int) -> int :
 def _colours_are_subset(b1 : int, b2 : int) -> bool :
 	return not (~b2 & b1)
 
-@interpolate_docstring()
-def compute(x : NDArray[np.float64],
-			colours : list[int],
-			*, # rest are keyword only
-			dom : Optional[list[int]] = None,
-			k : Optional[int] = None,
-			method : str = "chromatic alpha",
-			max_dgm_dim : int = 2) -> DiagramEnsemble :
-	"""
-	Compute the 6-pack of persistence diagrams of a coloured point-cloud.
-
-	This function constructs a chromatic complex :math:`L` from the point cloud,
-	and computes persistence diagrams associated with the inclusion
-	:math:`f : K \\hookrightarrow L` of a filtered subcomplex into :math:`L`.
-
-	Parameters
-	----------
-	x :
-		Numpy matrix whose columns are points.
-	colours :
-		List of integers describing the colours of the points.
-
-	Keyword Args
-	------------
-	dom :
-		List of integers describing the colours of the points in the domain.
-	k :
-		If not ``None``, then the domain is taken to be the :math:`k`-chromatic
-		subcomplex of :math:`L`, i.e., the subcomplex of simplices of at
-		most :math:`k` colours.
-	method:
-		Filtration used to construct the chromatic complex. Must be one of
-		``${str(list(ChromaticMethod.keys()))}``.
-	max_dgm_dim :
-		Maximum homological dimension for which the persistence diagrams are computed.
-
-	Returns
-	-------
-	dgms : DiagramEnsemble
-		Diagrams corresponding to the following persistence modules (where
-		:math:`H_*` is the persistent homology functor and :math:`f_*` is the
-		induced map on persistent homology):
-
-		#. :math:`H_*(K)` (domain)
-		#. :math:`H_*(L)` (codomain)
-		#. :math:`\\ker(f_*)` (kernel)
-		#. :math:`\\mathrm{coker}(f_*)` (cokernel)
-		#. :math:`\\mathrm{im}(f_*)` (image)
-		#. :math:`H_*(L, K)` (relative homology)
-
-		Each diagram is represented by sets of paired and unpaired simplices,
-		and contain simplices of all dimensions. ``dgms`` also contains the
-		entrance times of the simplices and their dimensions.
-	"""
-	matrix, entrance_times, dimensions = _get_boundary_matrix(
-		x, colours,
-		dom=dom,
-		k=k,
-		method=method,
-		max_dgm_dim=max_dgm_dim)
+def _get_diagrams(
+	K               : FilteredComplex,
+	check_in_domain : Callable[[int], bool],
+	max_dgm_dim     : int
+	) -> DiagramEnsemble :
+	# Build up the matrix
+	matrix:         BdMatType   = []
+	entrance_times: list[float] = []
+	dimensions:     list[int]   = []
+	for column in K.serialised():
+		facet_idxs = column[0]
+		dimension = max(0, len(facet_idxs) - 1)
+		# Only need k-skeleton for k <= max_dgm_dim + 1
+		if dimension > max_dgm_dim + 1: break
+		dimensions.append(dimension)
+		entrance_times.append(column[2])
+		matrix.append((check_in_domain(column[3]), dimension, facet_idxs))
 	d = compute_ensemble(matrix)
 	dgms = DiagramEnsemble(
 		Diagram._fromPhimaker(d.ker),
@@ -147,6 +71,139 @@ def compute(x : NDArray[np.float64],
 		entrance_times,
 		dimensions)
 	return dgms
+
+@interpolate_docstring()
+def from_filtration(
+	K                     : FilteredComplex,
+	*,
+	dom                   : list[int] | None = None,
+	k                     : int | None       = None,
+	max_diagram_dimension : int              = 2
+	) -> DiagramEnsemble :
+	"""
+	Compute the 6-pack of persistence diagrams filtered simplicial complex with coloured vertices.
+
+	Given a filtered chromatic simplicial complex :math:`K` and a subcomplex :math:`L` of :math:`K`,
+	this function computes the 6-pack of persistence diagram associated with
+	the inclusion map :math:`f : L \\hookrightarrow K`. The subcomplex is specified by
+	the colours of its vertices, or by an integer :math:`k` wherein all simplices with
+	:math:`k` or fewer colours are considered part of the subcomplex.
+
+	Parameters
+	----------
+	K :
+		A filtered chromatic simplicial complex.
+
+	Keyword Args
+	------------
+	dom :
+		List of integers describing the colours of the points in the domain (the subcomplex :math:`L`).
+	k :
+		If not ``None``, then the domain is taken to be the :math:`k`-chromatic
+		subcomplex of :math:`K`, i.e., the subcomplex of simplices having at
+		most :math:`k` colours.
+	max_diagram_dimension :
+		Maximum homological dimension for which the persistence diagrams are computed.
+
+	Returns
+	-------
+	dgms : DiagramEnsemble
+		Diagrams corresponding to the following persistence modules (where
+		:math:`H_*` is the persistent homology functor and :math:`f_*` is the
+		induced map on persistent homology):
+
+		#. :math:`H_*(L)` (domain)
+		#. :math:`H_*(K)` (codomain)
+		#. :math:`\\ker(f_*)` (kernel)
+		#. :math:`\\mathrm{coker}(f_*)` (cokernel)
+		#. :math:`\\mathrm{im}(f_*)` (image)
+		#. :math:`H_*(K, L)` (relative homology)
+
+		Each diagram is represented by sets of paired and unpaired simplices,
+		and contain simplices of all dimensions. ``dgms`` also contains the
+		entrance times of the simplices and their dimensions.
+	"""
+	if dom is not None and k is None:
+		colours_bitmask = _colours_to_bitmask(dom)
+		check_in_domain = lambda b : _colours_are_subset(b, colours_bitmask)
+	elif k is not None and dom is None:
+		check_in_domain = lambda b: _num_colours_in_bitmask(b) <= k # k-chromatic simplex
+	else:
+		raise RuntimeError("Only one of k or dom is allowed")
+	return _get_diagrams(K, check_in_domain, max_diagram_dimension)
+
+@interpolate_docstring()
+def compute(
+	x                     : NDArray[np.float64],
+	colours               : list[int],
+	*, # rest are keyword only
+	dom                   : Optional[list[int]] = None,
+	k                     : Optional[int]       = None,
+	method                : str                 = "chromatic alpha",
+	max_diagram_dimension : int                 = 2
+	) -> DiagramEnsemble :
+	"""
+	Compute the 6-pack of persistence diagrams of a coloured point-cloud.
+
+	This function constructs a filtered chromatic simplicial complex :math:`K`
+	from the point cloud, and computes the 6-pack of persistence diagrams
+	associated with the inclusion :math:`f : L \\hookrightarrow K` where
+	:math:`L` is some filtered subcomplex of :math:`K`.
+
+	Parameters
+	----------
+	x :
+		Numpy matrix whose columns are points.
+	colours :
+		List of integers describing the colours of the points.
+
+	Keyword Args
+	------------
+	dom :
+		List of integers describing the colours of the points in the domain (the subcomplex :math:`L`).
+	k :
+		If not ``None``, then the domain is taken to be the :math:`k`-chromatic
+		subcomplex of :math:`K`, i.e., the subcomplex of simplices having at
+		most :math:`k` colours.
+	method:
+		Filtration used to construct the chromatic complex. Must be one of
+		``${str(list(ChromaticMethod.keys()))}``.
+	max_diagram_dimension :
+		Maximum homological dimension for which the persistence diagrams are computed.
+
+	Returns
+	-------
+	dgms : DiagramEnsemble
+		Diagrams corresponding to the following persistence modules (where
+		:math:`H_*` is the persistent homology functor and :math:`f_*` is the
+		induced map on persistent homology):
+
+		#. :math:`H_*(L)` (domain)
+		#. :math:`H_*(K)` (codomain)
+		#. :math:`\\ker(f_*)` (kernel)
+		#. :math:`\\mathrm{coker}(f_*)` (cokernel)
+		#. :math:`\\mathrm{im}(f_*)` (image)
+		#. :math:`H_*(K, L)` (relative homology)
+
+		Each diagram is represented by sets of paired and unpaired simplices,
+		and contain simplices of all dimensions. ``dgms`` also contains the
+		entrance times of the simplices and their dimensions.
+	"""
+	if dom is not None and k is None:
+		# new colours: 1 -> domain, 0 -> codomain
+		new_colours = np.isin(colours, dom).astype(np.int64)
+		check_in_domain = lambda b : b == 2
+	elif k is not None and dom is None:
+		check_in_domain = lambda b: _num_colours_in_bitmask(b) <= k # k-chromatic simplex
+		new_colours = colours
+	else:
+		raise RuntimeError("Only one of k or dom is allowed")
+	# Compute chromatic complex
+	if method in ChromaticMethod.keys():
+		K = ChromaticMethod[method](x, new_colours)
+	else:
+		raise RuntimeError(f"method must be one of {ChromaticMethod.keys()}")
+	return _get_diagrams(K, check_in_domain, max_diagram_dimension)
 
 @dataclass
 class Diagram:
@@ -186,7 +243,7 @@ class Diagram:
 @dataclass
 class DiagramEnsemble:
 	"""
-	Six pack of persistence diagrams.
+	6-pack of persistence diagrams.
 	"""
 	# List of matrices
 	diagram_names : ClassVar[list[str]] = ['ker', 'cok', 'dom', 'cod', 'im', 'rel']
@@ -250,7 +307,7 @@ class DiagramEnsemble:
 
 def save_diagrams(dgms : DiagramEnsemble, file : Group) -> None :
 	"""
-	Save a six-pack of persistence diagrams to a HDF5 file or group.
+	Save a 6-pack of persistence diagrams to a HDF5 file or group.
 
 	Args:
 		dgms : 6-pack of diagrams to save to file/group.
@@ -265,7 +322,7 @@ def save_diagrams(dgms : DiagramEnsemble, file : Group) -> None :
 
 def load_diagrams(file : Group) -> DiagramEnsemble :
 	"""
-	Load a six-pack of persistence diagrams from a HDF5 file or group.
+	Load a 6-pack of persistence diagrams from a HDF5 file or group.
 	"""
 	dgms = DiagramEnsemble()
 	if any(f.name not in file for f in fields(DiagramEnsemble)):

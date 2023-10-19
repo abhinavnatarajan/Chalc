@@ -1,7 +1,7 @@
 import re
 from typing import Callable
 
-def interpolate_docstring(names : dict = dict()) -> Callable :
+def interpolate_docstring(names : dict = dict()) -> Callable[[Callable], Callable] :
     def inner(func : Callable) -> Callable:
         docstring : str | None = func.__doc__
         if docstring is not None:

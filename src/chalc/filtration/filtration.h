@@ -42,7 +42,7 @@
 
 namespace chalc
 {
-    constexpr index_t MAX_NUM_COLOURS = 4;
+    constexpr index_t MAX_NUM_COLOURS = 64;
     typedef std::bitset<MAX_NUM_COLOURS> colours_t;
 
     class BinomialCoeffTable;
@@ -160,9 +160,8 @@ namespace chalc
 
         const index_t label;      // label for the simplex
         const index_t max_vertex; // largest vertex label
-        const index_t dim;        // number of vertices - 1
-        value_t value;            // filtration value
-        colours_t colours;        // bitmask representing the colours of its vertices
+        const index_t dim;        // number of vertices minus 1
+        value_t       value;      // filtration value
         static constexpr value_t DEFAULT_FILT_VALUE = 0.0;
 
         /* PUBLIC METHODS OF Simplex */
@@ -206,12 +205,15 @@ namespace chalc
 
         inline void add_colours(colours_t c);
 
+        colours_t  get_colours();
+
         inline void make_colourless();
 
         /* PRIVATE MEMBERS OF Simplex */
     private:
-        const std::vector<std::shared_ptr<Simplex>> facets; // pointers to the [i]th facets of the simplex
-        std::vector<std::weak_ptr<Simplex>> cofacets;       // pointers to the cofacets of the simplex
+        const std::vector<std::shared_ptr<Simplex>>  facets;   // pointers to the [i]th facets of the simplex
+        std::vector<std::weak_ptr<Simplex>>          cofacets; // pointers to the cofacets of the simplex
+        colours_t                                    colours;  // bitmask representing the colours of its vertices
         // Constructor
         Simplex(
             index_t label,
