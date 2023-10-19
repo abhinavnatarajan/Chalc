@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="License" href="../license.html" /><link rel="prev" title="DiagramEnsemble" href="chalc.sixpack.DiagramEnsemble.html" />
 
     <!-- Generated with Sphinx 7.2.4 and Furo 2023.08.19 -->
-        <title>plotting - chalc 0.6.1 documentation</title>
+        <title>plotting - chalc 0.7.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">chalc 0.6.1 documentation</div></a>
+      <a href="../index.html"><div class="brand">chalc 0.7.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -148,7 +148,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">chalc 0.6.1 documentation</span>
+  <span class="sidebar-brand-text">chalc 0.7.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -240,7 +240,7 @@
 <td><p>Visualise a filtration at given time, optionally including only certain colours.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#chalc.plotting.plot_diagram" title="chalc.plotting.plot_diagram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_diagram</span></code></a></p></td>
-<td><p>Plot a specific diagram from a sixpack.</p></td>
+<td><p>Plot a specific diagram from a 6-pack.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#chalc.plotting.plot_sixpack" title="chalc.plotting.plot_sixpack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_sixpack</span></code></a></p></td>
 <td><p>Plots the 6-pack of persistence diagrams returned by <a class="reference internal" href="chalc.sixpack.html#chalc.sixpack.compute" title="chalc.sixpack.compute"><code class="xref py py-func docutils literal notranslate"><span class="pre">compute</span></code></a>.</p></td>
@@ -291,7 +291,7 @@
 <dd class="field-even"><p><strong>include_colours</strong> – Optional list of colours to include. If not specified then all colours will be drawn.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)">tuple</a>[<a class="reference external" href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.FigureBase" title="(in Matplotlib v3.8.0)"><em>FigureBase</em></a>, <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="(in Matplotlib v3.8.0)"><em>Axes</em></a>]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)">tuple</a>[<a class="reference external" href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="(in Matplotlib v3.8.0)"><em>Figure</em></a>, <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="(in Matplotlib v3.8.0)"><em>Axes</em></a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -299,11 +299,11 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="chalc.plotting.plot_diagram">
 <span class="sig-name descname"><span class="pre">plot_diagram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dgms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diagram_name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">truncation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_diagram_dimension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.plotting.plot_diagram" title="Link to this definition">#</a></dt>
-<dd><p>Plot a specific diagram from a sixpack.</p>
+<dd><p>Plot a specific diagram from a 6-pack.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dgms</strong> (<a class="reference internal" href="chalc.sixpack.DiagramEnsemble.html#chalc.sixpack.DiagramEnsemble" title="chalc.sixpack.DiagramEnsemble"><em>DiagramEnsemble</em></a>) – The six-pack of persistence diagrams.</p></li>
+<li><p><strong>dgms</strong> (<a class="reference internal" href="chalc.sixpack.DiagramEnsemble.html#chalc.sixpack.DiagramEnsemble" title="chalc.sixpack.DiagramEnsemble"><em>DiagramEnsemble</em></a>) – The 6-pack of persistence diagrams.</p></li>
 <li><p><strong>diagram_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – One of <code class="docutils literal notranslate"><span class="pre">['ker',</span> <span class="pre">'cok',</span> <span class="pre">'dom',</span> <span class="pre">'cod',</span> <span class="pre">'im',</span> <span class="pre">'rel']</span></code>.</p></li>
 </ul>
 </dd>
@@ -314,7 +314,7 @@
 </ul>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)">tuple</a>[<a class="reference external" href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.FigureBase" title="(in Matplotlib v3.8.0)"><em>FigureBase</em></a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.26)"><em>dtype</em></a>[<em>_ScalarType_co</em>]]]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)">tuple</a>[<a class="reference external" href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="(in Matplotlib v3.8.0)"><em>Figure</em></a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.26)"><em>dtype</em></a>[<em>_ScalarType_co</em>]]]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -325,7 +325,7 @@
 <dd><p>Plots the 6-pack of persistence diagrams returned by <a class="reference internal" href="chalc.sixpack.html#chalc.sixpack.compute" title="chalc.sixpack.compute"><code class="xref py py-func docutils literal notranslate"><span class="pre">compute</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dgms</strong> (<a class="reference internal" href="chalc.sixpack.DiagramEnsemble.html#chalc.sixpack.DiagramEnsemble" title="chalc.sixpack.DiagramEnsemble"><em>DiagramEnsemble</em></a>) – The six-pack of persistence diagrams.</p>
+<dd class="field-odd"><p><strong>dgms</strong> (<a class="reference internal" href="chalc.sixpack.DiagramEnsemble.html#chalc.sixpack.DiagramEnsemble" title="chalc.sixpack.DiagramEnsemble"><em>DiagramEnsemble</em></a>) – The 6-pack of persistence diagrams.</p>
 </dd>
 <dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -334,7 +334,7 @@
 </ul>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)">tuple</a>[<a class="reference external" href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.FigureBase" title="(in Matplotlib v3.8.0)"><em>FigureBase</em></a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.26)"><em>dtype</em></a>[<em>_ScalarType_co</em>]]]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)">tuple</a>[<a class="reference external" href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="(in Matplotlib v3.8.0)"><em>Figure</em></a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.26)"><em>dtype</em></a>[<em>_ScalarType_co</em>]]]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -420,7 +420,7 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=2bd037f0"></script>
+</div><script src="../_static/documentation_options.js?v=fe7df9b0"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>

@@ -20,6 +20,7 @@ Overview
       :nosignatures:
    
       compute
+      from_filtration
       load_diagrams
       save_diagrams
    
@@ -55,5 +56,6 @@ Details
 
 
 .. autofunction:: compute
+.. autofunction:: from_filtration
 .. autofunction:: load_diagrams
 .. autofunction:: save_diagrams

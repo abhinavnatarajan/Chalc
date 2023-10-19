@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Diagram" href="chalc.sixpack.Diagram.html" /><link rel="prev" title="Simplex" href="chalc.filtration.Simplex.html" />
 
     <!-- Generated with Sphinx 7.2.4 and Furo 2023.08.19 -->
-        <title>sixpack - chalc 0.6.1 documentation</title>
+        <title>sixpack - chalc 0.7.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">chalc 0.6.1 documentation</div></a>
+      <a href="../index.html"><div class="brand">chalc 0.7.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -148,7 +148,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">chalc 0.6.1 documentation</span>
+  <span class="sidebar-brand-text">chalc 0.7.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -227,7 +227,7 @@
 <h1>sixpack<a class="headerlink" href="#sixpack" title="Link to this heading">#</a></h1>
 <section id="module-chalc.sixpack">
 <span id="overview"></span><h2>Overview<a class="headerlink" href="#module-chalc.sixpack" title="Link to this heading">#</a></h2>
-<p>Routines for computing six-packs of persistence diagrams.</p>
+<p>Routines for computing 6-packs of persistence diagrams.</p>
 <section id="functions">
 <h3>Functions<a class="headerlink" href="#functions" title="Link to this heading">#</a></h3>
 <div class="table-wrapper autosummary longtable docutils container">
@@ -236,11 +236,14 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#chalc.sixpack.compute" title="chalc.sixpack.compute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute</span></code></a></p></td>
 <td><p>Compute the 6-pack of persistence diagrams of a coloured point-cloud.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#chalc.sixpack.load_diagrams" title="chalc.sixpack.load_diagrams"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_diagrams</span></code></a></p></td>
-<td><p>Load a six-pack of persistence diagrams from a HDF5 file or group.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#chalc.sixpack.from_filtration" title="chalc.sixpack.from_filtration"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_filtration</span></code></a></p></td>
+<td><p>Compute the 6-pack of persistence diagrams filtered simplicial complex with coloured vertices.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#chalc.sixpack.save_diagrams" title="chalc.sixpack.save_diagrams"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_diagrams</span></code></a></p></td>
-<td><p>Save a six-pack of persistence diagrams to a HDF5 file or group.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#chalc.sixpack.load_diagrams" title="chalc.sixpack.load_diagrams"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_diagrams</span></code></a></p></td>
+<td><p>Load a 6-pack of persistence diagrams from a HDF5 file or group.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#chalc.sixpack.save_diagrams" title="chalc.sixpack.save_diagrams"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_diagrams</span></code></a></p></td>
+<td><p>Save a 6-pack of persistence diagrams to a HDF5 file or group.</p></td>
 </tr>
 </tbody>
 </table>
@@ -255,7 +258,7 @@
 <td><p>Persistence diagram object, represented by a set of simplex pairings and a set of unpaired simplices.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="chalc.sixpack.DiagramEnsemble.html#chalc.sixpack.DiagramEnsemble" title="chalc.sixpack.DiagramEnsemble"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DiagramEnsemble</span></code></a></p></td>
-<td><p>Six pack of persistence diagrams.</p></td>
+<td><p>6-pack of persistence diagrams.</p></td>
 </tr>
 </tbody>
 </table>
@@ -266,11 +269,12 @@
 <h2>Details<a class="headerlink" href="#details" title="Link to this heading">#</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="chalc.sixpack.compute">
-<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colours</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'chromatic</span> <span class="pre">alpha'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_dgm_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.sixpack.compute" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colours</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'chromatic</span> <span class="pre">alpha'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_diagram_dimension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.sixpack.compute" title="Link to this definition">#</a></dt>
 <dd><p>Compute the 6-pack of persistence diagrams of a coloured point-cloud.</p>
-<p>This function constructs a chromatic complex <span class="math notranslate nohighlight">\(L\)</span> from the point cloud,
-and computes persistence diagrams associated with the inclusion
-<span class="math notranslate nohighlight">\(f : K \hookrightarrow L\)</span> of a filtered subcomplex into <span class="math notranslate nohighlight">\(L\)</span>.</p>
+<p>This function constructs a filtered chromatic simplicial complex <span class="math notranslate nohighlight">\(K\)</span>
+from the point cloud, and computes the 6-pack of persistence diagrams
+associated with the inclusion <span class="math notranslate nohighlight">\(f : L \hookrightarrow K\)</span> where
+<span class="math notranslate nohighlight">\(L\)</span> is some filtered subcomplex of <span class="math notranslate nohighlight">\(K\)</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -280,13 +284,13 @@ and computes persistence diagrams associated with the inclusion
 </dd>
 <dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>dom</strong> – List of integers describing the colours of the points in the domain.</p></li>
+<li><p><strong>dom</strong> – List of integers describing the colours of the points in the domain (the subcomplex <span class="math notranslate nohighlight">\(L\)</span>).</p></li>
 <li><p><strong>k</strong> – If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, then the domain is taken to be the <span class="math notranslate nohighlight">\(k\)</span>-chromatic
-subcomplex of <span class="math notranslate nohighlight">\(L\)</span>, i.e., the subcomplex of simplices of at
+subcomplex of <span class="math notranslate nohighlight">\(K\)</span>, i.e., the subcomplex of simplices having at
 most <span class="math notranslate nohighlight">\(k\)</span> colours.</p></li>
 <li><p><strong>method</strong> – Filtration used to construct the chromatic complex. Must be one of
 <code class="docutils literal notranslate"><span class="pre">['chromatic</span> <span class="pre">alpha',</span> <span class="pre">'chromatic</span> <span class="pre">delcech',</span> <span class="pre">'chromatic</span> <span class="pre">delrips']</span></code>.</p></li>
-<li><p><strong>max_dgm_dim</strong> – Maximum homological dimension for which the persistence diagrams are computed.</p></li>
+<li><p><strong>max_diagram_dimension</strong> – Maximum homological dimension for which the persistence diagrams are computed.</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -294,12 +298,57 @@ most <span class="math notranslate nohighlight">\(k\)</span> colours.</p></li>
 <span class="math notranslate nohighlight">\(H_*\)</span> is the persistent homology functor and <span class="math notranslate nohighlight">\(f_*\)</span> is the
 induced map on persistent homology):</p>
 <ol class="arabic simple">
-<li><p><span class="math notranslate nohighlight">\(H_*(K)\)</span> (domain)</p></li>
-<li><p><span class="math notranslate nohighlight">\(H_*(L)\)</span> (codomain)</p></li>
+<li><p><span class="math notranslate nohighlight">\(H_*(L)\)</span> (domain)</p></li>
+<li><p><span class="math notranslate nohighlight">\(H_*(K)\)</span> (codomain)</p></li>
 <li><p><span class="math notranslate nohighlight">\(\ker(f_*)\)</span> (kernel)</p></li>
 <li><p><span class="math notranslate nohighlight">\(\mathrm{coker}(f_*)\)</span> (cokernel)</p></li>
 <li><p><span class="math notranslate nohighlight">\(\mathrm{im}(f_*)\)</span> (image)</p></li>
-<li><p><span class="math notranslate nohighlight">\(H_*(L, K)\)</span> (relative homology)</p></li>
+<li><p><span class="math notranslate nohighlight">\(H_*(K, L)\)</span> (relative homology)</p></li>
+</ol>
+<p>Each diagram is represented by sets of paired and unpaired simplices,
+and contain simplices of all dimensions. <code class="docutils literal notranslate"><span class="pre">dgms</span></code> also contains the
+entrance times of the simplices and their dimensions.</p>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="chalc.sixpack.DiagramEnsemble.html#chalc.sixpack.DiagramEnsemble" title="chalc.sixpack.DiagramEnsemble">DiagramEnsemble</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chalc.sixpack.from_filtration">
+<span class="sig-name descname"><span class="pre">from_filtration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_diagram_dimension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.sixpack.from_filtration" title="Link to this definition">#</a></dt>
+<dd><p>Compute the 6-pack of persistence diagrams filtered simplicial complex with coloured vertices.</p>
+<p>Given a filtered chromatic simplicial complex <span class="math notranslate nohighlight">\(K\)</span> and a subcomplex <span class="math notranslate nohighlight">\(L\)</span> of <span class="math notranslate nohighlight">\(K\)</span>,
+this function computes the 6-pack of persistence diagram associated with
+the inclusion map <span class="math notranslate nohighlight">\(f : L \hookrightarrow K\)</span>. The subcomplex is specified by
+the colours of its vertices, or by an integer <span class="math notranslate nohighlight">\(k\)</span> wherein all simplices with
+<span class="math notranslate nohighlight">\(k\)</span> or fewer colours are considered part of the subcomplex.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>K</strong> (<a class="reference internal" href="chalc.filtration.FilteredComplex.html#chalc.filtration.FilteredComplex" title="chalc.filtration.FilteredComplex"><em>FilteredComplex</em></a>) – A filtered chromatic simplicial complex.</p>
+</dd>
+<dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>dom</strong> – List of integers describing the colours of the points in the domain (the subcomplex <span class="math notranslate nohighlight">\(L\)</span>).</p></li>
+<li><p><strong>k</strong> – If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, then the domain is taken to be the <span class="math notranslate nohighlight">\(k\)</span>-chromatic
+subcomplex of <span class="math notranslate nohighlight">\(K\)</span>, i.e., the subcomplex of simplices having at
+most <span class="math notranslate nohighlight">\(k\)</span> colours.</p></li>
+<li><p><strong>max_diagram_dimension</strong> – Maximum homological dimension for which the persistence diagrams are computed.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p><strong>dgms</strong> – Diagrams corresponding to the following persistence modules (where
+<span class="math notranslate nohighlight">\(H_*\)</span> is the persistent homology functor and <span class="math notranslate nohighlight">\(f_*\)</span> is the
+induced map on persistent homology):</p>
+<ol class="arabic simple">
+<li><p><span class="math notranslate nohighlight">\(H_*(L)\)</span> (domain)</p></li>
+<li><p><span class="math notranslate nohighlight">\(H_*(K)\)</span> (codomain)</p></li>
+<li><p><span class="math notranslate nohighlight">\(\ker(f_*)\)</span> (kernel)</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathrm{coker}(f_*)\)</span> (cokernel)</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathrm{im}(f_*)\)</span> (image)</p></li>
+<li><p><span class="math notranslate nohighlight">\(H_*(K, L)\)</span> (relative homology)</p></li>
 </ol>
 <p>Each diagram is represented by sets of paired and unpaired simplices,
 and contain simplices of all dimensions. <code class="docutils literal notranslate"><span class="pre">dgms</span></code> also contains the
@@ -315,7 +364,7 @@ entrance times of the simplices and their dimensions.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="chalc.sixpack.load_diagrams">
 <span class="sig-name descname"><span class="pre">load_diagrams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.sixpack.load_diagrams" title="Link to this definition">#</a></dt>
-<dd><p>Load a six-pack of persistence diagrams from a HDF5 file or group.</p>
+<dd><p>Load a 6-pack of persistence diagrams from a HDF5 file or group.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="chalc.sixpack.DiagramEnsemble.html#chalc.sixpack.DiagramEnsemble" title="chalc.sixpack.DiagramEnsemble"><em>DiagramEnsemble</em></a></p>
@@ -326,7 +375,7 @@ entrance times of the simplices and their dimensions.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="chalc.sixpack.save_diagrams">
 <span class="sig-name descname"><span class="pre">save_diagrams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dgms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.sixpack.save_diagrams" title="Link to this definition">#</a></dt>
-<dd><p>Save a six-pack of persistence diagrams to a HDF5 file or group.</p>
+<dd><p>Save a 6-pack of persistence diagrams to a HDF5 file or group.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -403,6 +452,7 @@ entrance times of the simplices and their dimensions.</p>
 </li>
 <li><a class="reference internal" href="#details">Details</a><ul>
 <li><a class="reference internal" href="#chalc.sixpack.compute"><code class="docutils literal notranslate"><span class="pre">compute()</span></code></a></li>
+<li><a class="reference internal" href="#chalc.sixpack.from_filtration"><code class="docutils literal notranslate"><span class="pre">from_filtration()</span></code></a></li>
 <li><a class="reference internal" href="#chalc.sixpack.load_diagrams"><code class="docutils literal notranslate"><span class="pre">load_diagrams()</span></code></a></li>
 <li><a class="reference internal" href="#chalc.sixpack.save_diagrams"><code class="docutils literal notranslate"><span class="pre">save_diagrams()</span></code></a></li>
 </ul>
@@ -418,7 +468,7 @@ entrance times of the simplices and their dimensions.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=2bd037f0"></script>
+</div><script src="../_static/documentation_options.js?v=fe7df9b0"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
