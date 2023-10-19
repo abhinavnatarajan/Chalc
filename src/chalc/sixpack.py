@@ -130,6 +130,7 @@ def from_filtration(
 		check_in_domain = lambda b: _num_colours_in_bitmask(b) <= k # k-chromatic simplex
 	else:
 		raise RuntimeError("Only one of k or dom is allowed")
+	max_diagram_dimension = min(max_diagram_dimension, K.dimension)
 	return _get_diagrams(K, check_in_domain, max_diagram_dimension)
 
 @interpolate_docstring()
@@ -198,6 +199,7 @@ def compute(
 		new_colours = colours
 	else:
 		raise RuntimeError("Only one of k or dom is allowed")
+	max_diagram_dimension = min(max_diagram_dimension, x.shape[0] - 1)
 	# Compute chromatic complex
 	if method in ChromaticMethod.keys():
 		K = ChromaticMethod[method](x, new_colours)
