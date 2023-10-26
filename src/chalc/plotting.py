@@ -66,7 +66,7 @@ def plot_sixpack(
 			dgms.entrance_times,
 			dgms.dimensions,
 			truncation,
-			ax            = axes[*plot_pos[diagram_name]],
+			ax            = axes[plot_pos[diagram_name]],
 			max_dim       = max_dim[diagram_name],
 			dim_shift     = dim_shift[diagram_name],
 			title         = plot_titles[diagram_name],
@@ -79,7 +79,7 @@ def plot_sixpack(
 		for h,l in zip(handles, labels):
 			legends[l] = h
 		ax.tick_params(labelleft = True, labelbottom = True)
-	axes[*plot_pos['rel']].get_legend().remove()
+	axes[plot_pos['rel']].get_legend().remove()
 	fig.legend(handles=legends.values(), loc = 'upper center', bbox_to_anchor = (0.5, 0.05), ncol = 5)
 	return fig, axes
 

@@ -8,7 +8,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "chalc"
-version = "0.8.0"
+version = "0.8.1"
 authors = [
     {name = "Abhinav Natarajan", email = "natarajan@maths.ox.ac.uk"},
 ]
@@ -23,7 +23,7 @@ keywords = [
     "persistent homology"
 ]
 dependencies = [
-    "numpy>=1.23.0",
+    "numpy>=1.24.0",
     "phimaker >= 0.1.2",
     "pandas>=2.1.0",
     "matplotlib>=3.8.0",
