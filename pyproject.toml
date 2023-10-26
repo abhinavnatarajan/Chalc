@@ -1,15 +1,14 @@
 [build-system]
 requires = [
     "setuptools>=67",
-    "scikit-build-core",
-    "pybind11>=2.11",
-    "packaging"
+    "scikit-build-core>=0.6.0",
+    "pybind11==2.11",
 ]
 build-backend = "scikit_build_core.build"
 
 [project]
 name = "chalc"
-version = "0.7.1"
+version = "0.8.0"
 authors = [
     {name = "Abhinav Natarajan", email = "natarajan@maths.ox.ac.uk"},
 ]
@@ -24,13 +23,12 @@ keywords = [
     "persistent homology"
 ]
 dependencies = [
-    "numpy",
-    "scipy",
+    "numpy>=1.23.0",
     "phimaker >= 0.1.2",
-    "pandas",
-    "matplotlib",
-    "seaborn",
-    "h5py",
+    "pandas>=2.1.0",
+    "matplotlib>=3.8.0",
+    "seaborn>=0.12.0",
+    "h5py>=3.9.0",
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -53,17 +51,11 @@ cmake.verbose = true
 logging.level = "DEBUG"
 cmake.build-type = "Release"
 cmake.minimum-version = "3.23"
-sdist.exclude = ["docs/", "build_docs.bat", "build_docs.sh", ".github/"]
+sdist.exclude = [".github/", ".git/"]
 build-dir = "build/{wheel_tag}"
 wheel.packages = ["src/chalc"]
 wheel.install-dir = "chalc"
 experimental = true
-
-[[tool.scikit-build.generate]]
-path = "_version.py"
-template = '''
-__version__ = "${version}"
-'''
 
 [tool.cibuildwheel]
 archs = ["auto64"]

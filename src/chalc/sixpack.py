@@ -2,23 +2,24 @@ from __future__ import annotations
 
 __doc__ = "Routines for computing 6-packs of persistence diagrams."
 
-from .chromatic import alpha, delcech, delrips
-from .filtration import FilteredComplex
+from chalc.chromatic import alpha, delcech, delrips # absolute import because of a bug in scikit-build-core v0.6.0
+from chalc.filtration import FilteredComplex # absolute import because of a bug in scikit-build-core v0.6.0
 from ._utils import interpolate_docstring
 import numpy as np
-from numpy.typing import NDArray
-from typing import Optional, Callable, ClassVar, overload
+from typing import Optional, Callable, ClassVar, overload, Annotated
 from phimaker import compute_ensemble
 from dataclasses import dataclass, field, fields
 from h5py import Group, Dataset
 
+__all__ = ["from_filtration", "compute", "SimplexPairings", "DiagramEnsemble", "save_diagrams", "load_diagrams"]
+
 ChromaticMethod = {
-	"chromatic alpha":   alpha,
-	"chromatic delcech": delcech,
-	"chromatic delrips": delrips
+	"chromatic alpha"   : alpha,
+	"chromatic delcech" : delcech,
+	"chromatic delrips" : delrips
 }
 
-BdMatType = list[tuple[bool, int, NDArray[np.int64]]]
+BdMatType = list[tuple[bool, int, list[int]]]
 
 # bitmask that represents a list of colours
 def _colours_to_bitmask(colours : list[int]) -> int :
@@ -46,7 +47,8 @@ def _colours_are_subset(b1 : int, b2 : int) -> bool :
 def _get_diagrams(
 	K               : FilteredComplex,
 	check_in_domain : Callable[[int], bool],
-	max_dgm_dim     : int
+	max_dgm_dim     : int,
+	tolerance       : float = 0,
 	) -> DiagramEnsemble :
 	# Build up the matrix
 	matrix:         BdMatType   = []
@@ -62,15 +64,15 @@ def _get_diagrams(
 		matrix.append((check_in_domain(column[3]), dimension, facet_idxs))
 	d = compute_ensemble(matrix)
 	dgms = DiagramEnsemble(
-		Diagram._fromPhimaker(d.ker),
-		Diagram._fromPhimaker(d.cok),
-		Diagram._fromPhimaker(d.g),
-		Diagram._fromPhimaker(d.f),
-		Diagram._fromPhimaker(d.im),
-		Diagram._fromPhimaker(d.rel),
+		SimplexPairings._fromPhimaker(d.ker),
+		SimplexPairings._fromPhimaker(d.cok),
+		SimplexPairings._fromPhimaker(d.g),
+		SimplexPairings._fromPhimaker(d.f),
+		SimplexPairings._fromPhimaker(d.im),
+		SimplexPairings._fromPhimaker(d.rel),
 		entrance_times,
 		dimensions)
-	return dgms
+	return dgms.threshold(tolerance)
 
 @interpolate_docstring()
 def from_filtration(
@@ -78,39 +80,26 @@ def from_filtration(
 	*,
 	dom                   : list[int] | None = None,
 	k                     : int | None       = None,
-	max_diagram_dimension : int              = 2
+	max_diagram_dimension : int              = 2,
+	tolerance             : float            = 0
 	) -> DiagramEnsemble :
 	"""
 	Compute the 6-pack of persistence diagrams filtered simplicial complex with coloured vertices.
 
-	Given a filtered chromatic simplicial complex :math:`K` and a subcomplex :math:`L` of :math:`K`,
-	this function computes the 6-pack of persistence diagram associated with
-	the inclusion map :math:`f : L \\hookrightarrow K`. The subcomplex is specified by
-	the colours of its vertices, or by an integer :math:`k` wherein all simplices with
-	:math:`k` or fewer colours are considered part of the subcomplex.
+	Given a filtered chromatic simplicial complex :math:`K` and a subcomplex :math:`L` of :math:`K`, this function computes the 6-pack of persistence diagram associated with the inclusion map :math:`f : L \\hookrightarrow K`. The subcomplex is specified by
+	the colours of its vertices, or by an integer :math:`k` wherein all simplices with :math:`k` or fewer colours are considered part of the subcomplex.
 
-	Parameters
-	----------
-	K :
-		A filtered chromatic simplicial complex.
+	Args:
+		K : A filtered chromatic simplicial complex.
 
-	Keyword Args
-	------------
-	dom :
-		List of integers describing the colours of the points in the domain (the subcomplex :math:`L`).
-	k :
-		If not ``None``, then the domain is taken to be the :math:`k`-chromatic
-		subcomplex of :math:`K`, i.e., the subcomplex of simplices having at
-		most :math:`k` colours.
-	max_diagram_dimension :
-		Maximum homological dimension for which the persistence diagrams are computed.
+	Keyword Args:
+		dom : List of integers describing the colours of the points in the domain (the subcomplex :math:`L`).
+		k : If not ``None``, then the domain is taken to be the :math:`k`-chromatic subcomplex of :math:`K`, i.e., the subcomplex of simplices having at most :math:`k` colours.
+		max_diagram_dimension : Maximum homological dimension for which the persistence diagrams are computed.
+		tolerance : Retain only points with persistence strictly greater than this value.
 
-	Returns
-	-------
-	dgms : DiagramEnsemble
-		Diagrams corresponding to the following persistence modules (where
-		:math:`H_*` is the persistent homology functor and :math:`f_*` is the
-		induced map on persistent homology):
+	Returns:
+		Diagrams corresponding to the following persistence modules (where :math:`H_*` is the persistent homology functor and :math:`f_*` is the induced map on persistent homology):
 
 		#. :math:`H_*(L)` (domain)
 		#. :math:`H_*(K)` (codomain)
@@ -130,54 +119,41 @@ def from_filtration(
 		check_in_domain = lambda b: _num_colours_in_bitmask(b) <= k # k-chromatic simplex
 	else:
 		raise RuntimeError("Only one of k or dom is allowed")
-	max_diagram_dimension = min(max_diagram_dimension, K.dimension)
-	return _get_diagrams(K, check_in_domain, max_diagram_dimension)
+	# if(K, L) is a pair of simplicial complexes where dim(L) <= dim(K) = d
+	# then all of the sixpack diagrams except for the relative homology
+	# can be non-zero upt dimension d, and relative can be nontrivial upto dim = d+1
+	max_diagram_dimension = min(max_diagram_dimension, K.dimension + 1)
+	return _get_diagrams(K, check_in_domain, max_diagram_dimension, tolerance)
 
 @interpolate_docstring()
 def compute(
-	x                     : NDArray[np.float64],
+	x                     : Annotated[np.ndarray, np.float64],
 	colours               : list[int],
 	*, # rest are keyword only
 	dom                   : Optional[list[int]] = None,
 	k                     : Optional[int]       = None,
 	method                : str                 = "chromatic alpha",
-	max_diagram_dimension : int                 = 2
+	max_diagram_dimension : int                 = 2,
+	tolerance             : float               = 0
 	) -> DiagramEnsemble :
 	"""
 	Compute the 6-pack of persistence diagrams of a coloured point-cloud.
 
-	This function constructs a filtered chromatic simplicial complex :math:`K`
-	from the point cloud, and computes the 6-pack of persistence diagrams
-	associated with the inclusion :math:`f : L \\hookrightarrow K` where
-	:math:`L` is some filtered subcomplex of :math:`K`.
+	This function constructs a filtered chromatic simplicial complex :math:`K` from the point cloud, and computes the 6-pack of persistence diagrams associated with the inclusion :math:`f : L \\hookrightarrow K` where :math:`L` is some filtered subcomplex of :math:`K`.
 
-	Parameters
-	----------
-	x :
-		Numpy matrix whose columns are points.
-	colours :
-		List of integers describing the colours of the points.
+	Args:
+		x : Numpy matrix whose columns are points.
+		colours : List of integers describing the colours of the points.
 
-	Keyword Args
-	------------
-	dom :
-		List of integers describing the colours of the points in the domain (the subcomplex :math:`L`).
-	k :
-		If not ``None``, then the domain is taken to be the :math:`k`-chromatic
-		subcomplex of :math:`K`, i.e., the subcomplex of simplices having at
-		most :math:`k` colours.
-	method:
-		Filtration used to construct the chromatic complex. Must be one of
-		``${str(list(ChromaticMethod.keys()))}``.
-	max_diagram_dimension :
-		Maximum homological dimension for which the persistence diagrams are computed.
+	Keyword Args:
+		dom : List of integers describing the colours of the points in the domain (the subcomplex :math:`L`).
+		k : If not ``None``, then the domain is taken to be the :math:`k`-chromatic subcomplex of :math:`K`, i.e., the subcomplex of simplices having at most :math:`k` colours.
+		method: Filtration used to construct the chromatic complex. Must be one of ``${str(list(ChromaticMethod.keys()))}``.
+		max_diagram_dimension : Maximum homological dimension for which the persistence diagrams are computed.
+		tolerance : Retain only points with persistence strictly greater than this value.
 
-	Returns
-	-------
-	dgms : DiagramEnsemble
-		Diagrams corresponding to the following persistence modules (where
-		:math:`H_*` is the persistent homology functor and :math:`f_*` is the
-		induced map on persistent homology):
+	Returns :
+		Diagrams corresponding to the following persistence modules (where :math:`H_*` is the persistent homology functor and :math:`f_*` is the induced map on persistent homology):
 
 		#. :math:`H_*(L)` (domain)
 		#. :math:`H_*(K)` (codomain)
@@ -186,59 +162,61 @@ def compute(
 		#. :math:`\\mathrm{im}(f_*)` (image)
 		#. :math:`H_*(K, L)` (relative homology)
 
-		Each diagram is represented by sets of paired and unpaired simplices,
-		and contain simplices of all dimensions. ``dgms`` also contains the
+		Each diagram is represented by lists of paired and unpaired simplices,
+		and contains simplices of all dimensions. ``dgms`` also contains the
 		entrance times of the simplices and their dimensions.
 	"""
 	if dom is not None and k is None:
 		# new colours: 1 -> domain, 0 -> codomain
-		new_colours = np.isin(colours, dom).astype(np.int64)
+		new_colours = list(np.isin(colours, dom).astype(np.int64))
 		check_in_domain = lambda b : b == 2
 	elif k is not None and dom is None:
 		check_in_domain = lambda b: _num_colours_in_bitmask(b) <= k # k-chromatic simplex
 		new_colours = colours
 	else:
 		raise RuntimeError("Only one of k or dom is allowed")
-	max_diagram_dimension = min(max_diagram_dimension, x.shape[0] - 1)
+	# can have non-zero homology upto dimension d for everything except rel
+	# rel can have non-zero homology in dimension d+1
+	max_diagram_dimension = min(max_diagram_dimension, x.shape[0])
 	# Compute chromatic complex
 	if method in ChromaticMethod.keys():
-		K = ChromaticMethod[method](x, new_colours)
+		K, _ = ChromaticMethod[method](x, new_colours)
 	else:
 		raise RuntimeError(f"method must be one of {ChromaticMethod.keys()}")
-	return _get_diagrams(K, check_in_domain, max_diagram_dimension)
+	return _get_diagrams(K, check_in_domain, max_diagram_dimension, tolerance)
 
 @dataclass
-class Diagram:
+class SimplexPairings:
 	"""
 	Persistence diagram object, represented by a
-	set of simplex pairings and a set of unpaired simplices.
+	list of simplex pairings and a list of unpaired simplices.
 	"""
 	#: Set of tuples of indices of paired simplices.
-	paired: set[tuple[int, int]] = field(default_factory=set)
+	paired: list[tuple[int, int]] = field(default_factory=list)
 	#: Set of indices of unpaired simplices.
-	unpaired: set[int] = field(default_factory=set)
+	unpaired: list[int] = field(default_factory=list)
 
 	@classmethod
-	def _fromPhimaker(cls, obj) -> Diagram :
-		return cls(obj.paired, obj.unpaired)
+	def _fromPhimaker(cls, obj) -> SimplexPairings :
+		return cls(list(obj.paired), list(obj.unpaired))
 
 	def __str__(self):
 		return f"Paired: {self.paired}\nUnpaired: {self.unpaired}"
 
 	@classmethod
-	def _from_matrices(cls, p : NDArray[np.int64], u : NDArray[np.int64]) -> Diagram :
+	def _from_matrices(cls, p : Annotated[np.ndarray, np.int64], u : Annotated[np.ndarray, np.int64]) -> SimplexPairings :
 		if p.shape[1] != 2:
 			raise ValueError(f"p must be a (m, 2) matrix, but received a matrix of size {p.shape}")
-		paired : set[tuple[int, int]] = set(tuple(p[i, :]) for i in range(p.shape[0]))
-		unpaired = set(u)
+		paired : list[tuple[int, int]] = [tuple(p[i, :]) for i in range(p.shape[0])]
+		unpaired = list(u)
 		return cls(paired, unpaired)
 
-	def paired_as_matrix(self) -> NDArray[np.int64] :
+	def paired_as_matrix(self) -> Annotated[np.ndarray, np.int64] :
 		return np.concatenate(list(self.paired)).reshape((-1, 2))
 
 	def __eq__(self, other) -> bool :
-		if isinstance(other, Diagram):
-			return self.paired == other.paired and self.unpaired == other.unpaired
+		if isinstance(other, SimplexPairings):
+			return set(self.paired) == set(other.paired) and set(self.unpaired) == set(other.unpaired)
 		else:
 			return NotImplemented
 
@@ -250,17 +228,17 @@ class DiagramEnsemble:
 	# List of matrices
 	diagram_names : ClassVar[list[str]] = ['ker', 'cok', 'dom', 'cod', 'im', 'rel']
 	#: Kernel
-	ker: Diagram = field(default_factory = lambda : Diagram())
+	ker: SimplexPairings = field(default_factory = lambda : SimplexPairings())
 	#: Cokernel
-	cok: Diagram = field(default_factory = lambda : Diagram())
+	cok: SimplexPairings = field(default_factory = lambda : SimplexPairings())
 	#: Domain
-	dom: Diagram = field(default_factory = lambda : Diagram())
+	dom: SimplexPairings = field(default_factory = lambda : SimplexPairings())
 	#: Codomain
-	cod: Diagram = field(default_factory = lambda : Diagram())
+	cod: SimplexPairings = field(default_factory = lambda : SimplexPairings())
 	#: Image
-	im: Diagram = field(default_factory = lambda : Diagram())
+	im: SimplexPairings = field(default_factory = lambda : SimplexPairings())
 	#: Relative
-	rel: Diagram = field(default_factory = lambda : Diagram())
+	rel: SimplexPairings = field(default_factory = lambda : SimplexPairings())
 	#: Entrance times of the simplices
 	entrance_times : list[float] = field(default_factory = lambda : [])
 	#: Dimensions of the simplices
@@ -272,11 +250,20 @@ class DiagramEnsemble:
 		else:
 			return NotImplemented
 
-	@overload
-	def get(self, diagram_name : str, dim : int) -> NDArray[np.float64] : ...
+	def threshold(self, tolerance : float) -> DiagramEnsemble :
+		"""
+		Discard all features with persistence ``<=tolerance``.
+		"""
+		for name in DiagramEnsemble.diagram_names:
+			pairings = [(b, d) for b, d in getattr(self, name).paired if self.entrance_times[d] - self.entrance_times[b] > tolerance]
+			setattr(getattr(self, name), 'paired', pairings)
+		return self
 
 	@overload
-	def get(self, diagram_name : str, dim : list[int] | None = None) -> list[NDArray[np.float64]] : ...
+	def get(self, diagram_name : str, dim : int) -> Annotated[np.ndarray, np.float64] : ...
+
+	@overload
+	def get(self, diagram_name : str, dim : list[int] | None = None) -> list[Annotated[np.ndarray, np.float64]] : ...
 
 	@interpolate_docstring({'diagram_names' : diagram_names})
 	def get(self, diagram_name, dim = None):
@@ -344,7 +331,7 @@ def load_diagrams(file : Group) -> DiagramEnsemble :
 			paired = grp['paired']
 			unpaired = grp['unpaired']
 			if isinstance(paired, Dataset) and paired.dtype == np.int64 and isinstance(unpaired, Dataset) and unpaired.dtype == np.int64 :
-				setattr(dgms, diagram_name, Diagram._from_matrices(paired[...], unpaired[...]))
+				setattr(dgms, diagram_name, SimplexPairings._from_matrices(paired[...], unpaired[...]))
 			else:
 				raise RuntimeError("Invalid file: missing fields")
 	return dgms

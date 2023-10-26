@@ -39,8 +39,8 @@
 
 #include <Eigen/Dense>
 #include <iostream>
-#include "../common.h"
-#include "../filtration/filtration.h"
+#include <chalc/common.h>
+#include <chalc/filtration/filtration.h>
 
 namespace chalc {
     namespace chromatic {

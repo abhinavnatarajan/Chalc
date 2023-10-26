@@ -42,8 +42,6 @@
 #include <map>
 #include <algorithm>
 #include <numeric>
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 
 namespace chalc {
     typedef double value_t;

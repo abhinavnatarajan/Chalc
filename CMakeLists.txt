@@ -29,13 +29,12 @@ if (NOT DEFINED ENV{NO_USE_VCPKG})
 	if (WIN32)
 	    execute_process(COMMAND ${VCPKG_INSTALLATION_ROOT}/bootstrap-vcpkg.bat)
         elseif (UNIX)
-            execute_process(COMMAND ${VCPKG_INSTALLATION_ROOT}/bootstrap-vcpkg.sh) 
+            execute_process(COMMAND ${VCPKG_INSTALLATION_ROOT}/bootstrap-vcpkg.sh)
         endif()
      endif()
      if (EXISTS ${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake)
-        # set(X_VCPKG_APPLOCAL_DEPS_INSTALL ON CACHE BOOL "Automatically copy dependencies into the install target directory for executables.")
         message(STATUS "Using Vcpkg toolchain: ${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake")
-        set(CMAKE_TOOLCHAIN_FILE "${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake" 
+        set(CMAKE_TOOLCHAIN_FILE "${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake"
         CACHE STRING "")
         set(USING_VCPKG TRUE)
     else ()
@@ -69,25 +68,22 @@ execute_process(COMMAND ${PYTHON_EXECUTABLE} -m pybind11 --cmakedir
 string(STRIP ${pybind11_DIR_RAW} pybind11_DIR)
 
 find_package(pybind11 CONFIG REQUIRED)
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    add_compile_options(-fvisibility=hidden)
-endif()
+# if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+#     add_compile_options(-fvisibility=hidden)
+# endif()
 
-# Create python extension module ###
-pybind11_add_module(
-    filtration 
-    MODULE 
-        src/chalc/filtration/filtration_py.cxx 
-        src/chalc/filtration/filtration.cxx)
-
-pybind11_add_module(
-    chromatic 
-    MODULE 
-        src/chalc/chromatic/chromatic_py.cxx 
-        src/chalc/chromatic/chromatic.cxx 
-        src/chalc/filtration/filtration.cxx)
-target_include_directories(chromatic PRIVATE src/mpreal)
-target_link_libraries(chromatic PRIVATE Eigen3::Eigen CGAL::CGAL CGAL::Eigen3_support)
+add_library(_filtration STATIC src/chalc/filtration/filtration.cxx)
+target_include_directories(_filtration PUBLIC src)
+add_library(_chromatic STATIC src/chalc/chromatic/chromatic.cxx)
+target_link_libraries(_chromatic PUBLIC _filtration Eigen3::Eigen CGAL::CGAL CGAL::Eigen3_support)
+target_include_directories(_chromatic PUBLIC src PRIVATE src/mpreal)
+set_target_properties(_filtration _chromatic PROPERTIES POSITION_INDEPENDENT_CODE ON)
+ 
+# Create python extension module
+pybind11_add_module(filtration MODULE src/chalc/filtration_py.cxx)
+target_link_libraries(filtration PRIVATE _filtration)
+pybind11_add_module(chromatic MODULE src/chalc/chromatic_py.cxx)
+target_link_libraries(chromatic PRIVATE _chromatic)
 
 install(TARGETS filtration RUNTIME_DEPENDENCY_SET vcpkg_libs DESTINATION .)
 install(TARGETS chromatic RUNTIME_DEPENDENCY_SET vcpkg_libs DESTINATION .)

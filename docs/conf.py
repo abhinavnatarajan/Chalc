@@ -42,7 +42,13 @@ toc_object_entries_show_parents = 'hide'
 add_module_names = False
 master_doc = "index"
 templates_path = ['_templates']
-exclude_patterns = ['_build', '_templates', 'exts', '_static']
+exclude_patterns = [
+    '_build', 
+    '_templates', 
+    'exts', 
+    '_static',
+    # 'example.ipynb'
+]
 
 extensions = [
     'sphinx.ext.autosectionlabel',

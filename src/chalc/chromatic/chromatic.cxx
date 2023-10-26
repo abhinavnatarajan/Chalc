@@ -38,9 +38,9 @@ DO NOT MOVE THE NEXT INCLUDE.
 mpreal must be included before CGAL due to
 preprocessor macro clashes
 */
-#include "../../mpreal/mpreal.h"
+#include <mpreal/mpreal.h>
 #include <unsupported/Eigen/MPRealSupport>
-#include "../../ConstrainedMiniball/ConstrainedMiniball.h"
+#include <ConstrainedMiniball/ConstrainedMiniball.h>
 #include <CGAL/Epick_d.h>
 #include <CGAL/Dimension.h>
 #include <CGAL/Delaunay_triangulation.h>
@@ -51,7 +51,7 @@ preprocessor macro clashes
 namespace
 {
     using namespace chalc::stl;
-    using 
+    using
         chalc::index_t,
         chalc::MAX_NUM_COLOURS,
         Eigen::lastN,
@@ -59,8 +59,7 @@ namespace
         std::min,
         std::runtime_error,
         std::bad_weak_ptr,
-        std::sort,
-        std::unique;
+        std::stable_sort;
     using Kernel_d = CGAL::Epick_d<CGAL::Dynamic_dimension_tag>;
     using Triangulation_data_structure = CGAL::Triangulation_data_structure<Kernel_d::Dimension,
                                                                             CGAL::Triangulation_vertex<Kernel_d, size_t>,
@@ -107,7 +106,7 @@ namespace
     {
         vector<index_t> idx(v.size());
         iota(idx.begin(), idx.end(), 0);
-        std::stable_sort(idx.begin(), idx.end(),
+        stable_sort(idx.begin(), idx.end(),
                          [&v, &compare](index_t i1, index_t i2)
                          { return compare(v[i1], v[i2]); });
         return tuple{reorder(v, idx), idx};
@@ -292,7 +291,7 @@ namespace chalc::chromatic
             for (auto &[idx, edge] : delX.get_simplices()[1])
             {
                 auto verts = edge->get_vertex_labels();
-                edge->value = (points.col(verts[0]) - points.col(verts[1])).norm();
+                edge->value = (points.col(verts[0]) - points.col(verts[1])).norm() * 0.5;
             }
             delX.propagate_filt_values(1, true);
         }
@@ -334,6 +333,7 @@ namespace chalc::chromatic
         {
             verts_by_colour[colours[i]].push_back(i);
         }
+        bool numerical_instability = false; // flag to check numerical instability
 
         if (delX.dimension() >= 1)
         {
@@ -342,10 +342,9 @@ namespace chalc::chromatic
             // We will use an arbitrary precision scalar type
             // for the geometric computation
             using mpfr::mpreal;
-            mpreal::set_default_prec(mpfr::digits2bits(25));
+            mpreal::set_default_prec(mpfr::digits2bits(18));
             RealMatrix<mpreal> X = points.template cast<mpreal>();
 
-            bool numerical_instability = false; // flag to check numerical instability
 
             // Start at the maximum dimension
             for (int p = delX.dimension(); p >= 1; p--)
@@ -449,12 +448,12 @@ namespace chalc::chromatic
                 // Propagate filtration values down
                 delX.propagate_filt_values(p, false);
             }
-            if (numerical_instability)
-            {
-                ostream << "Warning: encountered numerical problems. \
-                            Filtration values may be inaccurate."
-                        << std::endl;
-            }
+        }
+        if (numerical_instability)
+        {
+            ostream << "Warning: encountered numerical problems. \
+                        Filtration values may be inaccurate."
+                    << std::endl;
         }
         return delX;
     }
@@ -484,17 +483,20 @@ namespace chalc::chromatic
         delX.propagate_colours();
         // modify the filtration values
         bool numerical_instability = false;
+        using mpfr::mpreal;
+        mpreal::set_default_prec(mpfr::digits2bits(18));
+        RealMatrix<mpreal> X = points.template cast<mpreal>();
         if (delX.dimension() >= 1)
         {
-            for (int p = delX.dimension(); p >= 1; p--)
+            for (int p = delX.dimension(); p > 1; p--)
             {
                 for (auto &[idx, simplex] : delX.get_simplices()[p])
                 {
                     auto verts = simplex->get_vertex_labels();
                     auto [centre, sqRadius, success] =
-                        cmb::miniball<double>(points(all, verts));
+                        cmb::miniball<mpreal>(X(all, verts));
                     numerical_instability |= !success;
-                    simplex->value = sqrt(sqRadius);
+                    simplex->value = static_cast<double>(sqrt(sqRadius));
                     auto cofacets = simplex->get_cofacets();
                     if (cofacets.size() == 0)
                     {
@@ -514,6 +516,28 @@ namespace chalc::chromatic
                 }
                 // Propagate filtration values down
                 delX.propagate_filt_values(p, false);
+            }
+            // fast version for dimension 1
+            for (auto &[idx, edge] : delX.get_simplices()[1])
+            {
+                auto verts = edge->get_vertex_labels();
+                edge->value = static_cast<double>((X.col(verts[0]) - X.col(verts[1])).norm()) * 0.5;
+                auto cofacets = edge->get_cofacets();
+                if (cofacets.size() == 0)
+                {
+                    continue;
+                }
+                try
+                {
+                    for (auto &cofacet : edge->get_cofacets())
+                    {
+                        edge->value = min(edge->value, cofacet.lock()->value);
+                    }
+                }
+                catch (bad_weak_ptr &e)
+                {
+                    throw runtime_error("Tried to dereference expired cofacet handle.");
+                }
             }
         }
         if (numerical_instability)

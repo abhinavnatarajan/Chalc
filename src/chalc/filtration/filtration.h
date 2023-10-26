@@ -37,7 +37,7 @@
 #ifndef FILTRATION_H
 #define FILTRATION_H
 
-#include "../common.h"
+#include <chalc/common.h>
 #include <bitset>
 
 namespace chalc
@@ -47,7 +47,7 @@ namespace chalc
 
     class BinomialCoeffTable;
 
-    struct PYBIND11_EXPORT FilteredComplex
+    struct FilteredComplex
     {
         /* PUBLIC CLASSES OF FilteredComplex */
 
@@ -153,7 +153,7 @@ namespace chalc
         void propagate_filt_values_down(const index_t start_dim);
     };
 
-    struct PYBIND11_EXPORT FilteredComplex::Simplex : public std::enable_shared_from_this<FilteredComplex::Simplex>
+    struct FilteredComplex::Simplex : public std::enable_shared_from_this<FilteredComplex::Simplex>
     {
 
         /* PUBLIC MEMBERS OF Simplex */

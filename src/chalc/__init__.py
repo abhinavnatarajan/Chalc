@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from ._version import __version__
 import platform
 
 from . import filtration
