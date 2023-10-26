@@ -31,7 +31,7 @@ PYBIND11_MODULE(chromatic, m)
     .def("delrips",
     [](const Eigen::MatrixXd& points, const vector<index_t>& colours) {
         auto res = delrips(points, colours);
-        return tuple{res,true};
+        return tuple{res,false};
     },
         R"docstring(
             Computes the chromatic Delaunay-Rips complex of a coloured point cloud.
@@ -57,14 +57,14 @@ PYBIND11_MODULE(chromatic, m)
         [](const Eigen::MatrixXd& points, const vector<index_t>& colours) {
             std::ostringstream ostream;
             auto res = alpha(points, colours, ostream);
-            bool success = true;
+            bool issues = false;
             if (ostream.tellp() > 0) {
-                success = false;
+                issues = true;
                 PyErr_WarnEx(PyExc_RuntimeWarning,
                             ostream.str().c_str(),
                             1);
             }
-            return tuple{res,success};
+            return tuple{res,issues};
         },
         R"docstring(
             Computes the chromatic alpha complex of a coloured point cloud.
@@ -87,14 +87,14 @@ PYBIND11_MODULE(chromatic, m)
         [](const Eigen::MatrixXd& points, const vector<index_t>& colours) {
             std::ostringstream ostream;
             auto res = delcech(points, colours, ostream);
-            bool success = true;
+            bool issues = false;
             if (ostream.tellp() > 0) {
-                success = false;
+                issues = true;
                 PyErr_WarnEx(PyExc_RuntimeWarning,
                             ostream.str().c_str(),
                             1);
             }
-            return tuple{res, success};
+            return tuple{res, issues};
         },
         R"docstring(
             Returns the chromatic Delaunay-Cech complex of a coloured point cloud.
