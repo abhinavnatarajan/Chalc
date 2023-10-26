@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="License" href="../license.html" /><link rel="prev" title="DiagramEnsemble" href="chalc.sixpack.DiagramEnsemble.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="License" href="../license.html" /><link rel="prev" title="SimplexPairings" href="chalc.sixpack.SimplexPairings.html" />
 
     <!-- Generated with Sphinx 7.2.4 and Furo 2023.08.19 -->
-        <title>plotting - chalc 0.7.1 documentation</title>
+        <title>plotting - chalc 0.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">chalc 0.7.1 documentation</div></a>
+      <a href="../index.html"><div class="brand">chalc 0.8.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -148,7 +148,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">chalc 0.7.1 documentation</span>
+  <span class="sidebar-brand-text">chalc 0.8.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -168,8 +168,8 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="chalc.sixpack.html">sixpack</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of sixpack</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="chalc.sixpack.Diagram.html">Diagram</a></li>
 <li class="toctree-l3"><a class="reference internal" href="chalc.sixpack.DiagramEnsemble.html">DiagramEnsemble</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chalc.sixpack.SimplexPairings.html">SimplexPairings</a></li>
 </ul>
 </li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">plotting</a></li>
@@ -256,21 +256,20 @@
 <dt class="sig sig-object py" id="chalc.plotting.animate_filtration">
 <span class="sig-name descname"><span class="pre">animate_filtration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filtration_times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">animation_length</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.plotting.animate_filtration" title="Link to this definition">#</a></dt>
 <dd><p>Create animation of 2-skeleton of filtered simplicial complex.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>K</strong> (<a class="reference internal" href="chalc.filtration.FilteredComplex.html#chalc.filtration.FilteredComplex" title="chalc.filtration.FilteredComplex"><em>FilteredComplex</em></a>) – A filtered complex.</p></li>
-<li><p><strong>points</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a><em>, </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.26)"><em>dtype</em></a><em>[</em><em>float64</em><em>]</em><em>]</em>) – The vertices of <code class="docutils literal notranslate"><span class="pre">K</span></code> as a <span class="math notranslate nohighlight">\(2\times N\)</span> numpy matrix.</p></li>
-</ul>
+<dl class="simple">
+<dt>Args :</dt><dd><p>K : A filtered complex.
+points : The vertices of <code class="docutils literal notranslate"><span class="pre">K</span></code> as a <span class="math notranslate nohighlight">\(2\times N\)</span> numpy matrix.</p>
 </dd>
-<dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
 <li><p><strong>filtration_times</strong> – List of filtration times for which to draw animation frames.</p></li>
 <li><p><strong>animation_length</strong> – Total length of the animation in seconds.</p></li>
 </ul>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.animation.FuncAnimation.html#matplotlib.animation.FuncAnimation" title="(in Matplotlib v3.8.0)"><em>FuncAnimation</em></a></p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.animation.FuncAnimation.html#matplotlib.animation.FuncAnimation" title="(in Matplotlib v3.8.0)"><em>FuncAnimation</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -283,7 +282,7 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>K</strong> (<a class="reference internal" href="chalc.filtration.FilteredComplex.html#chalc.filtration.FilteredComplex" title="chalc.filtration.FilteredComplex"><em>FilteredComplex</em></a>) – A filtered complex.</p></li>
-<li><p><strong>points</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a><em>, </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.26)"><em>dtype</em></a><em>[</em><em>float64</em><em>]</em><em>]</em>) – The vertices of <code class="docutils literal notranslate"><span class="pre">K</span></code> as a <span class="math notranslate nohighlight">\(2\times N\)</span> numpy matrix.</p></li>
+<li><p><strong>points</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a>) – The vertices of <code class="docutils literal notranslate"><span class="pre">K</span></code> as a <span class="math notranslate nohighlight">\(2\times N\)</span> numpy matrix.</p></li>
 <li><p><strong>time</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Filtration times for which to draw simplices.</p></li>
 </ul>
 </dd>
@@ -298,7 +297,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="chalc.plotting.plot_diagram">
-<span class="sig-name descname"><span class="pre">plot_diagram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dgms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diagram_name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">truncation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_diagram_dimension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.plotting.plot_diagram" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">plot_diagram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dgms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diagram_name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">truncation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_diagram_dimension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.plotting.plot_diagram" title="Link to this definition">#</a></dt>
 <dd><p>Plot a specific diagram from a 6-pack.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -311,17 +310,19 @@
 <dd class="field-even"><ul class="simple">
 <li><p><strong>truncation</strong> – The maximum entrance time for which the diagrams are plotted. A sensible default will be calculated if not provided.</p></li>
 <li><p><strong>max_diagram_dimension</strong> – The maximum homological dimension for which to plot points. If not provided, all dimensions will be included in the plots.</p></li>
+<li><p><strong>ax</strong> – A matplotlib axes object. If provided then the diagram will be plotted on the given axes.</p></li>
+<li><p><strong>tolerance</strong> – Only features with persistence greater than this value will be plotted.</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)">tuple</a>[<a class="reference external" href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="(in Matplotlib v3.8.0)"><em>Figure</em></a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.26)"><em>dtype</em></a>[<em>_ScalarType_co</em>]]]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)">tuple</a>[<a class="reference external" href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="(in Matplotlib v3.8.0)"><em>Figure</em></a>, <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="(in Matplotlib v3.8.0)"><em>Axes</em></a>]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="chalc.plotting.plot_sixpack">
-<span class="sig-name descname"><span class="pre">plot_sixpack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dgms</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">truncation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_diagram_dimension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.plotting.plot_sixpack" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">plot_sixpack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dgms</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">truncation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_diagram_dimension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.plotting.plot_sixpack" title="Link to this definition">#</a></dt>
 <dd><p>Plots the 6-pack of persistence diagrams returned by <a class="reference internal" href="chalc.sixpack.html#chalc.sixpack.compute" title="chalc.sixpack.compute"><code class="xref py py-func docutils literal notranslate"><span class="pre">compute</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -329,12 +330,13 @@
 </dd>
 <dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>truncation</strong> – The maximum entrance time for which the diagrams are plotted. A sensible default will be calculated if not provided.</p></li>
-<li><p><strong>max_diagram_dimension</strong> – The maximum homological dimension for which to plot points. If not provided, all dimensions will be included in the plots.</p></li>
+<li><p><strong>truncation</strong> – The maximum entrance time upto which features are plotted. A sensible default will be calculated if not provided.</p></li>
+<li><p><strong>max_diagram_dimension</strong> – The maximum homological dimension for which to plot features. If not provided, all dimensions will be included in the plots.</p></li>
+<li><p><strong>tolerance</strong> – Only features with persistence greater than this value will be plotted.</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)">tuple</a>[<a class="reference external" href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="(in Matplotlib v3.8.0)"><em>Figure</em></a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.26)"><em>dtype</em></a>[<em>_ScalarType_co</em>]]]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)">tuple</a>[<a class="reference external" href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="(in Matplotlib v3.8.0)"><em>Figure</em></a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -356,14 +358,14 @@
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="chalc.sixpack.DiagramEnsemble.html">
+          <a class="prev-page" href="chalc.sixpack.SimplexPairings.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">DiagramEnsemble</div>
+                <div class="title">SimplexPairings</div>
                 
               </div>
             </a>
@@ -420,7 +422,7 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=5a057da9"></script>
+</div><script src="../_static/documentation_options.js?v=486e5634"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>

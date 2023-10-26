@@ -36,8 +36,8 @@ Overview
       :nosignatures:
       :recursive:
    
-      Diagram
       DiagramEnsemble
+      SimplexPairings
    
    
 

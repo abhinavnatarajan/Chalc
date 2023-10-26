@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="filtration" href="chalc.filtration.html" /><link rel="prev" title="API Reference" href="../API.html" />
 
     <!-- Generated with Sphinx 7.2.4 and Furo 2023.08.19 -->
-        <title>chromatic - chalc 0.7.1 documentation</title>
+        <title>chromatic - chalc 0.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">chalc 0.7.1 documentation</div></a>
+      <a href="../index.html"><div class="brand">chalc 0.8.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -148,7 +148,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">chalc 0.7.1 documentation</span>
+  <span class="sidebar-brand-text">chalc 0.8.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -168,8 +168,8 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="chalc.sixpack.html">sixpack</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of sixpack</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="chalc.sixpack.Diagram.html">Diagram</a></li>
 <li class="toctree-l3"><a class="reference internal" href="chalc.sixpack.DiagramEnsemble.html">DiagramEnsemble</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chalc.sixpack.SimplexPairings.html">SimplexPairings</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="chalc.plotting.html">plotting</a></li>
@@ -270,25 +270,23 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>numpy.ndarray</em></a><em>[</em><em>numpy.float64</em><em>[</em><em>m</em><em>, </em><em>n</em><em>]</em><em>]</em>) – Numpy matrix whose columns are points in the point cloud.</p></li>
+<li><p><strong>x</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a>) – Numpy matrix whose columns are points in the point cloud.</p></li>
 <li><p><strong>colours</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>]</em>) – List of integers describing the colours of the points.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The chromatic alpha complex.</p>
+<dd class="field-even"><p>The chromatic alpha complex and a boolean flag to indicate if numerical issues were encountered. In case of numerical issues, a warning is also raised.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="chalc.filtration.FilteredComplex.html#chalc.filtration.FilteredComplex" title="chalc.filtration.FilteredComplex">FilteredComplex</a></p>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If any value in <code class="docutils literal notranslate"><span class="pre">colours</span></code> is &gt;= <a class="reference internal" href="#chalc.chromatic.MaxColoursChromatic" title="chalc.chromatic.MaxColoursChromatic"><code class="xref py py-attr docutils literal notranslate"><span class="pre">MaxColoursChromatic</span></code></a> or &lt; 0, or if the length of <code class="docutils literal notranslate"><span class="pre">colours</span></code> does not match the number of points.</p>
 </dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If any value in <code class="docutils literal notranslate"><span class="pre">colours</span></code> is &gt;=
-    <a class="reference internal" href="#chalc.chromatic.MaxColoursChromatic" title="chalc.chromatic.MaxColoursChromatic"><code class="xref py py-attr docutils literal notranslate"><span class="pre">MaxColoursChromatic</span></code></a>
-    or &lt; 0, or if the length of <code class="docutils literal notranslate"><span class="pre">colours</span></code> does not match the number of points.</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)">tuple</a>[<a class="reference internal" href="chalc.filtration.FilteredComplex.html#chalc.filtration.FilteredComplex" title="chalc.filtration.FilteredComplex"><em>FilteredComplex</em></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)">bool</a>]</p>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#chalc.chromatic.delrips" title="chalc.chromatic.delrips"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delrips</span></code></a>, <a class="reference internal" href="#chalc.chromatic.delcech" title="chalc.chromatic.delcech"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delcech</span></code></a></p>
+<p>delrips, delcech</p>
 </div>
 </dd></dl>
 
@@ -298,13 +296,13 @@
 <dd><p>Returns the Delaunay triangulation of a point cloud in Euclidean space.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>numpy.ndarray</em></a><em>[</em><em>numpy.float64</em><em>[</em><em>m</em><em>, </em><em>n</em><em>]</em><em>]</em>) – Numpy matrix whose columns are points in the point cloud.</p>
+<dd class="field-odd"><p><strong>x</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a>) – Numpy matrix whose columns are points in the point cloud.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The Delaunay triangulation.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="chalc.filtration.FilteredComplex.html#chalc.filtration.FilteredComplex" title="chalc.filtration.FilteredComplex">FilteredComplex</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="chalc.filtration.FilteredComplex.html#chalc.filtration.FilteredComplex" title="chalc.filtration.FilteredComplex"><em>FilteredComplex</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -316,29 +314,25 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>numpy.ndarray</em></a><em>[</em><em>numpy.float64</em><em>[</em><em>m</em><em>, </em><em>n</em><em>]</em><em>]</em>) – Numpy matrix whose columns are points in the point cloud.</p></li>
+<li><p><strong>x</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a>) – Numpy matrix whose columns are points in the point cloud.</p></li>
 <li><p><strong>colours</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>]</em>) – List of integers describing the colours of the points.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The chromatic Delaunay-Cech complex.</p>
+<dd class="field-even"><p>The chromatic Delaunay-Cech complex and a boolean flag to indicate if numerical issues were encountered. In case of numerical issues, a warning is also raised.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="chalc.filtration.FilteredComplex.html#chalc.filtration.FilteredComplex" title="chalc.filtration.FilteredComplex">FilteredComplex</a></p>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If any value in <code class="docutils literal notranslate"><span class="pre">colours</span></code> is &gt;= <a class="reference internal" href="#chalc.chromatic.MaxColoursChromatic" title="chalc.chromatic.MaxColoursChromatic"><code class="xref py py-attr docutils literal notranslate"><span class="pre">MaxColoursChromatic</span></code></a> or &lt; 0, or if the length of <code class="docutils literal notranslate"><span class="pre">colours</span></code> does not match the number of points.</p>
 </dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If any value in <code class="docutils literal notranslate"><span class="pre">colours</span></code> is &gt;=
-    <a class="reference internal" href="#chalc.chromatic.MaxColoursChromatic" title="chalc.chromatic.MaxColoursChromatic"><code class="xref py py-attr docutils literal notranslate"><span class="pre">MaxColoursChromatic</span></code></a>
-    or &lt; 0, or if the length of <code class="docutils literal notranslate"><span class="pre">colours</span></code> does not match the number of points.</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)">tuple</a>[<a class="reference internal" href="chalc.filtration.FilteredComplex.html#chalc.filtration.FilteredComplex" title="chalc.filtration.FilteredComplex"><em>FilteredComplex</em></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)">bool</a>]</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The chromatic Delaunay-Cech complex of the point cloud
-has the same set of simplices as the chromatic alpha complex,
-but with Cech filtration times.</p>
+<p>The chromatic Delaunay-Cech complex of the point cloud has the same set of simplices as the chromatic alpha complex, but with Cech filtration times.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#chalc.chromatic.alpha" title="chalc.chromatic.alpha"><code class="xref py py-obj docutils literal notranslate"><span class="pre">alpha</span></code></a>, <a class="reference internal" href="#chalc.chromatic.delrips" title="chalc.chromatic.delrips"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delrips</span></code></a></p>
+<p>alpha, delrips</p>
 </div>
 </dd></dl>
 
@@ -349,29 +343,25 @@ but with Cech filtration times.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>numpy.ndarray</em></a><em>[</em><em>numpy.float64</em><em>[</em><em>m</em><em>, </em><em>n</em><em>]</em><em>]</em>) – Numpy matrix whose columns are points in the point cloud.</p></li>
+<li><p><strong>x</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a>) – Numpy matrix whose columns are points in the point cloud.</p></li>
 <li><p><strong>colours</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>]</em>) – List of integers describing the colours of the points.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The chromatic Delaunay-Rips complex.</p>
+<dd class="field-even"><p>The chromatic Delaunay-Rips complex and a boolean flag to indicate if numerical issues were encountered. In case of numerical issues, a warning is also raised.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="chalc.filtration.FilteredComplex.html#chalc.filtration.FilteredComplex" title="chalc.filtration.FilteredComplex">FilteredComplex</a></p>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If any value in <code class="docutils literal notranslate"><span class="pre">colours</span></code> is &gt;= <a class="reference internal" href="#chalc.chromatic.MaxColoursChromatic" title="chalc.chromatic.MaxColoursChromatic"><code class="xref py py-attr docutils literal notranslate"><span class="pre">MaxColoursChromatic</span></code></a> or &lt; 0, or if the length of <code class="docutils literal notranslate"><span class="pre">colours</span></code> does not match the number of points.</p>
 </dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If any value in <code class="docutils literal notranslate"><span class="pre">colours</span></code> is &gt;=
-    <a class="reference internal" href="#chalc.chromatic.MaxColoursChromatic" title="chalc.chromatic.MaxColoursChromatic"><code class="xref py py-attr docutils literal notranslate"><span class="pre">MaxColoursChromatic</span></code></a>
-    or &lt; 0, or if the length of <code class="docutils literal notranslate"><span class="pre">colours</span></code> does not match the number of points.</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)">tuple</a>[<a class="reference internal" href="chalc.filtration.FilteredComplex.html#chalc.filtration.FilteredComplex" title="chalc.filtration.FilteredComplex"><em>FilteredComplex</em></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)">bool</a>]</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The chromatic Delaunay-Rips complex of the point cloud
-has the same set of simplices as the chromatic alpha complex,
-but with Vietoris-Rips filtration times.</p>
+<p>The chromatic Delaunay-Rips complex of the point cloud has the same set of simplices as the chromatic alpha complex, but with Vietoris-Rips filtration times. The convention used is that the filtration time of a simplex is half the maximum edge length in that simplex. With this convention, the chromatic Delaunay-Rips complex and chromatic alpha complex have visually similar persistence diagrams.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#chalc.chromatic.alpha" title="chalc.chromatic.alpha"><code class="xref py py-obj docutils literal notranslate"><span class="pre">alpha</span></code></a>, <a class="reference internal" href="#chalc.chromatic.delcech" title="chalc.chromatic.delcech"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delcech</span></code></a></p>
+<p>alpha, delcech</p>
 </div>
 </dd></dl>
 
@@ -457,7 +447,7 @@ but with Vietoris-Rips filtration times.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=5a057da9"></script>
+</div><script src="../_static/documentation_options.js?v=486e5634"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>

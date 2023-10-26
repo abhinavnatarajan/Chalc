@@ -19,6 +19,7 @@ Overview
    
       ~DiagramEnsemble.__init__
       ~DiagramEnsemble.get
+      ~DiagramEnsemble.threshold
    
    
 
@@ -57,3 +58,4 @@ Details
    
    .. automethod:: DiagramEnsemble.__init__
    .. automethod:: DiagramEnsemble.get
+   .. automethod:: DiagramEnsemble.threshold
