@@ -9,6 +9,7 @@ PYBIND11_MODULE(chromatic, m)
     using namespace chalc::stl;
     using namespace chalc;
     namespace py = pybind11;
+    py::object log_warn = py::module_::import("logging").attr("getLogger")("chalc.chromatic").attr("warning");
     m.doc() =
         R"docstring(
             Module containing geometry routines to compute chromatic complexes.
@@ -54,15 +55,13 @@ PYBIND11_MODULE(chromatic, m)
         )docstring",
         py::arg("x"), py::arg("colours"))
     .def("alpha",
-        [](const Eigen::MatrixXd& points, const vector<index_t>& colours) {
+        [log_warn](const Eigen::MatrixXd& points, const vector<index_t>& colours) {
             std::ostringstream ostream;
             auto res = alpha(points, colours, ostream);
             bool issues = false;
             if (ostream.tellp() > 0) {
                 issues = true;
-                PyErr_WarnEx(PyExc_RuntimeWarning,
-                            ostream.str().c_str(),
-                            1);
+                log_warn(ostream.str().c_str());
             }
             return tuple{res,issues};
         },
@@ -84,15 +83,13 @@ PYBIND11_MODULE(chromatic, m)
         )docstring",
         py::arg("x"), py::arg("colours"))
     .def("delcech",
-        [](const Eigen::MatrixXd& points, const vector<index_t>& colours) {
+        [log_warn](const Eigen::MatrixXd& points, const vector<index_t>& colours) {
             std::ostringstream ostream;
             auto res = delcech(points, colours, ostream);
             bool issues = false;
             if (ostream.tellp() > 0) {
                 issues = true;
-                PyErr_WarnEx(PyExc_RuntimeWarning,
-                            ostream.str().c_str(),
-                            1);
+                log_warn(ostream.str().c_str());
             }
             return tuple{res, issues};
         },
