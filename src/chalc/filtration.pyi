@@ -27,8 +27,7 @@ class FilteredComplex:
         				Add a simplex to a filtered simplicial complex.
         
         				Args:
-        					vertices : List of vertex labels corresponding to existing vertices
-        					in the complex.
+        					vertices : List of vertex labels corresponding to existing vertices in the complex.
         					filt_value : Filtration value to associate to the new simplex.
         
         				Note:

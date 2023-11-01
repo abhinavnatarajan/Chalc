@@ -1,17 +1,26 @@
-from __future__ import annotations
+from   __future__           import annotations
+from   collections.abc      import Collection, Sequence
+from   itertools            import product
+from   typing               import Annotated
 
-from matplotlib.figure import Figure
-from matplotlib.axes import Axes
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-import numpy as np
-from itertools import product
-from typing import Annotated
-from pandas import DataFrame
-import seaborn as sns
-from .sixpack import DiagramEnsemble, _num_colours_in_bitmask, _bitmask_to_colours, _colours_are_subset, _colours_to_bitmask
-from chalc.filtration import FilteredComplex # absolute import because of a bug in scikit-build-core v0.6.0
-from ._utils import interpolate_docstring
+import matplotlib.animation as     animation
+from   matplotlib.axes      import Axes
+from   matplotlib.figure    import Figure
+import matplotlib.pyplot    as     plt
+import numpy                as     np
+from   pandas               import DataFrame
+import seaborn              as     sns
+
+from   chalc.filtration     import FilteredComplex
+
+from   ._utils              import interpolate_docstring
+from   .sixpack             import (
+	DiagramEnsemble,
+	_bitmask_to_colours,
+	_colours_are_subset,
+	_colours_to_bitmask,
+	_num_colours_in_bitmask,
+)
 
 plt.rcParams["animation.html"] = "jshtml"
 
@@ -19,7 +28,6 @@ __doc__ = 'Plotting and visualisation utilities.'
 
 def plot_sixpack(
 	dgms                  : DiagramEnsemble,
-	*,
 	truncation            : float | None = None,
 	max_diagram_dimension : int   | None = None,
 	tolerance             : float        = 0,
@@ -29,12 +37,10 @@ def plot_sixpack(
 	Plots the 6-pack of persistence diagrams returned by :func:`compute <.sixpack.compute>`.
 
 	Args:
-		dgms : The 6-pack of persistence diagrams.
-
-	Keyword Args:
-		truncation : The maximum entrance time upto which features are plotted. A sensible default will be calculated if not provided.
+		dgms                  : The 6-pack of persistence diagrams.
+		truncation            : The maximum entrance time upto which features are plotted. A sensible default will be calculated if not provided.
 		max_diagram_dimension : The maximum homological dimension for which to plot features. If not provided, all dimensions will be included in the plots.
-		tolerance: Only features with persistence greater than this value will be plotted.
+		tolerance             : Only features with persistence greater than this value will be plotted.
 	"""
 	if max_diagram_dimension is None:
 		max_diagram_dimension = max(dgms.dimensions)
@@ -87,24 +93,21 @@ def plot_sixpack(
 def plot_diagram(
 	dgms                  : DiagramEnsemble,
 	diagram_name          : str,
-	*,
 	truncation            : float | None = None,
 	max_diagram_dimension : int   | None = None,
 	ax                    : Axes  | None = None,
 	tolerance             : float        = 0
-	) -> tuple[Figure, Axes] :
+	) -> Axes :
 	"""
 	Plot a specific diagram from a 6-pack.
 
 	Args:
-		dgms : The 6-pack of persistence diagrams.
-		diagram_name : One of ``${str(DiagramEnsemble.diagram_names)}``.
-
-	Keyword Args:
-		truncation : The maximum entrance time for which the diagrams are plotted. A sensible default will be calculated if not provided.
+		dgms                  : The 6-pack of persistence diagrams.
+		diagram_name          : One of ``${str(DiagramEnsemble.diagram_names)}``.
+		truncation            : The maximum entrance time for which the diagrams are plotted. A sensible default will be calculated if not provided.
 		max_diagram_dimension : The maximum homological dimension for which to plot points. If not provided, all dimensions will be included in the plots.
-		ax : A matplotlib axes object. If provided then the diagram will be plotted on the given axes.
-		tolerance: Only features with persistence greater than this value will be plotted.
+		ax                    : A matplotlib axes object. If provided then the diagram will be plotted on the given axes.
+		tolerance             : Only features with persistence greater than this value will be plotted.
 	"""
 	if not diagram_name in DiagramEnsemble.diagram_names:
 		raise KeyError("Invalid diagram name!")
@@ -124,9 +127,7 @@ def plot_diagram(
 			if dgms.dimensions[d] <= max_diagram_dimension]
 		truncation = _get_truncation(et)
 	if ax is None:
-		fig, ax = plt.subplots()
-	else:
-		fig = ax.get_figure()
+		_, ax = plt.subplots()
 	_plot_diagram(
 		getattr(dgms, diagram_name),
 		dgms.entrance_times,
@@ -140,7 +141,7 @@ def plot_diagram(
 		max_dim       = max_diagram_dimension,
 		tolerance     = tolerance
 	)
-	return fig, ax
+	return ax
 
 def _plot_diagram(
 	diagram,
@@ -210,25 +211,22 @@ def draw_filtration(
 	K               : FilteredComplex,
 	points          : Annotated[np.ndarray, np.float64],
 	time            : float,
-	*,
-	include_colours : list[int] | None = None
+	include_colours : Collection[int] | None = None
 	) -> tuple[Figure, Axes] :
 	"""
 	Visualise a filtration at given time, optionally including only certain colours.
 
 	Args:
-		K : A filtered complex.
-		points : The vertices of ``K`` as a :math:`2\\times N` numpy matrix.
-		time : Filtration times for which to draw simplices.
-
-	Keyword Args:
-		include_colours : Optional list of colours to include. If not specified then all colours will be drawn.
+		K               : A filtered complex.
+		points          : The vertices of ``K`` as a :math:`2\\times N` numpy matrix.
+		time            : Filtration times for which to draw simplices.
+		include_colours : Optional collection of colours to include. If not specified then all colours will be drawn.
 	"""
 	if len(points.shape) != 2:
 		raise NotImplementedError
 
 	if include_colours is None:
-		include_colours = list(set([_bitmask_to_colours(vertex.colours)[0] for vertex in K.simplices[0].values()]))
+		include_colours = set([_bitmask_to_colours(vertex.colours)[0] for vertex in K.simplices[0].values()])
 
 	include_colours_bitmask = _colours_to_bitmask(include_colours)
 
@@ -275,18 +273,16 @@ def draw_filtration(
 def animate_filtration(
 	K                : FilteredComplex,
 	points           : Annotated[np.ndarray, np.float64],
-	*,
-	filtration_times : list[float],
-	animation_length : float) -> animation.FuncAnimation :
+	filtration_times : Sequence[float],
+	animation_length : float
+	) -> animation.FuncAnimation :
 	"""
 	Create animation of 2-skeleton of filtered simplicial complex.
 
-	Args :
-		K : A filtered complex.
-		points : The vertices of ``K`` as a :math:`2\\times N` numpy matrix.
-
-	Keyword Args:
-		filtration_times : List of filtration times for which to draw animation frames.
+	Args:
+		K                : A filtered complex.
+		points           : The vertices of ``K`` as a :math:`2\\times N` numpy matrix.
+		filtration_times : Sequence of filtration times for which to draw animation frames.
 		animation_length : Total length of the animation in seconds.
 	"""
 	if len(points.shape) != 2:

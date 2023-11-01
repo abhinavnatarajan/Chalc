@@ -47,7 +47,7 @@ exclude_patterns = [
     '_templates', 
     'exts', 
     '_static',
-    # 'example.ipynb'
+    'example.ipynb'
 ]
 
 extensions = [
@@ -69,7 +69,6 @@ autosectionlabel_prefix_document = True
 # napoleon options
 napolean_include_init_with_doc = True
 napoleon_attr_annotations = True
-napolean_use_keyword = True
 
 # autodoc options
 autodoc_default_options = {

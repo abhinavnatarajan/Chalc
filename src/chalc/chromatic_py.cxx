@@ -51,7 +51,7 @@ PYBIND11_MODULE(chromatic, m)
                 The chromatic Delaunay-Rips complex of the point cloud has the same set of simplices as the chromatic alpha complex, but with Vietoris-Rips filtration times. The convention used is that the filtration time of a simplex is half the maximum edge length in that simplex. With this convention, the chromatic Delaunay-Rips complex and chromatic alpha complex have visually similar persistence diagrams.
 
             See Also:
-                alpha, delcech
+                :func:`alpha`, :func:`delcech`
         )docstring",
         py::arg("x"), py::arg("colours"))
     .def("alpha",
@@ -79,7 +79,7 @@ PYBIND11_MODULE(chromatic, m)
                 ValueError: If any value in ``colours`` is >= :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>` or < 0, or if the length of ``colours`` does not match the number of points.
 
             See Also:
-                delrips, delcech
+                :func:`delrips`, :func:`delcech`
         )docstring",
         py::arg("x"), py::arg("colours"))
     .def("delcech",
@@ -110,7 +110,7 @@ PYBIND11_MODULE(chromatic, m)
                 The chromatic Delaunay-Cech complex of the point cloud has the same set of simplices as the chromatic alpha complex, but with Cech filtration times.
 
             See Also:
-                alpha, delrips
+                :func:`alpha`, :func:`delrips`
         )docstring",
         py::arg("x"), py::arg("colours"));
 }
