@@ -9,3 +9,4 @@ numpy==1.26.0
 matplotlib==3.8.0
 IPython==8.15.0
 ipykernel==6.25.2
+ipympl==0.9.3

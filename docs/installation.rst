@@ -4,7 +4,7 @@ Installation
 
 Using pip
 ---------
-The recommended way to download and install chalc is from the `PyPI repository <https://pypi.org/project/chalc/>`_ using pip. Prepackaged binary distributions are available for 64-bit Windows, macOSX, and Linux. Chalc requires CPython or PyPy \>=3.8.
+The recommended way to download and install chalc is from the `PyPI repository <https://pypi.org/project/chalc/>`_ using pip. Pre-packaged binary distributions are available for 64-bit Windows, macOS, and Linux. Chalc requires CPython or PyPy \>=3.8.
 
 .. code-block:: console
 

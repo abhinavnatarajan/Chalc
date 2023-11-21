@@ -211,7 +211,8 @@ def draw_filtration(
 	K               : FilteredComplex,
 	points          : Annotated[np.ndarray, np.float64],
 	time            : float,
-	include_colours : Collection[int] | None = None
+	include_colours : Collection[int] | None = None,
+	ax              : Axes            | None = None
 	) -> tuple[Figure, Axes] :
 	"""
 	Visualise a filtration at given time, optionally including only certain colours.
@@ -221,6 +222,7 @@ def draw_filtration(
 		points          : The vertices of ``K`` as a :math:`2\\times N` numpy matrix.
 		time            : Filtration times for which to draw simplices.
 		include_colours : Optional collection of colours to include. If not specified then all colours will be drawn.
+		ax              : A matplotlib axes object. If provided then the diagram will be plotted on the given axes.
 	"""
 	if len(points.shape) != 2:
 		raise NotImplementedError
@@ -229,10 +231,10 @@ def draw_filtration(
 		include_colours = set([_bitmask_to_colours(vertex.colours)[0] for vertex in K.simplices[0].values()])
 
 	include_colours_bitmask = _colours_to_bitmask(include_colours)
-
-	fig : Figure
-	ax : Axes
-	fig, ax = plt.subplots()
+	
+	if ax is None:
+		ax : Axes
+		_, ax = plt.subplots()
 	plot_colours = np.array(plt.rcParams['axes.prop_cycle'].by_key()['color'])
 
 	# Plot the vertices
@@ -268,7 +270,7 @@ def draw_filtration(
 	ax.set_aspect('equal')
 	# ax.set_xlabel('Time = ' + f"{0.0:.4f}")
 
-	return fig, ax
+	return ax
 
 def animate_filtration(
 	K                : FilteredComplex,
