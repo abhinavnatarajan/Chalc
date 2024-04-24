@@ -34,7 +34,9 @@
 */
 #include <chalc/filtration/filtration.h>
 #include <stdexcept>
+#define NDEBUG
 #include <cassert>
+#include <algorithm>
 
 namespace {
 using namespace chalc::stl;

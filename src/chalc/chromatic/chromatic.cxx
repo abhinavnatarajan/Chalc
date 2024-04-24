@@ -46,6 +46,7 @@ preprocessor macro clashes
 #include <CGAL/Epick_d.h>
 #include <CGAL/Triangulation.h>
 #include <stdexcept>
+#include <algorithm>
 
 namespace {
 using namespace chalc::stl;
