@@ -47,10 +47,10 @@ jobs:
           submodules: 'recursive'
 
       - name: Get CMake
-        uses: lukka/get-cmake@v3.29.2
+        uses: lukka/get-cmake@v3.28.0
       
       - name: Setup build tools on macOS
-        run: brew install automake
+        run: brew install automake autoconf libtool
         if: ${{ matrix.os == 'macOS-latest' }}
       
       - name: Get vcpkg commit ID from manifest
