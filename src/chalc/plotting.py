@@ -127,14 +127,16 @@ def plot_diagram(
 			if dgms.dimensions[d] <= max_diagram_dimension]
 		truncation = _get_truncation(et)
 	if ax is None:
-		ax : Axes
-		_, ax = plt.subplots()
+		ax1 : Axes
+		_, ax1 = plt.subplots()
+	else:
+		ax1 = ax
 	_plot_diagram(
 		getattr(dgms, diagram_name),
 		dgms.entrance_times,
 		dgms.dimensions,
 		truncation,
-		ax            = ax,
+		ax            = ax1,
 		dim_shift     = 1 if diagram_name == 'ker' else 0,
 		points_legend = True,
 		lines_legend  = True,
@@ -142,7 +144,7 @@ def plot_diagram(
 		max_dim       = max_diagram_dimension,
 		tolerance     = tolerance
 	)
-	return ax
+	return ax1
 
 def _plot_diagram(
 	diagram,
@@ -232,10 +234,13 @@ def draw_filtration(
 		include_colours = set([_bitmask_to_colours(vertex.colours)[0] for vertex in K.simplices[0].values()])
 
 	include_colours_bitmask = _colours_to_bitmask(include_colours)
-	
+
 	if ax is None:
-		ax : Axes
-		_, ax = plt.subplots()
+		ax1 : Axes
+		_, ax1 = plt.subplots()
+	else:
+		ax1 = ax
+
 	plot_colours = np.array(plt.rcParams['axes.prop_cycle'].by_key()['color'])
 
 	# Plot the vertices
@@ -247,7 +252,7 @@ def draw_filtration(
 			vertices_to_plot.append(idx)
 
 	vertex_colours = np.array(vertex_colours)
-	ax.scatter(points[0, vertices_to_plot], points[1, vertices_to_plot], c=list(plot_colours[vertex_colours]), s=10)
+	ax1.scatter(points[0, vertices_to_plot], points[1, vertices_to_plot], c=list(plot_colours[vertex_colours]), s=10)
 
 	# Plot the edges
 	for idx, simplex in K.simplices[1].items():
@@ -258,7 +263,7 @@ def draw_filtration(
 			else:
 				colour = 'black'
 				alpha = 0.2
-			ax.plot(points[0, simplex.vertices], points[1, simplex.vertices], c=colour, alpha=alpha, linewidth=1)
+			ax1.plot(points[0, simplex.vertices], points[1, simplex.vertices], c=colour, alpha=alpha, linewidth=1)
 
 	for idx, simplex in K.simplices[2].items():
 		if _colours_are_subset(simplex.colours, include_colours_bitmask) and simplex.filtration_value <= time:
@@ -266,12 +271,12 @@ def draw_filtration(
 				colour = plot_colours[_bitmask_to_colours(simplex.colours)[0]]
 			else:
 				colour = 'grey'
-			ax.fill(points[0, simplex.vertices], points[1, simplex.vertices], c=colour, alpha=0.2)
+			ax1.fill(points[0, simplex.vertices], points[1, simplex.vertices], c=colour, alpha=0.2)
 
-	ax.set_aspect('equal')
+	ax1.set_aspect('equal')
 	# ax.set_xlabel('Time = ' + f"{0.0:.4f}")
 
-	return ax
+	return ax1
 
 def animate_filtration(
 	K                : FilteredComplex,

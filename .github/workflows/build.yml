@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: 'recursive'
 
@@ -47,7 +47,7 @@ jobs:
           submodules: 'recursive'
 
       - name: Get CMake
-        uses: lukka/get-cmake@v3.26.3
+        uses: lukka/get-cmake@v3.29.2
       
       - name: Setup build tools on macOS
         run: brew install automake
@@ -78,5 +78,16 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: wheels
+          name: wheels-${{ matrix.os }}
           path: ./wheelhouse/*.whl
+  
+  merge_artifacts:
+    name: Merge wheel artifacts
+    needs: build_wheels
+    runs-on: ubuntu-latest
+    steps:
+      - name: Merge artifacts
+        uses: actions/upload-artifact/merge@v4
+        with: 
+          name: wheels
+          pattern: wheels-*
