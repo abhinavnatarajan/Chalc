@@ -127,6 +127,7 @@ def plot_diagram(
 			if dgms.dimensions[d] <= max_diagram_dimension]
 		truncation = _get_truncation(et)
 	if ax is None:
+		ax : Axes
 		_, ax = plt.subplots()
 	_plot_diagram(
 		getattr(dgms, diagram_name),
@@ -213,7 +214,7 @@ def draw_filtration(
 	time            : float,
 	include_colours : Collection[int] | None = None,
 	ax              : Axes            | None = None
-	) -> tuple[Figure, Axes] :
+	) -> Axes :
 	"""
 	Visualise a filtration at given time, optionally including only certain colours.
 

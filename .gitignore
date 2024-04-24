@@ -86,3 +86,5 @@ stubs/
 vcpkg_installed/
 build_requirements.txt
 .clangd
+.clang-format
+compile_commands.json

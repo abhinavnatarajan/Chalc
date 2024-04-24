@@ -85,7 +85,7 @@ def from_filtration(
 	tolerance             : float                        = 0
 	) -> DiagramEnsemble :
 	"""
-	Compute the 6-pack of persistence diagrams filtered simplicial complex with coloured vertices.
+	Compute the 6-pack of persistence diagrams associated to a filtered simplicial complex with coloured vertices.
 
 	Given a filtered chromatic simplicial complex :math:`K` and a subcomplex :math:`L` of :math:`K`, this function computes the 6-pack of persistence diagram associated with the inclusion map :math:`f : L \\hookrightarrow K`. The subcomplex is specified by
 	the colours of its vertices, or by an integer :math:`k` wherein all simplices with :math:`k` or fewer colours are considered part of the subcomplex.
@@ -141,7 +141,7 @@ def compute(
 	"""
 	Compute the 6-pack of persistence diagrams of a coloured point-cloud.
 
-	This function constructs a filtered chromatic simplicial complex :math:`K` from the point cloud, and computes the 6-pack of persistence diagrams associated with the inclusion :math:`f : L \\hookrightarrow K` where :math:`L` is some filtered subcomplex of :math:`K`.
+	This function constructs a filtered simplicial complex :math:`K` from the point cloud, and computes the 6-pack of persistence diagrams associated with the inclusion :math:`f : L \\hookrightarrow K` where :math:`L` is some filtered subcomplex of :math:`K`.
 
 	Args:
 		x                     : Numpy matrix whose columns are points.

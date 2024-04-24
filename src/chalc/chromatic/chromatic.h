@@ -2,9 +2,9 @@
     This file is part of Chalc.
 
     Chalc: Chromatic Alpha Complexes.
-    Based on: di Montesano et. al., “Persistent Homology of Chromatic Alpha Complexes”. 
-    Online preprint available at http://arxiv.org/abs/2212.03128. 
-    Accessed: 2023-02-28 22:07:23 UTC. 
+    Based on: di Montesano et. al., “Persistent Homology of Chromatic Alpha
+   Complexes”. Online preprint available at http://arxiv.org/abs/2212.03128.
+    Accessed: 2023-02-28 22:07:23 UTC.
     DOI: 10.48550/arXiv.2212.03128.
 
     Project homepage:    http://abhinavnatarajan.github.io/Chalc
@@ -43,20 +43,26 @@
 #include <chalc/filtration/filtration.h>
 
 namespace chalc {
-    namespace chromatic {
+namespace chromatic {
 
-        // Create a Delaunay triangulation from a collection of coordinate vectors
-        FilteredComplex delaunay(const Eigen::MatrixXd& X);
+// Create a Delaunay triangulation from a collection of coordinate vectors
+FilteredComplex delaunay(const Eigen::MatrixXd &X,
+                         const std::vector<index_t> &colours);
 
-        // Create the weak chromatic alpha complex
-        FilteredComplex delrips(const Eigen::MatrixXd& points, const std::vector<index_t>& colours);
+// Create the weak chromatic alpha complex
+FilteredComplex delrips(const Eigen::MatrixXd &points,
+                        const std::vector<index_t> &colours);
 
-        // Create the chromatic alpha complex
-        FilteredComplex alpha(const Eigen::MatrixXd& points, const std::vector<index_t>& colours, std::ostream& ostream = std::cerr);
+// Create the chromatic alpha complex
+FilteredComplex alpha(const Eigen::MatrixXd &points,
+                      const std::vector<index_t> &colours,
+                      std::ostream &ostream = std::cerr);
 
-        // Create the chromatic Del-Cech complex
-        FilteredComplex delcech(const Eigen::MatrixXd& points, const std::vector<index_t>& colours, std::ostream& ostream = std::cerr);
-    }
-}
+// Create the chromatic Del-Cech complex
+FilteredComplex delcech(const Eigen::MatrixXd &points,
+                        const std::vector<index_t> &colours,
+                        std::ostream &ostream = std::cerr);
+} // namespace chromatic
+} // namespace chalc
 
 #endif
