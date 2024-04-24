@@ -91,3 +91,4 @@ jobs:
         with: 
           name: wheels
           pattern: wheels-*
+          delete-merged: true
