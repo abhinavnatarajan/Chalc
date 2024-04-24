@@ -22,8 +22,7 @@ jobs:
       - name: Prepare for upload
         run: |
           mkdir dist
-          mv sdist/* dist
-          mv wheels/* dist
+          mv * dist
       # - name: Upload to TestPyPI
       #   uses: pypa/gh-action-pypi-publish@release/v1
       #   with:
