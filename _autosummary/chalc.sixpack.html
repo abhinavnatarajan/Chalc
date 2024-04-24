@@ -2,11 +2,11 @@
 <html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="DiagramEnsemble" href="chalc.sixpack.DiagramEnsemble.html" /><link rel="prev" title="Simplex" href="chalc.filtration.Simplex.html" />
 
     <!-- Generated with Sphinx 7.2.4 and Furo 2023.08.19 -->
-        <title>sixpack - chalc 0.10.0 documentation</title>
+        <title>sixpack - chalc 0.11.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">chalc 0.10.0 documentation</div></a>
+      <a href="../index.html"><div class="brand">chalc 0.11.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -148,7 +148,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">chalc 0.10.0 documentation</span>
+  <span class="sidebar-brand-text">chalc 0.11.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -237,7 +237,7 @@
 <td><p>Compute the 6-pack of persistence diagrams of a coloured point-cloud.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#chalc.sixpack.from_filtration" title="chalc.sixpack.from_filtration"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_filtration</span></code></a></p></td>
-<td><p>Compute the 6-pack of persistence diagrams filtered simplicial complex with coloured vertices.</p></td>
+<td><p>Compute the 6-pack of persistence diagrams associated to a filtered simplicial complex with coloured vertices.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#chalc.sixpack.load_diagrams" title="chalc.sixpack.load_diagrams"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_diagrams</span></code></a></p></td>
 <td><p>Load a 6-pack of persistence diagrams from a HDF5 file or group.</p></td>
@@ -271,7 +271,7 @@
 <dt class="sig sig-object py" id="chalc.sixpack.compute">
 <span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colours</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'chromatic</span> <span class="pre">alpha'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_diagram_dimension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.sixpack.compute" title="Link to this definition">#</a></dt>
 <dd><p>Compute the 6-pack of persistence diagrams of a coloured point-cloud.</p>
-<p>This function constructs a filtered chromatic simplicial complex <span class="math notranslate nohighlight">\(K\)</span> from the point cloud, and computes the 6-pack of persistence diagrams associated with the inclusion <span class="math notranslate nohighlight">\(f : L \hookrightarrow K\)</span> where <span class="math notranslate nohighlight">\(L\)</span> is some filtered subcomplex of <span class="math notranslate nohighlight">\(K\)</span>.</p>
+<p>This function constructs a filtered simplicial complex <span class="math notranslate nohighlight">\(K\)</span> from the point cloud, and computes the 6-pack of persistence diagrams associated with the inclusion <span class="math notranslate nohighlight">\(f : L \hookrightarrow K\)</span> where <span class="math notranslate nohighlight">\(L\)</span> is some filtered subcomplex of <span class="math notranslate nohighlight">\(K\)</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -308,7 +308,7 @@ entrance times of the simplices and their dimensions.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="chalc.sixpack.from_filtration">
 <span class="sig-name descname"><span class="pre">from_filtration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_diagram_dimension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.sixpack.from_filtration" title="Link to this definition">#</a></dt>
-<dd><p>Compute the 6-pack of persistence diagrams filtered simplicial complex with coloured vertices.</p>
+<dd><p>Compute the 6-pack of persistence diagrams associated to a filtered simplicial complex with coloured vertices.</p>
 <p>Given a filtered chromatic simplicial complex <span class="math notranslate nohighlight">\(K\)</span> and a subcomplex <span class="math notranslate nohighlight">\(L\)</span> of <span class="math notranslate nohighlight">\(K\)</span>, this function computes the 6-pack of persistence diagram associated with the inclusion map <span class="math notranslate nohighlight">\(f : L \hookrightarrow K\)</span>. The subcomplex is specified by
 the colours of its vertices, or by an integer <span class="math notranslate nohighlight">\(k\)</span> wherein all simplices with <span class="math notranslate nohighlight">\(k\)</span> or fewer colours are considered part of the subcomplex.</p>
 <dl class="field-list simple">
@@ -448,7 +448,7 @@ entrance times of the simplices and their dimensions.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=82662543"></script>
+</div><script src="../_static/documentation_options.js?v=f3b36f1a"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
