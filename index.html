@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Theory" href="theory.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Installation" href="installation.html" />
 
     <!-- Generated with Sphinx 7.2.4 and Furo 2023.08.19 -->
-        <title>chalc 0.11.0 documentation</title>
+        <title>chalc 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="#"><div class="brand">chalc 0.11.0 documentation</div></a>
+      <a href="#"><div class="brand">chalc 1.0.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -148,7 +148,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="#">
   
   
-  <span class="sidebar-brand-text">chalc 0.11.0 documentation</span>
+  <span class="sidebar-brand-text">chalc 1.0.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -157,7 +157,6 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
-<li class="toctree-l1"><a class="reference internal" href="theory.html">Theory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="example.html">Example Usage</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="API.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -225,15 +224,13 @@
         <article role="main">
           <section id="chalc-documentation">
 <h1>Chalc Documentation<a class="headerlink" href="#chalc-documentation" title="Link to this heading">#</a></h1>
-<p>Chalc is a Python package for computing the persistent homology of <span class="underline">ch</span>romatic <span class="underline">al</span>pha <span class="underline">c</span>omplexes of coloured point clouds in Euclidean space. Chalc is written in C++ and relies on the <a class="reference external" href="https://www.cgal.org">Computational Geometry Algorithms Library (CGAL)</a> for fast and accurate geometric computations, and <a class="reference external" href="https://github.com/tomchaplin/phimaker">Phimaker</a> for persistent homology calculations.</p>
+<p>Chalc is a Python package for computing chromatic Delaunay filtrations of labelled point clouds in Euclidean space, and their persistent homology.
+Chalc is named for <span class="underline">ch</span>romatic <span class="underline">al</span>pha <span class="underline">c</span>omplexes, but it can also compute chromatic Delaunay–Čech and chromatic Delaunay–Rips filtrations.
+Chalc is written in C++ and relies on the <a class="reference external" href="https://www.cgal.org">Computational Geometry Algorithms Library (CGAL)</a> for fast and accurate geometric computations, and <a class="reference external" href="https://github.com/tomchaplin/phimaker">Phimaker</a> for persistent homology calculations.</p>
 <section id="documentation-index">
 <h2>Documentation index<a class="headerlink" href="#documentation-index" title="Link to this heading">#</a></h2>
 <div class="toctree-wrapper compound" id="toc">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="theory.html">Theory</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="theory.html#references">References</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#using-pip">Using pip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#build-from-source">Build from source</a></li>
@@ -253,9 +250,40 @@
 </div>
 </p>
 </section>
+<section id="citing-this-software">
+<h2>Citing this Software<a class="headerlink" href="#citing-this-software" title="Link to this heading">#</a></h2>
+<p>If you want to use chalc in your work, please use the following citation:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" data-sync-id="text" for="sd-tab-item-0">
+Text</label><div class="sd-tab-content docutils">
+<p>Abhinav Natarajan, Thomas Chaplin, Adam Brown, and Maria-Jose Jimenez. “Morse Theory for Chromatic Delaunay Triangulations”. May 30, 2024. arXiv: <a class="reference external" href="https://arxiv.org/abs/2405.19303">2405.19303</a>.</p>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" data-sync-id="bibtex" for="sd-tab-item-1">
+BibTex</label><div class="sd-tab-content docutils">
+<div class="highlight-bibtex notranslate"><div class="highlight"><pre><span></span><span class="nc">@misc</span><span class="p">{</span><span class="nl">natarajan2024morse</span><span class="p">,</span>
+<span class="w">   </span><span class="na">title</span><span class="p">=</span><span class="s">{Morse Theory for Chromatic Delaunay Triangulations}</span><span class="p">,</span>
+<span class="w">   </span><span class="na">author</span><span class="p">=</span><span class="s">{Abhinav Natarajan and Thomas Chaplin and Adam Brown and Maria-Jose Jimenez}</span><span class="p">,</span>
+<span class="w">   </span><span class="na">year</span><span class="p">=</span><span class="s">{2024}</span><span class="p">,</span>
+<span class="w">   </span><span class="na">eprint</span><span class="p">=</span><span class="s">{2405.19303}</span><span class="p">,</span>
+<span class="w">   </span><span class="na">archivePrefix</span><span class="p">=</span><span class="s">{arXiv}</span><span class="p">,</span>
+<span class="w">   </span><span class="na">primaryClass</span><span class="p">=</span><span class="s">{math.AT}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
 <section id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading">#</a></h2>
-<p>The Python package <a class="reference external" href="https://pypi.org/project/chromatic-tda/">chromatic-tda</a> (written by the original authors of <a class="reference internal" href="theory.html#di-montesano-et-al"><span class="std std-ref">[1]</span></a>) provides similar functionality, but is currently limited to points in two dimensions with upto three colours.</p>
+<p>The Python package <a class="reference external" href="https://pypi.org/project/chromatic-tda/">chromatic-tda</a> (written by the original authors of <a class="reference internal" href="#sebastiano"><span class="std std-ref">[1]</span></a>) provides similar functionality, but is currently limited to points in two dimensions with upto three colours, although an alpha version with support for higher dimensions is available.</p>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p><span class="target" id="sebastiano">Sebastiano</span> Cultrera di Montesano, Ondřej Draganov, Herbert Edelsbrunner, and Morteza Saghafian. “Chromatic Alpha Complexes”. Feb. 7, 2024. arXiv: <a class="reference external" href="https://arxiv.org/abs/2212.03128">2212.03128</a>.</p></li>
+</ol>
 </section>
 </section>
 
@@ -264,12 +292,12 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="theory.html">
+          <a class="next-page" href="installation.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Theory</div>
+                <div class="title">Installation</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -308,7 +336,9 @@
 <li><a class="reference internal" href="#documentation-index">Documentation index</a><ul>
 </ul>
 </li>
+<li><a class="reference internal" href="#citing-this-software">Citing this Software</a></li>
 <li><a class="reference internal" href="#see-also">See Also</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
 </ul>
@@ -320,7 +350,7 @@
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=f3b36f1a"></script>
+</div><script src="_static/documentation_options.js?v=8d563738"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>

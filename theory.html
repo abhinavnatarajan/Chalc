@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Installation" href="installation.html" /><link rel="prev" title="Chalc Documentation" href="index.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" />
 
     <!-- Generated with Sphinx 7.2.4 and Furo 2023.08.19 -->
-        <title>Theory - chalc 0.11.0 documentation</title>
+        <title>Theory - chalc 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">chalc 0.11.0 documentation</div></a>
+      <a href="index.html"><div class="brand">chalc 1.0.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -148,7 +148,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
-  <span class="sidebar-brand-text">chalc 0.11.0 documentation</span>
+  <span class="sidebar-brand-text">chalc 1.0.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -156,8 +156,7 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul class="current">
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Theory</a></li>
+  <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="example.html">Example Usage</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="API.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -225,10 +224,10 @@
         <article role="main">
           <section id="theory">
 <h1>Theory<a class="headerlink" href="#theory" title="Link to this heading">#</a></h1>
-<p>Given a point cloud <span class="math notranslate nohighlight">\(X\)</span> in <span class="math notranslate nohighlight">\(\mathbb{R}^d\)</span>, one can use the <a class="reference external" href="https://en.wikipedia.org/wiki/%C4%8Cech_complex">Čech filtration</a> <span class="math notranslate nohighlight">\(\mathrm{\check{C}ech}_{\bullet}(X)\)</span> and its homology groups as a proxy for the spatial information contained in <span class="math notranslate nohighlight">\(X\)</span>. In many cases of interest, <span class="math notranslate nohighlight">\(X\)</span> comprises heterogenous data, i.e., there exists a semantically meaningful colouring <span class="math notranslate nohighlight">\(c:X \to \{0, \ldots, s\}\)</span>. In such cases one is often interested in capturing not just spatial information of <span class="math notranslate nohighlight">\(X\)</span> but also of spatial relations among subtypes within the data <a class="reference internal" href="#stolz-b-et-al"><span class="std std-ref">[3]</span></a>. The benefit of the Čech filtration is that it is <em>functorial</em> with respect to inclusions; one could consider the induced maps among the subfiltrations of <span class="math notranslate nohighlight">\(\mathrm{\check{C}ech}_{\bullet}(X)\)</span> induced by inclusions among subsets of <span class="math notranslate nohighlight">\(X\)</span>. These induced maps provide spatial relation information, but the drawback is that computing these inclusion maps and the induced maps on persistent homology is a computationally expensive procedure.</p>
-<p>The chromatic alpha filtration of <span class="math notranslate nohighlight">\(X\)</span> is a filtered simplicial complex <span class="math notranslate nohighlight">\(\mathrm{ChrAlpha}_{\bullet}(X, c)\)</span> with vertex set <span class="math notranslate nohighlight">\(X\)</span> that aims to address this drawback, defined and studied in <a class="reference internal" href="#di-montesano-et-al"><span class="std std-ref">[1]</span></a>. It is a generalisation of the alpha filtration.</p>
+<p>Given a point cloud <span class="math notranslate nohighlight">\(X\)</span> in <span class="math notranslate nohighlight">\(\mathbb{R}^d\)</span>, one can use the <a class="reference external" href="https://en.wikipedia.org/wiki/%C4%8Cech_complex">Čech filtration</a> <span class="math notranslate nohighlight">\(\mathrm{\check{C}}_{\bullet}(X)\)</span> and its homology groups as a proxy for the spatial information contained in <span class="math notranslate nohighlight">\(X\)</span>. In many cases of interest, <span class="math notranslate nohighlight">\(X\)</span> comprises heterogenous data, that is, there exists a semantically meaningful colouring <span class="math notranslate nohighlight">\(\mu:X \to \{0, \ldots, s\}\)</span>. In such cases one is often interested in capturing not just spatial information of <span class="math notranslate nohighlight">\(X\)</span> but also of spatial relations among subtypes within the data <a class="reference internal" href="#stolz-b-et-al"><span class="std std-ref">[3]</span></a>. The benefit of the Čech filtration is that it is <em>functorial</em> with respect to inclusions; one could consider the induced maps among the subfiltrations of <span class="math notranslate nohighlight">\(\mathrm{\check{C}}_{\bullet}(X)\)</span> induced by inclusions among subsets of <span class="math notranslate nohighlight">\(X\)</span>. These induced maps provide spatial relation information, but the drawback is that computing these inclusion maps and the induced maps on persistent homology is a computationally expensive procedure.</p>
+<p>The chromatic alpha filtration of <span class="math notranslate nohighlight">\(X\)</span> is a filtered simplicial complex <span class="math notranslate nohighlight">\(\mathcal{A}_{\bullet}^{\mu}(X)\)</span> with vertex set <span class="math notranslate nohighlight">\(X\)</span> that aims to address this drawback, defined and studied in <a class="reference internal" href="#di-montesano-et-al"><span class="std std-ref">[1]</span></a>. It is a generalisation of the alpha filtration.</p>
 <ol class="arabic simple">
-<li><p><em>Functoriality</em>: In the Čech filtration, every inclusion <span class="math notranslate nohighlight">\(A \hookrightarrow B\)</span> of subsets of <span class="math notranslate nohighlight">\(X\)</span> induces an inclusion of Čech filtrations <span class="math notranslate nohighlight">\(\mathrm{\check{C}ech}_{\bullet}(A) \hookrightarrow \mathrm{\check{C}ech}_{\bullet}(B)\)</span>. In the chromatic alpha filtration, this functoriality holds for a select family of subsets of <span class="math notranslate nohighlight">\(X\)</span>, namely those of the form  <span class="math notranslate nohighlight">\(X_I := \chi^{-1}(I)\)</span> where <span class="math notranslate nohighlight">\(I \subset \{0, \ldots, s\}\)</span>. To be more precise, let <span class="math notranslate nohighlight">\(c_I\)</span> denote the restriction of <span class="math notranslate nohighlight">\(c\)</span> to <span class="math notranslate nohighlight">\(X_I\)</span>. Then <span class="math notranslate nohighlight">\(\mathrm{ChrAlpha}_{\bullet}(X_I, c_I)\)</span> is the subfiltration of <span class="math notranslate nohighlight">\(\mathrm{ChrAlpha}_{\bullet}(X, c)\)</span> generated by <span class="math notranslate nohighlight">\(X_I\)</span>.</p></li>
+<li><p><em>Functoriality</em>: In the Čech filtration, every inclusion <span class="math notranslate nohighlight">\(A \hookrightarrow B\)</span> of subsets of <span class="math notranslate nohighlight">\(X\)</span> induces an inclusion of Čech filtrations <span class="math notranslate nohighlight">\(\mathrm{\check{C}}_{\bullet}(A) \hookrightarrow \mathrm{\check{C}}_{\bullet}(B)\)</span>. In the chromatic alpha filtration, this functoriality holds for a select family of subsets of <span class="math notranslate nohighlight">\(X\)</span>, namely those of the form  <span class="math notranslate nohighlight">\(X_I := \mu^{-1}(I)\)</span> where <span class="math notranslate nohighlight">\(I \subset \{0, \ldots, s\}\)</span>. To be more precise, let <span class="math notranslate nohighlight">\(\mu_I\)</span> denote the restriction of <span class="math notranslate nohighlight">\(\mu\)</span> to <span class="math notranslate nohighlight">\(X_I\)</span>. Then, for sets of colours <span class="math notranslate nohighlight">\(I \subset J\)</span>, we have <span class="math notranslate nohighlight">\(\mathcal{A}_{\bullet}^{\mu}(X)\)</span> is the subfiltration of <span class="math notranslate nohighlight">\(\mathcal{A}_{\bullet}^{\mu}(X)\)</span> generated by <span class="math notranslate nohighlight">\(X_I\)</span>.</p></li>
 <li><p><em>Recovery of spatial information</em>: For every subset <span class="math notranslate nohighlight">\(I \subset \{0, \ldots, s\}\)</span> there is a filtration-preserving inclusion map <span class="math notranslate nohighlight">\(\mathrm{ChrAlpha}_{\bullet}(X_I, c_I) \hookrightarrow \mathrm{\check{C}ech}_{\bullet}(X_I)\)</span> into the Čech filtration which is a level-wise homotopy equivalence. In particular <span class="math notranslate nohighlight">\(\mathrm{ChrAlpha}_{\bullet}(X, c) \simeq \mathrm{\check{C}ech}_{\bullet}(X)\)</span>, and the persistent homotopy type of the chromatic alpha filtration does not depend on the colouring. This means that one can use the chromatic alpha filtration as a substitute for the Čech for persistent homology calculations.</p></li>
 <li><p><em>Computational efficiency</em>: The chromatic alpha filtration typically has far fewer simplices than the Čech filtration <a class="reference internal" href="#edelsbrunner-h-nikitenko-a-and-reitzner-m"><span class="std std-ref">[2]</span></a>. For example, if <span class="math notranslate nohighlight">\(I = \{m\}\)</span> for some <span class="math notranslate nohighlight">\(m \in \{0, \ldots s\}\)</span> then <span class="math notranslate nohighlight">\(\mathrm{ChrAlpha}_{\bullet}(X_I, c_I)\)</span> is the <a class="reference external" href="https://gudhi.inria.fr/doc/3.0.0/group__alpha__complex.html">alpha filtration</a> of the <span class="math notranslate nohighlight">\(m\)</span>-coloured points. This means that the chromatic alpha filtration has computational advantages over the Čech filtration in persistent homology calculations when <span class="math notranslate nohighlight">\(d\)</span> is small and the number of points is large.</p></li>
 <li><p>The chromatic alpha filtration includes as special cases the Čech filtration when <span class="math notranslate nohighlight">\(c\)</span> is the colouring that gives every point a different colour, and the alpha filtration when <span class="math notranslate nohighlight">\(c\)</span> gives every point the same colour. One can view the chromatic alpha filtration as interpolating between the functorial properties of the Čech filtration and the sparsity of the alpha filtration while preserving overall spatial information.</p></li>
@@ -236,7 +235,7 @@
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
 <ol class="arabic simple">
-<li><p><span class="target" id="di-montesano-et-al">di Montesano et. al.</span>, “Persistent Homology of Chromatic Alpha Complexes”.
+<li><p><span class="target" id="di-montesano-et-al">di Montesano et. al.</span>, “Chromatic Alpha Complexes”.
 Online preprint available at <a class="reference external" href="https://arxiv.org/abs/2212.03128">https://arxiv.org/abs/2212.03128</a>. Accessed: 2023-02-28 22:07:23 UTC.</p></li>
 <li><p><span class="target" id="edelsbrunner-h-nikitenko-a-and-reitzner-m">Edelsbrunner H., Nikitenko A. and Reitzner M.</span>, “Expected Sizes of Poisson-Delaunay Mosaics and Their Discrete Morse Functions” (2017) in Advances in Applied Probability, 49(3) pp. 745-767. DOI: <a class="reference external" href="https://doi.org/10.1017/apr.2017.20">10.1017/apr.2017.20</a>.</p></li>
 <li><p><span class="target" id="stolz-b-et-al">Stolz, B. et. al.</span>, “Relational persistent homology for multispecies data with application to the tumor microenvironment” (2023). Online preprint available at <a class="reference external" href="https://arxiv.org/abs/2308.06205">https://arxiv.org/abs/2308.06205</a>. Accessed: 2023-08-31 22:07:23 16:04:05 UTC.</p></li>
@@ -253,26 +252,8 @@ in Lecture Notes in Computer Science. Berlin, Heidelberg: Springer,
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="installation.html">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">Installation</div>
-              </div>
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="index.html">
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-              <div class="page-info">
-                <div class="context">
-                  <span>Previous</span>
-                </div>
-                
-                <div class="title">Home</div>
-                
-              </div>
-            </a>
+          
+          
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -316,7 +297,7 @@ in Lecture Notes in Computer Science. Berlin, Heidelberg: Springer,
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=f3b36f1a"></script>
+</div><script src="_static/documentation_options.js?v=8d563738"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>
