@@ -8,18 +8,20 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "chalc"
-version = "0.11.0"
+version = "1.0.0"
 authors = [
     {name = "Abhinav Natarajan", email = "natarajan@maths.ox.ac.uk"},
 ]
-description = "Persistent homology of chromatic alpha complexes"
+description = "Persistent homology of chromatic Delaunay filtrations"
 readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.8"
 license = {file = "COPYING"}
 keywords = [
     "topological data analysis",
     "TDA",
-    "chromatic alpha complex",
+    "chromatic Delaunay",
+    "computational geometry",
+    "computational topology",
     "persistent homology"
 ]
 dependencies = [
