@@ -77,14 +77,3 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-
-# Miscellaneous
-instructions_for_build.txt
-scratch_test/
-stubs/
-*.h5
-vcpkg_installed/
-build_requirements.txt
-.clangd
-.clang-format
-compile_commands.json

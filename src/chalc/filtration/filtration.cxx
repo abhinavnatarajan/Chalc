@@ -34,7 +34,7 @@
 */
 #include <chalc/filtration/filtration.h>
 #include <stdexcept>
-#ifndef NDEBUF
+#ifndef NDEBUG
 #define NDEBUG
 #endif
 #include <cassert>

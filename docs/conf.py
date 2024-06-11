@@ -41,12 +41,12 @@ maximum_signature_line_length = 160
 toc_object_entries_show_parents = 'hide'
 add_module_names = False
 master_doc = "index"
-templates_path = ['_templates']
+templates_path = ['templates']
 exclude_patterns = [
     '_build', 
-    '_templates', 
+    'templates', 
     'exts', 
-    '_static',
+    'static',
     # 'example.ipynb'
 ]
 
@@ -103,7 +103,7 @@ github_repository = 'chalc'
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_static_path = ['_static']
+html_static_path = ['static']
 html_css_files = [
     'css/custom.css'
 ]
