@@ -190,7 +190,7 @@ PYBIND11_MODULE(filtration, m) {
           py::arg("n"), py::arg("k"));
     m.def("standard_simplex", &standard_simplex,
           R"docstring(
-			Returns the simplicial complex corresponding to the standard abstract :math:`n`-simplex.
+			Returns the filtered simplicial complex corresponding to the standard abstract :math:`n`-simplex, with filtration values intialised to zero.
 		)docstring",
           py::arg("n"));
 }

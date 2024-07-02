@@ -6,3 +6,6 @@ Chalc is a C++ library with Python bindings to compute the persistent homology o
 ![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/abhinavnatarajan/Chalc/build.yml?labelColor=222222)
 
 For instructions on installation and usage, see the [documentation](https://abhinavnatarajan.github.io/Chalc).
+
+> [!IMPORTANT]
+> Versions of chalc older than 2.0.0 will not work correctly any more. This is due to an incorrect dependency specification in these older versions and the release of numpy v2.0. If you are using an older version of chalc, please make sure to install a compatible version of numpy (< v2.0.0).
