@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="FilteredComplex" href="chalc.filtration.FilteredComplex.html" /><link rel="prev" title="chromatic" href="chalc.chromatic.html" />
 
     <!-- Generated with Sphinx 7.2.4 and Furo 2023.08.19 -->
-        <title>filtration - chalc 1.0.0 documentation</title>
+        <title>filtration - chalc 2.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">chalc 1.0.0 documentation</div></a>
+      <a href="../index.html"><div class="brand">chalc 2.0.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -148,7 +148,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">chalc 1.0.0 documentation</span>
+  <span class="sidebar-brand-text">chalc 2.0.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -234,10 +234,10 @@ abstract filtered simplicial complexes.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#chalc.filtration.clique_complex" title="chalc.filtration.clique_complex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clique_complex</span></code></a></p></td>
-<td><p>Returns the <span class="math notranslate nohighlight">\(k\)</span>-skeleton of the complete simplicial complex on <span class="math notranslate nohighlight">\(n\)</span> vertices, with filtration values initialised to zero.</p></td>
+<td><p>Returns the <span class="math notranslate nohighlight">\(k\)</span>-skeleton of the complete simplicial complex on <span class="math notranslate nohighlight">\(n\)</span> vertices, with filtration values initialised to zero and all vertices coloured with the colour 0.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#chalc.filtration.standard_simplex" title="chalc.filtration.standard_simplex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">standard_simplex</span></code></a></p></td>
-<td><p>Returns the simplicial complex corresponding to the standard abstract <span class="math notranslate nohighlight">\(n\)</span>-simplex.</p></td>
+<td><p>Returns the filtered simplicial complex corresponding to the standard abstract <span class="math notranslate nohighlight">\(n\)</span>-simplex, with filtration values initialised to zero and all vertices coloured with the colour 0.</p></td>
 </tr>
 </tbody>
 </table>
@@ -264,7 +264,7 @@ abstract filtered simplicial complexes.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="chalc.filtration.clique_complex">
 <span class="sig-name descname"><span class="pre">clique_complex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.filtration.clique_complex" title="Link to this definition">#</a></dt>
-<dd><p>Returns the <span class="math notranslate nohighlight">\(k\)</span>-skeleton of the complete simplicial complex on <span class="math notranslate nohighlight">\(n\)</span> vertices, with filtration values initialised to zero.</p>
+<dd><p>Returns the <span class="math notranslate nohighlight">\(k\)</span>-skeleton of the complete simplicial complex on <span class="math notranslate nohighlight">\(n\)</span> vertices, with filtration values initialised to zero and all vertices coloured with the colour 0.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="chalc.filtration.FilteredComplex.html#chalc.filtration.FilteredComplex" title="chalc.filtration.FilteredComplex"><em>FilteredComplex</em></a></p>
@@ -275,7 +275,7 @@ abstract filtered simplicial complexes.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="chalc.filtration.standard_simplex">
 <span class="sig-name descname"><span class="pre">standard_simplex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.filtration.standard_simplex" title="Link to this definition">#</a></dt>
-<dd><p>Returns the simplicial complex corresponding to the standard abstract <span class="math notranslate nohighlight">\(n\)</span>-simplex.</p>
+<dd><p>Returns the filtered simplicial complex corresponding to the standard abstract <span class="math notranslate nohighlight">\(n\)</span>-simplex, with filtration values initialised to zero and all vertices coloured with the colour 0.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="chalc.filtration.FilteredComplex.html#chalc.filtration.FilteredComplex" title="chalc.filtration.FilteredComplex"><em>FilteredComplex</em></a></p>
@@ -363,7 +363,7 @@ abstract filtered simplicial complexes.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=8d563738"></script>
+</div><script src="../_static/documentation_options.js?v=51b770b3"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
