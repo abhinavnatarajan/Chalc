@@ -10,16 +10,16 @@ class FilteredComplex:
     """
     
     			Class representing a filtered simplicial complex.
-    
-    			Construct a discrete filtered simplicial complex with default filtration time of 0.
-    
-    			Args:
-    				n : Number of vertices. Cannot be changed after initialisation.
-    				k : Maximum dimension of a simplex that the complex can have. This parameter is required for memory efficiency, and cannot be changed after initialisation.
     		
     """
     def __init__(self, n: int, k: int) -> None:
-        ...
+        """
+                        Construct a discrete filtered simplicial complex with default filtration time of 0.
+        
+                        Args:
+                            n : Number of vertices. Cannot be changed after initialisation.
+                            k : Maximum dimension of a simplex that the complex can have. This parameter is required for memory efficiency, and cannot be changed after initialisation.
+        """
     def __repr__(self) -> str:
         ...
     def add_simplex(self, vertices: list[int], filt_value: float) -> bool:
@@ -157,9 +157,9 @@ class Simplex:
         """
 def clique_complex(n: int, k: int) -> FilteredComplex:
     """
-    			Returns the :math:`k`-skeleton of the complete simplicial complex on :math:`n` vertices, with filtration values initialised to zero.
+    			Returns the :math:`k`-skeleton of the complete simplicial complex on :math:`n` vertices, with filtration values initialised to zero and all vertices coloured with the colour 0.
     """
 def standard_simplex(n: int) -> FilteredComplex:
     """
-    			Returns the filtered simplicial complex corresponding to the standard abstract :math:`n`-simplex, with filtration values intialised to zero.
+    			Returns the filtered simplicial complex corresponding to the standard abstract :math:`n`-simplex, with filtration values initialised to zero and all vertices coloured with the colour 0.
     """
