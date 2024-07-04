@@ -185,12 +185,12 @@ PYBIND11_MODULE(filtration, m) {
 
     m.def("clique_complex", &FilteredComplex::clique_complex,
           R"docstring(
-			Returns the :math:`k`-skeleton of the complete simplicial complex on :math:`n` vertices, with filtration values initialised to zero.
+			Returns the :math:`k`-skeleton of the complete simplicial complex on :math:`n` vertices, with filtration values initialised to zero and all vertices coloured with the colour 0.
 		)docstring",
           py::arg("n"), py::arg("k"));
     m.def("standard_simplex", &standard_simplex,
           R"docstring(
-			Returns the filtered simplicial complex corresponding to the standard abstract :math:`n`-simplex, with filtration values intialised to zero.
+			Returns the filtered simplicial complex corresponding to the standard abstract :math:`n`-simplex, with filtration values initialised to zero and all vertices coloured with the colour 0.
 		)docstring",
           py::arg("n"));
 }
