@@ -161,5 +161,5 @@ def clique_complex(n: int, k: int) -> FilteredComplex:
     """
 def standard_simplex(n: int) -> FilteredComplex:
     """
-    			Returns the simplicial complex corresponding to the standard abstract :math:`n`-simplex.
+    			Returns the filtered simplicial complex corresponding to the standard abstract :math:`n`-simplex, with filtration values intialised to zero.
     """

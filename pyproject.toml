@@ -45,7 +45,7 @@ Repository = "https://github.com/abhinavnatarajan/Chalc.git"
 [tool.scikit-build]
 cmake.verbose = true
 logging.level = "DEBUG"
-cmake.build-type = "Debug"
+cmake.build-type = "Release"
 cmake.minimum-version = "3.23"
 sdist.exclude = [".github/", ".git/"]
 build-dir = "build/{wheel_tag}"
@@ -55,6 +55,10 @@ experimental = true
 
 [tool.cibuildwheel]
 archs = ["auto64"]
+skip = "pp*"
+test-command = "pytest {package}/tests"
+test-requires = ["pytest==8.2.2"]
+build-verbosity = 3
 
 [tool.cibuildwheel.linux]
 environment-pass = ["CI"]

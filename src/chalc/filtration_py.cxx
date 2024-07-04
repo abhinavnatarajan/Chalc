@@ -21,16 +21,17 @@ PYBIND11_MODULE(filtration, m) {
     filtered_complex.doc() =
         R"docstring(
 			Class representing a filtered simplicial complex.
-
-			Construct a discrete filtered simplicial complex with default filtration time of 0.
-
-			Args:
-				n : Number of vertices. Cannot be changed after initialisation.
-				k : Maximum dimension of a simplex that the complex can have. This parameter is required for memory efficiency, and cannot be changed after initialisation.
 		)docstring";
     filtered_complex
-        .def(py::init<const index_t, const index_t>(), py::arg("n"),
-             py::arg("k"))
+        .def(py::init<const index_t, const index_t>(),
+             R"docstring(
+                Construct a discrete filtered simplicial complex with default filtration time of 0.
+
+                Args:
+                    n : Number of vertices. Cannot be changed after initialisation.
+                    k : Maximum dimension of a simplex that the complex can have. This parameter is required for memory efficiency, and cannot be changed after initialisation.
+             )docstring",
+             py::arg("n"), py::arg("k"))
         .def("add_simplex", &FilteredComplex::add_simplex,
              R"docstring(
 				Add a simplex to a filtered simplicial complex.
