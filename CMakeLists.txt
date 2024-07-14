@@ -77,7 +77,6 @@ add_library(_filtration STATIC src/chalc/filtration/filtration.cxx)
 target_include_directories(_filtration PUBLIC src)
 add_library(_chromatic STATIC src/chalc/chromatic/chromatic.cxx)
 target_link_libraries(_chromatic PUBLIC _filtration Eigen3::Eigen CGAL::CGAL CGAL::Eigen3_support)
-target_include_directories(_chromatic PUBLIC src PRIVATE src/mpreal)
 set_target_properties(_filtration _chromatic PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 # Create python extension module

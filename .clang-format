@@ -1,0 +1,129 @@
+# https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+
+# Indentation
+IndentWidth: 4 # how many spaces to indent with
+TabWidth: 4 # how many spaces count for a tab
+UseTab: AlignWithSpaces # replace space indents with tabs
+ColumnLimit: 100
+IndentExternBlock: NoIndent
+
+# Alignment and spacing
+AlignAfterOpenBracket: Align
+AlignArrayOfStructures: Right
+AlignConsecutiveAssignments:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: false
+  AlignCompound: true
+  PadOperators: true
+AlignConsecutiveBitFields:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: false
+AlignConsecutiveDeclarations:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: false
+  PadOperators: true
+  AlignFunctionPointers: true
+AlignConsecutiveMacros:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: false
+# AlignEscapedNewlines: LeftWithLastLine
+AlignEscapedNewlines: Left
+AlignOperands: Align
+AlignTrailingComments:
+  Kind: Always
+  OverEmptyLines: 1
+PointerAlignment: Left
+QualifierAlignment: Left
+ReferenceAlignment: Left
+
+# Line breaks
+# Generally force line breaks for easier debugging
+AllowShortEnumsOnASingleLine: false
+BreakAdjacentStringLiterals: true
+BreakStringLiterals: false
+BreakAfterAttributes: Always
+BreakBeforeBinaryOperators: None # break after
+BreakBeforeBraces: Attach # never break before braces
+BreakBeforeTernaryOperators: true
+# KeepEmptyLines:
+#   AtEndOfFile: false
+#   AtStartOfBlock: false
+#   AtStartOfFile: false
+ReflowComments: true
+SeparateDefinitionBlocks: Always
+
+# Templates
+# BreakTemplateDeclarations: Yes # break after template declaration
+RequiresClausePosition: OwnLine
+SpaceAfterTemplateKeyword: true
+SpacesInAngles: Never
+
+# Control statements
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowShortBlocksOnASingleLine: Empty # while loops
+InsertBraces: true
+SpaceBeforeParens: ControlStatements
+SpaceBeforeRangeBasedForLoopColon: false
+
+# Switch case
+# AllowShortCaseExpressionOnASingleLine: true
+AllowShortCaseLabelsOnASingleLine: false
+IndentCaseBlocks: false
+IndentCaseLabels: true
+AlignConsecutiveShortCaseStatements:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: false
+  # AlignCaseArrows: true
+  AlignCaseColons: true
+SpaceBeforeCaseColon: true
+
+# Functions
+AllowShortFunctionsOnASingleLine: Empty
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortLambdasOnASingleLine: Empty
+BinPackArguments: false
+BinPackParameters: false
+IndentWrappedFunctionNames: false
+
+# Preprocessor directives
+IncludeBlocks: Preserve
+SortIncludes: CaseSensitive
+IndentPPDirectives: BeforeHash
+
+# Classes
+BreakConstructorInitializers: AfterColon
+EmptyLineBeforeAccessModifier: LogicalBlock
+EmptyLineAfterAccessModifier: Never
+IndentAccessModifiers: false
+PackConstructorInitializers: Never
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+
+# Namespaces
+FixNamespaceComments: true
+NamespaceIndentation: None
+
+# Using declarations
+SortUsingDeclarations: Lexicographic
+
+# Spacing
+SpaceAfterCStyleCast: false
+SpaceAfterLogicalNot: false
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeSquareBrackets: false
+SpaceInEmptyBlock: false
+SpacesBeforeTrailingComments: 2
+SpacesInContainerLiterals: true
+SpacesInLineCommentPrefix:
+  Minimum: 1
+  Maximum: -1
+SpacesInParens: Never
+SpacesInSquareBrackets: false
+Standard: Auto # Cpp11, Cpp14, Cpp17, Cpp20, Latest

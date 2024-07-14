@@ -1,7 +1,7 @@
 """
 
-			Module containing utilities to store and manipulate
-			abstract filtered simplicial complexes.
+Module containing utilities to store and manipulate
+abstract filtered simplicial complexes.
 		
 """
 from __future__ import annotations
@@ -9,29 +9,28 @@ __all__ = ['FilteredComplex', 'Simplex', 'clique_complex', 'standard_simplex']
 class FilteredComplex:
     """
     
-    			Class representing a filtered simplicial complex.
-    		
+    Class representing a filtered simplicial complex.
     """
     def __init__(self, n: int, k: int) -> None:
         """
-                        Construct a discrete filtered simplicial complex with default filtration time of 0.
+        Construct a discrete filtered simplicial complex with default filtration time of 0.
         
-                        Args:
-                            n : Number of vertices. Cannot be changed after initialisation.
-                            k : Maximum dimension of a simplex that the complex can have. This parameter is required for memory efficiency, and cannot be changed after initialisation.
+        Args:
+        	n : Number of vertices. Cannot be changed after initialisation.
+        	k : Maximum dimension of a simplex that the complex can have. This parameter is required for memory efficiency, and cannot be changed after initialisation.
         """
     def __repr__(self) -> str:
         ...
     def add_simplex(self, vertices: list[int], filt_value: float) -> bool:
         """
-        				Add a simplex to a filtered simplicial complex.
+        Add a simplex to a filtered simplicial complex.
         
-        				Args:
-        					vertices : List of vertex labels corresponding to existing vertices in the complex.
-        					filt_value : Filtration value to associate to the new simplex.
+        Args:
+        	vertices : List of vertex labels corresponding to existing vertices in the complex.
+        	filt_value : Filtration value to associate to the new simplex.
         
-        				Note:
-        					Faces of the added simplex that are already present in the simplicial complex will have their filtration values reduced if necessary.
+        Note:
+        	Faces of the added simplex that are already present in the simplicial complex will have their filtration values reduced if necessary.
         """
     def get_label_from_vertex_labels(self, vertices: list[int]) -> int:
         """
@@ -54,11 +53,11 @@ class FilteredComplex:
         """
     def propagate_filt_values(self, start_dim: int, upwards: bool = True) -> None:
         """
-        				Propagate filtration values upwards or downwards to ensure that every simplex appears after its faces. For example, setting the filtration values in dimension 1 and propagating upwards is akin to the Rips filtration.
+        Propagate filtration values upwards or downwards to ensure that every simplex appears after its faces. For example, setting the filtration values in dimension 1 and propagating upwards is akin to the Rips filtration.
         
-        				Args:
-        					start_dim : Dimension from which to start propagating (exclusive).
-        					upwards : If true then values are propagated upwards, downwards otherwise. Defaults to true.
+        Args:
+        	start_dim : Dimension from which to start propagating (exclusive).
+        	upwards : If true then values are propagated upwards, downwards otherwise. Defaults to true.
         """
     def serialised(self) -> list[tuple[list[int], int, float, int]]:
         """
@@ -75,29 +74,29 @@ class FilteredComplex:
     @property
     def dimension(self) -> int:
         """
-        				Current maximum dimension of a maximal simplex in the complex.
+        Current maximum dimension of a maximal simplex in the complex.
         """
     @property
     def max_dimension(self) -> int:
         """
-        				Maximum dimension of simplex that this complex can store. \
-        				Set during initialisation.
+        Maximum dimension of simplex that this complex can store. \
+        Set during initialisation.
         """
     @property
     def max_filtration_time(self) -> float:
         """
-        				Current maximum dimension of a maximal simplex in the complex.
+        Current maximum dimension of a maximal simplex in the complex.
         """
     @property
     def num_simplices(self) -> int:
         """
-        				The total number of simplices in the complex.
+        The total number of simplices in the complex.
         """
     @property
     def num_vertices(self) -> int:
         """
-        				Number of vertices in the simplicial complex. \
-        				Set during initialisation.
+        Number of vertices in the simplicial complex. \
+        Set during initialisation.
         """
     @property
     def simplices(self) -> list[dict[int, Simplex]]:

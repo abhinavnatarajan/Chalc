@@ -1,0 +1,8 @@
+CompileFlags:
+  Add: 
+    - -std=c++20
+    - -I/home/abhinav/vcpkg/installed/x64-linux/include/
+    - -I/home/abhinav/mambaforge/envs/chalc/lib/python3.11/site-packages/pybind11/include/
+    - -I/home/abhinav/mambaforge/envs/chalc/include/python3.11/
+    - -I/home/abhinav/projects/chalc/src/
+    - -I/home/abhinav/projects/chalc/src/mpreal/
