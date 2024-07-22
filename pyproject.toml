@@ -58,7 +58,7 @@ archs = ["auto64"]
 skip = ["pp*", "*-musllinux_*"]
 test-command = "pytest {package}/tests"
 test-requires = ["pytest==8.2.2"]
-build-verbosity = 3
+build-verbosity = 2
 
 [tool.cibuildwheel.linux]
 environment-pass = ["CI"]
