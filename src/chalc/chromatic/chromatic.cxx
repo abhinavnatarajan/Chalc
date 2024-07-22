@@ -220,9 +220,9 @@ FilteredComplex delrips(const RealMatrix<double>& points, const vector<index_t>&
 // Create the chromatic alpha complex
 std::tuple<FilteredComplex, bool> alpha(const RealMatrix<double>& points,
                                         const vector<index_t>&    colours) {
-	using CGAL::Gmpzf;
-	using cmb::equidistant_subspace, cmb::constrained_miniball, cmb::SolutionPrecision;
-
+	using CGAL::Gmpzf, CGAL::Quotient;
+	using cmb::equidistant_subspace, cmb::SolutionPrecision;
+	using enum SolutionPrecision;
 	// Start
 	// Get the delaunay triangulation
 	FilteredComplex delX(delaunay(points, colours));
@@ -238,7 +238,8 @@ std::tuple<FilteredComplex, bool> alpha(const RealMatrix<double>& points,
 	if (delX.dimension() >= 1) {
 		// Now comes the hard bit
 		// Modify the filtration values
-		auto points_exact = points.template cast<Gmpzf>();
+		auto points_exact   = points.template cast<Gmpzf>();
+		auto points_exact_q = points.template cast<Quotient<Gmpzf>>();
 
 		// Start at the maximum dimension
 		for (int p = delX.dimension(); p >= 1; p--) {
@@ -281,7 +282,7 @@ std::tuple<FilteredComplex, bool> alpha(const RealMatrix<double>& points,
 				i.e., it lies in the affine subspace E
 				*/
 				auto [centre, sqRadius, success] =
-					constrained_miniball<SolutionPrecision::DOUBLE>(points_exact(all, verts), E, b);
+					cmb::constrained_miniball<EXACT>(points_exact(all, verts), E, b);
 				// Check if there were any numerical issues
 				numerical_instability |= !success;
 
@@ -302,12 +303,12 @@ std::tuple<FilteredComplex, bool> alpha(const RealMatrix<double>& points,
 					simplex. In this case there is a high chance that
 					the stack is not empty.
 					*/
-					double rj_squared = (points(all, verts_j).colwise() - centre)
-					                        .colwise()
-					                        .squaredNorm()
-					                        .minCoeff();
-					double squared_dist_to_nearest_pt_of_colour_j =
-						(points(all, verts_by_colour[j][0]) - centre)
+					Quotient<Gmpzf> rj_squared = (points_exact_q(all, verts_j).colwise() - centre)
+					                                 .colwise()
+					                                 .squaredNorm()
+					                                 .minCoeff();
+					Quotient<Gmpzf> squared_dist_to_nearest_pt_of_colour_j =
+						(points_exact_q(all, verts_by_colour[j]).colwise() - centre)
 							.colwise()
 							.squaredNorm()
 							.minCoeff();
@@ -316,7 +317,7 @@ std::tuple<FilteredComplex, bool> alpha(const RealMatrix<double>& points,
 				}
 				// If the stack is empty, assign the filtration value
 				if (stack_is_empty) {
-					simplex->value = sqrt(sqRadius);
+					simplex->value = sqrt(CGAL::to_double(sqRadius));
 					// We need to take into account floating point issues
 					// so we make sure that we satisfy the filtration property
 					try {
@@ -338,7 +339,9 @@ std::tuple<FilteredComplex, bool> alpha(const RealMatrix<double>& points,
 // Create the chromatic Del-Cech complex
 std::tuple<FilteredComplex, bool> delcech(const RealMatrix<double>& points,
                                           const vector<index_t>&    colours) {
+	using CGAL::Gmpzf, CGAL::Quotient;
 	using cmb::SolutionPrecision;
+	using enum SolutionPrecision;
 	// Start
 	// Get the delaunay triangulation
 	FilteredComplex delX(delaunay(points, colours));
@@ -347,12 +350,11 @@ std::tuple<FilteredComplex, bool> delcech(const RealMatrix<double>& points,
 	if (delX.dimension() >= 1) {
 		for (int p = delX.dimension(); p > 1; p--) {
 			for (auto& [idx, simplex]: delX.get_simplices()[p]) {
-				auto verts = simplex->get_vertex_labels();
-				auto [centre, sqRadius, success] =
-					cmb::miniball<SolutionPrecision::DOUBLE>(points(all, verts));
-				numerical_instability |= !success;
-				simplex->value         = sqrt(sqRadius);
-				auto cofacets          = simplex->get_cofacets();
+				auto verts                        = simplex->get_vertex_labels();
+				auto [centre, sqRadius, success]  = cmb::miniball<DOUBLE>(points(all, verts));
+				numerical_instability            |= !success;
+				simplex->value                    = sqrt(CGAL::to_double(sqRadius));
+				auto cofacets                     = simplex->get_cofacets();
 				if (cofacets.size() == 0) {
 					continue;
 				}
@@ -371,7 +373,7 @@ std::tuple<FilteredComplex, bool> delcech(const RealMatrix<double>& points,
 		for (auto& [idx, edge]: delX.get_simplices()[1]) {
 			auto verts = edge->get_vertex_labels();
 			edge->value =
-				sqrt((points.col(verts[0]) - points.col(verts[1])).squaredNorm() * 0.25);
+				static_cast<double>((points.col(verts[0]) - points.col(verts[1])).norm()) * 0.5;
 			auto cofacets = edge->get_cofacets();
 			if (cofacets.size() == 0) {
 				continue;
