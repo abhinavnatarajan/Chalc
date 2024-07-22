@@ -222,7 +222,6 @@ std::tuple<FilteredComplex, bool> alpha(const RealMatrix<double>& points,
                                         const vector<index_t>&    colours) {
 	using CGAL::Gmpzf, CGAL::Quotient;
 	using cmb::equidistant_subspace, cmb::SolutionPrecision;
-	using enum SolutionPrecision;
 	// Start
 	// Get the delaunay triangulation
 	FilteredComplex delX(delaunay(points, colours));
@@ -282,7 +281,7 @@ std::tuple<FilteredComplex, bool> alpha(const RealMatrix<double>& points,
 				i.e., it lies in the affine subspace E
 				*/
 				auto [centre, sqRadius, success] =
-					cmb::constrained_miniball<EXACT>(points_exact(all, verts), E, b);
+					cmb::constrained_miniball<SolutionPrecision::EXACT>(points_exact(all, verts), E, b);
 				// Check if there were any numerical issues
 				numerical_instability |= !success;
 
@@ -341,7 +340,6 @@ std::tuple<FilteredComplex, bool> delcech(const RealMatrix<double>& points,
                                           const vector<index_t>&    colours) {
 	using CGAL::Gmpzf, CGAL::Quotient;
 	using cmb::SolutionPrecision;
-	using enum SolutionPrecision;
 	// Start
 	// Get the delaunay triangulation
 	FilteredComplex delX(delaunay(points, colours));
@@ -351,7 +349,7 @@ std::tuple<FilteredComplex, bool> delcech(const RealMatrix<double>& points,
 		for (int p = delX.dimension(); p > 1; p--) {
 			for (auto& [idx, simplex]: delX.get_simplices()[p]) {
 				auto verts                        = simplex->get_vertex_labels();
-				auto [centre, sqRadius, success]  = cmb::miniball<DOUBLE>(points(all, verts));
+				auto [centre, sqRadius, success]  = cmb::miniball<SolutionPrecision::DOUBLE>(points(all, verts));
 				numerical_instability            |= !success;
 				simplex->value                    = sqrt(CGAL::to_double(sqRadius));
 				auto cofacets                     = simplex->get_cofacets();
