@@ -434,6 +434,19 @@ FilteredComplex FilteredComplex::clique_complex(const index_t n, const index_t k
 	return result;
 }
 
+bool FilteredComplex::is_filtration() const {
+	for (int i = cur_dim; i >= 0; i--) {
+		for (auto& s: simplices[i]) {
+			for (auto& f: s.second->get_facets()) {
+				if (f->value > s.second->value) {
+					return false;
+				}
+			}
+		}
+	}
+	return true;
+}
+
 FilteredComplex standard_simplex(const index_t n) {
 	return chalc::FilteredComplex::clique_complex(n + 1, n);
 }

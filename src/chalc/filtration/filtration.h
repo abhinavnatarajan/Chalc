@@ -102,6 +102,9 @@ struct FilteredComplex {
 	// bitwise OR accumulates colours upwards from vertices
 	void propagate_colours();
 
+	// check if filtration property is satisfied
+	bool is_filtration() const;
+
   private:
 	/* PRIVATE MEMBERS OF FilteredComplex */
 

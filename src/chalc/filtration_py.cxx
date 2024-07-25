@@ -128,6 +128,11 @@ Args:
 					3.  The filtration time of :math:`\sigma`.
 					4.  The colour bitmask of :math:`\sigma`.
 			)docstring")
+		.def("is_filtration",
+	         &FilteredComplex::is_filtration,
+	         R"docstring(
+			 Returns true if the filtration property is satisfied; that is, if each simplex has a filtration value at least as large as each of its faces.
+			 )docstring")
 		.def("__repr__", [](const FilteredComplex& K) {
 			return "<" + std::to_string(K.dimension()) + "-dimensional simplicial complex with " +
 		           std::to_string(K.N) + " vertices>";

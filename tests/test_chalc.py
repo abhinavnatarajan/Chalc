@@ -17,6 +17,7 @@ class Test_chromatic:
 		]
 	).T
 	colours = [1, 0, 0, 0]
+	random_seed = 44
 
 	def test_delaunay(self):
 		K = ch.chromatic.delaunay(self.points, self.colours)
@@ -31,6 +32,7 @@ class Test_chromatic:
 	def test_alpha(self):
 		K, numerical_errors = ch.chromatic.alpha(self.points, self.colours)
 		assert not numerical_errors
+		assert K.is_filtration()
 		assert all(K.simplices[0][i].filtration_value == 0 for i in range(4))
 		assert all(math.isclose(K.simplices[1][i].filtration_value, 0.5) for i in range(3))
 		assert all(
@@ -45,6 +47,7 @@ class Test_chromatic:
 	def test_delcech(self):
 		K, numerical_errors = ch.chromatic.delcech(self.points, self.colours)
 		assert not numerical_errors
+		assert K.is_filtration()
 		assert all(K.simplices[0][i].filtration_value == 0 for i in range(4))
 		assert all(math.isclose(K.simplices[1][i].filtration_value, 0.5) for i in range(3))
 		assert all(
@@ -59,6 +62,7 @@ class Test_chromatic:
 	def test_delrips(self):
 		K, numerical_errors = ch.chromatic.delrips(self.points, self.colours)
 		assert not numerical_errors
+		assert K.is_filtration()
 		assert all(K.simplices[0][i].filtration_value == 0 for i in range(4))
 		assert all(math.isclose(K.simplices[1][i].filtration_value, 0.5) for i in range(3))
 		assert all(
@@ -68,6 +72,26 @@ class Test_chromatic:
 			math.isclose(K.simplices[2][i].filtration_value, np.sqrt(3) / 2) for i in range(4)
 		)
 		assert math.isclose(K.simplices[3][0].filtration_value, np.sqrt(3) / 2)
+
+	def test_is_filtration(self):
+		rng = np.random.default_rng(self.random_seed)
+		dims = [1, 2, 3]
+		num_colours = [1, 2, 3]
+		for d in dims:
+			for s in num_colours:
+				points = rng.uniform(size=(d, 200))
+				colours = rng.integers(0, s, size=200).tolist()
+				K, numerical_errors = ch.chromatic.delcech(points, colours)
+				assert not numerical_errors
+				assert(K.is_filtration())
+
+# class Test_sixpack:
+# 	random_seed = 44
+# 	def test_k_chromatic(self):
+# 		rng = np.random.default_rng(self.random_seed)
+# 		points = rng.uniform(size=(2, 1000))
+# 		colours = rng.integers(0, 3, size=1000)
+# 		dgms = ch.sixpack.compute(points, colours, method='chromatic delcech')
 
 
 class Test_filtration:

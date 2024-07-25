@@ -47,6 +47,10 @@ class FilteredComplex:
         				Args:
         					vertices : Vertex labels of the simplex to check for.
         """
+    def is_filtration(self) -> bool:
+        """
+        			 Returns true if the filtration property is satisfied; that is, if each simplex has a filtration value at least as large as each of its faces.
+        """
     def propagate_colours(self) -> None:
         """
         				Function to make sure that simplex colours are consistent with the colours of their vertices. You should call this whenever you change the colour of any vertices.
