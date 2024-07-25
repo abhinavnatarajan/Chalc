@@ -136,8 +136,7 @@ def from_filtration(
 
 		def check_in_domain(b):
 			return _colours_are_subset(b, colours_bitmask)
-	elif k is not None and dom is None:
-
+	elif isinstance(k, int) and dom is None:
 		def check_in_domain(b):
 			return _num_colours_in_bitmask(b) <= k  # k-chromatic simplex
 	elif k is None and dom is None:
