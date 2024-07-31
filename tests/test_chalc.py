@@ -73,15 +73,39 @@ class Test_chromatic:
 		)
 		assert math.isclose(K.simplices[3][0].filtration_value, np.sqrt(3) / 2)
 
-	def test_is_filtration(self):
+	def test_delcech_is_filtration(self):
 		rng = np.random.default_rng(self.random_seed)
 		dims = [1, 2, 3]
 		num_colours = [1, 2, 3]
 		for d in dims:
 			for s in num_colours:
 				points = rng.uniform(size=(d, 200))
-				colours = rng.integers(0, s, size=200).tolist()
+				colours = rng.integers(0, s, size=200)
 				K, numerical_errors = ch.chromatic.delcech(points, colours)
+				assert not numerical_errors
+				assert(K.is_filtration())
+
+	def test_alpha_is_filtration(self):
+		rng = np.random.default_rng(self.random_seed)
+		dims = [1, 2, 3]
+		num_colours = [1, 2, 3]
+		for d in dims:
+			for s in num_colours:
+				points = rng.uniform(size=(d, 200))
+				colours = rng.integers(0, s, size=200)
+				K, numerical_errors = ch.chromatic.alpha(points, colours)
+				assert not numerical_errors
+				assert(K.is_filtration())
+
+	def test_delrips_is_filtration(self):
+		rng = np.random.default_rng(self.random_seed)
+		dims = [1, 2, 3]
+		num_colours = [1, 2, 3]
+		for d in dims:
+			for s in num_colours:
+				points = rng.uniform(size=(d, 200))
+				colours = rng.integers(0, s, size=200)
+				K, numerical_errors = ch.chromatic.delrips(points, colours)
 				assert not numerical_errors
 				assert(K.is_filtration())
 

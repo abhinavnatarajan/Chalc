@@ -12,13 +12,17 @@ import numpy
 import pybind11_stubgen.typing_ext
 import typing
 __all__ = ['MaxColoursChromatic', 'alpha', 'delaunay', 'delcech', 'delrips']
+@typing.overload
+def alpha(x: typing.Annotated[numpy.ndarray, numpy.float64, pybind11_stubgen.typing_ext.DynamicSize('m', 'n')], colours: typing.Annotated[numpy.ndarray, numpy.int32, pybind11_stubgen.typing_ext.DynamicSize('m', 1)]) -> tuple[chalc.filtration.FilteredComplex, bool]:
+    ...
+@typing.overload
 def alpha(x: typing.Annotated[numpy.ndarray, numpy.float64, pybind11_stubgen.typing_ext.DynamicSize('m', 'n')], colours: list[int]) -> tuple[chalc.filtration.FilteredComplex, bool]:
     """
     Computes the chromatic alpha filtration of a coloured point cloud.
     
     Args:
     	x : Numpy matrix whose columns are points in the point cloud.
-    	colours : List of integers describing the colours of the points.
+    	colours : List or numpy array of integers describing the colours of the points.
     
     Returns:
     	The chromatic alpha filtration and a boolean flag to indicate if numerical issues were encountered. In case of numerical issues, a warning is also raised.
@@ -32,13 +36,17 @@ def alpha(x: typing.Annotated[numpy.ndarray, numpy.float64, pybind11_stubgen.typ
     See Also:
     	:func:`delrips`, :func:`delcech`
     """
+@typing.overload
+def delaunay(x: typing.Annotated[numpy.ndarray, numpy.float64, pybind11_stubgen.typing_ext.DynamicSize('m', 'n')], colours: typing.Annotated[numpy.ndarray, numpy.int32, pybind11_stubgen.typing_ext.DynamicSize('m', 1)]) -> chalc.filtration.FilteredComplex:
+    ...
+@typing.overload
 def delaunay(x: typing.Annotated[numpy.ndarray, numpy.float64, pybind11_stubgen.typing_ext.DynamicSize('m', 'n')], colours: list[int]) -> chalc.filtration.FilteredComplex:
     """
     Returns the chromatic Delaunay triangulation of a coloured point cloud in Euclidean space.
     
     Args:
     	x : Numpy matrix whose columns are points in the point cloud.
-    	colours : List of integers describing the colours of the points.
+    	colours : List or numpy array of integers describing the colours of the points.
     
     Raises:
     	ValueError: If any value in ``colours`` is >= :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>` or < 0, or if the length of ``colours`` does not match the number of points.
@@ -46,13 +54,17 @@ def delaunay(x: typing.Annotated[numpy.ndarray, numpy.float64, pybind11_stubgen.
     Returns:
     	The Delaunay triangulation.
     """
+@typing.overload
+def delcech(x: typing.Annotated[numpy.ndarray, numpy.float64, pybind11_stubgen.typing_ext.DynamicSize('m', 'n')], colours: typing.Annotated[numpy.ndarray, numpy.int32, pybind11_stubgen.typing_ext.DynamicSize('m', 1)]) -> tuple[chalc.filtration.FilteredComplex, bool]:
+    ...
+@typing.overload
 def delcech(x: typing.Annotated[numpy.ndarray, numpy.float64, pybind11_stubgen.typing_ext.DynamicSize('m', 'n')], colours: list[int]) -> tuple[chalc.filtration.FilteredComplex, bool]:
     """
     Returns the chromatic Delaunay--Čech filtration of a coloured point cloud.
     
     Args:
     	x : Numpy matrix whose columns are points in the point cloud.
-    	colours : List of integers describing the colours of the points.
+    	colours : List or numpy array of integers describing the colours of the points.
     
     Returns:
     	The chromatic Delaunay--Čech filtration and a boolean flag to indicate if numerical issues were encountered. In case of numerical issues, a warning is also raised.
@@ -66,13 +78,17 @@ def delcech(x: typing.Annotated[numpy.ndarray, numpy.float64, pybind11_stubgen.t
     See Also:
     	:func:`alpha`, :func:`delrips`
     """
+@typing.overload
+def delrips(x: typing.Annotated[numpy.ndarray, numpy.float64, pybind11_stubgen.typing_ext.DynamicSize('m', 'n')], colours: typing.Annotated[numpy.ndarray, numpy.int32, pybind11_stubgen.typing_ext.DynamicSize('m', 1)]) -> tuple[chalc.filtration.FilteredComplex, bool]:
+    ...
+@typing.overload
 def delrips(x: typing.Annotated[numpy.ndarray, numpy.float64, pybind11_stubgen.typing_ext.DynamicSize('m', 'n')], colours: list[int]) -> tuple[chalc.filtration.FilteredComplex, bool]:
     """
     Computes the chromatic Delaunay--Rips filtration of a coloured point cloud.
     
     Args:
     	x : Numpy matrix whose columns are points in the point cloud.
-    	colours : List of integers describing the colours of the points.
+    	colours : List or numpy array of integers describing the colours of the points.
     
     Returns:
     	The chromatic Delaunay--Rips filtration and a boolean flag to indicate if numerical issues were encountered. In case of numerical issues, a warning is also raised.

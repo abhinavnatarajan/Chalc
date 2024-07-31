@@ -97,7 +97,7 @@ def from_filtration(
 	K: FilteredComplex,
 	dom: Collection[int] | int | None = None,
 	k: int | None = None,
-	max_diagram_dimension: int = 2,
+	max_diagram_dimension: int | None = None,
 	tolerance: float = 0,
 ) -> DiagramEnsemble:
 	"""
@@ -110,7 +110,7 @@ def from_filtration(
 		K                     : A filtered chromatic simplicial complex.
 		dom                   : Integer or collection of integers describing the colours of the points in the domain (the subcomplex :math:`L`).
 		k                     : If not ``None``, then the domain is taken to be the :math:`k`-chromatic subcomplex of :math:`K`, i.e., the subcomplex of simplices having at most :math:`k` colours.
-		max_diagram_dimension : Maximum homological dimension for which the persistence diagrams are computed.
+		max_diagram_dimension : Maximum homological dimension for which the persistence diagrams are computed. By default diagrams of all dimensions are computed.
 		tolerance             : Retain only points with persistence strictly greater than this value.
 
 	Returns:
@@ -127,7 +127,11 @@ def from_filtration(
 		and contain simplices of all dimensions. ``dgms`` also contains the
 		entrance times of the simplices and their dimensions.
 	"""
-	if dom is not None and k is None:
+	if k is None and dom is None:
+		raise RuntimeError("At least one of k or dom must be provided")
+	if k is not None and dom is not None:
+		raise RuntimeError("Only one of k or dom is allowed")
+	if dom is not None:
 		if isinstance(dom, int):
 			dom = [
 				dom,
@@ -136,17 +140,18 @@ def from_filtration(
 
 		def check_in_domain(b):
 			return _colours_are_subset(b, colours_bitmask)
-	elif isinstance(k, int) and dom is None:
+	elif k is not None:
+
 		def check_in_domain(b):
 			return _num_colours_in_bitmask(b) <= k  # k-chromatic simplex
-	elif k is None and dom is None:
-		raise RuntimeError("At least one of k or dom must be provided")
-	else:
-		raise RuntimeError("Only one of k or dom is allowed")
+
 	# if(K, L) is a pair of simplicial complexes where dim(L) <= dim(K) = d
 	# then all of the sixpack diagrams except for the relative homology
-	# can be non-zero upt dimension d, and relative can be nontrivial upto dim = d+1
-	max_diagram_dimension = min(max_diagram_dimension, K.dimension + 1)
+	# can be non-zero upto dimension d, and relative can be nontrivial upto dim = d+1
+	if max_diagram_dimension is None:
+		max_diagram_dimension = K.dimension + 1
+	else:
+		max_diagram_dimension = min(max_diagram_dimension, K.dimension + 1)
 	return _get_diagrams(K, check_in_domain, max_diagram_dimension, tolerance)
 
 
@@ -157,7 +162,7 @@ def compute(
 	dom: Collection[int] | int | None = None,
 	k: int | None = None,
 	method: str = "chromatic alpha",
-	max_diagram_dimension: int = 2,
+	max_diagram_dimension: int | None = None,
 	tolerance: float = 0,
 ) -> DiagramEnsemble:
 	"""
@@ -171,7 +176,7 @@ def compute(
 		dom                   : Integer or collection of integers describing the colours of the points in the domain (the subcomplex :math:`L`).
 		k                     : If not ``None``, then the domain is taken to be the :math:`k`-chromatic subcomplex of :math:`K`, i.e., the subcomplex of simplices having at most :math:`k` colours.
 		method                : Filtration used to construct the chromatic complex. Must be one of ``${str(list(ChromaticMethod.keys()))}``.
-		max_diagram_dimension : Maximum homological dimension for which the persistence diagrams are computed.
+		max_diagram_dimension : Maximum homological dimension for which the persistence diagrams are computed. By default diagrams of all dimensions are computed.
 		tolerance             : Retain only points with persistence strictly greater than this value.
 
 	Returns :
@@ -188,7 +193,11 @@ def compute(
 		and contains simplices of all dimensions. ``dgms`` also contains the
 		entrance times of the simplices and their dimensions.
 	"""
-	if dom is not None and k is None:
+	if k is None and dom is None:
+		raise RuntimeError("At least one of k or dom must be provided")
+	if k is not None and dom is not None:
+		raise RuntimeError("Only one of k or dom is allowed")
+	if dom is not None:
 		# new colours: 1 -> domain, 0 -> codomain
 		if isinstance(dom, int):
 			dom = [
@@ -198,19 +207,18 @@ def compute(
 
 		def check_in_domain(b: int):
 			return b == 2
-	elif k is not None and dom is None:
+	elif k is not None:
 
 		def check_in_domain(b: int):
 			return _num_colours_in_bitmask(b) <= k  # k-chromatic simplex
 
 		new_colours = list(colours)
-	elif k is None and dom is None:
-		raise RuntimeError("At least one of k or dom must be provided")
-	else:
-		raise RuntimeError("Only one of k or dom is allowed")
 	# can have non-zero homology upto dimension d for everything except rel
 	# rel can have non-zero homology in dimension d+1
-	max_diagram_dimension = min(max_diagram_dimension, x.shape[0])
+	if max_diagram_dimension is None:
+		max_diagram_dimension = x.shape[0]
+	else:
+		max_diagram_dimension = min(max_diagram_dimension, x.shape[0])
 	# Compute chromatic complex
 	if method in ChromaticMethod.keys():
 		K, _ = ChromaticMethod[method](x, new_colours)

@@ -18,14 +18,23 @@ Attributes:
 	MaxColoursChromatic (int): Maximum number of colours that can be handled by the methods in this module.
         )docstring";
 	m.attr("MaxColoursChromatic") = py::int_(MAX_NUM_COLOURS);
-	m.def("delaunay",
-	      &delaunay,
-	      R"docstring(
+	m.def(
+		 "delaunay",
+		 [](const Eigen::MatrixXd& points, const Eigen::VectorXi& colours) {
+			 std::vector<long long int> colours_vec(colours.data(),
+		                                            colours.data() + colours.size());
+			 return delaunay(points, colours_vec);
+		 },
+		 py::arg("x"),
+		 py::arg("colours"))
+		.def("delaunay",
+	         &delaunay,
+	         R"docstring(
 Returns the chromatic Delaunay triangulation of a coloured point cloud in Euclidean space.
 
 Args:
 	x : Numpy matrix whose columns are points in the point cloud.
-	colours : List of integers describing the colours of the points.
+	colours : List or numpy array of integers describing the colours of the points.
 
 Raises:
 	ValueError: If any value in ``colours`` is >= :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>` or < 0, or if the length of ``colours`` does not match the number of points.
@@ -33,20 +42,28 @@ Raises:
 Returns:
 	The Delaunay triangulation.
 	      )docstring",
-	      py::arg("x"),
-	      py::arg("colours"))
+	         py::arg("x"),
+	         py::arg("colours"))
+		.def(
+			"delrips",
+			[](const Eigen::MatrixXd& points, const Eigen::VectorXi& colours) {
+				std::vector<long long int> colours_vec(colours.data(),
+		                                               colours.data() + colours.size());
+				return tuple{delrips(points, colours_vec), false};
+			},
+			py::arg("x"),
+			py::arg("colours"))
 		.def(
 			"delrips",
 			[](const Eigen::MatrixXd& points, const vector<index_t>& colours) {
-				auto res = delrips(points, colours);
-				return tuple{res, false};
+				return tuple{delrips(points, colours), false};
 			},
 			R"docstring(
 Computes the chromatic Delaunay--Rips filtration of a coloured point cloud.
 
 Args:
 	x : Numpy matrix whose columns are points in the point cloud.
-	colours : List of integers describing the colours of the points.
+	colours : List or numpy array of integers describing the colours of the points.
 
 Returns:
 	The chromatic Delaunay--Rips filtration and a boolean flag to indicate if numerical issues were encountered. In case of numerical issues, a warning is also raised.
@@ -62,6 +79,15 @@ See Also:
 			)docstring",
 			py::arg("x"),
 			py::arg("colours"))
+		.def(
+			"alpha",
+			[](const Eigen::MatrixXd& points, const Eigen::VectorXi& colours) {
+				std::vector<long long int> colours_vec(colours.data(),
+		                                               colours.data() + colours.size());
+				return alpha(points, colours_vec);
+			},
+			py::arg("x"),
+			py::arg("colours"))
 		.def("alpha",
 	         &alpha,
 	         R"docstring(
@@ -69,7 +95,7 @@ Computes the chromatic alpha filtration of a coloured point cloud.
 
 Args:
 	x : Numpy matrix whose columns are points in the point cloud.
-	colours : List of integers describing the colours of the points.
+	colours : List or numpy array of integers describing the colours of the points.
 
 Returns:
 	The chromatic alpha filtration and a boolean flag to indicate if numerical issues were encountered. In case of numerical issues, a warning is also raised.
@@ -85,6 +111,15 @@ See Also:
 	         )docstring",
 	         py::arg("x"),
 	         py::arg("colours"))
+		.def(
+			"delcech",
+			[](const Eigen::MatrixXd& points, const Eigen::VectorXi& colours) {
+				std::vector<long long int> colours_vec(colours.data(),
+		                                               colours.data() + colours.size());
+				return delcech(points, colours_vec);
+			},
+			py::arg("x"),
+			py::arg("colours"))
 		.def("delcech",
 	         &delcech,
 	         R"docstring(
@@ -92,7 +127,7 @@ Returns the chromatic Delaunay--Čech filtration of a coloured point cloud.
 
 Args:
 	x : Numpy matrix whose columns are points in the point cloud.
-	colours : List of integers describing the colours of the points.
+	colours : List or numpy array of integers describing the colours of the points.
 
 Returns:
 	The chromatic Delaunay--Čech filtration and a boolean flag to indicate if numerical issues were encountered. In case of numerical issues, a warning is also raised.
