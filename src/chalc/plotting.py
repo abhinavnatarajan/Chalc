@@ -96,7 +96,7 @@ def plot_sixpack(
 			legends[label] = handle
 		ax.tick_params(labelleft=True, labelbottom=True)
 	axes[plot_pos["rel"]].get_legend().remove()
-	fig.legend(handles=legends.values(), loc="upper center", bbox_to_anchor=(0.5, 0.05), ncol=5)
+	fig.legend(handles=legends.values(), loc="lower center", ncol=5)
 	return fig, axes
 
 
