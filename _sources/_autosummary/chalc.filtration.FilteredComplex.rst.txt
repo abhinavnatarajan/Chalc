@@ -21,6 +21,7 @@ Overview
       ~FilteredComplex.add_simplex
       ~FilteredComplex.get_label_from_vertex_labels
       ~FilteredComplex.has_simplex
+      ~FilteredComplex.is_filtration
       ~FilteredComplex.propagate_colours
       ~FilteredComplex.propagate_filt_values
       ~FilteredComplex.serialised
@@ -61,6 +62,7 @@ Details
    .. automethod:: FilteredComplex.add_simplex
    .. automethod:: FilteredComplex.get_label_from_vertex_labels
    .. automethod:: FilteredComplex.has_simplex
+   .. automethod:: FilteredComplex.is_filtration
    .. automethod:: FilteredComplex.propagate_colours
    .. automethod:: FilteredComplex.propagate_filt_values
    .. automethod:: FilteredComplex.serialised

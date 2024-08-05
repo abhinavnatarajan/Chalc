@@ -13,17 +13,6 @@ Overview
 
    
    
-   Functions
-   ^^^^^^^^^^^^^^^^^^^^
-
-   .. autosummary::
-      :nosignatures:
-   
-      alpha
-      delaunay
-      delcech
-      delrips
-   
    
 
    
@@ -38,13 +27,3 @@ Overview
    
    
 
-
-Details
--------
-.. currentmodule:: chalc.chromatic
-
-
-.. autofunction:: alpha
-.. autofunction:: delaunay
-.. autofunction:: delcech
-.. autofunction:: delrips

@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="filtration" href="chalc.filtration.html" /><link rel="prev" title="API Reference" href="../API.html" />
 
     <!-- Generated with Sphinx 7.2.4 and Furo 2023.08.19 -->
-        <title>chromatic - chalc 3.0.1 documentation</title>
+        <title>chromatic - chalc 3.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">chalc 3.0.1 documentation</div></a>
+      <a href="../index.html"><div class="brand">chalc 3.1.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -148,7 +148,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">chalc 3.0.1 documentation</span>
+  <span class="sidebar-brand-text">chalc 3.1.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -238,140 +238,6 @@
 </dl>
 </dd></dl>
 
-<section id="functions">
-<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading">#</a></h3>
-<div class="table-wrapper autosummary longtable docutils container">
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#chalc.chromatic.alpha" title="chalc.chromatic.alpha"><code class="xref py py-obj docutils literal notranslate"><span class="pre">alpha</span></code></a></p></td>
-<td><p>Computes the chromatic alpha filtration of a coloured point cloud.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#chalc.chromatic.delaunay" title="chalc.chromatic.delaunay"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delaunay</span></code></a></p></td>
-<td><p>Returns the chromatic Delaunay triangulation of a coloured point cloud in Euclidean space.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#chalc.chromatic.delcech" title="chalc.chromatic.delcech"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delcech</span></code></a></p></td>
-<td><p>Returns the chromatic Delaunay--Čech filtration of a coloured point cloud.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#chalc.chromatic.delrips" title="chalc.chromatic.delrips"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delrips</span></code></a></p></td>
-<td><p>Computes the chromatic Delaunay--Rips filtration of a coloured point cloud.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-</section>
-<section id="details">
-<h2>Details<a class="headerlink" href="#details" title="Link to this heading">#</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="chalc.chromatic.alpha">
-<span class="sig-name descname"><span class="pre">alpha</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colours</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.chromatic.alpha" title="Link to this definition">#</a></dt>
-<dd><p>Computes the chromatic alpha filtration of a coloured point cloud.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><em>ndarray</em></a>) – Numpy matrix whose columns are points in the point cloud.</p></li>
-<li><p><strong>colours</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>]</em>) – List of integers describing the colours of the points.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The chromatic alpha filtration and a boolean flag to indicate if numerical issues were encountered. In case of numerical issues, a warning is also raised.</p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If any value in <code class="docutils literal notranslate"><span class="pre">colours</span></code> is &gt;= <a class="reference internal" href="#chalc.chromatic.MaxColoursChromatic" title="chalc.chromatic.MaxColoursChromatic"><code class="xref py py-attr docutils literal notranslate"><span class="pre">MaxColoursChromatic</span></code></a> or &lt; 0, or if the length of <code class="docutils literal notranslate"><span class="pre">colours</span></code> does not match the number of points.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)">tuple</a>[<a class="reference internal" href="chalc.filtration.FilteredComplex.html#chalc.filtration.FilteredComplex" title="chalc.filtration.FilteredComplex"><em>FilteredComplex</em></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)">bool</a>]</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>This function is included for pedantic reasons. For most purposes you should instead consider using <a class="reference internal" href="#chalc.chromatic.delcech" title="chalc.chromatic.delcech"><code class="xref py py-func docutils literal notranslate"><span class="pre">chalc.chromatic.delcech()</span></code></a>, which is faster to compute, more numerically stable, and has the same persistent homology.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#chalc.chromatic.delrips" title="chalc.chromatic.delrips"><code class="xref py py-func docutils literal notranslate"><span class="pre">delrips()</span></code></a>, <a class="reference internal" href="#chalc.chromatic.delcech" title="chalc.chromatic.delcech"><code class="xref py py-func docutils literal notranslate"><span class="pre">delcech()</span></code></a></p>
-</div>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="chalc.chromatic.delaunay">
-<span class="sig-name descname"><span class="pre">delaunay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colours</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.chromatic.delaunay" title="Link to this definition">#</a></dt>
-<dd><p>Returns the chromatic Delaunay triangulation of a coloured point cloud in Euclidean space.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><em>ndarray</em></a>) – Numpy matrix whose columns are points in the point cloud.</p></li>
-<li><p><strong>colours</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>]</em>) – List of integers describing the colours of the points.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If any value in <code class="docutils literal notranslate"><span class="pre">colours</span></code> is &gt;= <a class="reference internal" href="#chalc.chromatic.MaxColoursChromatic" title="chalc.chromatic.MaxColoursChromatic"><code class="xref py py-attr docutils literal notranslate"><span class="pre">MaxColoursChromatic</span></code></a> or &lt; 0, or if the length of <code class="docutils literal notranslate"><span class="pre">colours</span></code> does not match the number of points.</p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The Delaunay triangulation.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="chalc.filtration.FilteredComplex.html#chalc.filtration.FilteredComplex" title="chalc.filtration.FilteredComplex"><em>FilteredComplex</em></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="chalc.chromatic.delcech">
-<span class="sig-name descname"><span class="pre">delcech</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colours</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.chromatic.delcech" title="Link to this definition">#</a></dt>
-<dd><p>Returns the chromatic Delaunay–Čech filtration of a coloured point cloud.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><em>ndarray</em></a>) – Numpy matrix whose columns are points in the point cloud.</p></li>
-<li><p><strong>colours</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>]</em>) – List of integers describing the colours of the points.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The chromatic Delaunay–Čech filtration and a boolean flag to indicate if numerical issues were encountered. In case of numerical issues, a warning is also raised.</p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If any value in <code class="docutils literal notranslate"><span class="pre">colours</span></code> is &gt;= <a class="reference internal" href="#chalc.chromatic.MaxColoursChromatic" title="chalc.chromatic.MaxColoursChromatic"><code class="xref py py-attr docutils literal notranslate"><span class="pre">MaxColoursChromatic</span></code></a> or &lt; 0, or if the length of <code class="docutils literal notranslate"><span class="pre">colours</span></code> does not match the number of points.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)">tuple</a>[<a class="reference internal" href="chalc.filtration.FilteredComplex.html#chalc.filtration.FilteredComplex" title="chalc.filtration.FilteredComplex"><em>FilteredComplex</em></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)">bool</a>]</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>The chromatic Delaunay–Čech filtration of the point cloud has the same set of simplices as the chromatic alpha filtration, but with Čech filtration times.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#chalc.chromatic.alpha" title="chalc.chromatic.alpha"><code class="xref py py-func docutils literal notranslate"><span class="pre">alpha()</span></code></a>, <a class="reference internal" href="#chalc.chromatic.delrips" title="chalc.chromatic.delrips"><code class="xref py py-func docutils literal notranslate"><span class="pre">delrips()</span></code></a></p>
-</div>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="chalc.chromatic.delrips">
-<span class="sig-name descname"><span class="pre">delrips</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colours</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.chromatic.delrips" title="Link to this definition">#</a></dt>
-<dd><p>Computes the chromatic Delaunay–Rips filtration of a coloured point cloud.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><em>ndarray</em></a>) – Numpy matrix whose columns are points in the point cloud.</p></li>
-<li><p><strong>colours</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>]</em>) – List of integers describing the colours of the points.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The chromatic Delaunay–Rips filtration and a boolean flag to indicate if numerical issues were encountered. In case of numerical issues, a warning is also raised.</p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If any value in <code class="docutils literal notranslate"><span class="pre">colours</span></code> is &gt;= <a class="reference internal" href="#chalc.chromatic.MaxColoursChromatic" title="chalc.chromatic.MaxColoursChromatic"><code class="xref py py-attr docutils literal notranslate"><span class="pre">MaxColoursChromatic</span></code></a> or &lt; 0, or if the length of <code class="docutils literal notranslate"><span class="pre">colours</span></code> does not match the number of points.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)">tuple</a>[<a class="reference internal" href="chalc.filtration.FilteredComplex.html#chalc.filtration.FilteredComplex" title="chalc.filtration.FilteredComplex"><em>FilteredComplex</em></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)">bool</a>]</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>The chromatic Delaunay–Rips filtration of the point cloud has the same set of simplices as the chromatic alpha filtration, but with Vietoris–Rips filtration times. The convention used is that the filtration time of a simplex is half the maximum edge length in that simplex. With this convention, the chromatic Delaunay–Rips filtration and chromatic alpha filtration have the same persistence diagrams in degree zero.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#chalc.chromatic.alpha" title="chalc.chromatic.alpha"><code class="xref py py-func docutils literal notranslate"><span class="pre">alpha()</span></code></a>, <a class="reference internal" href="#chalc.chromatic.delcech" title="chalc.chromatic.delcech"><code class="xref py py-func docutils literal notranslate"><span class="pre">delcech()</span></code></a></p>
-</div>
-</dd></dl>
-
 </section>
 </section>
 
@@ -433,14 +299,6 @@
 <li><a class="reference internal" href="#">chromatic</a><ul>
 <li><a class="reference internal" href="#module-chalc.chromatic">Overview</a><ul>
 <li><a class="reference internal" href="#chalc.chromatic.MaxColoursChromatic"><code class="docutils literal notranslate"><span class="pre">MaxColoursChromatic</span></code></a></li>
-<li><a class="reference internal" href="#functions">Functions</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#details">Details</a><ul>
-<li><a class="reference internal" href="#chalc.chromatic.alpha"><code class="docutils literal notranslate"><span class="pre">alpha()</span></code></a></li>
-<li><a class="reference internal" href="#chalc.chromatic.delaunay"><code class="docutils literal notranslate"><span class="pre">delaunay()</span></code></a></li>
-<li><a class="reference internal" href="#chalc.chromatic.delcech"><code class="docutils literal notranslate"><span class="pre">delcech()</span></code></a></li>
-<li><a class="reference internal" href="#chalc.chromatic.delrips"><code class="docutils literal notranslate"><span class="pre">delrips()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -454,7 +312,7 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=08bfcbec"></script>
+</div><script src="../_static/documentation_options.js?v=dd1205ac"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>

@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Simplex" href="chalc.filtration.Simplex.html" /><link rel="prev" title="filtration" href="chalc.filtration.html" />
 
     <!-- Generated with Sphinx 7.2.4 and Furo 2023.08.19 -->
-        <title>FilteredComplex - chalc 3.0.1 documentation</title>
+        <title>FilteredComplex - chalc 3.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">chalc 3.0.1 documentation</div></a>
+      <a href="../index.html"><div class="brand">chalc 3.1.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -148,7 +148,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">chalc 3.0.1 documentation</span>
+  <span class="sidebar-brand-text">chalc 3.1.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -247,13 +247,16 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#chalc.filtration.FilteredComplex.has_simplex" title="chalc.filtration.FilteredComplex.has_simplex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_simplex</span></code></a></p></td>
 <td><p>Check for membership of a simplex in the complex.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#chalc.filtration.FilteredComplex.propagate_colours" title="chalc.filtration.FilteredComplex.propagate_colours"><code class="xref py py-obj docutils literal notranslate"><span class="pre">propagate_colours</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#chalc.filtration.FilteredComplex.is_filtration" title="chalc.filtration.FilteredComplex.is_filtration"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_filtration</span></code></a></p></td>
+<td><p>Returns true if the filtration property is satisfied; that is, if each simplex has a filtration value at least as large as each of its faces.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#chalc.filtration.FilteredComplex.propagate_colours" title="chalc.filtration.FilteredComplex.propagate_colours"><code class="xref py py-obj docutils literal notranslate"><span class="pre">propagate_colours</span></code></a></p></td>
 <td><p>Function to make sure that simplex colours are consistent with the colours of their vertices.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#chalc.filtration.FilteredComplex.propagate_filt_values" title="chalc.filtration.FilteredComplex.propagate_filt_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">propagate_filt_values</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#chalc.filtration.FilteredComplex.propagate_filt_values" title="chalc.filtration.FilteredComplex.propagate_filt_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">propagate_filt_values</span></code></a></p></td>
 <td><p>Propagate filtration values upwards or downwards to ensure that every simplex appears after its faces.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#chalc.filtration.FilteredComplex.serialised" title="chalc.filtration.FilteredComplex.serialised"><code class="xref py py-obj docutils literal notranslate"><span class="pre">serialised</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#chalc.filtration.FilteredComplex.serialised" title="chalc.filtration.FilteredComplex.serialised"><code class="xref py py-obj docutils literal notranslate"><span class="pre">serialised</span></code></a></p></td>
 <td><p>Serialised representation of the simplicial complex in a format suitable for persistent homology computations.</p></td>
 </tr>
 </tbody>
@@ -371,6 +374,17 @@ possible sorted subsequences of <span class="math notranslate nohighlight">\((0,
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chalc.filtration.FilteredComplex.is_filtration">
+<span class="sig-name descname"><span class="pre">is_filtration</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chalc.filtration.FilteredComplex.is_filtration" title="Link to this definition">#</a></dt>
+<dd><p>Returns true if the filtration property is satisfied; that is, if each simplex has a filtration value at least as large as each of its faces.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -496,6 +510,7 @@ possible sorted subsequences of <span class="math notranslate nohighlight">\((0,
 <li><a class="reference internal" href="#chalc.filtration.FilteredComplex.add_simplex"><code class="docutils literal notranslate"><span class="pre">add_simplex()</span></code></a></li>
 <li><a class="reference internal" href="#chalc.filtration.FilteredComplex.get_label_from_vertex_labels"><code class="docutils literal notranslate"><span class="pre">get_label_from_vertex_labels()</span></code></a></li>
 <li><a class="reference internal" href="#chalc.filtration.FilteredComplex.has_simplex"><code class="docutils literal notranslate"><span class="pre">has_simplex()</span></code></a></li>
+<li><a class="reference internal" href="#chalc.filtration.FilteredComplex.is_filtration"><code class="docutils literal notranslate"><span class="pre">is_filtration()</span></code></a></li>
 <li><a class="reference internal" href="#chalc.filtration.FilteredComplex.propagate_colours"><code class="docutils literal notranslate"><span class="pre">propagate_colours()</span></code></a></li>
 <li><a class="reference internal" href="#chalc.filtration.FilteredComplex.propagate_filt_values"><code class="docutils literal notranslate"><span class="pre">propagate_filt_values()</span></code></a></li>
 <li><a class="reference internal" href="#chalc.filtration.FilteredComplex.serialised"><code class="docutils literal notranslate"><span class="pre">serialised()</span></code></a></li>
@@ -512,7 +527,7 @@ possible sorted subsequences of <span class="math notranslate nohighlight">\((0,
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=08bfcbec"></script>
+</div><script src="../_static/documentation_options.js?v=dd1205ac"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
