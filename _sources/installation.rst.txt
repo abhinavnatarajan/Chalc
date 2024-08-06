@@ -22,7 +22,16 @@ Chalc is a C++ extension module for Python and has several additional dependenci
 3. The `Computational Geometry Algorithms Library (CGAL) <https://www.cgal.org/>`_ library (version 5.6).
 4. The `Boost C++ libraries <https://www.boost.org/>`_ (transitive dependency through CGAL).
 
-The recommended way to obtain and manage these dependencies is using the `vcpkg <https://vcpkg.io/>`_ C++ dependency manager. It is also recommended to use a `Python virtual environment <https://docs.python.org/3/tutorial/venv.html>`_ for the build process to avoid polluting the package namespace.
+The recommended way to obtain and manage these dependencies is using vcpkg (see the build dependencies section) . It is also recommended to use a `Python virtual environment <https://docs.python.org/3/tutorial/venv.html>`_ for the build process to avoid polluting the package namespace.
+
+Build dependencies
+^^^^^^^^^^^^^^^^^^
+1. CMake (version 3.23 or later).
+2. On Windows: Visual Studio 2019 or later.
+   On Linux: GCC11 or later.
+   On MacOS: Clang 14 or later.
+3. (Recommended) `Microsoft vcpkg <https://vcpkg.io/>`_ C++ dependency manager.
+4. (MacOS only) The build tools automake, autoconf, and libtool. You can install these with `brew install automake autoconf libtool`.
 
 Build steps
 ^^^^^^^^^^^

@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="DiagramEnsemble" href="chalc.sixpack.DiagramEnsemble.html" /><link rel="prev" title="Simplex" href="chalc.filtration.Simplex.html" />
 
     <!-- Generated with Sphinx 7.2.4 and Furo 2023.08.19 -->
-        <title>sixpack - chalc 3.1.0 documentation</title>
+        <title>sixpack - chalc 3.1.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -125,7 +125,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">chalc 3.1.0 documentation</div></a>
+      <a href="../index.html"><div class="brand">chalc 3.1.2 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -148,7 +148,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">chalc 3.1.0 documentation</span>
+  <span class="sidebar-brand-text">chalc 3.1.2 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -268,7 +268,7 @@
 <h2>Details<a class="headerlink" href="#details" title="Link to this heading">#</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="chalc.sixpack.compute">
-<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colours</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'chromatic</span> <span class="pre">alpha'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_diagram_dimension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.sixpack.compute" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colours</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'chromatic</span> <span class="pre">alpha'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_diagram_dimension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.sixpack.compute" title="Link to this definition">#</a></dt>
 <dd><p>Compute the 6-pack of persistence diagrams of a coloured point-cloud.</p>
 <p>This function constructs a filtered simplicial complex <span class="math notranslate nohighlight">\(K\)</span> from the point cloud, and computes the 6-pack of persistence diagrams associated with the inclusion <span class="math notranslate nohighlight">\(f : L \hookrightarrow K\)</span> where <span class="math notranslate nohighlight">\(L\)</span> is some filtered subcomplex of <span class="math notranslate nohighlight">\(K\)</span>.</p>
 <dl class="field-list simple">
@@ -279,7 +279,7 @@
 <li><p><strong>dom</strong> (<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection" title="(in Python v3.12)"><em>Collection</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>] </em><em>| </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>None</em>) – Integer or collection of integers describing the colours of the points in the domain (the subcomplex <span class="math notranslate nohighlight">\(L\)</span>).</p></li>
 <li><p><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>None</em>) – If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, then the domain is taken to be the <span class="math notranslate nohighlight">\(k\)</span>-chromatic subcomplex of <span class="math notranslate nohighlight">\(K\)</span>, i.e., the subcomplex of simplices having at most <span class="math notranslate nohighlight">\(k\)</span> colours.</p></li>
 <li><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Filtration used to construct the chromatic complex. Must be one of <code class="docutils literal notranslate"><span class="pre">['chromatic</span> <span class="pre">alpha',</span> <span class="pre">'chromatic</span> <span class="pre">delcech',</span> <span class="pre">'chromatic</span> <span class="pre">delrips']</span></code>.</p></li>
-<li><p><strong>max_diagram_dimension</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Maximum homological dimension for which the persistence diagrams are computed.</p></li>
+<li><p><strong>max_diagram_dimension</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>None</em>) – Maximum homological dimension for which the persistence diagrams are computed. By default diagrams of all dimensions are computed.</p></li>
 <li><p><strong>tolerance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Retain only points with persistence strictly greater than this value.</p></li>
 </ul>
 </dd>
@@ -306,7 +306,7 @@ entrance times of the simplices and their dimensions.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="chalc.sixpack.from_filtration">
-<span class="sig-name descname"><span class="pre">from_filtration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_diagram_dimension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.sixpack.from_filtration" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">from_filtration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_diagram_dimension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.sixpack.from_filtration" title="Link to this definition">#</a></dt>
 <dd><p>Compute the 6-pack of persistence diagrams associated to a filtered simplicial complex with coloured vertices.</p>
 <p>Given a filtered chromatic simplicial complex <span class="math notranslate nohighlight">\(K\)</span> and a subcomplex <span class="math notranslate nohighlight">\(L\)</span> of <span class="math notranslate nohighlight">\(K\)</span>, this function computes the 6-pack of persistence diagram associated with the inclusion map <span class="math notranslate nohighlight">\(f : L \hookrightarrow K\)</span>. The subcomplex is specified by
 the colours of its vertices, or by an integer <span class="math notranslate nohighlight">\(k\)</span> wherein all simplices with <span class="math notranslate nohighlight">\(k\)</span> or fewer colours are considered part of the subcomplex.</p>
@@ -316,7 +316,7 @@ the colours of its vertices, or by an integer <span class="math notranslate nohi
 <li><p><strong>K</strong> (<a class="reference internal" href="chalc.filtration.FilteredComplex.html#chalc.filtration.FilteredComplex" title="chalc.filtration.FilteredComplex"><em>FilteredComplex</em></a>) – A filtered chromatic simplicial complex.</p></li>
 <li><p><strong>dom</strong> (<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection" title="(in Python v3.12)"><em>Collection</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>] </em><em>| </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>None</em>) – Integer or collection of integers describing the colours of the points in the domain (the subcomplex <span class="math notranslate nohighlight">\(L\)</span>).</p></li>
 <li><p><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>None</em>) – If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, then the domain is taken to be the <span class="math notranslate nohighlight">\(k\)</span>-chromatic subcomplex of <span class="math notranslate nohighlight">\(K\)</span>, i.e., the subcomplex of simplices having at most <span class="math notranslate nohighlight">\(k\)</span> colours.</p></li>
-<li><p><strong>max_diagram_dimension</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Maximum homological dimension for which the persistence diagrams are computed.</p></li>
+<li><p><strong>max_diagram_dimension</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>None</em>) – Maximum homological dimension for which the persistence diagrams are computed. By default diagrams of all dimensions are computed.</p></li>
 <li><p><strong>tolerance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Retain only points with persistence strictly greater than this value.</p></li>
 </ul>
 </dd>
@@ -447,7 +447,7 @@ entrance times of the simplices and their dimensions.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=dd1205ac"></script>
+</div><script src="../_static/documentation_options.js?v=4e920bdf"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
