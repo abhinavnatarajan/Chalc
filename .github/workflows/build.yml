@@ -37,8 +37,8 @@ jobs:
   build_wheels:
     name: Build wheels
     strategy:
-      matrix: 
-        os: [windows-latest, macOS-latest, ubuntu-latest]
+      matrix:
+        os: [windows-2022, macos-14, ubuntu-22.04, macos-14-large]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -51,7 +51,7 @@ jobs:
       
       - name: Setup build tools on macOS
         run: brew install automake autoconf libtool
-        if: ${{ matrix.os == 'macOS-latest' }}
+        if: ${{ runner.os == 'macos' }}
       
       - name: Get vcpkg commit ID from manifest
         shell: bash
