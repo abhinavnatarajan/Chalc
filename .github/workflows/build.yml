@@ -38,7 +38,7 @@ jobs:
     name: Build wheels
     strategy:
       matrix:
-        os: [windows-2022, macos-14, ubuntu-22.04, macos-14-large]
+        os: [windows-2022, macos-14, ubuntu-22.04, macos-13]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
