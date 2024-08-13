@@ -4,7 +4,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "chalc"
-version = "3.1.2"
+version = "3.1.3"
 authors = [{ name = "Abhinav Natarajan", email = "natarajan@maths.ox.ac.uk" }]
 description = "Persistent homology of chromatic Delaunay filtrations"
 readme = { file = "README.md", content-type = "text/markdown" }
@@ -21,9 +21,9 @@ keywords = [
 dependencies = [
     "numpy~=2.0.0",
     "phimaker~=0.1.3",
-    "pandas~=2.2.0",
+    "pandas~=2.2.2",
     "matplotlib~=3.8.0",
-    "seaborn~=0.12.0",
+    "seaborn~=0.13.0",
     "h5py~=3.11.0",
 ]
 classifiers = [
