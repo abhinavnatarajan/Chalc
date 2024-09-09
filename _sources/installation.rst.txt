@@ -43,7 +43,7 @@ Clone the git repository.
    $ git clone https://github.com/abhinavnatarajan/chalc
    $ cd chalc
 
-If you have vcpkg installed on your system, make sure that the environment variable ``VCPKG_INSTALLATION_ROOT`` is set and points to the base directory where vcpkg is installed.
+If you have vcpkg installed on your system, make sure that the environment variable ``VCPKG_ROOT`` is set and points to the base directory where vcpkg is installed.
 
 .. tab-set::
 
@@ -52,14 +52,14 @@ If you have vcpkg installed on your system, make sure that the environment varia
 
       .. code-block:: bash
 
-         $ export VCPKG_INSTALLATION_ROOT=/path/to/vcpkg/dir
+         $ export VCPKG_ROOT=/path/to/vcpkg/dir
 
    .. tab-item:: Powershell
       :sync: powershell
 
       .. code-block:: powershell
 
-         > $Env:VCPKG_INSTALLATION_ROOT = 'C:\path\to\vcpkg\dir'
+         > $Env:VCPKG_ROOT = 'C:\path\to\vcpkg\dir'
 
 If you do not have vcpkg installed, the build process will automatically download vcpkg into a temporary directory and fetch the required dependencies.
 
@@ -88,3 +88,17 @@ Build the package wheel using ``pip wheel`` and install the compiled binary.
 
    $ pip wheel . -w outputdir
    $ pip install outputdir/<name_of_generated_wheel>.whl
+
+Building the Documentation
+--------------------------
+
+To build the documentation, first make sure that ``chalc`` is installed and available to the Python interpreter. Then run the following commands from the root directory of the repository.
+
+.. code-block:: console
+
+   $ cd docs
+   $ pip install -r requirements.txt
+   $ make html
+
+This will build the documentation into the folder ``docs/build`` with root ``index.html``.
+In order to avoid polluting your global Python package tree, it is a good idea to install ``chalc`` and run the ``pip install ..`` command above in a virtual environment.

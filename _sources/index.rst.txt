@@ -20,12 +20,11 @@ Documentation index
    installation
    example
    API
+   license
 
 .. sidebar-links::
    :github:
    :pypi: chalc
-
-   license
 
 Citing this Software
 --------------------

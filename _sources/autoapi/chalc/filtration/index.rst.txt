@@ -1,0 +1,202 @@
+chalc.filtration
+================
+
+.. py:module:: chalc.filtration
+
+.. autoapi-nested-parse::
+
+   Module containing utilities to store and manipulate
+   abstract filtered simplicial complexes.
+
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   chalc.filtration.FilteredComplex
+   chalc.filtration.Simplex
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   chalc.filtration.clique_complex
+   chalc.filtration.standard_simplex
+
+
+Module Contents
+---------------
+
+.. py:class:: FilteredComplex(n: int, k: int)
+
+   Class representing a filtered simplicial complex.
+
+
+   .. py:method:: add_simplex(vertices: list[int], filt_value: float) -> bool
+
+      Add a simplex to a filtered simplicial complex.
+
+      :param vertices: List of vertex labels corresponding to existing vertices in the complex.
+      :param filt_value: Filtration value to associate to the new simplex.
+
+      .. note:: Faces of the added simplex that are already present in the simplicial complex will have their filtration values reduced if necessary.
+
+
+
+   .. py:method:: get_label_from_vertex_labels(vertices: list[int]) -> int
+
+      Returns the dictionary key of a simplex with respect to its vertex labels sorted in ascending order, counting all
+      possible sorted subsequences of :math:`(0, ..., N-1)` of length :math:`k`, where :math:`N` is the number of vertices in the complex. The simplex need not be present in the simplicial complex.
+
+      :param vertices: List of vertex labels of the simplex.
+
+
+
+   .. py:method:: has_simplex(vertices: list[int]) -> bool
+
+      Check for membership of a simplex in the complex.
+
+      :param vertices: Vertex labels of the simplex to check for.
+
+
+
+   .. py:method:: is_filtration() -> bool
+
+      Returns true if the filtration property is satisfied; that is, if each simplex has a filtration value at least as large as each of its faces.
+
+
+
+   .. py:method:: propagate_colours() -> None
+
+      Function to make sure that simplex colours are consistent with the colours of their vertices. You should call this whenever you change the colour of any vertices.
+
+
+
+   .. py:method:: propagate_filt_values(start_dim: int, upwards: bool = True) -> None
+
+      Propagate filtration values upwards or downwards to ensure that every simplex appears after its faces. For example, setting the filtration values in dimension 1 and propagating upwards is akin to the Rips filtration.
+
+      :param start_dim: Dimension from which to start propagating (exclusive).
+      :param upwards: If true then values are propagated upwards, downwards otherwise. Defaults to true.
+
+
+
+   .. py:method:: serialised() -> list[tuple[list[int], int, float, int]]
+
+      Serialised representation of the simplicial complex in a format suitable for persistent homology computations.
+
+      :return:
+              A list `x` of simplices in the simplicial complex ordered by dimension followed by filtration time. Each simplex :math:`\sigma` is represented by a tuple containing the following items.
+
+              1.  A list containing the indices in `x` of the facets of :math:`\sigma`, sorted in ascending order.
+              2.  The lexicographic key of :math:`\sigma` in the simplicial complex.
+              3.  The filtration time of :math:`\sigma`.
+              4.  The colour bitmask of :math:`\sigma`.
+
+
+
+   .. py:property:: dimension
+      :type: int
+
+      Current maximum dimension of a maximal simplex in the complex.
+
+
+   .. py:property:: max_dimension
+      :type: int
+
+      Maximum dimension of simplex that this complex can store. \
+      Set during initialisation.
+
+
+   .. py:property:: max_filtration_time
+      :type: float
+
+      Current maximum dimension of a maximal simplex in the complex.
+
+
+   .. py:property:: num_simplices
+      :type: int
+
+      The total number of simplices in the complex.
+
+
+   .. py:property:: num_vertices
+      :type: int
+
+      Number of vertices in the simplicial complex. \
+      Set during initialisation.
+
+
+   .. py:property:: simplices
+      :type: list[dict[int, Simplex]]
+
+      A list such that ``simplices[k]`` is a dictionary of handles to the :math:`k`-simplices in the complex. The key of a :math:`k`-simplex in ``simplices[k]`` is the lexicographic index of that simplex with respect to its vertex labels sorted in ascending order, counting all possible sorted subsequences of :math:`(0, ..., N-1)` of length :math:`k`.
+
+
+.. py:class:: Simplex
+
+   Class representing a simplex in a filtered simplicial complex.
+
+
+
+   .. py:method:: set_colour(colour: int) -> None
+
+      Change the colour of a vertex.
+
+      :raises ValueError: If the simplex is not a vertex or if `colour >=` :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>`.
+
+      .. tip:: It is recommended to call the member function :meth:`propagate_colours() <chalc.filtration.FilteredComplex.propagate_colours>` from the parent simplicial complex after changing the colour of a vertex.
+
+
+
+   .. py:property:: colours
+      :type: int
+
+      Bitmask of colours in the simplex, where the rightmost bit represents the smallest colour index. More precisely, :math:`\mathrm{bitmask} = \sum_{c \in \mathrm{colours}(\sigma)} 2^c`. For example, a simplex having vertices of colours 0 and 1 has a colour bitmask of 3.
+
+
+   .. py:property:: dimension
+      :type: int
+
+      Dimension of the simplex.
+
+
+   .. py:property:: facets
+      :type: list[Simplex]
+
+      Read-only list of handles to the facets of the simplex.
+
+
+   .. py:property:: filtration_value
+      :type: float
+
+      Filtration value of the simplex. If you modify this value, you should call :meth:`propagate_filt_values() <chalc.filtration.FilteredComplex.propagate_filt_values>` from the parent complex to ensure that filtration times remain monotonic.
+
+
+   .. py:property:: label
+      :type: int
+
+      Label of the simplex in its parent filtered complex. A :math:`k`-simplex :math:`\sigma` is labelled by the lexicographic index of :math:`\sigma` with respect to its vertex labels sorted in ascending order, counting all possible sorted subsequences of :math:`(0, ..., N-1)` of length :math:`k`.
+
+
+   .. py:property:: vertices
+      :type: list[int]
+
+      List of (sorted, ascending) vertex labels of the simplex.
+
+
+.. py:function:: clique_complex(n: int, k: int) -> FilteredComplex
+
+   Returns the :math:`k`-skeleton of the complete simplicial complex on :math:`n` vertices, with filtration values initialised to zero and all vertices coloured with the colour 0.
+
+
+.. py:function:: standard_simplex(n: int) -> FilteredComplex
+
+   Returns the filtered simplicial complex corresponding to the standard abstract :math:`n`-simplex, with filtration values initialised to zero and all vertices coloured with the colour 0.
+
+

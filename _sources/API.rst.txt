@@ -1,17 +1,7 @@
 API Reference
 =============
 
-.. automodule:: chalc
+.. toctree::
+   :name: api
 
-
-   .. rubric:: Modules
-
-   .. autosummary::
-      :toctree: _autosummary
-      :recursive:
-      :nosignatures:
-
-      chromatic
-      filtration
-      sixpack
-      plotting
+   autoapi/chalc/index

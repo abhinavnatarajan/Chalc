@@ -1,0 +1,23 @@
+chalc
+=====
+
+.. py:module:: chalc
+
+.. autoapi-nested-parse::
+
+   Chalc is a package to compute the persistent homology of chromatic complexes of points clouds in Euclidean space.
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/chalc/chromatic/index
+   /autoapi/chalc/filtration/index
+   /autoapi/chalc/plotting/index
+   /autoapi/chalc/sixpack/index
+
+
