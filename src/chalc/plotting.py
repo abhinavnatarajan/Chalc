@@ -1,8 +1,10 @@
+"""Plotting and visualisation utilities."""
+
 from __future__ import annotations
 
 from collections.abc import Collection, Sequence
 from itertools import product
-from typing import Annotated
+from typing import Literal
 
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
@@ -14,7 +16,6 @@ from pandas import DataFrame
 
 from chalc.filtration import FilteredComplex
 
-from ._utils import interpolate_docstring
 from .sixpack import (
 	DiagramEnsemble,
 	_bitmask_to_colours,
@@ -25,15 +26,13 @@ from .sixpack import (
 
 plt.rcParams["animation.html"] = "jshtml"
 
-__doc__ = "Plotting and visualisation utilities."
-
 
 def plot_sixpack(
 	dgms: DiagramEnsemble,
 	truncation: float | None = None,
 	max_diagram_dimension: int | None = None,
 	tolerance: float = 0,
-) -> tuple[Figure, Annotated[np.ndarray, "Axes"]]:
+) -> tuple[Figure, np.ndarray[tuple[int, ...], np.dtype[Axes]]]:
 	"""
 	Plots the 6-pack of persistence diagrams returned by :func:`compute <.sixpack.compute>`.
 
@@ -100,10 +99,9 @@ def plot_sixpack(
 	return fig, axes
 
 
-@interpolate_docstring()
 def plot_diagram(
 	dgms: DiagramEnsemble,
-	diagram_name: str,
+	diagram_name: Literal["ker", "cok", "dom", "cod", "im", "rel"],
 	truncation: float | None = None,
 	max_diagram_dimension: int | None = None,
 	ax: Axes | None = None,
@@ -114,7 +112,7 @@ def plot_diagram(
 
 	Args:
 		dgms                  : The 6-pack of persistence diagrams.
-		diagram_name          : One of ``${str(DiagramEnsemble.diagram_names)}``.
+		diagram_name          : One of ``'ker'``, ``'cok'``, ``'dom'``, ``'cod'``, ``'im'``, or ``'rel'``.
 		truncation            : The maximum entrance time for which the diagrams are plotted. A sensible default will be calculated if not provided.
 		max_diagram_dimension : The maximum homological dimension for which to plot points. If not provided, all dimensions will be included in the plots.
 		ax                    : A matplotlib axes object. If provided then the diagram will be plotted on the given axes.
@@ -223,16 +221,16 @@ def _plot_diagram(
 
 def draw_filtration(
 	K: FilteredComplex,
-	points: Annotated[np.ndarray, np.float64],
+	points: np.ndarray[tuple[Literal[2], int], np.dtype[np.float64]],
 	time: float,
 	include_colours: Collection[int] | None = None,
 	ax: Axes | None = None,
 ) -> Axes:
 	"""
-	Visualise a filtration at given time, optionally including only certain colours.
+	Visualise a 2D filtration at given time, optionally including only certain colours.
 
 	Args:
-		K               : A filtered complex.
+		K               : A filtered 2-dimensional simplicial complex.
 		points          : The vertices of ``K`` as a :math:`2\\times N` numpy matrix.
 		time            : Filtration times for which to draw simplices.
 		include_colours : Optional collection of colours to include. If not specified then all colours will be drawn.
@@ -313,7 +311,7 @@ def draw_filtration(
 
 def animate_filtration(
 	K: FilteredComplex,
-	points: Annotated[np.ndarray, np.float64],
+	points: np.ndarray[tuple[Literal[2], int], np.dtype[np.float64]],
 	filtration_times: Sequence[float],
 	animation_length: float,
 ) -> animation.FuncAnimation:

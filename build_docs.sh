@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# python docs/stubgen.py chalc --output-dir docs/stubs
-source build_stubs.sh
-shopt -s extglob
-mkdir -p docs/stubs/chalc/
-cp -rf src/chalc/!(__init__)*.py?(i) docs/stubs/chalc/
-for f in docs/stubs/chalc/*.pyi; do mv -- "$f" "${f%.pyi}.py"; done
+python -m pybind11_stubgen chalc.chromatic --numpy-array-use-type-var --output-dir src
+python -m pybind11_stubgen chalc.filtration --numpy-array-use-type-var --output-dir src
 sphinx-build -E -b html docs docs/_build

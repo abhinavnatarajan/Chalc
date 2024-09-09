@@ -68,12 +68,12 @@ class FilteredComplex:
         				Serialised representation of the simplicial complex in a format suitable for persistent homology computations.
         
         				:return:
-        					A list `x` of simplices in the simplicial complex ordered by dimension followed by filtration time. Each simplex :math:`\sigma` is represented by a tuple containing the following items.
+        					A list `x` of simplices in the simplicial complex ordered by dimension followed by filtration time. Each simplex :math:`\\sigma` is represented by a tuple containing the following items.
         
-        					1.  A list containing the indices in `x` of the facets of :math:`\sigma`, sorted in ascending order.
-        					2.  The lexicographic key of :math:`\sigma` in the simplicial complex.
-        					3.  The filtration time of :math:`\sigma`.
-        					4.  The colour bitmask of :math:`\sigma`.
+        					1.  A list containing the indices in `x` of the facets of :math:`\\sigma`, sorted in ascending order.
+        					2.  The lexicographic key of :math:`\\sigma` in the simplicial complex.
+        					3.  The filtration time of :math:`\\sigma`.
+        					4.  The colour bitmask of :math:`\\sigma`.
         """
     @property
     def dimension(self) -> int:
@@ -83,7 +83,7 @@ class FilteredComplex:
     @property
     def max_dimension(self) -> int:
         """
-        Maximum dimension of simplex that this complex can store. \
+        Maximum dimension of simplex that this complex can store. \\
         Set during initialisation.
         """
     @property
@@ -99,7 +99,7 @@ class FilteredComplex:
     @property
     def num_vertices(self) -> int:
         """
-        Number of vertices in the simplicial complex. \
+        Number of vertices in the simplicial complex. \\
         Set during initialisation.
         """
     @property
@@ -128,7 +128,7 @@ class Simplex:
     @property
     def colours(self) -> int:
         """
-        				Bitmask of colours in the simplex, where the rightmost bit represents the smallest colour index. More precisely, :math:`\mathrm{bitmask} = \sum_{c \in \mathrm{colours}(\sigma)} 2^c`. For example, a simplex having vertices of colours 0 and 1 has a colour bitmask of 3.
+        				Bitmask of colours in the simplex, where the rightmost bit represents the smallest colour index. More precisely, :math:`\\mathrm{bitmask} = \\sum_{c \\in \\mathrm{colours}(\\sigma)} 2^c`. For example, a simplex having vertices of colours 0 and 1 has a colour bitmask of 3.
         """
     @property
     def dimension(self) -> int:
@@ -151,7 +151,7 @@ class Simplex:
     @property
     def label(self) -> int:
         """
-        				Label of the simplex in its parent filtered complex. A :math:`k`-simplex :math:`\sigma` is labelled by the lexicographic index of :math:`\sigma` with respect to its vertex labels sorted in ascending order, counting all possible sorted subsequences of :math:`(0, ..., N-1)` of length :math:`k`.
+        				Label of the simplex in its parent filtered complex. A :math:`k`-simplex :math:`\\sigma` is labelled by the lexicographic index of :math:`\\sigma` with respect to its vertex labels sorted in ascending order, counting all possible sorted subsequences of :math:`(0, ..., N-1)` of length :math:`k`.
         """
     @property
     def vertices(self) -> list[int]:

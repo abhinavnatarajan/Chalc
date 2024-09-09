@@ -13,9 +13,6 @@ PYBIND11_MODULE(chromatic, m) {
 	m.doc() =
 		R"docstring(
 Module containing geometry routines to compute chromatic Delaunay filtrations.
-
-Attributes:
-	MaxColoursChromatic (int): Maximum number of colours that can be handled by the methods in this module.
         )docstring";
 	m.attr("MaxColoursChromatic") = py::int_(MAX_NUM_COLOURS);
 	m.def(

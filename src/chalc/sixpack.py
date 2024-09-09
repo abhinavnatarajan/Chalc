@@ -1,8 +1,10 @@
+"""Routines for computing 6-packs of persistence diagrams."""
+
 from __future__ import annotations
 
 from collections.abc import Collection, Sequence
 from dataclasses import dataclass, field, fields
-from typing import Annotated, Callable, ClassVar, overload
+from typing import Callable, ClassVar, Literal, overload
 
 import numpy as np
 from h5py import Dataset, Group
@@ -11,9 +13,6 @@ from phimaker import compute_ensemble
 from chalc.chromatic import alpha, delcech, delrips
 from chalc.filtration import FilteredComplex
 
-from ._utils import interpolate_docstring
-
-__doc__ = "Routines for computing 6-packs of persistence diagrams."
 __all__ = [
 	"from_filtration",
 	"compute",
@@ -24,9 +23,9 @@ __all__ = [
 ]
 
 ChromaticMethod = {
-	"chromatic alpha": alpha,
-	"chromatic delcech": delcech,
-	"chromatic delrips": delrips,
+	"alpha": alpha,
+	"delcech": delcech,
+	"delrips": delrips,
 }
 
 BdMatType = list[tuple[bool, int, list[int]]]
@@ -92,7 +91,6 @@ def _get_diagrams(
 	return dgms.threshold(tolerance)
 
 
-@interpolate_docstring()
 def from_filtration(
 	K: FilteredComplex,
 	dom: Collection[int] | int | None = None,
@@ -155,13 +153,12 @@ def from_filtration(
 	return _get_diagrams(K, check_in_domain, max_diagram_dimension, tolerance)
 
 
-@interpolate_docstring()
 def compute(
-	x: Annotated[np.ndarray, np.float64],
+	x: np.ndarray[tuple[int, int], np.dtype[np.float64]],
 	colours: Sequence[int],
 	dom: Collection[int] | int | None = None,
 	k: int | None = None,
-	method: str = "chromatic alpha",
+	method: Literal["alpha", "delcech", "delrips"] = "alpha",
 	max_diagram_dimension: int | None = None,
 	tolerance: float = 0,
 ) -> DiagramEnsemble:
@@ -175,7 +172,7 @@ def compute(
 		colours               : Sequence of integers describing the colours of the points.
 		dom                   : Integer or collection of integers describing the colours of the points in the domain (the subcomplex :math:`L`).
 		k                     : If not ``None``, then the domain is taken to be the :math:`k`-chromatic subcomplex of :math:`K`, i.e., the subcomplex of simplices having at most :math:`k` colours.
-		method                : Filtration used to construct the chromatic complex. Must be one of ``${str(list(ChromaticMethod.keys()))}``.
+		method                : Filtration used to construct the chromatic complex. Must be one of ``'alpha'``, ``'delcech'``, or ``'delrips'``.
 		max_diagram_dimension : Maximum homological dimension for which the persistence diagrams are computed. By default diagrams of all dimensions are computed.
 		tolerance             : Retain only points with persistence strictly greater than this value.
 
@@ -248,7 +245,9 @@ class SimplexPairings:
 
 	@classmethod
 	def _from_matrices(
-		cls, p: Annotated[np.ndarray, np.int64], u: Annotated[np.ndarray, np.int64]
+		cls,
+		p: np.ndarray[tuple[int, int], np.dtype[np.int64]],
+		u: np.ndarray[tuple[int, int], np.dtype[np.int64]],
 	) -> SimplexPairings:
 		if p.shape[1] != 2:
 			raise ValueError(f"p must be a (m, 2) matrix, but received a matrix of size {p.shape}")
@@ -256,7 +255,7 @@ class SimplexPairings:
 		unpaired = list(u)
 		return cls(paired, unpaired)
 
-	def paired_as_matrix(self) -> Annotated[np.ndarray, np.int64]:
+	def paired_as_matrix(self) -> np.ndarray[tuple[int, int], np.dtype[np.int64]]:
 		return np.concatenate(list(self.paired)).reshape((-1, 2))
 
 	def __eq__(self, other) -> bool:
@@ -315,20 +314,23 @@ class DiagramEnsemble:
 		return self
 
 	@overload
-	def get(self, diagram_name: str, dim: int) -> Annotated[np.ndarray, np.float64]: ...
+	def get(
+		self, diagram_name: Literal["ker", "cok", "dom", "cod", "im", "rel"], dim: int
+	) -> np.ndarray[tuple[int, int], np.dtype[np.float64]]: ...
 
 	@overload
 	def get(
-		self, diagram_name: str, dim: list[int] | None = None
-	) -> list[Annotated[np.ndarray, np.float64]]: ...
+		self,
+		diagram_name: Literal["ker", "cok", "dom", "cod", "im", "rel"],
+		dim: list[int] | None = None,
+	) -> list[np.ndarray[tuple[int, int], np.dtype[np.float64]]]: ...
 
-	@interpolate_docstring({"diagram_names": diagram_names})
 	def get(self, diagram_name, dim=None):
 		"""
 		Get a specific diagram as a matrix of birth and death times.
 
 		Args:
-			diagram_name : One of ``${str(diagram_names)}``.
+			diagram_name : One of ``'ker'``, ``'cok'``, ``'dom'``, ``'cod'``, ``'im'``, or ``'rel'``.
 			dim          : Dimension(s) of the diagram desired. If a list is provided then a list of matrices is returned, with the order of matrices respecting the order of entries of `dim`. If `dim` is not provided then the returned matrix will contain persistent features from all homological dimensions from zero to ``max(self.dimensions)``.
 
 		Returns:

@@ -1,22 +1,20 @@
 """
 
 Module containing geometry routines to compute chromatic Delaunay filtrations.
-
-Attributes:
-	MaxColoursChromatic (int): Maximum number of colours that can be handled by the methods in this module.
         
 """
 from __future__ import annotations
 import chalc.filtration
 import numpy
-import pybind11_stubgen.typing_ext
 import typing
 __all__ = ['MaxColoursChromatic', 'alpha', 'delaunay', 'delcech', 'delrips']
+M = typing.TypeVar("M", bound=int)
+N = typing.TypeVar("N", bound=int)
 @typing.overload
-def alpha(x: typing.Annotated[numpy.ndarray, numpy.float64, pybind11_stubgen.typing_ext.DynamicSize('m', 'n')], colours: typing.Annotated[numpy.ndarray, numpy.int32, pybind11_stubgen.typing_ext.DynamicSize('m', 1)]) -> tuple[chalc.filtration.FilteredComplex, bool]:
+def alpha(x: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, typing.Literal[1]], numpy.dtype[numpy.int32]]) -> tuple[chalc.filtration.FilteredComplex, bool]:
     ...
 @typing.overload
-def alpha(x: typing.Annotated[numpy.ndarray, numpy.float64, pybind11_stubgen.typing_ext.DynamicSize('m', 'n')], colours: list[int]) -> tuple[chalc.filtration.FilteredComplex, bool]:
+def alpha(x: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int]) -> tuple[chalc.filtration.FilteredComplex, bool]:
     """
     Computes the chromatic alpha filtration of a coloured point cloud.
     
@@ -37,10 +35,10 @@ def alpha(x: typing.Annotated[numpy.ndarray, numpy.float64, pybind11_stubgen.typ
     	:func:`delrips`, :func:`delcech`
     """
 @typing.overload
-def delaunay(x: typing.Annotated[numpy.ndarray, numpy.float64, pybind11_stubgen.typing_ext.DynamicSize('m', 'n')], colours: typing.Annotated[numpy.ndarray, numpy.int32, pybind11_stubgen.typing_ext.DynamicSize('m', 1)]) -> chalc.filtration.FilteredComplex:
+def delaunay(x: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, typing.Literal[1]], numpy.dtype[numpy.int32]]) -> chalc.filtration.FilteredComplex:
     ...
 @typing.overload
-def delaunay(x: typing.Annotated[numpy.ndarray, numpy.float64, pybind11_stubgen.typing_ext.DynamicSize('m', 'n')], colours: list[int]) -> chalc.filtration.FilteredComplex:
+def delaunay(x: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int]) -> chalc.filtration.FilteredComplex:
     """
     Returns the chromatic Delaunay triangulation of a coloured point cloud in Euclidean space.
     
@@ -55,10 +53,10 @@ def delaunay(x: typing.Annotated[numpy.ndarray, numpy.float64, pybind11_stubgen.
     	The Delaunay triangulation.
     """
 @typing.overload
-def delcech(x: typing.Annotated[numpy.ndarray, numpy.float64, pybind11_stubgen.typing_ext.DynamicSize('m', 'n')], colours: typing.Annotated[numpy.ndarray, numpy.int32, pybind11_stubgen.typing_ext.DynamicSize('m', 1)]) -> tuple[chalc.filtration.FilteredComplex, bool]:
+def delcech(x: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, typing.Literal[1]], numpy.dtype[numpy.int32]]) -> tuple[chalc.filtration.FilteredComplex, bool]:
     ...
 @typing.overload
-def delcech(x: typing.Annotated[numpy.ndarray, numpy.float64, pybind11_stubgen.typing_ext.DynamicSize('m', 'n')], colours: list[int]) -> tuple[chalc.filtration.FilteredComplex, bool]:
+def delcech(x: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int]) -> tuple[chalc.filtration.FilteredComplex, bool]:
     """
     Returns the chromatic Delaunay--Čech filtration of a coloured point cloud.
     
@@ -79,10 +77,10 @@ def delcech(x: typing.Annotated[numpy.ndarray, numpy.float64, pybind11_stubgen.t
     	:func:`alpha`, :func:`delrips`
     """
 @typing.overload
-def delrips(x: typing.Annotated[numpy.ndarray, numpy.float64, pybind11_stubgen.typing_ext.DynamicSize('m', 'n')], colours: typing.Annotated[numpy.ndarray, numpy.int32, pybind11_stubgen.typing_ext.DynamicSize('m', 1)]) -> tuple[chalc.filtration.FilteredComplex, bool]:
+def delrips(x: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, typing.Literal[1]], numpy.dtype[numpy.int32]]) -> tuple[chalc.filtration.FilteredComplex, bool]:
     ...
 @typing.overload
-def delrips(x: typing.Annotated[numpy.ndarray, numpy.float64, pybind11_stubgen.typing_ext.DynamicSize('m', 'n')], colours: list[int]) -> tuple[chalc.filtration.FilteredComplex, bool]:
+def delrips(x: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int]) -> tuple[chalc.filtration.FilteredComplex, bool]:
     """
     Computes the chromatic Delaunay--Rips filtration of a coloured point cloud.
     

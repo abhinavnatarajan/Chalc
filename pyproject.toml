@@ -4,7 +4,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "chalc"
-version = "3.1.3"
+version = "4.0.0-dev0"
 authors = [{ name = "Abhinav Natarajan", email = "natarajan@maths.ox.ac.uk" }]
 description = "Persistent homology of chromatic Delaunay filtrations"
 readme = { file = "README.md", content-type = "text/markdown" }
@@ -57,7 +57,7 @@ experimental = true
 archs = ["auto64"]
 skip = ["pp*", "*-musllinux_*"]
 test-command = "pytest {package}/tests"
-test-requires = ["pytest==8.2.2"]
+test-requires = ["pytest~=8.2.2"]
 build-verbosity = 2
 
 [tool.cibuildwheel.linux]
