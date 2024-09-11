@@ -12,6 +12,7 @@ import numpy as np
 import seaborn as sns
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
+from matplotlib.legend import Legend
 from pandas import DataFrame
 
 from chalc.filtration import FilteredComplex
@@ -206,7 +207,8 @@ def _plot_diagram(
 	ret_ax.set(ylabel=None)
 	ret_ax.set(title=title)
 	ret_ax.set_aspect("equal")
-	if points_legend:
+	has_legend = any(True for c in ret_ax.get_children() if isinstance(c, Legend))
+	if points_legend and has_legend:
 		sns.move_legend(ret_ax, "lower right")
 	handle = ax if ax is not None else plt
 	handle.plot([0, inf_level], [0, inf_level], "k-", alpha=0.4)
