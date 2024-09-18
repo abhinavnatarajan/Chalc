@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Example Usage" href="example.html" /><link rel="prev" title="Chalc Documentation" href="index.html" />
 
     <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
-        <title>Installation - chalc 4.0.1 documentation</title>
+        <title>Installation - chalc 5.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=fd3f3429" />
@@ -169,7 +169,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">chalc 4.0.1 documentation</div></a>
+      <a href="index.html"><div class="brand">chalc 5.0.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
-  <span class="sidebar-brand-text">chalc 4.0.1 documentation</span>
+  <span class="sidebar-brand-text">chalc 5.0.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -305,7 +305,7 @@
 On Linux: GCC11 or later.
 On MacOS: Clang 14 or later.</p></li>
 <li><p>(Recommended) <a class="reference external" href="https://vcpkg.io/">Microsoft vcpkg</a> C++ dependency manager.</p></li>
-<li><p>(MacOS only) The build tools automake, autoconf, and libtool. You can install these with <cite>brew install automake autoconf libtool</cite>.</p></li>
+<li><p>(MacOS only) The build tools automake, autoconf, and libtool. You can install these with <code class="docutils literal notranslate"><span class="pre">brew</span> <span class="pre">install</span> <span class="pre">automake</span> <span class="pre">autoconf</span> <span class="pre">libtool</span></code>.</p></li>
 </ol>
 </section>
 <section id="build-steps">
@@ -362,11 +362,31 @@ Powershell</label><div class="sd-tab-content docutils">
 </section>
 <section id="building-the-documentation">
 <h2>Building the Documentation<a class="headerlink" href="#building-the-documentation" title="Link to this heading">¶</a></h2>
-<p>To build the documentation, first make sure that <code class="docutils literal notranslate"><span class="pre">chalc</span></code> is installed and available to the Python interpreter. Then run the following commands from the root directory of the repository.</p>
+<p>To build the documentation, first make sure that <code class="docutils literal notranslate"><span class="pre">chalc</span></code> is installed and available to the Python interpreter.
+Then run the following commands from the root directory of the repository.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>docs
 <span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
-<span class="gp">$ </span>make<span class="w"> </span>html
 </pre></div>
+</div>
+<p>This installs the necessary dependencies used to generate the documentation from the API.
+The commands to build the documentation depend on the platform you are using:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="bash" for="sd-tab-item-4">
+Bash</label><div class="sd-tab-content docutils">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>make<span class="w"> </span>html
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="powershell" for="sd-tab-item-5">
+Powershell</label><div class="sd-tab-content docutils">
+<div class="highlight-powershell notranslate"><div class="highlight"><pre><span></span><span class="p">&gt;</span> <span class="n">python</span> <span class="n">-m</span> <span class="n">pybind11_stubgen</span> <span class="n">chalc</span><span class="p">.</span><span class="n">chromatic</span> <span class="p">-</span><span class="n">-numpy-array-use-type-var</span> <span class="p">-</span><span class="n">-output-dir</span> <span class="p">../</span><span class="n">src</span>
+<span class="p">&gt;</span> <span class="n">python</span> <span class="n">-m</span> <span class="n">pybind11_stubgen</span> <span class="n">chalc</span><span class="p">.</span><span class="n">filtration</span> <span class="p">-</span><span class="n">-numpy-array-use-type-var</span> <span class="p">-</span><span class="n">-output-dir</span> <span class="p">../</span><span class="n">src</span>
+<span class="p">&gt;</span> <span class="n">sphinx-build</span> <span class="n">-M</span> <span class="n">html</span> <span class="n">source</span> <span class="n">build</span>
+</pre></div>
+</div>
+</div>
 </div>
 <p>This will build the documentation into the folder <code class="docutils literal notranslate"><span class="pre">docs/build</span></code> with root <code class="docutils literal notranslate"><span class="pre">index.html</span></code>.
 In order to avoid polluting your global Python package tree, it is a good idea to install <code class="docutils literal notranslate"><span class="pre">chalc</span></code> and run the <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">..</span></code> command above in a virtual environment.</p>
@@ -448,7 +468,7 @@ In order to avoid polluting your global Python package tree, it is a good idea t
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=977c7dfd"></script>
+</div><script src="_static/documentation_options.js?v=ce74c6a2"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=5fa4622c"></script>
