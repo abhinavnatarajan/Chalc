@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Collection, Sequence
+from collections.abc import Collection, Sequence, Set
 from itertools import product
 from typing import Literal
 
@@ -19,6 +19,7 @@ from chalc.filtration import FilteredComplex
 
 from .sixpack import (
 	DiagramEnsemble,
+	SimplexPairings,
 	_bitmask_to_colours,
 	_colours_are_subset,
 	_colours_to_bitmask,
@@ -31,25 +32,33 @@ plt.rcParams["animation.html"] = "jshtml"
 def plot_sixpack(
 	dgms: DiagramEnsemble,
 	truncation: float | None = None,
-	max_diagram_dimension: int | None = None,
+	dimensions: Set[int] | int | None = None,
 	tolerance: float = 0,
 ) -> tuple[Figure, np.ndarray[tuple[int, ...], np.dtype[Axes]]]:
 	"""
 	Plots the 6-pack of persistence diagrams returned by :func:`compute <.sixpack.compute>`.
 
 	Args:
-		dgms                  : The 6-pack of persistence diagrams.
-		truncation            : The maximum entrance time upto which features are plotted. A sensible default will be calculated if not provided.
-		max_diagram_dimension : The maximum homological dimension for which to plot features. If not provided, all dimensions will be included in the plots.
-		tolerance             : Only features with persistence greater than this value will be plotted.
+		dgms       : The 6-pack of persistence diagrams.
+		truncation : The maximum entrance time upto which features are plotted. A sensible default will be calculated if not provided.
+		dimensions : The homological dimensions for which to plot features. If not provided, all dimensions will be included in the plots.
+		tolerance  : Only features with persistence greater than this value will be plotted.
 	"""
-	if max_diagram_dimension is None:
-		max_diagram_dimension = max(dgms.dimensions)
+	if dimensions is None:
+		dimensions = set(range(max(dgms.dimensions)))
+		# The relative diagram may contain features in one dimension higher than that of the filtration.
+		dims = {
+			name: (dimensions if name != "rel" else dimensions | {max(dimensions) + 1})
+			for name in DiagramEnsemble.diagram_names
+		}
+	if isinstance(dimensions, int):
+		dimensions = {
+			dimensions,
+		}
+	# In general, the dimension of a feature represented by a simplex pair (a, b)
+	# is dim(a), unless the diagram is in the kernel, in which case
+	# it is dim(a) - 1.
 	dim_shift = {name: (1 if name == "ker" else 0) for name in DiagramEnsemble.diagram_names}
-	max_dim = {
-		name: (max_diagram_dimension if name != "rel" else max_diagram_dimension + 1)
-		for name in DiagramEnsemble.diagram_names
-	}
 	plot_pos = {
 		name: (val[1], val[0])
 		for name, val in zip(DiagramEnsemble.diagram_names, product((0, 1, 2), (0, 1)))
@@ -68,11 +77,10 @@ def plot_sixpack(
 	if truncation is None:
 		et = []
 		for diagram_name in DiagramEnsemble.diagram_names:
-			m = max_dim[diagram_name]
 			et += [
 				dgms.entrance_times[d]
 				for _, d in getattr(dgms, diagram_name).paired
-				if dgms.dimensions[d] <= m
+				if dgms.dimensions[d] in dims[diagram_name]
 			]
 		truncation = _get_truncation(et)
 	fig, axes = plt.subplots(nrows=2, ncols=3, figsize=[3.5 * 3, 3.5 * 2], sharex=True, sharey=True)
@@ -83,7 +91,7 @@ def plot_sixpack(
 			dgms.dimensions,
 			truncation,
 			ax=axes[plot_pos[diagram_name]],
-			max_dim=max_dim[diagram_name],
+			dims=dims[diagram_name],
 			dim_shift=dim_shift[diagram_name],
 			title=plot_titles[diagram_name],
 			points_legend=points_legend[diagram_name],
@@ -104,7 +112,7 @@ def plot_diagram(
 	dgms: DiagramEnsemble,
 	diagram_name: Literal["ker", "cok", "dom", "cod", "im", "rel"],
 	truncation: float | None = None,
-	max_diagram_dimension: int | None = None,
+	dimensions: Set[int] | int | None = None,
 	ax: Axes | None = None,
 	tolerance: float = 0,
 ) -> Axes:
@@ -112,15 +120,21 @@ def plot_diagram(
 	Plot a specific diagram from a 6-pack.
 
 	Args:
-		dgms                  : The 6-pack of persistence diagrams.
-		diagram_name          : One of ``'ker'``, ``'cok'``, ``'dom'``, ``'cod'``, ``'im'``, or ``'rel'``.
-		truncation            : The maximum entrance time for which the diagrams are plotted. A sensible default will be calculated if not provided.
-		max_diagram_dimension : The maximum homological dimension for which to plot points. If not provided, all dimensions will be included in the plots.
-		ax                    : A matplotlib axes object. If provided then the diagram will be plotted on the given axes.
-		tolerance             : Only features with persistence greater than this value will be plotted.
+		dgms         : The 6-pack of persistence diagrams.
+		diagram_name : One of ``'ker'``, ``'cok'``, ``'dom'``, ``'cod'``, ``'im'``, or ``'rel'``.
+		truncation   : The maximum entrance time for which the diagrams are plotted. A sensible default will be calculated if not provided.
+		dimensions   : The homological dimensions for which to plot features. If not provided, all dimensions will be included in the plots.
+		ax           : A matplotlib axes object. If provided then the diagram will be plotted on the given axes.
+		tolerance    : Only features with persistence greater than this value will be plotted.
 	"""
 	if diagram_name not in DiagramEnsemble.diagram_names:
 		raise KeyError("Invalid diagram name!")
+	if dimensions is None:
+		dimensions = set(range(max(dgms.dimensions)))
+	if isinstance(dimensions, int):
+		dimensions = {
+			dimensions,
+		}
 	titles = {
 		"ker": "Kernel",
 		"cok": "Cokernel",
@@ -129,13 +143,11 @@ def plot_diagram(
 		"cod": "Codomain",
 		"rel": "Relative",
 	}
-	if max_diagram_dimension is None:
-		max_diagram_dimension = max(dgms.dimensions)
 	if truncation is None:
 		et = [
 			dgms.entrance_times[d]
 			for _, d in getattr(dgms, diagram_name).paired
-			if dgms.dimensions[d] <= max_diagram_dimension
+			if dgms.dimensions[d] in dimensions
 		]
 		truncation = _get_truncation(et)
 	if ax is None:
@@ -153,24 +165,24 @@ def plot_diagram(
 		points_legend=True,
 		lines_legend=True,
 		title=titles[diagram_name],
-		max_dim=max_diagram_dimension,
+		dims=dimensions,
 		tolerance=tolerance,
 	)
 	return ax1
 
 
 def _plot_diagram(
-	diagram,
-	entrance_times,
-	dimensions,
-	truncation,
-	max_dim=2,
-	ax=None,
-	title=None,
-	points_legend=False,
-	lines_legend=False,
-	dim_shift=0,
-	tolerance=0.0,
+	diagram: SimplexPairings,
+	entrance_times: Sequence[float],  # entrance times of the simplices by index
+	dimensions: Sequence[int],  # dimensions of the simplices by index
+	truncation: float,  # max birth/death time to plot
+	dims: Set[int],  # dimensions for which features are plotted
+	ax: Axes | None = None,  # axes to plot on
+	title: str | None = None,  # title of the plot
+	points_legend: bool = False,  # show legend for points (which dimension)
+	lines_legend: bool = False,  # show legend for lines (truncation, infinity)
+	dim_shift: int = 0,  # dimension shift if any; only relevant for kernel
+	tolerance: float = 0.0,
 	**kwargs,
 ) -> None:
 	# Truncate all times
@@ -187,7 +199,7 @@ def _plot_diagram(
 			f"$H_{{{dimensions[birth_idx] - dim_shift}}}$",
 		)
 		for birth_idx, death_idx in diagram.paired
-		if dimensions[birth_idx] - dim_shift <= max_dim
+		if dimensions[birth_idx] - dim_shift in dims
 		and entrance_times[death_idx] - entrance_times[birth_idx] > tolerance
 	] + [
 		(
@@ -196,7 +208,7 @@ def _plot_diagram(
 			f"$H_{{{dimensions[birth_idx] - dim_shift}}}$",
 		)
 		for birth_idx in diagram.unpaired
-		if dimensions[birth_idx] - dim_shift <= max_dim
+		if dimensions[birth_idx] - dim_shift in dims
 	]
 	df = DataFrame(data=all_pts, columns=["Birth", "Death", "Dimension"])
 	df["Dimension"] = df["Dimension"].astype("category")

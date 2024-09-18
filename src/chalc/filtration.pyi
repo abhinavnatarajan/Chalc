@@ -11,6 +11,9 @@ class FilteredComplex:
     
     Class representing a filtered simplicial complex.
     """
+    @staticmethod
+    def _pybind11_conduit_v1_(*args, **kwargs):
+        ...
     def __init__(self, n: int, k: int) -> None:
         """
         Construct a discrete filtered simplicial complex with default filtration time of 0.
@@ -113,6 +116,9 @@ class Simplex:
     			Class representing a simplex in a filtered simplicial complex.
     		
     """
+    @staticmethod
+    def _pybind11_conduit_v1_(*args, **kwargs):
+        ...
     def __repr__(self) -> str:
         ...
     def set_colour(self, colour: int) -> None:

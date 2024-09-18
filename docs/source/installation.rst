@@ -31,7 +31,7 @@ Build dependencies
    On Linux: GCC11 or later.
    On MacOS: Clang 14 or later.
 3. (Recommended) `Microsoft vcpkg <https://vcpkg.io/>`_ C++ dependency manager.
-4. (MacOS only) The build tools automake, autoconf, and libtool. You can install these with `brew install automake autoconf libtool`.
+4. (MacOS only) The build tools automake, autoconf, and libtool. You can install these with ``brew install automake autoconf libtool``.
 
 Build steps
 ^^^^^^^^^^^
@@ -92,13 +92,34 @@ Build the package wheel using ``pip wheel`` and install the compiled binary.
 Building the Documentation
 --------------------------
 
-To build the documentation, first make sure that ``chalc`` is installed and available to the Python interpreter. Then run the following commands from the root directory of the repository.
+To build the documentation, first make sure that ``chalc`` is installed and available to the Python interpreter.
+Then run the following commands from the root directory of the repository.
 
 .. code-block:: console
 
    $ cd docs
    $ pip install -r requirements.txt
-   $ make html
+
+This installs the necessary dependencies used to generate the documentation from the API.
+The commands to build the documentation depend on the platform you are using:
+
+.. tab-set::
+
+   .. tab-item:: Bash
+      :sync: bash
+
+      .. code-block:: bash
+
+         $ make html
+
+   .. tab-item:: Powershell
+      :sync: powershell
+
+      .. code-block:: powershell
+
+         > python -m pybind11_stubgen chalc.chromatic --numpy-array-use-type-var --output-dir ../src
+         > python -m pybind11_stubgen chalc.filtration --numpy-array-use-type-var --output-dir ../src
+         > sphinx-build -M html source build
 
 This will build the documentation into the folder ``docs/build`` with root ``index.html``.
 In order to avoid polluting your global Python package tree, it is a good idea to install ``chalc`` and run the ``pip install ..`` command above in a virtual environment.
