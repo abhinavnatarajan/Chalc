@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-from collections.abc import Collection, Sequence
-from dataclasses import dataclass, field, fields
-from typing import Callable, ClassVar, Literal, overload
+from collections.abc import Collection, ItemsView, KeysView, Mapping, Sequence, ValuesView
+from typing import Callable, Iterator, Literal, TypeVar, overload
 
 import numpy as np
 from h5py import Dataset, Group
@@ -18,8 +17,6 @@ __all__ = [
 	"compute",
 	"SimplexPairings",
 	"DiagramEnsemble",
-	"save_diagrams",
-	"load_diagrams",
 ]
 
 ChromaticMethod = {
@@ -29,6 +26,8 @@ ChromaticMethod = {
 }
 
 BdMatType = list[tuple[bool, int, list[int]]]
+
+UnknownType = TypeVar("UnknownType")
 
 
 # bitmask that represents a list of colours
@@ -79,12 +78,12 @@ def _get_diagrams(
 		matrix.append((check_in_domain(column[3]), dimension, facet_idxs))
 	d = compute_ensemble(matrix)
 	dgms = DiagramEnsemble(
-		SimplexPairings._fromPhimaker(d.ker),
-		SimplexPairings._fromPhimaker(d.cok),
-		SimplexPairings._fromPhimaker(d.g),
-		SimplexPairings._fromPhimaker(d.f),
-		SimplexPairings._fromPhimaker(d.im),
-		SimplexPairings._fromPhimaker(d.rel),
+		SimplexPairings(d.ker.paired, d.ker.unpaired),
+		SimplexPairings(d.cok.paired, d.cok.unpaired),
+		SimplexPairings(d.g.paired, d.g.unpaired),
+		SimplexPairings(d.f.paired, d.f.unpaired),
+		SimplexPairings(d.im.paired, d.im.unpaired),
+		SimplexPairings(d.rel.paired, d.rel.unpaired),
 		entrance_times,
 		dimensions,
 	)
@@ -186,7 +185,7 @@ def compute(
 		#. :math:`\\mathrm{im}(f_*)` (image)
 		#. :math:`H_*(K, L)` (relative homology)
 
-		Each diagram is represented by lists of paired and unpaired simplices,
+		Each diagram is represented by sets of paired and unpaired simplices,
 		and contains simplices of all dimensions. ``dgms`` also contains the
 		entrance times of the simplices and their dimensions.
 	"""
@@ -224,108 +223,232 @@ def compute(
 	return _get_diagrams(K, check_in_domain, max_diagram_dimension, tolerance)
 
 
-@dataclass
-class SimplexPairings:
+class SimplexPairings(Collection):
 	"""
 	Persistence diagram object, represented by a
-	list of simplex pairings and a list of unpaired simplices.
+	set of simplex pairings and a set of unpaired simplices.
 	"""
 
-	#: Set of tuples of indices of paired simplices.
-	paired: list[tuple[int, int]] = field(default_factory=list)
-	#: Set of indices of unpaired simplices.
-	unpaired: list[int] = field(default_factory=list)
+	_paired: set[tuple[int, int]]
+	_unpaired: set[int]
 
-	@classmethod
-	def _fromPhimaker(cls, obj) -> SimplexPairings:
-		return cls(list(obj.paired), list(obj.unpaired))
+	@property
+	def paired(self) -> set[tuple[int, int]]:
+		"""
+		Set of indices of paired simplices (read-only).
+		"""
+		return self._paired.copy()
+
+	@property
+	def unpaired(self) -> set[int]:
+		"""
+		Set of indices of unpaired simplices (read-only).
+		"""
+		return self._unpaired.copy()
+
+	def __init__(
+		self, paired: Collection[tuple[int, int]] = set(), unpaired: Collection[int] = set()
+	) -> None:
+		self._paired = set(paired)
+		self._unpaired = set(unpaired)
 
 	def __str__(self):
-		return f"Paired: {self.paired}\nUnpaired: {self.unpaired}"
+		return f"Paired: {self._paired}\nUnpaired: {self._unpaired}"
+
+	def __eq__(self, other: SimplexPairings) -> bool:
+		return self._paired == other._paired and self._unpaired == other._unpaired
+
+	def __bool__(self) -> bool:
+		"""
+		Returns true if the diagram is non-empty.
+		"""
+		# check if the diagram is non-empty
+		return bool(self._paired) or bool(self._unpaired)
+
+	# Implement the collections protocol
+	def __len__(self) -> int:
+		"""
+		Returns the number of features in the diagram.
+		"""
+		# return the number of features in the diagram
+		return len(self._paired) + len(self._unpaired)
+
+	def __iter__(self) -> Iterator[tuple[int, int] | int]:
+		"""
+		Iterate over all features in the diagram.
+		"""
+		yield from self._paired
+		yield from self._unpaired
+
+	def __contains__(self, feature: tuple[int, int] | int) -> bool:
+		"""
+		Returns true if a feature, represented by either a pair of simplices or a single unpaired simplex, is in the diagram.
+		"""
+		return feature in self._paired or feature in self._unpaired
 
 	@classmethod
 	def _from_matrices(
 		cls,
-		p: np.ndarray[tuple[int, int], np.dtype[np.int64]],
-		u: np.ndarray[tuple[int, int], np.dtype[np.int64]],
+		paired_matrix: np.ndarray[tuple[int, Literal[2]], np.dtype[np.int64]],
+		unpaired_vector: np.ndarray[int, np.dtype[np.int64]],
 	) -> SimplexPairings:
-		if p.shape[1] != 2:
-			raise ValueError(f"p must be a (m, 2) matrix, but received a matrix of size {p.shape}")
-		paired: list[tuple[int, int]] = [(p[i, 0], p[i, 1]) for i in range(p.shape[0])]
-		unpaired = list(u)
+		"""
+		Construct a SimplexPairings object from paired and unpaired simplices represented as matrices.
+		Internal use only - used to load diagrams from file.
+		"""
+		paired: set[tuple[int, int]] = {
+			(int(paired_matrix[i, 0]), int(paired_matrix[i, 1]))
+			for i in range(paired_matrix.shape[0])
+		}
+		unpaired: set[int] = set(int(x) for x in unpaired_vector)
 		return cls(paired, unpaired)
 
-	def paired_as_matrix(self) -> np.ndarray[tuple[int, int], np.dtype[np.int64]]:
-		return np.concatenate(list(self.paired)).reshape((-1, 2))
-
-	def __eq__(self, other) -> bool:
-		if isinstance(other, SimplexPairings):
-			return set(self.paired) == set(other.paired) and set(self.unpaired) == set(
-				other.unpaired
-			)
-		else:
-			return NotImplemented
+	def paired_as_matrix(self) -> np.ndarray[tuple[int, Literal[2]], np.dtype[np.int64]]:
+		"""
+		Returns a matrix representation of the finite persistence features in the diagram.
+		"""
+		return np.concatenate(list(self._paired)).reshape((-1, 2))
 
 
-@dataclass
-class DiagramEnsemble:
+class DiagramEnsemble(Mapping):
 	"""
 	6-pack of persistence diagrams.
 	"""
 
-	# List of matrices
-	diagram_names: ClassVar[tuple[str, ...]] = ("ker", "cok", "dom", "cod", "im", "rel")
-	#: Kernel
-	ker: SimplexPairings = field(default_factory=lambda: SimplexPairings())
-	#: Cokernel
-	cok: SimplexPairings = field(default_factory=lambda: SimplexPairings())
-	#: Domain
-	dom: SimplexPairings = field(default_factory=lambda: SimplexPairings())
-	#: Codomain
-	cod: SimplexPairings = field(default_factory=lambda: SimplexPairings())
-	#: Image
-	im: SimplexPairings = field(default_factory=lambda: SimplexPairings())
-	#: Relative
-	rel: SimplexPairings = field(default_factory=lambda: SimplexPairings())
-	#: Entrance times of the simplices
-	entrance_times: list[float] = field(default_factory=lambda: [])
-	#: Dimensions of the simplices
-	dimensions: list[int] = field(default_factory=lambda: [])
+	DiagramName = Literal["ker", "cok", "dom", "cod", "im", "rel"]
+	"""Type hint for the names of the diagrams in the 6-pack."""
+	diagram_names: list[DiagramName] = ["ker", "cok", "dom", "cod", "im", "rel"]
+	"""Names of the diagrams in the 6-pack."""
 
-	def __eq__(self, other) -> bool:
-		if isinstance(other, DiagramEnsemble):
-			return all(
-				getattr(self, f.name) == getattr(other, f.name) for f in fields(DiagramEnsemble)
-			)
-		else:
-			return NotImplemented
+	@property
+	def entrance_times(self) -> np.ndarray[int, np.dtype[np.float64]]:
+		"""
+		Entrance times of the simplices.
+		"""
+		temp = self._entrance_times[:]
+		temp.setflags(write=False)
+		return temp
+
+	@property
+	def dimensions(self) -> np.ndarray[int, np.dtype[np.int64]]:
+		"""
+		Dimensions of the simplices.
+		"""
+		temp = self._dimensions[:]
+		temp.setflags(write=False)
+		return temp
+
+	def __init__(
+		self,
+		ker: SimplexPairings = SimplexPairings(),
+		cok: SimplexPairings = SimplexPairings(),
+		dom: SimplexPairings = SimplexPairings(),
+		cod: SimplexPairings = SimplexPairings(),
+		im: SimplexPairings = SimplexPairings(),
+		rel: SimplexPairings = SimplexPairings(),
+		entrance_times: Sequence[float] = [],
+		dimensions: Sequence[int] = [],
+	):
+		self._simplex_pairings: dict[DiagramEnsemble.DiagramName, SimplexPairings] = dict()
+
+		self._simplex_pairings["ker"] = ker
+		self._simplex_pairings["cok"] = cok
+		self._simplex_pairings["dom"] = dom
+		self._simplex_pairings["cod"] = cod
+		self._simplex_pairings["im"] = im
+		self._simplex_pairings["rel"] = rel
+		self._entrance_times: np.ndarray[int, np.dtype[np.float64]] = np.array(entrance_times)
+		self._dimensions: np.ndarray[int, np.dtype[np.int64]] = np.array(dimensions)
+
+	def __getitem__(self, key: DiagramName) -> SimplexPairings:
+		"""
+		Access a specific diagram in the 6-pack.
+		"""
+		return self._simplex_pairings[key]
+
+	def get(self, key: DiagramName, default: UnknownType = None) -> SimplexPairings | UnknownType:
+		"""
+		Access a specific diagram in the 6-pack, with a default value if the diagram does not exist.
+		"""
+		return self._simplex_pairings.get(key, default)
+
+	def items(self) -> ItemsView[DiagramName, SimplexPairings]:
+		"""
+		View of the diagrams in the 6-pack.
+		"""
+		return self._simplex_pairings.items()
+
+	def __contains__(self, key: DiagramName) -> bool:
+		return key in self._simplex_pairings.keys()
+
+	def __iter__(
+		self,
+	) -> Iterator[tuple[DiagramName, SimplexPairings]]:
+		"""
+		Iterate over all diagrams in the 6-pack.
+		"""
+		yield from zip(self._simplex_pairings.keys(), self._simplex_pairings.values())
+
+	def keys(self) -> KeysView[DiagramName]:
+		"""
+		View of the names of the diagrams in the 6-pack.
+		"""
+		return self._simplex_pairings.keys()
+
+	def values(self) -> ValuesView[SimplexPairings]:
+		"""
+		View of the diagrams in the 6-pack.
+		"""
+		return self._simplex_pairings.values()
+
+	def __len__(self) -> int:
+		return 6
+
+	def __bool__(self) -> bool:
+		"""
+		Returns true if any diagram in the 6-pack is non-empty.
+		"""
+		return any(self._simplex_pairings.values())
+
+	def __eq__(self, other: DiagramEnsemble) -> bool:
+		return (
+			all(self[name] == other[name] for name in DiagramEnsemble.diagram_names)
+			and all(self._entrance_times == other._entrance_times)
+			and all(self._dimensions == other._dimensions)
+		)
+
+	def num_features(self) -> int:
+		"""
+		Count the total number of features across all diagrams in the 6-pack.
+		"""
+		return sum(len(dgm) for dgm in self.values())
 
 	def threshold(self, tolerance: float) -> DiagramEnsemble:
 		"""
 		Discard all features with persistence ``<=tolerance``.
 		"""
-		for name in DiagramEnsemble.diagram_names:
-			pairings = [
+		for diagram_name in self.keys():
+			pairings = {
 				(b, d)
-				for b, d in getattr(self, name).paired
-				if self.entrance_times[d] - self.entrance_times[b] > tolerance
-			]
-			setattr(getattr(self, name), "paired", pairings)
+				for b, d in self[diagram_name]._paired
+				if self._entrance_times[d] - self._entrance_times[b] > tolerance
+			}
+			self._simplex_pairings[diagram_name]._paired = pairings
 		return self
 
 	@overload
-	def get(
-		self, diagram_name: Literal["ker", "cok", "dom", "cod", "im", "rel"], dim: int
+	def get_matrix(
+		self, diagram_name: DiagramName, dim: int
 	) -> np.ndarray[tuple[int, int], np.dtype[np.float64]]: ...
 
 	@overload
-	def get(
+	def get_matrix(
 		self,
-		diagram_name: Literal["ker", "cok", "dom", "cod", "im", "rel"],
+		diagram_name: DiagramName,
 		dim: list[int] | None = None,
 	) -> list[np.ndarray[tuple[int, int], np.dtype[np.float64]]]: ...
 
-	def get(self, diagram_name, dim=None):
+	def get_matrix(self, diagram_name, dim=None):
 		"""
 		Get a specific diagram as a matrix of birth and death times.
 
@@ -337,18 +460,27 @@ class DiagramEnsemble:
 			An :math:`m \\times 2` matrix whose rows are a pair of birth and death times, or a list of such matrices.
 		"""
 		if dim is None:
-			dim = list(range(max(set(self.dimensions))))
+			simplices = set()
+			dgm = self[diagram_name]
+			for b, d in dgm._paired:
+				simplices.add(b)
+				simplices.add(d)
+			for s in dgm._unpaired:
+				simplices.add(s)
+			dim = list(range(max(np.array(self._dimensions)[list(simplices)])))
 		if isinstance(dim, int):
 			# a p-dimensional homology class is captured by a pairing of (p+1) simplices for kernels
 			if diagram_name == "ker":
 				dim += 1
-			diagram = getattr(self, diagram_name)
-			entrance_times = np.array(self.entrance_times)
+			diagram = self[diagram_name]
+			entrance_times = np.array(self._entrance_times)
 			paired_list = np.array(
-				[pair for pair in diagram.paired if self.dimensions[pair[0]] == dim], dtype=int
+				[pair for pair in diagram._paired if self._dimensions[pair[0]] == dim],
+				dtype=np.int64,
 			)
 			unpaired_list = np.array(
-				[sigma for sigma in diagram.unpaired if self.dimensions[sigma] == dim], dtype=int
+				[sigma for sigma in diagram._unpaired if self._dimensions[sigma] == dim],
+				dtype=np.int64,
 			)
 			paired_matrix = entrance_times[paired_list.flatten()].reshape((-1, 2))
 			unpaired_matrix = entrance_times[unpaired_list][:, np.newaxis]
@@ -356,60 +488,74 @@ class DiagramEnsemble:
 			unpaired_matrix = np.concatenate((unpaired_matrix, inf_array), axis=1)
 			return np.concatenate((paired_matrix, unpaired_matrix), axis=0)
 		elif isinstance(dim, list):
-			return [self.get(diagram_name, d) for d in dim]
+			return [self.get_matrix(diagram_name, d) for d in dim]
 
+	def save(self, file: Group) -> None:
+		"""
+		Save a 6-pack of persistence diagrams to a HDF5 file or group.
 
-def save_diagrams(dgms: DiagramEnsemble, file: Group) -> None:
-	"""
-	Save a 6-pack of persistence diagrams to a HDF5 file or group.
+		Args:
+			file : A h5py file or group.
+		"""
+		file["entrance_times"] = np.array(self._entrance_times, dtype=np.float64)
+		file["dimensions"] = np.array(self._dimensions, dtype=np.int64)
+		for name, diagram in self:
+			grp = file.require_group(name)
+			grp["unpaired"] = np.array(list(diagram._unpaired), dtype=np.int64)
+			grp["paired"] = diagram.paired_as_matrix()
 
-	Args:
-		dgms : 6-pack of diagrams to save to file/group.
-		file : A h5py file or group.
-	"""
-	file["entrance_times"] = np.array(dgms.entrance_times, dtype=np.float64)
-	file["dimensions"] = np.array(dgms.dimensions, dtype=np.int64)
-	for diagram_name in DiagramEnsemble.diagram_names:
-		grp = file.require_group(diagram_name)
-		grp["unpaired"] = np.array(list(getattr(dgms, diagram_name).unpaired), dtype=np.int64)
-		grp["paired"] = getattr(dgms, diagram_name).paired_as_matrix()
+	@classmethod
+	def from_file(cls, file: Group) -> DiagramEnsemble:
+		"""
+		Load a 6-pack of persistence diagrams from a HDF5 file or group.
 
-
-def load_diagrams(file: Group) -> DiagramEnsemble:
-	"""
-	Load a 6-pack of persistence diagrams from a HDF5 file or group.
-	"""
-	dgms = DiagramEnsemble()
-	if any(f.name not in file for f in fields(DiagramEnsemble)):
-		raise RuntimeError("Invalid file: missing fields")
-
-	dgms.entrance_times = (
-		list(entrance_times)
-		if isinstance((entrance_times := file["entrance_times"]), Dataset)
-		and entrance_times.dtype == np.float64
-		else []
-	)
-	dgms.dimensions = (
-		list(dimensions)
-		if isinstance((dimensions := file["dimensions"]), Dataset) and dimensions.dtype == np.int64
-		else []
-	)
-	for diagram_name in DiagramEnsemble.diagram_names:
-		grp = file[diagram_name]
-		if isinstance(grp, Group) and all(
-			name in list(grp.keys()) for name in ["paired", "unpaired"]
+		Args:
+			file : A h5py file or group.
+		"""
+		dgms = DiagramEnsemble()
+		if any(
+			attr not in file
+			for attr in ["entrance_times", "dimensions", "ker", "cok", "dom", "cod", "im", "rel"]
 		):
-			paired = grp["paired"]
-			unpaired = grp["unpaired"]
-			if (
-				isinstance(paired, Dataset)
-				and paired.dtype == np.int64
-				and isinstance(unpaired, Dataset)
-				and unpaired.dtype == np.int64
-			):
-				setattr(
-					dgms, diagram_name, SimplexPairings._from_matrices(paired[...], unpaired[...])
+			raise RuntimeError("Invalid file: missing fields")
+
+		dgms._entrance_times = (
+			entrance_times[:]
+			if isinstance((entrance_times := file["entrance_times"]), Dataset)
+			and entrance_times[:].dtype == np.float64
+			else np.array([], dtype=np.float64)
+		)
+		dgms._dimensions = (
+			dimensions[:]
+			if isinstance((dimensions := file["dimensions"]), Dataset)
+			and dimensions[:].dtype == np.int64
+			else np.array([], dtype=np.int64)
+		)
+		names: list[DiagramEnsemble.DiagramName] = ["ker", "cok", "dom", "cod", "im", "rel"]
+		for diagram_name in names:
+			grp = file[diagram_name]
+			if isinstance(grp, Group):
+				temp = dict()
+				for name in ["paired", "unpaired"]:
+					if name not in grp:
+						raise RuntimeError(f"Invalid file: missing field {diagram_name}.{name}.")
+					if not isinstance(grp[name], Dataset):
+						raise RuntimeError(
+							f"Invalid file: expected {diagram_name}.{name} to be a Dataset(dtype=np.int64), but found {type(grp[name])}."
+						)
+					temp[name] = grp[name]
+					if temp[name].dtype != np.int64:
+						raise RuntimeError(
+							f"Invalid file: expected {diagram_name}.{name} to be a Dataset(dtype=np.int64), but found Dataset(dtype={temp[name].dtype})."
+						)
+				paired = temp["paired"].astype(int)
+				unpaired = temp["unpaired"].astype(int)
+				dgms._simplex_pairings[diagram_name] = SimplexPairings._from_matrices(
+					paired[...], unpaired[...]
 				)
 			else:
-				raise RuntimeError("Invalid file: missing fields")
-	return dgms
+				raise RuntimeError(
+					f"Invalid file: expected {diagram_name} to be a group but found a {type(grp)}."
+				)
+
+		return dgms

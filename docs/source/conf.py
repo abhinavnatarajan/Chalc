@@ -68,7 +68,11 @@ autoapi_dirs = ["../../src"]
 autoapi_options = [
 	"members",
 	"show-module-summary",
+	"special-members",
+	"inherited-members",
+	"show-inheritance",
 ]
+autoapi_member_order = "groupwise"
 
 # intersphinx options
 intersphinx_mapping = {
