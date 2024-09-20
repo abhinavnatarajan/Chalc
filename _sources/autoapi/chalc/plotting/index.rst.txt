@@ -14,35 +14,23 @@ Functions
 
 .. autoapisummary::
 
-   chalc.plotting.plot_sixpack
-   chalc.plotting.plot_diagram
-   chalc.plotting.draw_filtration
    chalc.plotting.animate_filtration
+   chalc.plotting.draw_filtration
+   chalc.plotting.plot_diagram
+   chalc.plotting.plot_sixpack
 
 
 Module Contents
 ---------------
 
-.. py:function:: plot_sixpack(dgms: chalc.sixpack.DiagramEnsemble, truncation: float | None = None, dimensions: collections.abc.Set[int] | int | None = None, tolerance: float = 0) -> tuple[matplotlib.figure.Figure, numpy.ndarray[tuple[int, Ellipsis], numpy.dtype[matplotlib.axes.Axes]]]
+.. py:function:: animate_filtration(K: chalc.filtration.FilteredComplex, points: numpy.ndarray[tuple[Literal[2], int], numpy.dtype[numpy.float64]], filtration_times: collections.abc.Sequence[float], animation_length: float) -> matplotlib.animation.FuncAnimation
 
-   Plots the 6-pack of persistence diagrams returned by :func:`compute <.sixpack.compute>`.
+   Create animation of 2-skeleton of filtered simplicial complex.
 
-   :param dgms: The 6-pack of persistence diagrams.
-   :param truncation: The maximum entrance time upto which features are plotted. A sensible default will be calculated if not provided.
-   :param dimensions: The homological dimensions for which to plot features. If not provided, all dimensions will be included in the plots.
-   :param tolerance: Only features with persistence greater than this value will be plotted.
-
-
-.. py:function:: plot_diagram(dgms: chalc.sixpack.DiagramEnsemble, diagram_name: Literal['ker', 'cok', 'dom', 'cod', 'im', 'rel'], truncation: float | None = None, dimensions: collections.abc.Set[int] | int | None = None, ax: matplotlib.axes.Axes | None = None, tolerance: float = 0) -> matplotlib.axes.Axes
-
-   Plot a specific diagram from a 6-pack.
-
-   :param dgms: The 6-pack of persistence diagrams.
-   :param diagram_name: One of ``'ker'``, ``'cok'``, ``'dom'``, ``'cod'``, ``'im'``, or ``'rel'``.
-   :param truncation: The maximum entrance time for which the diagrams are plotted. A sensible default will be calculated if not provided.
-   :param dimensions: The homological dimensions for which to plot features. If not provided, all dimensions will be included in the plots.
-   :param ax: A matplotlib axes object. If provided then the diagram will be plotted on the given axes.
-   :param tolerance: Only features with persistence greater than this value will be plotted.
+   :param K: A filtered complex.
+   :param points: The vertices of ``K`` as a :math:`2\times N` numpy matrix.
+   :param filtration_times: Sequence of filtration times for which to draw animation frames.
+   :param animation_length: Total length of the animation in seconds.
 
 
 .. py:function:: draw_filtration(K: chalc.filtration.FilteredComplex, points: numpy.ndarray[tuple[Literal[2], int], numpy.dtype[numpy.float64]], time: float, include_colours: collections.abc.Collection[int] | None = None, ax: matplotlib.axes.Axes | None = None) -> matplotlib.axes.Axes
@@ -56,13 +44,25 @@ Module Contents
    :param ax: A matplotlib axes object. If provided then the diagram will be plotted on the given axes.
 
 
-.. py:function:: animate_filtration(K: chalc.filtration.FilteredComplex, points: numpy.ndarray[tuple[Literal[2], int], numpy.dtype[numpy.float64]], filtration_times: collections.abc.Sequence[float], animation_length: float) -> matplotlib.animation.FuncAnimation
+.. py:function:: plot_diagram(dgms: chalc.sixpack.DiagramEnsemble, diagram_name: chalc.sixpack.DiagramEnsemble.DiagramName, truncation: float | None = None, dimensions: collections.abc.Set[int] | int | None = None, ax: matplotlib.axes.Axes | None = None, tolerance: float = 0) -> matplotlib.axes.Axes | None
 
-   Create animation of 2-skeleton of filtered simplicial complex.
+   Plot a specific diagram from a 6-pack.
 
-   :param K: A filtered complex.
-   :param points: The vertices of ``K`` as a :math:`2\times N` numpy matrix.
-   :param filtration_times: Sequence of filtration times for which to draw animation frames.
-   :param animation_length: Total length of the animation in seconds.
+   :param dgms: The 6-pack of persistence diagrams.
+   :param diagram_name: One of ``'ker'``, ``'cok'``, ``'dom'``, ``'cod'``, ``'im'``, or ``'rel'``.
+   :param truncation: The maximum entrance time for which the diagrams are plotted. A sensible default will be calculated if not provided.
+   :param dimensions: The homological dimensions for which to plot features. If not provided, all dimensions will be included in the plots.
+   :param ax: A matplotlib axes object. If provided then the diagram will be plotted on the given axes.
+   :param tolerance: Only features with persistence greater than this value will be plotted.
+
+
+.. py:function:: plot_sixpack(dgms: chalc.sixpack.DiagramEnsemble, truncations: collections.abc.Mapping[chalc.sixpack.DiagramEnsemble.DiagramName, float] | float | None = None, dimensions: collections.abc.Set[int] | int | None = None, tolerance: float = 0) -> tuple[matplotlib.figure.Figure, numpy.ndarray[tuple[int, Ellipsis], numpy.dtype[matplotlib.axes.Axes]]]
+
+   Plots the 6-pack of persistence diagrams returned by :func:`compute <.sixpack.compute>`.
+
+   :param dgms: The 6-pack of persistence diagrams.
+   :param truncations: The maximum entrance time upto which features are plotted. Can be either a single value, or a mapping from diagram names to values. A sensible default will be calculated if not provided.
+   :param dimensions: The homological dimensions for which to plot features. If not provided, all dimensions will be included in the plots.
+   :param tolerance: Only features with persistence greater than this value will be plotted.
 
 
