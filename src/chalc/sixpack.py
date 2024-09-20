@@ -467,7 +467,11 @@ class DiagramEnsemble(Mapping):
 				simplices.add(d)
 			for s in dgm._unpaired:
 				simplices.add(s)
-			dim = list(range(max(np.array(self._dimensions)[list(simplices)])))
+			relevant_dims = np.array(self._dimensions)[list(simplices)]
+			if not relevant_dims:
+				# there are no features in the diagram
+				return []
+			dim = list(range(max(relevant_dims)))
 		if isinstance(dim, int):
 			# a p-dimensional homology class is captured by a pairing of (p+1) simplices for kernels
 			if diagram_name == "ker":
