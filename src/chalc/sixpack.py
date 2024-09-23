@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Collection, ItemsView, KeysView, Mapping, Sequence, ValuesView
-from typing import Callable, Iterator, Literal, TypeVar, overload
+from typing import Any, Callable, Iterator, Literal, TypeAlias, TypeVar, overload
 
 import numpy as np
 from h5py import Dataset, Group
@@ -17,6 +17,9 @@ __all__ = [
 	"compute",
 	"SimplexPairings",
 	"DiagramEnsemble",
+	"NumpyMatrix",
+	"NumpyVector",
+	"BarcodeMatrix",
 ]
 
 ChromaticMethod = {
@@ -25,9 +28,21 @@ ChromaticMethod = {
 	"delrips": delrips,
 }
 
-BdMatType = list[tuple[bool, int, list[int]]]
+BoundaryMatrix = list[tuple[bool, int, list[int]]]
 
-UnknownType = TypeVar("UnknownType")
+T = TypeVar("T", bound=np.generic)
+U = TypeVar("U", bound=Any)
+M = TypeVar("M", bound=int)
+N = TypeVar("N", bound=int)
+
+NumpyMatrix: TypeAlias = np.ndarray[tuple[M, N], np.dtype[T]]
+"""Type hint for an :math:`m \\times n` numpy matrix."""
+
+NumpyVector: TypeAlias = np.ndarray[N, np.dtype[T]]
+"""Type hint for an :math:`n`-dimensional numpy vector."""
+
+BarcodeMatrix: TypeAlias = NumpyMatrix[M, Literal[2], np.floating]
+"""Type hint for a numpy matrix representing a barcode."""
 
 
 # bitmask that represents a list of colours
@@ -64,7 +79,7 @@ def _get_diagrams(
 	tolerance: float = 0,
 ) -> DiagramEnsemble:
 	# Build up the matrix
-	matrix: BdMatType = []
+	matrix: BoundaryMatrix = []
 	entrance_times: list[float] = []
 	dimensions: list[int] = []
 	for column in K.serialised():
@@ -153,7 +168,7 @@ def from_filtration(
 
 
 def compute(
-	x: np.ndarray[tuple[int, int], np.dtype[np.float64]],
+	x: NumpyMatrix[M, N, np.floating],
 	colours: Sequence[int],
 	dom: Collection[int] | int | None = None,
 	k: int | None = None,
@@ -289,8 +304,8 @@ class SimplexPairings(Collection):
 	@classmethod
 	def _from_matrices(
 		cls,
-		paired_matrix: np.ndarray[tuple[int, Literal[2]], np.dtype[np.int64]],
-		unpaired_vector: np.ndarray[int, np.dtype[np.int64]],
+		paired_matrix: NumpyMatrix[M, Literal[2], np.integer],
+		unpaired_vector: NumpyVector[int, np.integer],
 	) -> SimplexPairings:
 		"""
 		Construct a SimplexPairings object from paired and unpaired simplices represented as matrices.
@@ -303,7 +318,7 @@ class SimplexPairings(Collection):
 		unpaired: set[int] = set(int(x) for x in unpaired_vector)
 		return cls(paired, unpaired)
 
-	def paired_as_matrix(self) -> np.ndarray[tuple[int, Literal[2]], np.dtype[np.int64]]:
+	def paired_as_matrix(self) -> NumpyMatrix[M, Literal[2], np.int64]:
 		"""
 		Returns a matrix representation of the finite persistence features in the diagram.
 		"""
@@ -315,13 +330,14 @@ class DiagramEnsemble(Mapping):
 	6-pack of persistence diagrams.
 	"""
 
-	DiagramName = Literal["ker", "cok", "dom", "cod", "im", "rel"]
+	DiagramName: TypeAlias = Literal["ker", "cok", "dom", "cod", "im", "rel"]
 	"""Type hint for the names of the diagrams in the 6-pack."""
+
 	diagram_names: list[DiagramName] = ["ker", "cok", "dom", "cod", "im", "rel"]
 	"""Names of the diagrams in the 6-pack."""
 
 	@property
-	def entrance_times(self) -> np.ndarray[int, np.dtype[np.float64]]:
+	def entrance_times(self) -> NumpyVector[N, np.float64]:
 		"""
 		Entrance times of the simplices.
 		"""
@@ -330,7 +346,7 @@ class DiagramEnsemble(Mapping):
 		return temp
 
 	@property
-	def dimensions(self) -> np.ndarray[int, np.dtype[np.int64]]:
+	def dimensions(self) -> NumpyVector[N, np.int64]:
 		"""
 		Dimensions of the simplices.
 		"""
@@ -357,8 +373,8 @@ class DiagramEnsemble(Mapping):
 		self._simplex_pairings["cod"] = cod
 		self._simplex_pairings["im"] = im
 		self._simplex_pairings["rel"] = rel
-		self._entrance_times: np.ndarray[int, np.dtype[np.float64]] = np.array(entrance_times)
-		self._dimensions: np.ndarray[int, np.dtype[np.int64]] = np.array(dimensions)
+		self._entrance_times: NumpyVector[int, np.float64] = np.array(entrance_times)
+		self._dimensions: NumpyVector[int, np.int64] = np.array(dimensions)
 
 	def __getitem__(self, key: DiagramName) -> SimplexPairings:
 		"""
@@ -366,7 +382,7 @@ class DiagramEnsemble(Mapping):
 		"""
 		return self._simplex_pairings[key]
 
-	def get(self, key: DiagramName, default: UnknownType = None) -> SimplexPairings | UnknownType:
+	def get(self, key: DiagramName, default: U = None) -> SimplexPairings | U:
 		"""
 		Access a specific diagram in the 6-pack, with a default value if the diagram does not exist.
 		"""
@@ -437,16 +453,14 @@ class DiagramEnsemble(Mapping):
 		return self
 
 	@overload
-	def get_matrix(
-		self, diagram_name: DiagramName, dim: int
-	) -> np.ndarray[tuple[int, int], np.dtype[np.float64]]: ...
+	def get_matrix(self, diagram_name: DiagramName, dim: int) -> BarcodeMatrix: ...
 
 	@overload
 	def get_matrix(
 		self,
 		diagram_name: DiagramName,
 		dim: list[int] | None = None,
-	) -> list[np.ndarray[tuple[int, int], np.dtype[np.float64]]]: ...
+	) -> list[BarcodeMatrix]: ...
 
 	def get_matrix(self, diagram_name, dim=None):
 		"""

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Collection, Mapping, Sequence, Set
 from itertools import product
-from typing import Literal
+from typing import Literal, TypeVar
 
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
@@ -16,6 +16,7 @@ from matplotlib.legend import Legend
 from pandas import DataFrame
 
 from chalc.filtration import FilteredComplex
+from chalc.sixpack import NumpyMatrix
 
 from .sixpack import (
 	DiagramEnsemble,
@@ -26,6 +27,8 @@ from .sixpack import (
 	_num_colours_in_bitmask,
 )
 
+N = TypeVar("N", bound=int)
+
 plt.rcParams["animation.html"] = "jshtml"
 
 
@@ -34,7 +37,7 @@ def plot_sixpack(
 	truncations: Mapping[DiagramEnsemble.DiagramName, float] | float | None = None,
 	dimensions: Set[int] | int | None = None,
 	tolerance: float = 0,
-) -> tuple[Figure, np.ndarray[tuple[int, ...], np.dtype[Axes]]]:
+) -> tuple[Figure, NumpyMatrix[Literal[2], Literal[3], Axes]]:
 	"""
 	Plots the 6-pack of persistence diagrams returned by :func:`compute <.sixpack.compute>`.
 
@@ -263,7 +266,7 @@ def _plot_diagram(
 
 def draw_filtration(
 	K: FilteredComplex,
-	points: np.ndarray[tuple[Literal[2], int], np.dtype[np.float64]],
+	points: NumpyMatrix[Literal[2], N, np.floating],
 	time: float,
 	include_colours: Collection[int] | None = None,
 	ax: Axes | None = None,
@@ -353,7 +356,7 @@ def draw_filtration(
 
 def animate_filtration(
 	K: FilteredComplex,
-	points: np.ndarray[tuple[Literal[2], int], np.dtype[np.float64]],
+	points: NumpyMatrix[Literal[2], N, np.floating],
 	filtration_times: Sequence[float],
 	animation_length: float,
 ) -> animation.FuncAnimation:
