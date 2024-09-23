@@ -35,11 +35,11 @@ NumRows = TypeVar("NumRows", bound=int)
 NumCols = TypeVar("NumCols", bound=int)
 Size = TypeVar("Size", bound=int)
 
-NumpyMatrix: TypeAlias = np.ndarray[tuple[NumRows, NumCols], np.dtype[DType]]
-"""Type hint for an :math:`m \\times n` numpy matrix."""
+type NumpyMatrix[M : int, N : int, T : np.generic] = np.ndarray[tuple[M, N], np.dtype[T]]
+"""Type hint for an ``M x N`` numpy matrix whose entries are of type ``T``."""
 
-NumpyVector: TypeAlias = np.ndarray[Size, np.dtype[DType]]
-"""Type hint for an :math:`n`-dimensional numpy vector."""
+type NumpyVector[N : int, T : np.generic] = np.ndarray[N, np.dtype[T]]
+"""Type hint for an numpy vector of length ``N`` with entries of type ``T``."""
 
 
 # bitmask that represents a list of colours
