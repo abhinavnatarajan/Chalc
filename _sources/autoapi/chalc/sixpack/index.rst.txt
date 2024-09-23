@@ -9,6 +9,15 @@ chalc.sixpack
 
 
 
+Attributes
+----------
+
+.. autoapisummary::
+
+   chalc.sixpack.NumpyMatrix
+   chalc.sixpack.NumpyVector
+
+
 Classes
 -------
 
@@ -66,14 +75,14 @@ Module Contents
 
 
 
-   .. py:method:: get(key: DiagramName, default: UnknownType = None) -> SimplexPairings | UnknownType
+   .. py:method:: get(key: DiagramName, default: U = None) -> SimplexPairings | U
 
       Access a specific diagram in the 6-pack, with a default value if the diagram does not exist.
 
 
 
-   .. py:method:: get_matrix(diagram_name: DiagramName, dim: int) -> numpy.ndarray[tuple[int, int], numpy.dtype[numpy.float64]]
-                  get_matrix(diagram_name: DiagramName, dim: list[int] | None = None) -> list[numpy.ndarray[tuple[int, int], numpy.dtype[numpy.float64]]]
+   .. py:method:: get_matrix(diagram_name: DiagramName, dim: int) -> NumpyMatrix[NumRows, Literal[2], numpy.float64]
+                  get_matrix(diagram_name: DiagramName, dim: list[int] | None = None) -> list[NumpyMatrix[NumRows, Literal[2], numpy.float64]]
 
       Get a specific diagram as a matrix of birth and death times.
 
@@ -123,6 +132,9 @@ Module Contents
 
 
    .. py:attribute:: DiagramName
+      :type:  TypeAlias
+      :value: Literal['ker', 'cok', 'dom', 'cod', 'im', 'rel']
+
 
       Type hint for the names of the diagrams in the 6-pack.
 
@@ -136,13 +148,13 @@ Module Contents
 
 
    .. py:property:: dimensions
-      :type: numpy.ndarray[int, numpy.dtype[numpy.int64]]
+      :type: NumpyVector[Size, numpy.int64]
 
       Dimensions of the simplices.
 
 
    .. py:property:: entrance_times
-      :type: numpy.ndarray[int, numpy.dtype[numpy.float64]]
+      :type: NumpyVector[Size, numpy.float64]
 
       Entrance times of the simplices.
 
@@ -180,7 +192,7 @@ Module Contents
 
 
 
-   .. py:method:: paired_as_matrix() -> numpy.ndarray[tuple[int, Literal[2]], numpy.dtype[numpy.int64]]
+   .. py:method:: paired_as_matrix() -> NumpyMatrix[NumRows, Literal[2], numpy.int64]
 
       Returns a matrix representation of the finite persistence features in the diagram.
 
@@ -198,7 +210,7 @@ Module Contents
       Set of indices of unpaired simplices (read-only).
 
 
-.. py:function:: compute(x: numpy.ndarray[tuple[int, int], numpy.dtype[numpy.float64]], colours: collections.abc.Sequence[int], dom: collections.abc.Collection[int] | int | None = None, k: int | None = None, method: Literal['alpha', 'delcech', 'delrips'] = 'alpha', max_diagram_dimension: int | None = None, tolerance: float = 0) -> DiagramEnsemble
+.. py:function:: compute(x: NumpyMatrix[NumRows, NumCols, numpy.floating], colours: collections.abc.Sequence[int], dom: collections.abc.Collection[int] | int | None = None, k: int | None = None, method: Literal['alpha', 'delcech', 'delrips'] = 'alpha', max_diagram_dimension: int | None = None, tolerance: float = 0) -> DiagramEnsemble
 
    Compute the 6-pack of persistence diagrams of a coloured point-cloud.
 
@@ -254,4 +266,18 @@ Module Contents
              entrance times of the simplices and their dimensions.
    :rtype: Diagrams corresponding to the following persistence modules (where :math:`H_*` is the persistent homology functor and :math:`f_*` is the induced map on persistent homology)
 
+
+.. py:data:: NumpyMatrix
+   :type:  TypeAlias
+   :value: np.ndarray[tuple[M, N], np.dtype[T]]
+
+
+   Type hint for an ``M x N`` numpy matrix whose entries are of type ``T``.
+
+.. py:data:: NumpyVector
+   :type:  TypeAlias
+   :value: np.ndarray[N, np.dtype[T]]
+
+
+   Type hint for an numpy vector of length ``N`` with entries of type ``T``.
 
