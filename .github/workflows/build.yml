@@ -3,14 +3,16 @@ on:
   push:
     branches:
       - '**'
-    paths-ignore:
-      - 'docs'
-      - '.github/workflows/deploy.yml'
-      - '.github/workflows/docs.yml'
-    tags-ignore:
-      - '**'
+    paths:
+      - 'CMakeLists.txt'
+      - 'pyproject.toml'
+      - 'vcpkg.json'
+      - 'README.md'
+      - 'COPYING'
+      - 'src'
+      - 'tests'
+      - '.github/workflows/build.yml'
   # only run on branch push
-  # ignore tags
   # ignore changes to docs
   # ignore changes to CI files except for this one
 

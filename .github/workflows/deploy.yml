@@ -1,7 +1,7 @@
 name: Deploy to PyPI
-on: 
+on:
   push:
-    tags-ignore: ['*.docs*'] 
+    tags-ignore: ['*.docs*']
     # only run on tags, and only if they don't end with docs
 
 jobs:
