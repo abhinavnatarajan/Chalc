@@ -27,7 +27,7 @@ from .sixpack import (
 	_num_colours_in_bitmask,
 )
 
-N = TypeVar("N", bound=int)
+NumCols = TypeVar("NumCols", bound=int)
 
 plt.rcParams["animation.html"] = "jshtml"
 
@@ -266,7 +266,7 @@ def _plot_diagram(
 
 def draw_filtration(
 	K: FilteredComplex,
-	points: NumpyMatrix[Literal[2], N, np.floating],
+	points: NumpyMatrix[Literal[2], NumCols, np.floating],
 	time: float,
 	include_colours: Collection[int] | None = None,
 	ax: Axes | None = None,
@@ -356,7 +356,7 @@ def draw_filtration(
 
 def animate_filtration(
 	K: FilteredComplex,
-	points: NumpyMatrix[Literal[2], N, np.floating],
+	points: NumpyMatrix[Literal[2], NumCols, np.floating],
 	filtration_times: Sequence[float],
 	animation_length: float,
 ) -> animation.FuncAnimation:

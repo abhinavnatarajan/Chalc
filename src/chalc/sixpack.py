@@ -19,7 +19,6 @@ __all__ = [
 	"DiagramEnsemble",
 	"NumpyMatrix",
 	"NumpyVector",
-	"BarcodeMatrix",
 ]
 
 ChromaticMethod = {
@@ -30,19 +29,17 @@ ChromaticMethod = {
 
 BoundaryMatrix = list[tuple[bool, int, list[int]]]
 
-T = TypeVar("T", bound=np.generic)
+DType = TypeVar("DType", bound=np.generic)
 U = TypeVar("U", bound=Any)
-M = TypeVar("M", bound=int)
-N = TypeVar("N", bound=int)
+NumRows = TypeVar("NumRows", bound=int)
+NumCols = TypeVar("NumCols", bound=int)
+Size = TypeVar("Size", bound=int)
 
-NumpyMatrix: TypeAlias = np.ndarray[tuple[M, N], np.dtype[T]]
+NumpyMatrix: TypeAlias = np.ndarray[tuple[NumRows, NumCols], np.dtype[DType]]
 """Type hint for an :math:`m \\times n` numpy matrix."""
 
-NumpyVector: TypeAlias = np.ndarray[N, np.dtype[T]]
+NumpyVector: TypeAlias = np.ndarray[Size, np.dtype[DType]]
 """Type hint for an :math:`n`-dimensional numpy vector."""
-
-BarcodeMatrix: TypeAlias = NumpyMatrix[M, Literal[2], np.floating]
-"""Type hint for a numpy matrix representing a barcode."""
 
 
 # bitmask that represents a list of colours
@@ -168,7 +165,7 @@ def from_filtration(
 
 
 def compute(
-	x: NumpyMatrix[M, N, np.floating],
+	x: NumpyMatrix[NumRows, NumCols, np.floating],
 	colours: Sequence[int],
 	dom: Collection[int] | int | None = None,
 	k: int | None = None,
@@ -304,8 +301,8 @@ class SimplexPairings(Collection):
 	@classmethod
 	def _from_matrices(
 		cls,
-		paired_matrix: NumpyMatrix[M, Literal[2], np.integer],
-		unpaired_vector: NumpyVector[int, np.integer],
+		paired_matrix: NumpyMatrix[NumRows, Literal[2], np.integer],
+		unpaired_vector: NumpyVector[Size, np.integer],
 	) -> SimplexPairings:
 		"""
 		Construct a SimplexPairings object from paired and unpaired simplices represented as matrices.
@@ -318,7 +315,7 @@ class SimplexPairings(Collection):
 		unpaired: set[int] = set(int(x) for x in unpaired_vector)
 		return cls(paired, unpaired)
 
-	def paired_as_matrix(self) -> NumpyMatrix[M, Literal[2], np.int64]:
+	def paired_as_matrix(self) -> NumpyMatrix[NumRows, Literal[2], np.int64]:
 		"""
 		Returns a matrix representation of the finite persistence features in the diagram.
 		"""
@@ -337,7 +334,7 @@ class DiagramEnsemble(Mapping):
 	"""Names of the diagrams in the 6-pack."""
 
 	@property
-	def entrance_times(self) -> NumpyVector[N, np.float64]:
+	def entrance_times(self) -> NumpyVector[Size, np.float64]:
 		"""
 		Entrance times of the simplices.
 		"""
@@ -346,7 +343,7 @@ class DiagramEnsemble(Mapping):
 		return temp
 
 	@property
-	def dimensions(self) -> NumpyVector[N, np.int64]:
+	def dimensions(self) -> NumpyVector[Size, np.int64]:
 		"""
 		Dimensions of the simplices.
 		"""
@@ -453,14 +450,16 @@ class DiagramEnsemble(Mapping):
 		return self
 
 	@overload
-	def get_matrix(self, diagram_name: DiagramName, dim: int) -> BarcodeMatrix: ...
+	def get_matrix(
+		self, diagram_name: DiagramName, dim: int
+	) -> NumpyMatrix[NumRows, Literal[2], np.float64]: ...
 
 	@overload
 	def get_matrix(
 		self,
 		diagram_name: DiagramName,
 		dim: list[int] | None = None,
-	) -> list[BarcodeMatrix]: ...
+	) -> list[NumpyMatrix[NumRows, Literal[2], np.float64]]: ...
 
 	def get_matrix(self, diagram_name, dim=None):
 		"""
