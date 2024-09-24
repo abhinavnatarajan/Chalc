@@ -481,7 +481,7 @@ class DiagramEnsemble(Mapping):
 			for s in dgm._unpaired:
 				simplices.add(s)
 			relevant_dims = np.array(self._dimensions)[list(simplices)]
-			if not relevant_dims:
+			if relevant_dims.size == 0 or relevant_dims.ndim == 0:
 				# there are no features in the diagram
 				return []
 			dim = list(range(max(relevant_dims)))
