@@ -11,30 +11,30 @@ readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.12"
 license = { file = "COPYING" }
 keywords = [
-    "topological data analysis",
-    "TDA",
-    "chromatic Delaunay",
-    "computational geometry",
-    "computational topology",
-    "persistent homology",
+	"topological data analysis",
+	"TDA",
+	"chromatic Delaunay",
+	"computational geometry",
+	"computational topology",
+	"persistent homology",
 ]
 dependencies = [
-    "numpy~=2.0.0",
-    "phimaker~=0.1.3",
-    "pandas~=2.2.2",
-    "matplotlib~=3.8.0",
-    "seaborn~=0.13.0",
-    "h5py~=3.11.0",
+	"numpy~=2.0.0",
+	"phimaker~=0.1.3",
+	"pandas~=2.2.2",
+	"matplotlib~=3.8.0",
+	"seaborn~=0.13.0",
+	"h5py~=3.11.0",
 ]
 classifiers = [
-    "Development Status :: 3 - Alpha",
-    "Intended Audience :: Science/Research",
-    "Topic :: Scientific/Engineering :: Mathematics",
-    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
-    "Programming Language :: C++",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: Implementation :: CPython",
-    "Programming Language :: Python :: Implementation :: PyPy",
+	"Development Status :: 3 - Alpha",
+	"Intended Audience :: Science/Research",
+	"Topic :: Scientific/Engineering :: Mathematics",
+	"License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+	"Programming Language :: C++",
+	"Programming Language :: Python :: 3",
+	"Programming Language :: Python :: Implementation :: CPython",
+	"Programming Language :: Python :: Implementation :: PyPy",
 ]
 
 [project.urls]
@@ -44,9 +44,9 @@ Repository = "https://github.com/abhinavnatarajan/Chalc.git"
 
 [tool.scikit-build]
 cmake.verbose = true
-logging.level = "DEBUG"
 cmake.build-type = "Release"
 cmake.minimum-version = "3.23"
+logging.level = "DEBUG"
 sdist.exclude = [".github/", ".git/"]
 build-dir = "build/{wheel_tag}"
 wheel.packages = ["src/chalc"]

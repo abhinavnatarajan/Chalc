@@ -43,24 +43,34 @@ def plot_sixpack(
 
 	Args:
 		dgms        : The 6-pack of persistence diagrams.
-		truncations : The maximum entrance time upto which features are plotted. Can be either a single value, or a mapping from diagram names to values. A sensible default will be calculated if not provided.
-		dimensions  : The homological dimensions for which to plot features. If not provided, all dimensions will be included in the plots.
+		truncations :
+			The maximum entrance time upto which features are plotted.
+			Can be either a single value, or a mapping from diagram names to values.
+			A sensible default will be calculated (for each individual diagram) if not provided.
+		dimensions  :
+			The homological dimensions for which to plot features.
+			If not provided, all dimensions will be included in the plots.
 		tolerance   : Only features with persistence greater than this value will be plotted.
 	"""
 	if dimensions is None:
 		if dgms:
 			dimensions = set(range(max(dgms.dimensions)))
-			# The relative diagram may contain features in one dimension higher than that of the filtration.
+			# The relative diagram may contain features
+			# one dimension higher than that of the filtration.
 			dims = {
 				name: (dimensions if name != "rel" else dimensions | {max(dimensions) + 1})
 				for name in DiagramEnsemble.diagram_names
 			}
 		else:
-			dimensions = set()
+			# if the diagrams are all empty then we gracefully fail
+			# by plotting empty diagrams
+			dims = {name: set() for name in DiagramEnsemble.diagram_names}
 	elif isinstance(dimensions, int):
-		dimensions = {
-			dimensions,
-		}
+		dims = {name: {dimensions} for name in DiagramEnsemble.diagram_names}
+	elif isinstance(dimensions, Set) and all(isinstance(dim, int) for dim in dimensions):
+		dims = {name: dimensions for name in DiagramEnsemble.diagram_names}
+	else:
+		raise ValueError("Invalid dimensions argument.")
 
 	# In general, the dimension of a feature represented by a simplex pair (a, b)
 	# is dim(a), unless the diagram is in the kernel, in which case
@@ -69,10 +79,12 @@ def plot_sixpack(
 
 	if truncations is None:
 		truncations = dict()
-	if isinstance(truncations, Mapping):
+	if isinstance(truncations, Mapping) and all(
+		isinstance(val, float) for val in truncations.values()
+	):
 		truncs = dict()
 		for diagram_name in DiagramEnsemble.diagram_names:
-			if diagram_name in truncations.keys() and isinstance(truncations[diagram_name], float):
+			if diagram_name in truncations and isinstance(truncations[diagram_name], float):
 				truncs[diagram_name] = truncations[diagram_name]
 				continue
 			ycoords = [
@@ -83,6 +95,8 @@ def plot_sixpack(
 			truncs[diagram_name] = _get_truncation(ycoords) if ycoords else 1.0
 	elif isinstance(truncations, float):
 		truncs = {diagram_name: truncations for diagram_name in DiagramEnsemble.diagram_names}
+	else:
+		raise TypeError("Invalid truncations argument.")
 
 	plot_pos = {
 		name: (val[1], val[0])
@@ -96,9 +110,7 @@ def plot_sixpack(
 		"cod": "Codomain",
 		"rel": "Relative",
 	}
-	points_legend = {
-		name: (True if name == "rel" else False) for name in DiagramEnsemble.diagram_names
-	}
+	points_legend = {name: (name == "rel") for name in DiagramEnsemble.diagram_names}
 	fig, axes = plt.subplots(
 		nrows=2, ncols=3, figsize=[3.5 * 3, 3.5 * 2], sharex=False, sharey=False
 	)
@@ -141,9 +153,15 @@ def plot_diagram(
 	Args:
 		dgms         : The 6-pack of persistence diagrams.
 		diagram_name : One of ``'ker'``, ``'cok'``, ``'dom'``, ``'cod'``, ``'im'``, or ``'rel'``.
-		truncation   : The maximum entrance time for which the diagrams are plotted. A sensible default will be calculated if not provided.
-		dimensions   : The homological dimensions for which to plot features. If not provided, all dimensions will be included in the plots.
-		ax           : A matplotlib axes object. If provided then the diagram will be plotted on the given axes.
+		truncation   :
+			The maximum entrance time for which the diagrams are plotted.
+			A sensible default will be calculated if not provided.
+		dimensions   :
+			The homological dimensions for which to plot features.
+			If not provided, all dimensions will be included in the plots.
+		ax           :
+			A matplotlib axes object.
+			If provided then the diagram will be plotted on the given axes.
 		tolerance    : Only features with persistence greater than this value will be plotted.
 	"""
 	dgm = dgms[diagram_name]
@@ -154,10 +172,7 @@ def plot_diagram(
 	dim_shift = 1 if diagram_name == "ker" else 0
 
 	if dimensions is None:
-		if dgm:
-			dimensions = set(range(max(dgms._dimensions)))
-		else:
-			dimensions = set()
+		dimensions = set(range(max(dgms._dimensions))) if dgm else set()
 	elif isinstance(dimensions, int):
 		dimensions = {
 			dimensions,
@@ -241,10 +256,10 @@ def _plot_diagram(
 		for birth_idx in diagram._unpaired
 		if dimensions[birth_idx] - dim_shift in dims
 	]
-	df = DataFrame(data=all_pts, columns=["Birth", "Death", "Dimension"])
-	df["Dimension"] = df["Dimension"].astype("category")
+	plot_df = DataFrame(data=all_pts, columns=["Birth", "Death", "Dimension"])
+	plot_df["Dimension"] = plot_df["Dimension"].astype("category")
 	ret_ax = sns.scatterplot(
-		data=df, x="Birth", y="Death", hue="Dimension", ax=ax, legend=points_legend, **kwargs
+		data=plot_df, x="Birth", y="Death", hue="Dimension", ax=ax, legend=points_legend, **kwargs
 	)
 	ret_ax.set(xlabel=None)
 	ret_ax.set(ylabel=None)
@@ -265,7 +280,7 @@ def _plot_diagram(
 
 
 def draw_filtration(
-	K: FilteredComplex,
+	K: FilteredComplex,  # noqa: N803
 	points: NumpyMatrix[Literal[2], NumCols, np.floating],
 	time: float,
 	include_colours: Collection[int] | None = None,
@@ -278,8 +293,12 @@ def draw_filtration(
 		K               : A filtered 2-dimensional simplicial complex.
 		points          : The vertices of ``K`` as a :math:`2\\times N` numpy matrix.
 		time            : Filtration times for which to draw simplices.
-		include_colours : Optional collection of colours to include. If not specified then all colours will be drawn.
-		ax              : A matplotlib axes object. If provided then the diagram will be plotted on the given axes.
+		include_colours :
+			Optional collection of colours to include.
+			If not specified then all colours will be drawn.
+		ax              :
+			A matplotlib axes object.
+			If provided then the diagram will be plotted on the given axes.
 	"""
 	if len(points.shape) != 2:
 		raise NotImplementedError
@@ -318,7 +337,7 @@ def draw_filtration(
 	)
 
 	# Plot the edges
-	for idx, simplex in K.simplices[1].items():
+	for _, simplex in K.simplices[1].items():
 		if (
 			_colours_are_subset(simplex.colours, include_colours_bitmask)
 			and simplex.filtration_value <= time
@@ -337,7 +356,7 @@ def draw_filtration(
 				linewidth=1,
 			)
 
-	for idx, simplex in K.simplices[2].items():
+	for _, simplex in K.simplices[2].items():
 		if (
 			_colours_are_subset(simplex.colours, include_colours_bitmask)
 			and simplex.filtration_value <= time
@@ -355,7 +374,7 @@ def draw_filtration(
 
 
 def animate_filtration(
-	K: FilteredComplex,
+	K: FilteredComplex,  # noqa: N803
 	points: NumpyMatrix[Literal[2], NumCols, np.floating],
 	filtration_times: Sequence[float],
 	animation_length: float,
@@ -377,7 +396,7 @@ def animate_filtration(
 	fig, ax = plt.subplots()
 	plot_colours = np.array(plt.rcParams["axes.prop_cycle"].by_key()["color"])
 	vertex_colours = []
-	for idx, simplex in K.simplices[0].items():
+	for _, simplex in K.simplices[0].items():
 		i = _bitmask_to_colours(simplex.colours)[0]
 		vertex_colours.append(i)
 
