@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Collection, Mapping, Sequence, Set
 from itertools import product
-from typing import Literal, TypeVar
+from typing import Literal, TypeVar, get_args
 
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
@@ -52,6 +52,7 @@ def plot_sixpack(
 			If not provided, all dimensions will be included in the plots.
 		tolerance   : Only features with persistence greater than this value will be plotted.
 	"""
+	diagram_names = get_args(DiagramEnsemble.DiagramName)
 	if dimensions is None:
 		if dgms:
 			dimensions = set(range(max(dgms.dimensions)))
@@ -59,23 +60,23 @@ def plot_sixpack(
 			# one dimension higher than that of the filtration.
 			dims = {
 				name: (dimensions if name != "rel" else dimensions | {max(dimensions) + 1})
-				for name in DiagramEnsemble.diagram_names
+				for name in diagram_names
 			}
 		else:
 			# if the diagrams are all empty then we gracefully fail
 			# by plotting empty diagrams
-			dims = {name: set() for name in DiagramEnsemble.diagram_names}
+			dims = {name: set() for name in diagram_names}
 	elif isinstance(dimensions, int):
-		dims = {name: {dimensions} for name in DiagramEnsemble.diagram_names}
+		dims = {name: {dimensions} for name in diagram_names}
 	elif isinstance(dimensions, Set) and all(isinstance(dim, int) for dim in dimensions):
-		dims = {name: dimensions for name in DiagramEnsemble.diagram_names}
+		dims = {name: dimensions for name in diagram_names}
 	else:
 		raise ValueError("Invalid dimensions argument.")
 
 	# In general, the dimension of a feature represented by a simplex pair (a, b)
 	# is dim(a), unless the diagram is in the kernel, in which case
 	# it is dim(a) - 1.
-	dim_shift = {name: (1 if name == "ker" else 0) for name in DiagramEnsemble.diagram_names}
+	dim_shift = {name: (1 if name == "ker" else 0) for name in diagram_names}
 
 	if truncations is None:
 		truncations = dict()
@@ -83,7 +84,7 @@ def plot_sixpack(
 		isinstance(val, float) for val in truncations.values()
 	):
 		truncs = dict()
-		for diagram_name in DiagramEnsemble.diagram_names:
+		for diagram_name in diagram_names:
 			if diagram_name in truncations and isinstance(truncations[diagram_name], float):
 				truncs[diagram_name] = truncations[diagram_name]
 				continue
@@ -94,13 +95,12 @@ def plot_sixpack(
 			]
 			truncs[diagram_name] = _get_truncation(ycoords) if ycoords else 1.0
 	elif isinstance(truncations, float):
-		truncs = {diagram_name: truncations for diagram_name in DiagramEnsemble.diagram_names}
+		truncs = {diagram_name: truncations for diagram_name in diagram_names}
 	else:
 		raise TypeError("Invalid truncations argument.")
 
 	plot_pos = {
-		name: (val[1], val[0])
-		for name, val in zip(DiagramEnsemble.diagram_names, product((0, 1, 2), (0, 1)))
+		name: (val[1], val[0]) for name, val in zip(diagram_names, product((0, 1, 2), (0, 1)))
 	}
 	plot_titles = {
 		"ker": "Kernel",
@@ -110,11 +110,11 @@ def plot_sixpack(
 		"cod": "Codomain",
 		"rel": "Relative",
 	}
-	points_legend = {name: (name == "rel") for name in DiagramEnsemble.diagram_names}
+	points_legend = {name: (name == "rel") for name in diagram_names}
 	fig, axes = plt.subplots(
 		nrows=2, ncols=3, figsize=[3.5 * 3, 3.5 * 2], sharex=False, sharey=False
 	)
-	for diagram_name in DiagramEnsemble.diagram_names:
+	for diagram_name in diagram_names:
 		_plot_diagram(
 			diagram=dgms[diagram_name],
 			entrance_times=list(dgms._entrance_times),
@@ -256,7 +256,7 @@ def _plot_diagram(
 		for birth_idx in diagram._unpaired
 		if dimensions[birth_idx] - dim_shift in dims
 	]
-	plot_df = DataFrame(data=all_pts, columns=["Birth", "Death", "Dimension"])
+	plot_df = DataFrame.from_records(data=all_pts, columns=["Birth", "Death", "Dimension"])
 	plot_df["Dimension"] = plot_df["Dimension"].astype("category")
 	ret_ax = sns.scatterplot(
 		data=plot_df, x="Birth", y="Death", hue="Dimension", ax=ax, legend=points_legend, **kwargs
@@ -386,7 +386,7 @@ def animate_filtration(
 		K                : A filtered complex.
 		points           : The vertices of ``K`` as a :math:`2\\times N` numpy matrix.
 		filtration_times : Sequence of filtration times for which to draw animation frames.
-		animation_length : Total length of the animation in seconds.
+		animation_length : Total length of the animation in seconds, unrelated to the filtration times.
 	"""
 	if len(points.shape) != 2:
 		raise NotImplementedError
@@ -425,20 +425,24 @@ def animate_filtration(
 	ax.set_aspect("equal")
 	ax.set_xlabel("Time = " + f"{0.0:.4f}")
 
-	def update(time: float) -> None:
+	def update(time: float):
+		modified_artists = []
 		for idx, simplex in K.simplices[1].items():
 			if simplex.filtration_value <= time:
 				lines[idx].set_xdata(points[0, simplex.vertices])
 				lines[idx].set_ydata(points[1, simplex.vertices])
+				modified_artists.append(lines[idx])
 
 		for idx, simplex in K.simplices[2].items():
 			if simplex.filtration_value <= time:
 				patches[idx].set_xy(points[:, simplex.vertices].T)
+				modified_artists.append(patches[idx])
 
 		ax.set_xlabel(f"Time = {time:.4f}")
+		return modified_artists
 
 	interval = int(np.round(animation_length * 1000 / len(filtration_times)))
-	return animation.FuncAnimation(fig=fig, func=update, frames=filtration_times, interval=interval)
+	return animation.FuncAnimation(fig=fig, func=update, frames=filtration_times, interval=interval)  # pyright : ignore
 
 
 def _get_truncation(entrance_times: list[float]) -> float:

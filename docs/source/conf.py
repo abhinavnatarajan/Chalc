@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 from packaging.version import parse
+from tomllib import loads
 
 # Configuration file for the Sphinx documentation builder.
 #
@@ -16,13 +17,12 @@ from packaging.version import parse
 docs_path = list(Path(__file__).parents)[1]
 project_root_dir = docs_path.parent
 
-copyright = "2023, Abhinav Natarajan"
+copyright = "2023, Abhinav Natarajan"  # noqa: A001
 author = "Abhinav Natarajan"
 
 # Get the name and release from pyproject.toml
-from tomllib import loads
 
-with open(project_root_dir / "pyproject.toml") as f:
+with Path.open(project_root_dir / "pyproject.toml") as f:
 	proj_props = loads(f.read())["project"]
 
 project = proj_props["name"]
@@ -41,7 +41,7 @@ exclude_patterns = [
 	"templates",
 	"exts",
 	"static",
-	# "example.ipynb",
+	"example.ipynb",
 ]
 
 extensions = [

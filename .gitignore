@@ -28,6 +28,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+uv.lock
 
 # scikit-build
 _skbuild/
@@ -56,12 +57,6 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 cover/
-
-# Sphinx documentation
-docs/_build/
-docs/_autosummary/
-docs/stubs
-examples/
 
 # Jupyter Notebook
 .ipynb_checkpoints

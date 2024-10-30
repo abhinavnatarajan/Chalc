@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Collection, ItemsView, KeysView, Mapping, Sequence, ValuesView
-from typing import Any, Callable, Iterator, Literal, TypeAlias, TypeVar, overload
+from typing import Any, Callable, Iterator, Literal, TypeAlias, TypeVar, get_args, overload
 
 import numpy as np
 from h5py import Dataset, Group
@@ -368,9 +368,6 @@ class DiagramEnsemble(Mapping):
 	"""
 
 	DiagramName: TypeAlias = Literal["ker", "cok", "dom", "cod", "im", "rel"]
-	"""Type hint for the names of the diagrams in the 6-pack."""
-
-	diagram_names: list[DiagramName] = ["ker", "cok", "dom", "cod", "im", "rel"]
 	"""Names of the diagrams in the 6-pack."""
 
 	@property
@@ -469,7 +466,7 @@ class DiagramEnsemble(Mapping):
 		if not isinstance(other, DiagramEnsemble):
 			return False
 		return (
-			all(self[name] == other[name] for name in DiagramEnsemble.diagram_names)
+			all(self[name] == other[name] for name in get_args(DiagramEnsemble.DiagramName))
 			and all(self._entrance_times == other._entrance_times)
 			and all(self._dimensions == other._dimensions)
 		)
