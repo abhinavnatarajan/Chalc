@@ -2,6 +2,6 @@ API Reference
 =============
 
 .. toctree::
-   :name: api
+    :name: api
 
-   autoapi/chalc/index
+    autoapi/chalc/index

@@ -65,6 +65,7 @@ napoleon_attr_annotations = True
 
 # autoapi options
 autoapi_dirs = ["../../src"]
+autoapi_add_toctree_entry = False
 autoapi_options = [
 	"members",
 	"show-module-summary",

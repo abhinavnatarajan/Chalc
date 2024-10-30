@@ -1,9 +1,9 @@
-.. Chalc documentation master file, created by
-   sphinx-quickstart on Thu Aug 24 18:00:30 2023.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+..  Chalc documentation master file, created by
+    sphinx-quickstart on Thu Aug 24 18:00:30 2023.
+    You can adapt this file completely to your liking, but it should at least
+    contain the root `toctree` directive.
 .. role:: underline
-   :class: underline
+    :class: underline
 
 Chalc Documentation
 ===================
@@ -14,17 +14,17 @@ Chalc is written in C++ and relies on the `Computational Geometry Algorithms Lib
 Documentation index
 -------------------
 .. toctree::
-   :name: toc
-   :maxdepth: 2
+    :name: toc
+    :maxdepth: 2
 
-   installation
-   example
-   API
-   license
+    installation
+    example
+    API
+    license
 
 .. sidebar-links::
-   :github:
-   :pypi: chalc
+    :github:
+    :pypi: chalc
 
 Citing this Software
 --------------------
@@ -32,24 +32,24 @@ If you want to use chalc in your work, please use the following citation:
 
 .. tab-set::
 
-   .. tab-item:: Text
-      :sync: text
+    .. tab-item:: Text
+        :sync: text
 
-      Abhinav Natarajan, Thomas Chaplin, Adam Brown, and Maria-Jose Jimenez. "Morse Theory for Chromatic Delaunay Triangulations". May 30, 2024. arXiv: `2405.19303 <https://arxiv.org/abs/2405.19303>`_.
+        Abhinav Natarajan, Thomas Chaplin, Adam Brown, and Maria-Jose Jimenez. "Morse Theory for Chromatic Delaunay Triangulations". May 30, 2024. arXiv: `2405.19303 <https://arxiv.org/abs/2405.19303>`_.
 
-   .. tab-item:: BibTex
-      :sync: bibtex
+    .. tab-item:: BibTex
+        :sync: bibtex
 
-      .. code-block:: bibtex
+        .. code-block:: bibtex
 
-         @misc{natarajan2024morse,
+            @misc{natarajan2024morse,
             title={Morse Theory for Chromatic Delaunay Triangulations},
             author={Abhinav Natarajan and Thomas Chaplin and Adam Brown and Maria-Jose Jimenez},
             year={2024},
             eprint={2405.19303},
             archivePrefix={arXiv},
             primaryClass={math.AT}
-         }
+            }
 
 See Also
 --------
