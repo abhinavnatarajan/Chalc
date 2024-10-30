@@ -2,16 +2,16 @@ name: Build
 on:
   push:
     branches:
-      - '**'
+      - "**"
     paths:
-      - 'CMakeLists.txt'
-      - 'pyproject.toml'
-      - 'vcpkg.json'
-      - 'README.md'
-      - 'COPYING'
-      - 'src'
-      - 'tests'
-      - '.github/workflows/build.yml'
+      - "CMakeLists.txt"
+      - "pyproject.toml"
+      - "vcpkg.json"
+      - "README.md"
+      - "COPYING"
+      - "src"
+      - "tests"
+      - ".github/workflows/build.yml"
   # only run on branch push
   # ignore changes to docs
   # ignore changes to CI files except for this one
@@ -25,11 +25,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          submodules: 'recursive'
+          submodules: "recursive"
 
       - name: Build SDist
         run: pipx run build --sdist
-      
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -46,15 +46,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          submodules: 'recursive'
+          submodules: "recursive"
 
       - name: Get CMake
         uses: lukka/get-cmake@v3.28.0
-      
+
       - name: Setup build tools on macOS
         run: brew install automake autoconf libtool
         if: ${{ runner.os == 'macos' }}
-      
+
       - name: Get vcpkg commit ID from manifest
         shell: bash
         run: |
@@ -69,18 +69,18 @@ jobs:
         with:
           vcpkgGitCommitId: ${{ fromJson(env.vcpkg_json).builtin-baseline }}
           runVcpkgInstall: false
-    
+
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.19.2
         env:
           CIBW_BEFORE_ALL_LINUX: yum install -y zip
-      
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: wheels-${{ matrix.os }}
           path: ./wheelhouse/*.whl
-  
+
   merge_artifacts:
     name: Merge wheel artifacts
     needs: build_wheels
@@ -88,7 +88,7 @@ jobs:
     steps:
       - name: Merge artifacts
         uses: actions/upload-artifact/merge@v4
-        with: 
+        with:
           name: wheels
           pattern: wheels-*
           delete-merged: true
