@@ -62,7 +62,10 @@ class BinomialCoeffTable {
 			if (i <= k) {
 				B[i][i] = 1;
 			}
-			assert(("Simplex index is too large.", B[i][min(i >> 1, k)] >= 0));
+			if (B[i][min(i >> 1, k)] < 0) {
+				throw runtime_error("Simplex index is too large.");
+			}
+			// assert(("Simplex index is too large.", B[i][min(i >> 1, k)] >= 0));
 		}
 	}
 

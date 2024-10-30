@@ -48,7 +48,7 @@
 namespace {
 using namespace chalc::stl;
 using chalc::index_t, chalc::MAX_NUM_COLOURS, Eigen::lastN, Eigen::all, std::min,
-	std::runtime_error, std::bad_weak_ptr, std::stable_sort;
+	std::runtime_error, std::bad_weak_ptr, std::sort, std::unique;
 using Kernel_d = CGAL::Epick_d<CGAL::Dynamic_dimension_tag>;
 using Triangulation_data_structure =
 	CGAL::Triangulation_data_structure<Kernel_d::Dimension,
@@ -89,10 +89,15 @@ tuple<vector<T>, vector<index_t>> sort_with_indices(const vector<T>& v,
                                                     bool (*compare)(const T& a, const T& b)) {
 	vector<index_t> idx(v.size());
 	iota(idx.begin(), idx.end(), 0);
-	stable_sort(idx.begin(), idx.end(), [&v, &compare](index_t i1, index_t i2) {
+	sort(idx.begin(), idx.end(), [&v, &compare](index_t i1, index_t i2) {
 		return compare(v[i1], v[i2]);
 	});
 	return tuple{reorder(v, idx), idx};
+}
+
+template <typename T> void remove_duplicates_inplace(vector<T>& vec) {
+	sort(vec.begin(), vec.end());
+	vec.erase(unique(vec.begin(), vec.end()), vec.end());
 }
 
 template <typename T> int compare(const void* a, const void* b) {
@@ -209,8 +214,8 @@ FilteredComplex delrips(const RealMatrix<double>& points, const vector<index_t>&
 	// modify the filtration values
 	if (delX.dimension() >= 1) {
 		for (auto& [idx, edge]: delX.get_simplices()[1]) {
-			auto verts  = edge->get_vertex_labels();
-			edge->value = (points.col(verts[0]) - points.col(verts[1])).norm() * 0.5;
+			auto&& verts = edge->get_vertex_labels();
+			edge->value  = (points.col(verts[0]) - points.col(verts[1])).norm() * 0.5;
 		}
 		delX.propagate_filt_values(1, true);
 	}
@@ -237,19 +242,32 @@ std::tuple<FilteredComplex, bool> alpha(const RealMatrix<double>& points,
 	if (delX.dimension() >= 1) {
 		// Now comes the hard bit
 		// Modify the filtration values
-		auto points_exact   = points.template cast<Gmpzf>();
-		auto points_exact_q = points.template cast<Quotient<Gmpzf>>();
+		auto&& points_exact   = points.template cast<Gmpzf>();
+		auto&& points_exact_q = points.template cast<Quotient<Gmpzf>>();
 
 		// Start at the maximum dimension
 		for (int p = delX.dimension(); p >= 1; p--) {
 			// Iterate over p-simplices
 			for (auto& [idx, simplex]: delX.get_simplices()[p]) {
-				auto verts = simplex->get_vertex_labels();
+				auto&& verts = simplex->get_vertex_labels();
 
 				// Partition the vertices of this simplex by colour
 				map<index_t, vector<index_t>> verts_by_colour_in_simplex;
-				for (auto v: verts) {
+				for (auto& v: verts) {
 					verts_by_colour_in_simplex[colours[v]].push_back(v);
+				}
+
+				// Partition the vertices of all cofaces of the simplex by colour
+				map<index_t, vector<index_t>> verts_by_colour_all_cofaces;
+				for (auto& cofacet: simplex->get_cofacets()) {
+					for (auto& v:
+					     shared_ptr<FilteredComplex::Simplex>(cofacet)->get_vertex_labels()) {
+						verts_by_colour_all_cofaces[colours[v]].push_back(v);
+					}
+				}
+				for (auto& [j, verts_j]: verts_by_colour_all_cofaces) {
+					// Remove duplicates
+					remove_duplicates_inplace(verts_j);
 				}
 
 				/*
@@ -280,51 +298,43 @@ std::tuple<FilteredComplex, bool> alpha(const RealMatrix<double>& points,
 				E * x = b
 				i.e., it lies in the affine subspace E
 				*/
-				auto [centre, sqRadius, success] =
-					cmb::constrained_miniball<SolutionPrecision::EXACT>(points_exact(all, verts), E, b);
+				auto&& [centre, sqRadius, success] =
+					cmb::constrained_miniball<SolutionPrecision::EXACT>(points_exact(all, verts),
+				                                                        E,
+				                                                        b);
 				// Check if there were any numerical issues
 				numerical_instability |= !success;
 
-				// Check if the stack is empty
 				bool stack_is_empty = true;
-				for (auto& [j, verts_j]: verts_by_colour_in_simplex) {
-					/*
-					Compute the radius r_j of the sphere of colour j.
-					Take all points of colour j in the simplex
-					and find the minimum distance of any of those
-					points from the centre of the bounding ball.
-					Theoretically they should all be equal, but
-					we have to account for floating point errors.
-					We choose the radius this way to ensure that
-					if any j-coloured point from the dataset lies
-					in the sphere of radius r_j, then it is closer
-					to the centre than every  j-coloured point in the
-					simplex. In this case there is a high chance that
-					the stack is not empty.
-					*/
-					Quotient<Gmpzf> rj_squared = (points_exact_q(all, verts_j).colwise() - centre)
-					                                 .colwise()
-					                                 .squaredNorm()
-					                                 .minCoeff();
-					Quotient<Gmpzf> squared_dist_to_nearest_pt_of_colour_j =
-						(points_exact_q(all, verts_by_colour[j]).colwise() - centre)
-							.colwise()
-							.squaredNorm()
-							.minCoeff();
-
-					stack_is_empty &= (squared_dist_to_nearest_pt_of_colour_j >= rj_squared);
-				}
-				// If the stack is empty, assign the filtration value
-				if (stack_is_empty) {
+				if (p == delX.dimension()) {
+					// For maximal simplices there is nothing more to do
 					simplex->value = sqrt(CGAL::to_double(sqRadius));
-					// We need to take into account floating point issues
-					// so we make sure that we satisfy the filtration property
-					try {
-						for (auto& cofacet: simplex->get_cofacets()) {
-							simplex->value = min(simplex->value, cofacet.lock()->value);
-						}
-					} catch (bad_weak_ptr& e) {
-						throw runtime_error("Tried to dereference expired cofacet handle.");
+				} else {
+					// If the simplex is not maximal, check if the stack is empty
+					for (auto& [j, verts_j]: verts_by_colour_in_simplex) {
+						// Get the radius of the j-coloured sphere in the stack
+						Quotient<Gmpzf>&& rj_squared =
+							(points_exact_q(all, verts_j[0]) - centre).squaredNorm();
+						// Get the distance of the nearest point of colour j to the centre,
+						// among all vertices in cofaces of this simplex
+						Quotient<Gmpzf>&& squared_dist_to_nearest_pt_of_colour_j =
+							(points_exact_q(all, verts_by_colour_all_cofaces[j]).colwise() - centre)
+								.colwise()
+								.squaredNorm()
+								.minCoeff();
+						// Check if the nearest point is not in the interior of the sphere
+						stack_is_empty &= (squared_dist_to_nearest_pt_of_colour_j >= rj_squared);
+					}
+					// If the stack is empty, assign the filtration value
+					if (stack_is_empty) {
+						simplex->value = sqrt(CGAL::to_double(sqRadius));
+						// The following block is only needed if CGAL::to_double is not monotonic
+						// On all IEEE-754 compliant architectures, this is not needed
+						// for (auto& cofacet: simplex->get_cofacets()) {
+						// 	simplex->value =
+						// 		min(simplex->value,
+						// 	        shared_ptr<FilteredComplex::Simplex>(cofacet)->value);
+						// }
 					}
 				}
 			}
@@ -332,6 +342,7 @@ std::tuple<FilteredComplex, bool> alpha(const RealMatrix<double>& points,
 			delX.propagate_filt_values(p, false);
 		}
 	}
+
 	return tuple{delX, numerical_instability};
 }
 
@@ -348,40 +359,32 @@ std::tuple<FilteredComplex, bool> delcech(const RealMatrix<double>& points,
 	if (delX.dimension() >= 1) {
 		for (int p = delX.dimension(); p > 1; p--) {
 			for (auto& [idx, simplex]: delX.get_simplices()[p]) {
-				auto verts                        = simplex->get_vertex_labels();
-				auto [centre, sqRadius, success]  = cmb::miniball<SolutionPrecision::DOUBLE>(points(all, verts));
-				numerical_instability            |= !success;
-				simplex->value                    = sqrt(CGAL::to_double(sqRadius));
-				auto cofacets                     = simplex->get_cofacets();
-				if (cofacets.size() == 0) {
-					continue;
-				}
-				try {
-					for (auto& cofacet: simplex->get_cofacets()) {
-						simplex->value = min(simplex->value, cofacet.lock()->value);
-					}
-				} catch (bad_weak_ptr& e) {
-					throw runtime_error("Tried to dereference expired cofacet handle.");
-				}
+				auto&& verts = simplex->get_vertex_labels();
+				auto&& [centre, sqRadius, success] =
+					cmb::miniball<SolutionPrecision::DOUBLE>(points(all, verts));
+				numerical_instability |= !success;
+				simplex->value         = sqrt(CGAL::to_double(sqRadius));
+				// The following block is only needed if CGAL::to_double is not monotonic
+				// On all IEEE-754 compliant architectures, this is not needed
+				// for (auto& cofacet: simplex->get_cofacets()) {
+				// 	simplex->value =
+				// 		min(simplex->value,
+				// shared_ptr<FilteredComplex::Simplex>(cofacet)->value);
+				// }
 			}
 			// Propagate filtration values down
 			delX.propagate_filt_values(p, false);
 		}
 		// fast version for dimension 1
 		for (auto& [idx, edge]: delX.get_simplices()[1]) {
-			auto verts = edge->get_vertex_labels();
+			auto&& verts = edge->get_vertex_labels();
 			edge->value =
 				static_cast<double>((points.col(verts[0]) - points.col(verts[1])).norm()) * 0.5;
-			auto cofacets = edge->get_cofacets();
-			if (cofacets.size() == 0) {
-				continue;
-			}
-			try {
-				for (auto& cofacet: edge->get_cofacets()) {
-					edge->value = min(edge->value, cofacet.lock()->value);
-				}
-			} catch (bad_weak_ptr& e) {
-				throw runtime_error("Tried to dereference expired cofacet handle.");
+			// Tests fail if we don't do this
+			// Possibly because of floating point rounding
+			for (auto& cofacet: edge->get_cofacets()) {
+				edge->value =
+					min(edge->value, shared_ptr<FilteredComplex::Simplex>(cofacet)->value);
 			}
 		}
 	}

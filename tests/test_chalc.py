@@ -81,7 +81,7 @@ class Test_chromatic:
 			for s in num_colours:
 				points = rng.uniform(size=(d, 200))
 				colours = rng.integers(0, s, size=200)
-				K, numerical_errors = ch.chromatic.delcech(points, colours)
+				K, numerical_errors = ch.chromatic.delcech(points, list(colours))
 				assert not numerical_errors
 				assert(K.is_filtration())
 
@@ -93,7 +93,7 @@ class Test_chromatic:
 			for s in num_colours:
 				points = rng.uniform(size=(d, 200))
 				colours = rng.integers(0, s, size=200)
-				K, numerical_errors = ch.chromatic.alpha(points, colours)
+				K, numerical_errors = ch.chromatic.alpha(points, list(colours))
 				assert not numerical_errors
 				assert(K.is_filtration())
 
@@ -105,7 +105,7 @@ class Test_chromatic:
 			for s in num_colours:
 				points = rng.uniform(size=(d, 200))
 				colours = rng.integers(0, s, size=200)
-				K, numerical_errors = ch.chromatic.delrips(points, colours)
+				K, numerical_errors = ch.chromatic.delrips(points, list(colours))
 				assert not numerical_errors
 				assert(K.is_filtration())
 
