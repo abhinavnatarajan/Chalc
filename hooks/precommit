@@ -1,0 +1,3 @@
+#! /usr/bin/env bash
+
+jupyter nbconvert --clear-output --inplace "$GIT_WORK_TREE"/docs/source/example.ipynb

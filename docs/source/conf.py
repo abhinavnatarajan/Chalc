@@ -41,7 +41,7 @@ exclude_patterns = [
 	"templates",
 	"exts",
 	"static",
-	"example.ipynb",
+	# "example.ipynb",
 ]
 
 extensions = [
