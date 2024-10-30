@@ -47,8 +47,8 @@
 
 namespace {
 using namespace chalc::stl;
-using chalc::index_t, chalc::MAX_NUM_COLOURS, Eigen::lastN, Eigen::all, std::min,
-	std::runtime_error, std::bad_weak_ptr, std::sort, std::unique;
+using chalc::index_t, chalc::MAX_NUM_COLOURS, Eigen::lastN, Eigen::all, std::min, std::sort,
+	std::unique;
 using Kernel_d = CGAL::Epick_d<CGAL::Dynamic_dimension_tag>;
 using Triangulation_data_structure =
 	CGAL::Triangulation_data_structure<Kernel_d::Dimension,
