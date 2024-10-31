@@ -14,20 +14,34 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install uv
+      - name: Download build artifacts
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          name: wheels
+          workflow: build.yml
+          workflow_conclusion: success
+          check_artifacts: true
+          branch: 'master'
+          path: wheels
+
+      - name: Setup uv
         uses: astral-sh/setup-uv@v3
         with:
-          version: "0.4.28"
           enable-cache: true
+          cache-dependency-blob: ""
 
       - name: Install Python
-        run: uv python install
+        run: uv python install cpython@3.12
 
-      - name: Install the project
+      - name: Install chalc from wheel
+        run: uv pip install chalc --force-reinstall --find-link ./wheels/
+
+      - name: Setup dev dependencies
         run: uv sync
 
       - name: Build docs
-        run: make -C docs html
+        run : make -C docs html
+
       - name: Deploy to GH pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
