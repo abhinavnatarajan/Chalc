@@ -28,7 +28,7 @@ jobs:
         uses: astral-sh/setup-uv@v3
         with:
           enable-cache: true
-          cache-dependency-blob: ""
+          cache-dependency-glob: ""
 
       - name: Install Python
         run: uv python install cpython@3.12
