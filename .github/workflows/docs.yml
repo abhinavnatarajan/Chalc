@@ -33,11 +33,11 @@ jobs:
       - name: Install Python
         run: uv python install cpython@3.12
 
-      - name: Install chalc from wheel
-        run: uv pip install chalc --force-reinstall --find-links ./wheels/
-
       - name: Setup dev dependencies
-        run: uv sync
+        run: uv sync --no-install-project
+
+      - name: Install chalc from wheel
+        run: uv pip install chalc --find-links ./wheels/
 
       - name: Build docs
         run : make -C docs html
