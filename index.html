@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Installation" href="installation.html" />
 
     <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
-        <title>chalc 7.0.1 documentation</title>
+        <title>chalc 7.0.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=fd3f3429" />
@@ -169,7 +169,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="#"><div class="brand">chalc 7.0.1 documentation</div></a>
+      <a href="#"><div class="brand">chalc 7.0.2 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="#">
   
   
-  <span class="sidebar-brand-text">chalc 7.0.1 documentation</span>
+  <span class="sidebar-brand-text">chalc 7.0.2 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -220,16 +220,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/abhinavnatarajan/chalc">GitHub</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/chalc">PyPI</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/chalc/index.html">chalc</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of chalc</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/chalc/chromatic/index.html">chalc.chromatic</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/chalc/filtration/index.html">chalc.filtration</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/chalc/plotting/index.html">chalc.plotting</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/chalc/sixpack/index.html">chalc.sixpack</a></li>
-</ul>
-</li>
-</ul>
-</li>
 </ul>
 
 </div>
@@ -276,7 +266,7 @@
         <article role="main" id="furo-main-content">
           <section id="chalc-documentation">
 <h1>Chalc Documentation<a class="headerlink" href="#chalc-documentation" title="Link to this heading">¶</a></h1>
-<p>Chalc is a Python package for computing chromatic Delaunay filtrations of labelled point clouds in Euclidean space, and their persistent homology.
+<p>Chalc is a Python package for computing chromatic Delaunay filtrations of labelled point clouds in Euclidean space, and associated six-packs of persistent homology diagrams.
 Chalc is named for <span class="underline">ch</span>romatic <span class="underline">al</span>pha <span class="underline">c</span>omplexes, but it can also compute chromatic Delaunay–Čech and chromatic Delaunay–Rips filtrations.
 Chalc is written in C++ and relies on the <a class="reference external" href="https://www.cgal.org">Computational Geometry Algorithms Library (CGAL)</a> for fast and accurate geometric computations, and <a class="reference external" href="https://github.com/tomchaplin/phimaker">Phimaker</a> for persistent homology calculations.</p>
 <section id="documentation-index">
@@ -317,12 +307,12 @@ Text</label><div class="sd-tab-content docutils">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="bibtex" for="sd-tab-item-1">
 BibTex</label><div class="sd-tab-content docutils">
 <div class="highlight-bibtex notranslate"><div class="highlight"><pre><span></span><span class="nc">@misc</span><span class="p">{</span><span class="nl">natarajan2024morse</span><span class="p">,</span>
-<span class="w">   </span><span class="na">title</span><span class="p">=</span><span class="s">{Morse Theory for Chromatic Delaunay Triangulations}</span><span class="p">,</span>
-<span class="w">   </span><span class="na">author</span><span class="p">=</span><span class="s">{Abhinav Natarajan and Thomas Chaplin and Adam Brown and Maria-Jose Jimenez}</span><span class="p">,</span>
-<span class="w">   </span><span class="na">year</span><span class="p">=</span><span class="s">{2024}</span><span class="p">,</span>
-<span class="w">   </span><span class="na">eprint</span><span class="p">=</span><span class="s">{2405.19303}</span><span class="p">,</span>
-<span class="w">   </span><span class="na">archivePrefix</span><span class="p">=</span><span class="s">{arXiv}</span><span class="p">,</span>
-<span class="w">   </span><span class="na">primaryClass</span><span class="p">=</span><span class="s">{math.AT}</span>
+<span class="na">title</span><span class="p">=</span><span class="s">{Morse Theory for Chromatic Delaunay Triangulations}</span><span class="p">,</span>
+<span class="na">author</span><span class="p">=</span><span class="s">{Abhinav Natarajan and Thomas Chaplin and Adam Brown and Maria-Jose Jimenez}</span><span class="p">,</span>
+<span class="na">year</span><span class="p">=</span><span class="s">{2024}</span><span class="p">,</span>
+<span class="na">eprint</span><span class="p">=</span><span class="s">{2405.19303}</span><span class="p">,</span>
+<span class="na">archivePrefix</span><span class="p">=</span><span class="s">{arXiv}</span><span class="p">,</span>
+<span class="na">primaryClass</span><span class="p">=</span><span class="s">{math.AT}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -331,7 +321,7 @@ BibTex</label><div class="sd-tab-content docutils">
 </section>
 <section id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading">¶</a></h2>
-<p>The Python package <a class="reference external" href="https://pypi.org/project/chromatic-tda/">chromatic-tda</a> (written by the original authors of <a class="reference internal" href="#sebastiano"><span class="std std-ref">[1]</span></a>) provides similar functionality, but is currently limited to points in two dimensions with upto three colours, although an alpha version with support for higher dimensions is available.</p>
+<p>The Python package <a class="reference external" href="https://pypi.org/project/chromatic-tda/">chromatic-tda</a> (written by the original authors of <a class="reference internal" href="#sebastiano"><span class="std std-ref">[1]</span></a>) has similar functionality, and can compute chromatic alpha filtrations and their six-packs of persistence diagrams, but does not provide functionality to compute chromatic Delaunay–Čech or chromatic Delaunay–Rips filtrations.</p>
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
@@ -404,7 +394,7 @@ BibTex</label><div class="sd-tab-content docutils">
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=4b9d3a76"></script>
+</div><script src="_static/documentation_options.js?v=7c65b01c"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=5fa4622c"></script>

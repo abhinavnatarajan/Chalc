@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="License" href="../../../license.html" /><link rel="prev" title="chalc.plotting" href="../plotting/index.html" />
 
     <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
-        <title>chalc.sixpack - chalc 7.0.1 documentation</title>
+        <title>chalc.sixpack - chalc 7.0.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
@@ -169,7 +169,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">chalc 7.0.1 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">chalc 7.0.2 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
   
-  <span class="sidebar-brand-text">chalc 7.0.1 documentation</span>
+  <span class="sidebar-brand-text">chalc 7.0.2 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -209,7 +209,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../chromatic/index.html">chalc.chromatic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../filtration/index.html">chalc.filtration</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../plotting/index.html">chalc.plotting</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">chalc.sixpack</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">chalc.sixpack</a></li>
 </ul>
 </li>
 </ul>
@@ -217,19 +217,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../license.html">License</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Links</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/abhinavnatarajan/chalc">GitHub</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/chalc">PyPI</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2 current has-children"><a class="reference internal" href="../index.html">chalc</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of chalc</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../chromatic/index.html">chalc.chromatic</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../filtration/index.html">chalc.filtration</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../plotting/index.html">chalc.plotting</a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">chalc.sixpack</a></li>
-</ul>
-</li>
-</ul>
-</li>
 </ul>
 
 </div>
@@ -316,7 +306,7 @@
 <td><p>Compute the 6-pack of persistence diagrams of a coloured point-cloud.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#chalc.sixpack.from_filtration" title="chalc.sixpack.from_filtration"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_filtration</span></code></a>(→ DiagramEnsemble)</p></td>
-<td><p>Compute the 6-pack of persistence diagrams associated to a filtered simplicial complex with coloured vertices.</p></td>
+<td><p>Compute the 6-pack of persistence diagrams associated to</p></td>
 </tr>
 </tbody>
 </table>
@@ -329,12 +319,12 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DiagramEnsemble</span></span><span class="sig-paren">(</span>
 
 <dl>
-<dd><em class="sig-param"><span class="n"><span class="pre">ker</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#chalc.sixpack.SimplexPairings" title="chalc.sixpack.SimplexPairings"><span class="pre">SimplexPairings</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">SimplexPairings()</span></span></em>,</dd>
-<dd><em class="sig-param"><span class="n"><span class="pre">cok</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#chalc.sixpack.SimplexPairings" title="chalc.sixpack.SimplexPairings"><span class="pre">SimplexPairings</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">SimplexPairings()</span></span></em>,</dd>
-<dd><em class="sig-param"><span class="n"><span class="pre">dom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#chalc.sixpack.SimplexPairings" title="chalc.sixpack.SimplexPairings"><span class="pre">SimplexPairings</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">SimplexPairings()</span></span></em>,</dd>
-<dd><em class="sig-param"><span class="n"><span class="pre">cod</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#chalc.sixpack.SimplexPairings" title="chalc.sixpack.SimplexPairings"><span class="pre">SimplexPairings</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">SimplexPairings()</span></span></em>,</dd>
-<dd><em class="sig-param"><span class="n"><span class="pre">im</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#chalc.sixpack.SimplexPairings" title="chalc.sixpack.SimplexPairings"><span class="pre">SimplexPairings</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">SimplexPairings()</span></span></em>,</dd>
-<dd><em class="sig-param"><span class="n"><span class="pre">rel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#chalc.sixpack.SimplexPairings" title="chalc.sixpack.SimplexPairings"><span class="pre">SimplexPairings</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">SimplexPairings()</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">ker</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#chalc.sixpack.SimplexPairings" title="chalc.sixpack.SimplexPairings"><span class="pre">SimplexPairings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">cok</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#chalc.sixpack.SimplexPairings" title="chalc.sixpack.SimplexPairings"><span class="pre">SimplexPairings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">dom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#chalc.sixpack.SimplexPairings" title="chalc.sixpack.SimplexPairings"><span class="pre">SimplexPairings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">cod</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#chalc.sixpack.SimplexPairings" title="chalc.sixpack.SimplexPairings"><span class="pre">SimplexPairings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">im</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#chalc.sixpack.SimplexPairings" title="chalc.sixpack.SimplexPairings"><span class="pre">SimplexPairings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">rel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#chalc.sixpack.SimplexPairings" title="chalc.sixpack.SimplexPairings"><span class="pre">SimplexPairings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
 <dd><em class="sig-param"><span class="n"><span class="pre">entrance_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.13)"><span class="pre">collections.abc.Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>,</dd>
 <dd><em class="sig-param"><span class="n"><span class="pre">dimensions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.13)"><span class="pre">collections.abc.Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>,</dd>
 </dl>
@@ -386,12 +376,19 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>diagram_name</strong> – One of <code class="docutils literal notranslate"><span class="pre">'ker'</span></code>, <code class="docutils literal notranslate"><span class="pre">'cok'</span></code>, <code class="docutils literal notranslate"><span class="pre">'dom'</span></code>, <code class="docutils literal notranslate"><span class="pre">'cod'</span></code>, <code class="docutils literal notranslate"><span class="pre">'im'</span></code>, or <code class="docutils literal notranslate"><span class="pre">'rel'</span></code>.</p></li>
-<li><p><strong>dim</strong> – Dimension(s) of the diagram desired. If a list is provided then a list of matrices is returned, with the order of matrices respecting the order of entries of <cite>dim</cite>. If <cite>dim</cite> is not provided then the returned matrix will contain persistent features from all homological dimensions from zero to <code class="docutils literal notranslate"><span class="pre">max(self.dimensions)</span></code>.</p></li>
+<li><p><strong>diagram_name</strong> – One of <code class="docutils literal notranslate"><span class="pre">'ker'</span></code>, <code class="docutils literal notranslate"><span class="pre">'cok'</span></code>, <code class="docutils literal notranslate"><span class="pre">'dom'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'cod'</span></code>, <code class="docutils literal notranslate"><span class="pre">'im'</span></code>, or <code class="docutils literal notranslate"><span class="pre">'rel'</span></code>.</p></li>
+<li><p><strong>dim</strong> – Dimension(s) of the diagram desired.
+If a list is provided then a list of matrices is returned,
+with the order of matrices respecting the order of entries of <cite>dim</cite>.
+If <cite>dim</cite> is not provided then the returned matrix will contain
+persistent features from all homological dimensions
+from zero to <code class="docutils literal notranslate"><span class="pre">max(self.dimensions)</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An <span class="math notranslate nohighlight">\(m \times 2\)</span> matrix whose rows are a pair of birth and death times, or a list of such matrices.</p>
+<dd class="field-even"><p>An <span class="math notranslate nohighlight">\(m \times 2\)</span> matrix whose rows are
+a pair of birth and death times, or a list of such matrices.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -440,12 +437,6 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="chalc.sixpack.DiagramEnsemble.DiagramName">
 <span class="sig-name descname"><span class="pre">DiagramName</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">TypeAlias</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Literal['ker',</span> <span class="pre">'cok',</span> <span class="pre">'dom',</span> <span class="pre">'cod',</span> <span class="pre">'im',</span> <span class="pre">'rel']</span></em><a class="headerlink" href="#chalc.sixpack.DiagramEnsemble.DiagramName" title="Link to this definition">¶</a></dt>
-<dd><p>Type hint for the names of the diagrams in the 6-pack.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="chalc.sixpack.DiagramEnsemble.diagram_names">
-<span class="sig-name descname"><span class="pre">diagram_names</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">DiagramEnsemble.DiagramName</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['ker',</span> <span class="pre">'cok',</span> <span class="pre">'dom',</span> <span class="pre">'cod',</span> <span class="pre">'im',</span> <span class="pre">'rel']</span></em><a class="headerlink" href="#chalc.sixpack.DiagramEnsemble.diagram_names" title="Link to this definition">¶</a></dt>
 <dd><p>Names of the diagrams in the 6-pack.</p>
 </dd></dl>
 
@@ -477,8 +468,9 @@ set of simplex pairings and a set of unpaired simplices.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="chalc.sixpack.SimplexPairings.__contains__">
-<span class="sig-name descname"><span class="pre">__contains__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#chalc.sixpack.SimplexPairings.__contains__" title="Link to this definition">¶</a></dt>
-<dd><p>Returns true if a feature, represented by either a pair of simplices or a single unpaired simplex, is in the diagram.</p>
+<span class="sig-name descname"><span class="pre">__contains__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#chalc.sixpack.SimplexPairings.__contains__" title="Link to this definition">¶</a></dt>
+<dd><p>Returns true if a feature, represented by either a pair of simplices
+or a single unpaired simplex, is in the diagram.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -529,22 +521,32 @@ set of simplex pairings and a set of unpaired simplices.</p>
 
 <span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble" title="chalc.sixpack.DiagramEnsemble"><span class="pre">DiagramEnsemble</span></a></span></span><a class="headerlink" href="#chalc.sixpack.compute" title="Link to this definition">¶</a></dt>
 <dd><p>Compute the 6-pack of persistence diagrams of a coloured point-cloud.</p>
-<p>This function constructs a filtered simplicial complex <span class="math notranslate nohighlight">\(K\)</span> from the point cloud, and computes the 6-pack of persistence diagrams associated with the inclusion <span class="math notranslate nohighlight">\(f : L \hookrightarrow K\)</span> where <span class="math notranslate nohighlight">\(L\)</span> is some filtered subcomplex of <span class="math notranslate nohighlight">\(K\)</span>.</p>
+<p>This function constructs a filtered simplicial complex <span class="math notranslate nohighlight">\(K\)</span>
+from the point cloud, and computes the 6-pack of persistence diagrams
+associated with the inclusion <span class="math notranslate nohighlight">\(f : L \hookrightarrow K\)</span>
+where <span class="math notranslate nohighlight">\(L\)</span> is some filtered subcomplex of <span class="math notranslate nohighlight">\(K\)</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> – Numpy matrix whose columns are points.</p></li>
 <li><p><strong>colours</strong> – Sequence of integers describing the colours of the points.</p></li>
-<li><p><strong>dom</strong> – Integer or collection of integers describing the colours of the points in the domain (the subcomplex <span class="math notranslate nohighlight">\(L\)</span>).</p></li>
-<li><p><strong>k</strong> – If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, then the domain is taken to be the <span class="math notranslate nohighlight">\(k\)</span>-chromatic subcomplex of <span class="math notranslate nohighlight">\(K\)</span>, i.e., the subcomplex of simplices having at most <span class="math notranslate nohighlight">\(k\)</span> colours.</p></li>
-<li><p><strong>method</strong> – Filtration used to construct the chromatic complex. Must be one of <code class="docutils literal notranslate"><span class="pre">'alpha'</span></code>, <code class="docutils literal notranslate"><span class="pre">'delcech'</span></code>, or <code class="docutils literal notranslate"><span class="pre">'delrips'</span></code>.</p></li>
-<li><p><strong>max_diagram_dimension</strong> – Maximum homological dimension for which the persistence diagrams are computed. By default diagrams of all dimensions are computed.</p></li>
+<li><p><strong>dom</strong> – Integer or collection of integers describing the colours of
+the points in the domain (the subcomplex <span class="math notranslate nohighlight">\(L\)</span>).</p></li>
+<li><p><strong>k</strong> – If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, then the domain is taken to be the
+<span class="math notranslate nohighlight">\(k\)</span>-chromatic subcomplex of <span class="math notranslate nohighlight">\(K\)</span>, i.e.,
+the subcomplex of simplices having at most <span class="math notranslate nohighlight">\(k\)</span> colours.</p></li>
+<li><p><strong>method</strong> – Filtration used to construct the chromatic complex.
+Must be one of <code class="docutils literal notranslate"><span class="pre">'alpha'</span></code>, <code class="docutils literal notranslate"><span class="pre">'delcech'</span></code>, or <code class="docutils literal notranslate"><span class="pre">'delrips'</span></code>.</p></li>
+<li><p><strong>max_diagram_dimension</strong> – Maximum homological dimension for which the persistence diagrams are computed.
+By default diagrams of all dimensions are computed.</p></li>
 <li><p><strong>tolerance</strong> – Retain only points with persistence strictly greater than this value.</p></li>
 </ul>
 </dd>
 </dl>
 <dl>
-<dt>Returns :</dt><dd><p>Diagrams corresponding to the following persistence modules (where <span class="math notranslate nohighlight">\(H_*\)</span> is the persistent homology functor and <span class="math notranslate nohighlight">\(f_*\)</span> is the induced map on persistent homology):</p>
+<dt>Returns :</dt><dd><p>Diagrams corresponding to the following persistence modules
+(where <span class="math notranslate nohighlight">\(H_*\)</span> is the persistent homology functor and
+<span class="math notranslate nohighlight">\(f_*\)</span> is the induced map on persistent homology):</p>
 <ol class="arabic simple">
 <li><p><span class="math notranslate nohighlight">\(H_*(L)\)</span> (domain)</p></li>
 <li><p><span class="math notranslate nohighlight">\(H_*(K)\)</span> (codomain)</p></li>
@@ -573,21 +575,34 @@ entrance times of the simplices and their dimensions.</p>
 </dl>
 
 <span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble" title="chalc.sixpack.DiagramEnsemble"><span class="pre">DiagramEnsemble</span></a></span></span><a class="headerlink" href="#chalc.sixpack.from_filtration" title="Link to this definition">¶</a></dt>
-<dd><p>Compute the 6-pack of persistence diagrams associated to a filtered simplicial complex with coloured vertices.</p>
-<p>Given a filtered chromatic simplicial complex <span class="math notranslate nohighlight">\(K\)</span> and a subcomplex <span class="math notranslate nohighlight">\(L\)</span> of <span class="math notranslate nohighlight">\(K\)</span>, this function computes the 6-pack of persistence diagram associated with the inclusion map <span class="math notranslate nohighlight">\(f : L \hookrightarrow K\)</span>. The subcomplex is specified by
-the colours of its vertices, or by an integer <span class="math notranslate nohighlight">\(k\)</span> wherein all simplices with <span class="math notranslate nohighlight">\(k\)</span> or fewer colours are considered part of the subcomplex.</p>
+<dd><p>Compute the 6-pack of persistence diagrams associated to
+a filtered simplicial complex with coloured vertices.</p>
+<p>Given a filtered chromatic simplicial complex <span class="math notranslate nohighlight">\(K\)</span>
+and a subcomplex <span class="math notranslate nohighlight">\(L\)</span> of <span class="math notranslate nohighlight">\(K\)</span>,
+this function computes the 6-pack of persistence diagram
+associated with the inclusion map <span class="math notranslate nohighlight">\(f : L \hookrightarrow K\)</span>.
+The subcomplex is specified by the colours of its vertices,
+or by an integer <span class="math notranslate nohighlight">\(k\)</span> wherein all simplices with
+<span class="math notranslate nohighlight">\(k\)</span> or fewer colours are considered part of the subcomplex.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>K</strong> – A filtered chromatic simplicial complex.</p></li>
-<li><p><strong>dom</strong> – Integer or collection of integers describing the colours of the points in the domain (the subcomplex <span class="math notranslate nohighlight">\(L\)</span>).</p></li>
-<li><p><strong>k</strong> – If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, then the domain is taken to be the <span class="math notranslate nohighlight">\(k\)</span>-chromatic subcomplex of <span class="math notranslate nohighlight">\(K\)</span>, i.e., the subcomplex of simplices having at most <span class="math notranslate nohighlight">\(k\)</span> colours.</p></li>
-<li><p><strong>max_diagram_dimension</strong> – Maximum homological dimension for which the persistence diagrams are computed. By default diagrams of all dimensions are computed.</p></li>
+<li><p><strong>dom</strong> – Integer or collection of integers describing the
+colours of the points in the domain (the subcomplex <span class="math notranslate nohighlight">\(L\)</span>).</p></li>
+<li><p><strong>k</strong> – If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, then the domain is taken to be the
+<span class="math notranslate nohighlight">\(k\)</span>-chromatic subcomplex of <span class="math notranslate nohighlight">\(K\)</span>, i.e.,
+the subcomplex of simplices having at most <span class="math notranslate nohighlight">\(k\)</span> colours.</p></li>
+<li><p><strong>max_diagram_dimension</strong> – Maximum homological dimension for which the persistence diagrams are computed.
+By default diagrams of all dimensions are computed.</p></li>
 <li><p><strong>tolerance</strong> – Retain only points with persistence strictly greater than this value.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ol class="arabic simple">
+<dd class="field-even"><p><p>Diagrams corresponding to the following persistence modules
+(where <span class="math notranslate nohighlight">\(H_*\)</span> is the persistent homology functor and
+<span class="math notranslate nohighlight">\(f_*\)</span> is the induced map on persistent homology):</p>
+<ol class="arabic simple">
 <li><p><span class="math notranslate nohighlight">\(H_*(L)\)</span> (domain)</p></li>
 <li><p><span class="math notranslate nohighlight">\(H_*(K)\)</span> (codomain)</p></li>
 <li><p><span class="math notranslate nohighlight">\(\ker(f_*)\)</span> (kernel)</p></li>
@@ -599,9 +614,6 @@ the colours of its vertices, or by an integer <span class="math notranslate nohi
 and contain simplices of all dimensions. <code class="docutils literal notranslate"><span class="pre">dgms</span></code> also contains the
 entrance times of the simplices and their dimensions.</p>
 </p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Diagrams corresponding to the following persistence modules (where <span class="math notranslate nohighlight">\(H_*\)</span> is the persistent homology functor and <span class="math notranslate nohighlight">\(f_*\)</span> is the induced map on persistent homology)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -695,7 +707,6 @@ entrance times of the simplices and their dimensions.</p>
 <li><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble.threshold"><code class="docutils literal notranslate"><span class="pre">threshold()</span></code></a></li>
 <li><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble.values"><code class="docutils literal notranslate"><span class="pre">values()</span></code></a></li>
 <li><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble.DiagramName"><code class="docutils literal notranslate"><span class="pre">DiagramName</span></code></a></li>
-<li><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble.diagram_names"><code class="docutils literal notranslate"><span class="pre">diagram_names</span></code></a></li>
 <li><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble.dimensions"><code class="docutils literal notranslate"><span class="pre">dimensions</span></code></a></li>
 <li><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble.entrance_times"><code class="docutils literal notranslate"><span class="pre">entrance_times</span></code></a></li>
 </ul>
@@ -727,7 +738,7 @@ entrance times of the simplices and their dimensions.</p>
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=4b9d3a76"></script>
+</div><script src="../../../_static/documentation_options.js?v=7c65b01c"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>

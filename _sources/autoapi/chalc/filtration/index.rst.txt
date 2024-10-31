@@ -103,11 +103,13 @@ Module Contents
    .. py:property:: dimension
       :type: int
 
+
       Current maximum dimension of a maximal simplex in the complex.
 
 
    .. py:property:: max_dimension
       :type: int
+
 
       Maximum dimension of simplex that this complex can store. \
       Set during initialisation.
@@ -116,11 +118,13 @@ Module Contents
    .. py:property:: max_filtration_time
       :type: float
 
+
       Current maximum dimension of a maximal simplex in the complex.
 
 
    .. py:property:: num_simplices
       :type: int
+
 
       The total number of simplices in the complex.
 
@@ -128,12 +132,14 @@ Module Contents
    .. py:property:: num_vertices
       :type: int
 
+
       Number of vertices in the simplicial complex. \
       Set during initialisation.
 
 
    .. py:property:: simplices
       :type: list[dict[int, Simplex]]
+
 
       A list such that ``simplices[k]`` is a dictionary of handles to the :math:`k`-simplices in the complex. The key of a :math:`k`-simplex in ``simplices[k]`` is the lexicographic index of that simplex with respect to its vertex labels sorted in ascending order, counting all possible sorted subsequences of :math:`(0, ..., N-1)` of length :math:`k`.
 
@@ -157,11 +163,13 @@ Module Contents
    .. py:property:: colours
       :type: int
 
+
       Bitmask of colours in the simplex, where the rightmost bit represents the smallest colour index. More precisely, :math:`\mathrm{bitmask} = \sum_{c \in \mathrm{colours}(\sigma)} 2^c`. For example, a simplex having vertices of colours 0 and 1 has a colour bitmask of 3.
 
 
    .. py:property:: dimension
       :type: int
+
 
       Dimension of the simplex.
 
@@ -169,11 +177,13 @@ Module Contents
    .. py:property:: facets
       :type: list[Simplex]
 
+
       Read-only list of handles to the facets of the simplex.
 
 
    .. py:property:: filtration_value
       :type: float
+
 
       Filtration value of the simplex. If you modify this value, you should call :meth:`propagate_filt_values() <chalc.filtration.FilteredComplex.propagate_filt_values>` from the parent complex to ensure that filtration times remain monotonic.
 
@@ -181,11 +191,13 @@ Module Contents
    .. py:property:: label
       :type: int
 
+
       Label of the simplex in its parent filtered complex. A :math:`k`-simplex :math:`\sigma` is labelled by the lexicographic index of :math:`\sigma` with respect to its vertex labels sorted in ascending order, counting all possible sorted subsequences of :math:`(0, ..., N-1)` of length :math:`k`.
 
 
    .. py:property:: vertices
       :type: list[int]
+
 
       List of (sorted, ascending) vertex labels of the simplex.
 

@@ -39,7 +39,7 @@ Functions
 Module Contents
 ---------------
 
-.. py:class:: DiagramEnsemble(ker: SimplexPairings = SimplexPairings(), cok: SimplexPairings = SimplexPairings(), dom: SimplexPairings = SimplexPairings(), cod: SimplexPairings = SimplexPairings(), im: SimplexPairings = SimplexPairings(), rel: SimplexPairings = SimplexPairings(), entrance_times: collections.abc.Sequence[float] = [], dimensions: collections.abc.Sequence[int] = [])
+.. py:class:: DiagramEnsemble(ker: SimplexPairings | None = None, cok: SimplexPairings | None = None, dom: SimplexPairings | None = None, cod: SimplexPairings | None = None, im: SimplexPairings | None = None, rel: SimplexPairings | None = None, entrance_times: collections.abc.Sequence[float] = [], dimensions: collections.abc.Sequence[int] = [])
 
    Bases: :py:obj:`collections.abc.Mapping`
 
@@ -86,10 +86,17 @@ Module Contents
 
       Get a specific diagram as a matrix of birth and death times.
 
-      :param diagram_name: One of ``'ker'``, ``'cok'``, ``'dom'``, ``'cod'``, ``'im'``, or ``'rel'``.
-      :param dim: Dimension(s) of the diagram desired. If a list is provided then a list of matrices is returned, with the order of matrices respecting the order of entries of `dim`. If `dim` is not provided then the returned matrix will contain persistent features from all homological dimensions from zero to ``max(self.dimensions)``.
+      :param diagram_name: One of ``'ker'``, ``'cok'``, ``'dom'``,
+                           ``'cod'``, ``'im'``, or ``'rel'``.
+      :param dim: Dimension(s) of the diagram desired.
+                  If a list is provided then a list of matrices is returned,
+                  with the order of matrices respecting the order of entries of `dim`.
+                  If `dim` is not provided then the returned matrix will contain
+                  persistent features from all homological dimensions
+                  from zero to ``max(self.dimensions)``.
 
-      :returns: An :math:`m \times 2` matrix whose rows are a pair of birth and death times, or a list of such matrices.
+      :returns: An :math:`m \times 2` matrix whose rows are
+                a pair of birth and death times, or a list of such matrices.
 
 
 
@@ -136,25 +143,19 @@ Module Contents
       :value: Literal['ker', 'cok', 'dom', 'cod', 'im', 'rel']
 
 
-      Type hint for the names of the diagrams in the 6-pack.
-
-
-   .. py:attribute:: diagram_names
-      :type:  list[DiagramEnsemble.DiagramName]
-      :value: ['ker', 'cok', 'dom', 'cod', 'im', 'rel']
-
-
       Names of the diagrams in the 6-pack.
 
 
    .. py:property:: dimensions
       :type: NumpyVector[Size, numpy.int64]
 
+
       Dimensions of the simplices.
 
 
    .. py:property:: entrance_times
       :type: NumpyVector[Size, numpy.float64]
+
 
       Entrance times of the simplices.
 
@@ -174,9 +175,10 @@ Module Contents
 
 
 
-   .. py:method:: __contains__(feature: tuple[int, int] | int) -> bool
+   .. py:method:: __contains__(feature: object) -> bool
 
-      Returns true if a feature, represented by either a pair of simplices or a single unpaired simplex, is in the diagram.
+      Returns true if a feature, represented by either a pair of simplices
+      or a single unpaired simplex, is in the diagram.
 
 
 
@@ -201,11 +203,13 @@ Module Contents
    .. py:property:: paired
       :type: set[tuple[int, int]]
 
+
       Set of indices of paired simplices (read-only).
 
 
    .. py:property:: unpaired
       :type: set[int]
+
 
       Set of indices of unpaired simplices (read-only).
 
@@ -214,18 +218,28 @@ Module Contents
 
    Compute the 6-pack of persistence diagrams of a coloured point-cloud.
 
-   This function constructs a filtered simplicial complex :math:`K` from the point cloud, and computes the 6-pack of persistence diagrams associated with the inclusion :math:`f : L \hookrightarrow K` where :math:`L` is some filtered subcomplex of :math:`K`.
+   This function constructs a filtered simplicial complex :math:`K`
+   from the point cloud, and computes the 6-pack of persistence diagrams
+   associated with the inclusion :math:`f : L \hookrightarrow K`
+   where :math:`L` is some filtered subcomplex of :math:`K`.
 
    :param x: Numpy matrix whose columns are points.
    :param colours: Sequence of integers describing the colours of the points.
-   :param dom: Integer or collection of integers describing the colours of the points in the domain (the subcomplex :math:`L`).
-   :param k: If not ``None``, then the domain is taken to be the :math:`k`-chromatic subcomplex of :math:`K`, i.e., the subcomplex of simplices having at most :math:`k` colours.
-   :param method: Filtration used to construct the chromatic complex. Must be one of ``'alpha'``, ``'delcech'``, or ``'delrips'``.
-   :param max_diagram_dimension: Maximum homological dimension for which the persistence diagrams are computed. By default diagrams of all dimensions are computed.
+   :param dom: Integer or collection of integers describing the colours of
+               the points in the domain (the subcomplex :math:`L`).
+   :param k: If not ``None``, then the domain is taken to be the
+             :math:`k`-chromatic subcomplex of :math:`K`, i.e.,
+             the subcomplex of simplices having at most :math:`k` colours.
+   :param method: Filtration used to construct the chromatic complex.
+                  Must be one of ``'alpha'``, ``'delcech'``, or ``'delrips'``.
+   :param max_diagram_dimension: Maximum homological dimension for which the persistence diagrams are computed.
+                                 By default diagrams of all dimensions are computed.
    :param tolerance: Retain only points with persistence strictly greater than this value.
 
    Returns :
-           Diagrams corresponding to the following persistence modules (where :math:`H_*` is the persistent homology functor and :math:`f_*` is the induced map on persistent homology):
+           Diagrams corresponding to the following persistence modules
+           (where :math:`H_*` is the persistent homology functor and
+           :math:`f_*` is the induced map on persistent homology):
 
            #. :math:`H_*(L)` (domain)
            #. :math:`H_*(K)` (codomain)
@@ -241,18 +255,30 @@ Module Contents
 
 .. py:function:: from_filtration(K: chalc.filtration.FilteredComplex, dom: collections.abc.Collection[int] | int | None = None, k: int | None = None, max_diagram_dimension: int | None = None, tolerance: float = 0) -> DiagramEnsemble
 
-   Compute the 6-pack of persistence diagrams associated to a filtered simplicial complex with coloured vertices.
+   Compute the 6-pack of persistence diagrams associated to
+   a filtered simplicial complex with coloured vertices.
 
-   Given a filtered chromatic simplicial complex :math:`K` and a subcomplex :math:`L` of :math:`K`, this function computes the 6-pack of persistence diagram associated with the inclusion map :math:`f : L \hookrightarrow K`. The subcomplex is specified by
-   the colours of its vertices, or by an integer :math:`k` wherein all simplices with :math:`k` or fewer colours are considered part of the subcomplex.
+   Given a filtered chromatic simplicial complex :math:`K`
+   and a subcomplex :math:`L` of :math:`K`,
+   this function computes the 6-pack of persistence diagram
+   associated with the inclusion map :math:`f : L \hookrightarrow K`.
+   The subcomplex is specified by the colours of its vertices,
+   or by an integer :math:`k` wherein all simplices with
+   :math:`k` or fewer colours are considered part of the subcomplex.
 
    :param K: A filtered chromatic simplicial complex.
-   :param dom: Integer or collection of integers describing the colours of the points in the domain (the subcomplex :math:`L`).
-   :param k: If not ``None``, then the domain is taken to be the :math:`k`-chromatic subcomplex of :math:`K`, i.e., the subcomplex of simplices having at most :math:`k` colours.
-   :param max_diagram_dimension: Maximum homological dimension for which the persistence diagrams are computed. By default diagrams of all dimensions are computed.
+   :param dom: Integer or collection of integers describing the
+               colours of the points in the domain (the subcomplex :math:`L`).
+   :param k: If not ``None``, then the domain is taken to be the
+             :math:`k`-chromatic subcomplex of :math:`K`, i.e.,
+             the subcomplex of simplices having at most :math:`k` colours.
+   :param max_diagram_dimension: Maximum homological dimension for which the persistence diagrams are computed.
+                                 By default diagrams of all dimensions are computed.
    :param tolerance: Retain only points with persistence strictly greater than this value.
 
-   :returns:
+   :returns: Diagrams corresponding to the following persistence modules
+             (where :math:`H_*` is the persistent homology functor and
+             :math:`f_*` is the induced map on persistent homology):
 
              #. :math:`H_*(L)` (domain)
              #. :math:`H_*(K)` (codomain)
@@ -264,7 +290,6 @@ Module Contents
              Each diagram is represented by sets of paired and unpaired simplices,
              and contain simplices of all dimensions. ``dgms`` also contains the
              entrance times of the simplices and their dimensions.
-   :rtype: Diagrams corresponding to the following persistence modules (where :math:`H_*` is the persistent homology functor and :math:`f_*` is the induced map on persistent homology)
 
 
 .. py:data:: NumpyMatrix
