@@ -44,17 +44,17 @@ Repository = "https://github.com/abhinavnatarajan/Chalc.git"
 
 [dependency-groups]
 dev = [
-	"furo~=2024.8.6",
-	"ipykernel~=6.29.5",
-	"ipympl~=0.9.4",
-	"ipython~=8.29.0",
-	"nbsphinx~=0.9.3",
-	"pybind11-stubgen~=2.5.1",
-	"pytest>=8.3.3",
-	"sphinx-autoapi~=3.3.1",
-	"sphinx-design~=0.6.0",
-	"sphinx-toolbox~=3.5.0",
-	"sphinx~=8.0.0",
+	"furo>=2024.8.6",
+	"ipykernel~=6.29",
+	"ipympl~=0.9",
+	"ipython~=8.29",
+	"nbsphinx~=0.9",
+	"pybind11-stubgen~=2.5",
+	"pytest~=8.3",
+	"sphinx-autoapi~=3.3",
+	"sphinx-design~=0.6",
+	"sphinx-toolbox~=3.5",
+	"sphinx~=8.0",
 ]
 
 [tool.scikit-build]

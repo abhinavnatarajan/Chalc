@@ -1,32 +1,32 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
-    "description": "A package to compute the chromatic alpha complex of coloured point clouds in Euclidean space",
-    "dependencies": [
-        {
-            "name": "eigen3",
-            "version>=": "3.4.0#2"
-        },
-        {
-            "name": "gmp",
-            "platform": "!windows",
-            "features": [
-                "fat"
-            ],
-            "version>=": "6.2.1#21"
-        },
-        {
-            "name": "gmp",
-            "platform": "windows",
-            "version>=": "6.2.1#21"
-        },
-        {
-            "name": "mpfr",
-            "version>=": "4.2.0"
-        },
-        {
-            "name": "cgal",
-            "version>=": "5.6"
-        }
-    ],
-    "builtin-baseline": "7ef9d0ddfe2ed9d931923867776277486d4e137a"
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "description": "A package to compute the chromatic alpha complex of coloured point clouds in Euclidean space",
+  "dependencies": [
+    {
+      "name": "eigen3",
+      "version>=": "3.4.0#2"
+    },
+    {
+      "name": "gmp",
+      "platform": "!windows",
+      "features": [
+        "fat"
+      ],
+      "version>=": "6.2.1#21"
+    },
+    {
+      "name": "gmp",
+      "platform": "windows",
+      "version>=": "6.2.1#21"
+    },
+    {
+      "name": "mpfr",
+      "version>=": "4.2.0"
+    },
+    {
+      "name": "cgal",
+      "version>=": "6.0.1"
+    }
+  ],
+  "builtin-baseline": "7fd612ee1c57192d49028ed6a922e5e8bdb257f3"
 }
