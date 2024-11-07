@@ -68,16 +68,6 @@ wheel.packages = ["src/chalc"]
 wheel.install-dir = "chalc"
 experimental = true
 
-[tool.cibuildwheel]
-archs = ["auto64"]
-skip = ["pp*", "*-musllinux_*"]
-test-command = "pytest {package}/tests"
-test-requires = ["pytest~=8.2.2"]
-build-verbosity = 2
-
-[tool.cibuildwheel.linux]
-environment-pass = ["CI"]
-
 [tool.pytest.ini_options]
 addopts = ["--import-mode=importlib"]
 
