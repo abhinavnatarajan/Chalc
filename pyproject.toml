@@ -22,9 +22,9 @@ dependencies = [
 	"numpy~=2.0",
 	"phimaker~=0.1",
 	"pandas~=2.2",
-	"matplotlib~=3.8",
+	"matplotlib~=3.9",
 	"seaborn~=0.13",
-	"h5py~=3.11",
+	"h5py~=3.12",
 ]
 classifiers = [
 	"Development Status :: 3 - Alpha",
