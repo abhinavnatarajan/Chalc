@@ -75,7 +75,7 @@ jobs:
           runVcpkgInstall: false
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.19.2
+        uses: pypa/cibuildwheel@v2.21.3
         env:
           CIBW_BEFORE_ALL_LINUX: yum install -y zip
 
