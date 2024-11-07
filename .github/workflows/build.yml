@@ -55,6 +55,9 @@ jobs:
         run: brew install automake autoconf libtool
         if: ${{ runner.os == 'macos' }}
 
+      - name: Set deployment target on macOS
+        run: echo "MACOSX_DEPLOYMENT_TARGET=$(sw_vers -productVersion | cut -d '.' -f 1-2)" >> "$GITHUB_ENV"
+
       - name: Get vcpkg commit ID from manifest
         shell: bash
         run: |
