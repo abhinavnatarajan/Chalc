@@ -57,6 +57,7 @@ jobs:
 
       - name: Set deployment target on macOS
         run: echo "MACOSX_DEPLOYMENT_TARGET=$(sw_vers -productVersion | cut -d '.' -f 1-2)" >> "$GITHUB_ENV"
+        if: ${{ runner.os == 'macos' }}
 
       - name: Get vcpkg commit ID from manifest
         shell: bash
