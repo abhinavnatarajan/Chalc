@@ -9,15 +9,6 @@ chalc.sixpack
 
 
 
-Attributes
-----------
-
-.. autoapisummary::
-
-   chalc.sixpack.NumpyMatrix
-   chalc.sixpack.NumpyVector
-
-
 Classes
 -------
 
@@ -47,9 +38,29 @@ Module Contents
    6-pack of persistence diagrams.
 
 
+   .. py:data:: DiagramName
+      :type:  TypeAlias
+      :value: Literal['ker', 'cok', 'dom', 'cod', 'im', 'rel']
+
+
+      Names of the diagrams in the 6-pack.
+
+
    .. py:method:: __bool__() -> bool
 
-      Returns true if any diagram in the 6-pack is non-empty.
+      Return true if any diagram in the 6-pack is non-empty.
+
+
+
+   .. py:method:: __contains__(key: object) -> bool
+
+      Return true if a diagram is in the 6-pack.
+
+
+
+   .. py:method:: __eq__(other: object) -> bool
+
+      Check if two 6-packs of persistence diagrams are equal.
 
 
 
@@ -59,9 +70,15 @@ Module Contents
 
 
 
-   .. py:method:: __iter__() -> Iterator[tuple[DiagramName, SimplexPairings]]
+   .. py:method:: __iter__() -> collections.abc.Iterator[tuple[DiagramName, SimplexPairings]]
 
       Iterate over all diagrams in the 6-pack.
+
+
+
+   .. py:method:: __len__() -> int
+
+      Return the number of diagrams in the 6-pack.
 
 
 
@@ -77,12 +94,14 @@ Module Contents
 
    .. py:method:: get(key: DiagramName, default: U = None) -> SimplexPairings | U
 
-      Access a specific diagram in the 6-pack, with a default value if the diagram does not exist.
+      Access a specific diagram in the 6-pack.
+
+      Returns a default value if the diagram does not exist.
 
 
 
-   .. py:method:: get_matrix(diagram_name: DiagramName, dim: int) -> NumpyMatrix[NumRows, Literal[2], numpy.float64]
-                  get_matrix(diagram_name: DiagramName, dim: list[int] | None = None) -> list[NumpyMatrix[NumRows, Literal[2], numpy.float64]]
+   .. py:method:: get_matrix(diagram_name: DiagramName, dim: int) -> numpy.ndarray[tuple[int, Literal[2]], numpy.dtype[numpy.float64]]
+                  get_matrix(diagram_name: DiagramName, dim: list[int] | None = None) -> list[numpy.ndarray[tuple[int, Literal[2]], numpy.dtype[numpy.float64]]]
 
       Get a specific diagram as a matrix of birth and death times.
 
@@ -138,23 +157,15 @@ Module Contents
 
 
 
-   .. py:attribute:: DiagramName
-      :type:  TypeAlias
-      :value: Literal['ker', 'cok', 'dom', 'cod', 'im', 'rel']
-
-
-      Names of the diagrams in the 6-pack.
-
-
    .. py:property:: dimensions
-      :type: NumpyVector[Size, numpy.int64]
+      :type: numpy.ndarray[tuple[int], numpy.dtype[numpy.int64]]
 
 
       Dimensions of the simplices.
 
 
    .. py:property:: entrance_times
-      :type: NumpyVector[Size, numpy.float64]
+      :type: numpy.ndarray[tuple[int], numpy.dtype[numpy.float64]]
 
 
       Entrance times of the simplices.
@@ -165,24 +176,31 @@ Module Contents
    Bases: :py:obj:`collections.abc.Collection`
 
 
-   Persistence diagram object, represented by a
-   set of simplex pairings and a set of unpaired simplices.
+   Persistence diagram object.
 
 
    .. py:method:: __bool__() -> bool
 
-      Returns true if the diagram is non-empty.
+      Return true if the diagram is non-empty.
 
 
 
    .. py:method:: __contains__(feature: object) -> bool
 
-      Returns true if a feature, represented by either a pair of simplices
-      or a single unpaired simplex, is in the diagram.
+      Return true if a feature is in the diagram.
+
+      The feature to check should be either a pair of simplices (int, int)
+      or a single simplex (int).
 
 
 
-   .. py:method:: __iter__() -> Iterator[tuple[int, int] | int]
+   .. py:method:: __eq__(other: object) -> bool
+
+      Check if two diagrams have the same paired and unpaired simplices.
+
+
+
+   .. py:method:: __iter__() -> collections.abc.Iterator[tuple[int, int] | int]
 
       Iterate over all features in the diagram.
 
@@ -190,13 +208,19 @@ Module Contents
 
    .. py:method:: __len__() -> int
 
-      Returns the number of features in the diagram.
+      Return the number of features in the diagram.
 
 
 
-   .. py:method:: paired_as_matrix() -> NumpyMatrix[NumRows, Literal[2], numpy.int64]
+   .. py:method:: __str__() -> str
 
-      Returns a matrix representation of the finite persistence features in the diagram.
+      Return string representation of the persistence diagram.
+
+
+
+   .. py:method:: paired_as_matrix() -> numpy.ndarray[tuple[int, Literal[2]], numpy.dtype[numpy.int64]]
+
+      Return a matrix representation of the finite persistence features in the diagram.
 
 
 
@@ -214,7 +238,7 @@ Module Contents
       Set of indices of unpaired simplices (read-only).
 
 
-.. py:function:: compute(x: NumpyMatrix[NumRows, NumCols, numpy.floating], colours: collections.abc.Sequence[int], dom: collections.abc.Collection[int] | int | None = None, k: int | None = None, method: Literal['alpha', 'delcech', 'delrips'] = 'alpha', max_diagram_dimension: int | None = None, tolerance: float = 0) -> DiagramEnsemble
+.. py:function:: compute(x: numpy.ndarray[tuple[NumRows, NumCols], numpy.dtype[numpy.floating]], colours: collections.abc.Sequence[int], dom: collections.abc.Collection[int] | int | None = None, k: int | None = None, method: Literal['alpha', 'delcech', 'delrips'] = 'alpha', max_diagram_dimension: int | None = None, tolerance: float = 0) -> DiagramEnsemble
 
    Compute the 6-pack of persistence diagrams of a coloured point-cloud.
 
@@ -253,10 +277,10 @@ Module Contents
            entrance times of the simplices and their dimensions.
 
 
+
 .. py:function:: from_filtration(K: chalc.filtration.FilteredComplex, dom: collections.abc.Collection[int] | int | None = None, k: int | None = None, max_diagram_dimension: int | None = None, tolerance: float = 0) -> DiagramEnsemble
 
-   Compute the 6-pack of persistence diagrams associated to
-   a filtered simplicial complex with coloured vertices.
+   Compute 6-pack of persistence diagrams from a chromatic filtration.
 
    Given a filtered chromatic simplicial complex :math:`K`
    and a subcomplex :math:`L` of :math:`K`,
@@ -291,18 +315,4 @@ Module Contents
              and contain simplices of all dimensions. ``dgms`` also contains the
              entrance times of the simplices and their dimensions.
 
-
-.. py:data:: NumpyMatrix
-   :type:  TypeAlias
-   :value: np.ndarray[tuple[M, N], np.dtype[T]]
-
-
-   Type hint for an ``M x N`` numpy matrix whose entries are of type ``T``.
-
-.. py:data:: NumpyVector
-   :type:  TypeAlias
-   :value: np.ndarray[N, np.dtype[T]]
-
-
-   Type hint for an numpy vector of length ``N`` with entries of type ``T``.
 
