@@ -19,7 +19,7 @@ Chalc is a C++ extension module for Python and has several additional dependenci
 
 1. The `Eigen C++ library <https://eigen.tuxfamily.org/index.php?title=Main_Page>`_ (tested with version 3.4.0).
 2. The `GNU MP Library <https://gmplib.org/>`_ (tested with version 6.3.1) and the `GNU MPFR Library <https://www.mpfr.org/>`_ (tested with version 4.2.0) for exact geometric computation.
-3. The `Computational Geometry Algorithms Library (CGAL) <https://www.cgal.org/>`_ library (version 5.6).
+3. The `Computational Geometry Algorithms Library (CGAL) <https://www.cgal.org/>`_ library (tested with version 6.0.1).
 4. The `Boost C++ libraries <https://www.boost.org/>`_ (transitive dependency through CGAL).
 
 The recommended way to obtain and manage these dependencies is using vcpkg (see the build dependencies section) . It is also recommended to use a `Python virtual environment <https://docs.python.org/3/tutorial/venv.html>`_ for the build process to avoid polluting the package namespace.
