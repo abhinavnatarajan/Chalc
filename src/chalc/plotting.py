@@ -2,21 +2,17 @@
 
 from __future__ import annotations
 
-from collections.abc import Collection, Mapping, Sequence, Set
+from collections.abc import Collection, Mapping, Sequence
+from collections.abc import Set as AbstractSet
 from itertools import product
-from typing import Literal, TypeVar, get_args
+from typing import TYPE_CHECKING, Any, Literal, get_args
 
-import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-from matplotlib.axes import Axes
-from matplotlib.figure import Figure
+from matplotlib import animation
 from matplotlib.legend import Legend
 from pandas import DataFrame
-
-from chalc.filtration import FilteredComplex
-from chalc.sixpack import NumpyMatrix
 
 from .sixpack import (
 	DiagramEnsemble,
@@ -27,7 +23,12 @@ from .sixpack import (
 	_num_colours_in_bitmask,
 )
 
-NumCols = TypeVar("NumCols", bound=int)
+if TYPE_CHECKING:
+	from matplotlib.artist import Artist
+	from matplotlib.axes import Axes
+	from matplotlib.figure import Figure
+
+	from chalc.filtration import FilteredComplex
 
 plt.rcParams["animation.html"] = "jshtml"
 
@@ -35,11 +36,10 @@ plt.rcParams["animation.html"] = "jshtml"
 def plot_sixpack(
 	dgms: DiagramEnsemble,
 	truncations: Mapping[DiagramEnsemble.DiagramName, float] | float | None = None,
-	dimensions: Set[int] | int | None = None,
+	dimensions: AbstractSet[int] | int | None = None,
 	tolerance: float = 0,
-) -> tuple[Figure, NumpyMatrix[Literal[2], Literal[3], Axes]]:
-	"""
-	Plots the 6-pack of persistence diagrams returned by :func:`compute <.sixpack.compute>`.
+) -> tuple[Figure, np.ndarray[tuple[Literal[2], Literal[3]], np.dtype[Axes]]]:
+	"""Plot the 6-pack of persistence diagrams returned by :func:`compute <.sixpack.compute>`.
 
 	Args:
 		dgms        : The 6-pack of persistence diagrams.
@@ -51,8 +51,9 @@ def plot_sixpack(
 			The homological dimensions for which to plot features.
 			If not provided, all dimensions will be included in the plots.
 		tolerance   : Only features with persistence greater than this value will be plotted.
+
 	"""
-	diagram_names = get_args(DiagramEnsemble.DiagramName)
+	diagram_names = get_args(DiagramEnsemble.DiagramName.__value__)
 	if dimensions is None:
 		if dgms:
 			dimensions = set(range(max(dgms.dimensions)))
@@ -68,10 +69,11 @@ def plot_sixpack(
 			dims = {name: set() for name in diagram_names}
 	elif isinstance(dimensions, int):
 		dims = {name: {dimensions} for name in diagram_names}
-	elif isinstance(dimensions, Set) and all(isinstance(dim, int) for dim in dimensions):
+	elif isinstance(dimensions, AbstractSet) and all(isinstance(dim, int) for dim in dimensions):
 		dims = {name: dimensions for name in diagram_names}
 	else:
-		raise ValueError("Invalid dimensions argument.")
+		errmsg = "Invalid dimensions argument."
+		raise ValueError(errmsg)
 
 	# In general, the dimension of a feature represented by a simplex pair (a, b)
 	# is dim(a), unless the diagram is in the kernel, in which case
@@ -79,28 +81,30 @@ def plot_sixpack(
 	dim_shift = {name: (1 if name == "ker" else 0) for name in diagram_names}
 
 	if truncations is None:
-		truncations = dict()
+		truncations = {}
 	if isinstance(truncations, Mapping) and all(
 		isinstance(val, float) for val in truncations.values()
 	):
-		truncs = dict()
+		truncs = {}
 		for diagram_name in diagram_names:
 			if diagram_name in truncations and isinstance(truncations[diagram_name], float):
 				truncs[diagram_name] = truncations[diagram_name]
 				continue
 			ycoords = [
-				dgms._entrance_times[death_simplex]
+				dgms.entrance_times[death_simplex]
 				for birth_simplex, death_simplex in dgms[diagram_name].paired
-				if dgms._dimensions[birth_simplex] - dim_shift[diagram_name] in dims[diagram_name]
+				if dgms.dimensions[birth_simplex] - dim_shift[diagram_name] in dims[diagram_name]
 			]
 			truncs[diagram_name] = _get_truncation(ycoords) if ycoords else 1.0
 	elif isinstance(truncations, float):
 		truncs = {diagram_name: truncations for diagram_name in diagram_names}
 	else:
-		raise TypeError("Invalid truncations argument.")
+		errmsg = "Invalid truncations argument."
+		raise TypeError(errmsg)
 
 	plot_pos = {
-		name: (val[1], val[0]) for name, val in zip(diagram_names, product((0, 1, 2), (0, 1)))
+		name: (val[1], val[0])
+		for name, val in zip(diagram_names, product((0, 1, 2), (0, 1)), strict=True)
 	}
 	plot_titles = {
 		"ker": "Kernel",
@@ -112,13 +116,17 @@ def plot_sixpack(
 	}
 	points_legend = {name: (name == "rel") for name in diagram_names}
 	fig, axes = plt.subplots(
-		nrows=2, ncols=3, figsize=[3.5 * 3, 3.5 * 2], sharex=False, sharey=False
+		nrows=2,
+		ncols=3,
+		figsize=[3.5 * 3, 3.5 * 2],
+		sharex=False,
+		sharey=False,
 	)
 	for diagram_name in diagram_names:
 		_plot_diagram(
 			diagram=dgms[diagram_name],
-			entrance_times=list(dgms._entrance_times),
-			dimensions=list(dgms._dimensions),
+			entrance_times=list(dgms.entrance_times),
+			dimensions=list(dgms.dimensions),
 			truncation=truncs[diagram_name],
 			dims=dims[diagram_name],
 			ax=axes[plot_pos[diagram_name]],
@@ -128,12 +136,11 @@ def plot_sixpack(
 			lines_legend=False,
 			tolerance=tolerance,
 		)
-	legends = dict()
+	legends = {}
 	for ax in fig.axes:
-		handles, labels = ax.get_legend_handles_labels()
-		for handle, label in zip(handles, labels):
-			legends[label] = handle
 		ax.tick_params(labelleft=True, labelbottom=True)
+		handles, labels = ax.get_legend_handles_labels()
+		legends |= dict(zip(labels, handles, strict=True))
 	axes[plot_pos["rel"]].get_legend().remove()
 	fig.legend(handles=legends.values(), loc="lower center", ncol=5)
 	return fig, axes
@@ -143,12 +150,11 @@ def plot_diagram(
 	dgms: DiagramEnsemble,
 	diagram_name: DiagramEnsemble.DiagramName,
 	truncation: float | None = None,
-	dimensions: Set[int] | int | None = None,
+	dimensions: AbstractSet[int] | int | None = None,
 	ax: Axes | None = None,
 	tolerance: float = 0,
 ) -> Axes | None:
-	"""
-	Plot a specific diagram from a 6-pack.
+	"""Plot a specific diagram from a 6-pack.
 
 	Args:
 		dgms         : The 6-pack of persistence diagrams.
@@ -163,6 +169,7 @@ def plot_diagram(
 			A matplotlib axes object.
 			If provided then the diagram will be plotted on the given axes.
 		tolerance    : Only features with persistence greater than this value will be plotted.
+
 	"""
 	dgm = dgms[diagram_name]
 
@@ -172,7 +179,7 @@ def plot_diagram(
 	dim_shift = 1 if diagram_name == "ker" else 0
 
 	if dimensions is None:
-		dimensions = set(range(max(dgms._dimensions))) if dgm else set()
+		dimensions = set(range(max(dgms.dimensions))) if dgm else set()
 	elif isinstance(dimensions, int):
 		dimensions = {
 			dimensions,
@@ -180,9 +187,9 @@ def plot_diagram(
 
 	if truncation is None:
 		ycoord = [
-			dgms._entrance_times[death_simplex]
+			dgms.entrance_times[death_simplex]
 			for birth_simplex, death_simplex in dgms[diagram_name].paired
-			if dgms._dimensions[birth_simplex] - dim_shift in dimensions
+			if dgms.dimensions[birth_simplex] - dim_shift in dimensions
 		]
 		truncation = _get_truncation(ycoord) if ycoord else 1.0
 
@@ -203,8 +210,8 @@ def plot_diagram(
 
 	_plot_diagram(
 		diagram=dgm,
-		entrance_times=list(dgms._entrance_times),
-		dimensions=list(dgms._dimensions),
+		entrance_times=list(dgms.entrance_times),
+		dimensions=list(dgms.dimensions),
 		truncation=truncation,
 		dims=dimensions,
 		ax=ax1,
@@ -218,18 +225,19 @@ def plot_diagram(
 
 
 def _plot_diagram(
+	*,
 	diagram: SimplexPairings,
 	entrance_times: Sequence[float],  # entrance times of the simplices by index
 	dimensions: Sequence[int],  # dimensions of the simplices by index
 	truncation: float,  # max birth/death time to plot
-	dims: Set[int],  # dimensions for which features are plotted
+	dims: AbstractSet[int],  # dimensions for which features are plotted
 	ax: Axes,  # axes to plot on
 	title: str,  # title of the plot
 	points_legend: bool,  # show legend for points (which dimension)
 	lines_legend: bool,  # show legend for lines (truncation, infinity)
 	dim_shift: int,  # dimension shift if any; only relevant for kernel
 	tolerance: float,
-	**kwargs,
+	**kwargs: Any,
 ) -> None:
 	# Truncate all times
 	truncate_level = truncation * 1.04
@@ -244,7 +252,7 @@ def _plot_diagram(
 			entrance_times[death_idx],
 			f"$H_{{{dimensions[birth_idx] - dim_shift}}}$",
 		)
-		for birth_idx, death_idx in diagram._paired
+		for birth_idx, death_idx in diagram.paired
 		if dimensions[birth_idx] - dim_shift in dims
 		and entrance_times[death_idx] - entrance_times[birth_idx] > tolerance
 	] + [
@@ -253,13 +261,19 @@ def _plot_diagram(
 			inf_level,
 			f"$H_{{{dimensions[birth_idx] - dim_shift}}}$",
 		)
-		for birth_idx in diagram._unpaired
+		for birth_idx in diagram.unpaired
 		if dimensions[birth_idx] - dim_shift in dims
 	]
 	plot_df = DataFrame.from_records(data=all_pts, columns=["Birth", "Death", "Dimension"])
 	plot_df["Dimension"] = plot_df["Dimension"].astype("category")
 	ret_ax = sns.scatterplot(
-		data=plot_df, x="Birth", y="Death", hue="Dimension", ax=ax, legend=points_legend, **kwargs
+		data=plot_df,
+		x="Birth",
+		y="Death",
+		hue="Dimension",
+		ax=ax,
+		legend=points_legend,
+		**kwargs,
 	)
 	ret_ax.set(xlabel=None)
 	ret_ax.set(ylabel=None)
@@ -271,9 +285,13 @@ def _plot_diagram(
 	handle = ax if ax is not None else plt
 	handle.plot([0, inf_level], [0, inf_level], "k-", alpha=0.4)
 	handle.plot(
-		[0, truncate_level], [truncate_level, truncate_level], "k:", alpha=0.4, label="Truncated"
+		[0, truncate_level],
+		[truncate_level, truncate_level],
+		"k:",
+		alpha=0.4,
+		label="Truncated",
 	)
-	handle.plot([0, inf_level], [inf_level, inf_level], "k--", alpha=0.4, label="$\\infty$")
+	handle.plot([0, inf_level], [inf_level, inf_level], "k--", alpha=0.4, label=r"$\infty$")
 	handle.plot([0, 0], [0, inf_level], "k-", alpha=0.4)
 	if lines_legend:
 		handle.legend()
@@ -281,17 +299,16 @@ def _plot_diagram(
 
 def draw_filtration(
 	K: FilteredComplex,  # noqa: N803
-	points: NumpyMatrix[Literal[2], NumCols, np.floating],
+	points: np.ndarray[tuple[Literal[2], int], np.dtype[np.floating]],
 	time: float,
 	include_colours: Collection[int] | None = None,
 	ax: Axes | None = None,
 ) -> Axes:
-	"""
-	Visualise a 2D filtration at given time, optionally including only certain colours.
+	r"""Visualise a 2D filtration at given time, optionally including only certain colours.
 
 	Args:
 		K               : A filtered 2-dimensional simplicial complex.
-		points          : The vertices of ``K`` as a :math:`2\\times N` numpy matrix.
+		points          : The vertices of ``K`` as a :math:`2\times N` numpy matrix.
 		time            : Filtration times for which to draw simplices.
 		include_colours :
 			Optional collection of colours to include.
@@ -299,14 +316,15 @@ def draw_filtration(
 		ax              :
 			A matplotlib axes object.
 			If provided then the diagram will be plotted on the given axes.
+
 	"""
-	if len(points.shape) != 2:
+	if len(points.shape) != 2:  # noqa: PLR2004
 		raise NotImplementedError
 
 	if include_colours is None:
-		include_colours = set(
-			[_bitmask_to_colours(vertex.colours)[0] for vertex in K.simplices[0].values()]
-		)
+		include_colours = {
+			_bitmask_to_colours(vertex.colours)[0] for vertex in K.simplices[0].values()
+		}
 
 	include_colours_bitmask = _colours_to_bitmask(include_colours)
 
@@ -337,7 +355,7 @@ def draw_filtration(
 	)
 
 	# Plot the edges
-	for _, simplex in K.simplices[1].items():
+	for simplex in K.simplices[1].values():
 		if (
 			_colours_are_subset(simplex.colours, include_colours_bitmask)
 			and simplex.filtration_value <= time
@@ -356,7 +374,7 @@ def draw_filtration(
 				linewidth=1,
 			)
 
-	for _, simplex in K.simplices[2].items():
+	for simplex in K.simplices[2].values():
 		if (
 			_colours_are_subset(simplex.colours, include_colours_bitmask)
 			and simplex.filtration_value <= time
@@ -375,20 +393,22 @@ def draw_filtration(
 
 def animate_filtration(
 	K: FilteredComplex,  # noqa: N803
-	points: NumpyMatrix[Literal[2], NumCols, np.floating],
+	points: np.ndarray[tuple[Literal[2], int], np.dtype[np.floating]],
 	filtration_times: Sequence[float],
 	animation_length: float,
 ) -> animation.FuncAnimation:
-	"""
-	Create animation of 2-skeleton of filtered simplicial complex.
+	r"""Create animation of 2-skeleton of filtered simplicial complex.
 
 	Args:
 		K                : A filtered complex.
-		points           : The vertices of ``K`` as a :math:`2\\times N` numpy matrix.
+		points           : The vertices of ``K`` as a :math:`2\times N` numpy matrix.
 		filtration_times : Sequence of filtration times for which to draw animation frames.
-		animation_length : Total length of the animation in seconds, unrelated to the filtration times.
+		animation_length :
+			Total length of the animation in seconds, unrelated to the
+		filtration times.
+
 	"""
-	if len(points.shape) != 2:
+	if len(points.shape) != 2:  # noqa: PLR2004
 		raise NotImplementedError
 
 	fig: Figure
@@ -396,14 +416,14 @@ def animate_filtration(
 	fig, ax = plt.subplots()
 	plot_colours = np.array(plt.rcParams["axes.prop_cycle"].by_key()["color"])
 	vertex_colours = []
-	for _, simplex in K.simplices[0].items():
+	for simplex in K.simplices[0].values():
 		i = _bitmask_to_colours(simplex.colours)[0]
 		vertex_colours.append(i)
 
 	ax.scatter(points[0, :], points[1, :], c=list(plot_colours[vertex_colours]), s=10)
 
-	lines = dict()
-	patches = dict()
+	lines = {}
+	patches = {}
 	for idx, simplex in K.simplices[1].items():
 		if _num_colours_in_bitmask(simplex.colours) == 1:
 			i = _bitmask_to_colours(simplex.colours)[0]
@@ -425,7 +445,7 @@ def animate_filtration(
 	ax.set_aspect("equal")
 	ax.set_xlabel("Time = " + f"{0.0:.4f}")
 
-	def update(time: float):
+	def update(time: float) -> list[Artist]:
 		modified_artists = []
 		for idx, simplex in K.simplices[1].items():
 			if simplex.filtration_value <= time:
@@ -442,7 +462,12 @@ def animate_filtration(
 		return modified_artists
 
 	interval = int(np.round(animation_length * 1000 / len(filtration_times)))
-	return animation.FuncAnimation(fig=fig, func=update, frames=filtration_times, interval=interval)  # pyright : ignore
+	return animation.FuncAnimation(
+		fig=fig,
+		func=update,
+		frames=filtration_times,
+		interval=interval,
+	)  # pyright : ignore
 
 
 def _get_truncation(entrance_times: list[float]) -> float:
