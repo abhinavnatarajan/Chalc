@@ -111,7 +111,7 @@ template <typename T> int compare(const void* a, const void* b) {
 tuple<vector<index_t>, index_t> canonicalise(const vector<index_t>& vec) {
 	vector<index_t>       new_vec(vec.size());
 	map<index_t, index_t> m;
-	for (auto [c, i] = tuple{vec.begin(), 0}; c != vec.end(); c++) {
+	for (auto&& [c, i] = tuple{vec.begin(), 0}; c != vec.end(); c++) {
 		if (!m.contains(*c)) {
 			m[*c] = i++;
 		}
@@ -140,7 +140,7 @@ RealMatrix<double> stratify(const RealMatrix<double>& points, const vector<index
 	}
 	index_t dim = points.rows();
 	// Make sure colours are contiguous and start at zero
-	auto [new_colours, num_colours] = canonicalise(colours);
+	auto&& [new_colours, num_colours] = canonicalise(colours);
 	RealMatrix<double> result(dim + num_colours - 1, points.cols());
 	result.topRows(dim) = points;
 	if (num_colours != 1) {
@@ -160,15 +160,15 @@ namespace chalc::chromatic {
 // Create a Delaunay triangulation from a collection of coordinate vectors
 FilteredComplex delaunay(const RealMatrix<double>& X, const vector<index_t>& colours) {
 	RealMatrix<double> Y(stratify(X, colours));
-	auto               dim = Y.rows();
-	FilteredComplex    result(Y.cols(), dim);
+	auto               max_dim = Y.rows();
+	FilteredComplex    result(Y.cols(), max_dim);
 	if (Y.cols() != 0) {
 		auto points = coordvecs_to_points(Y);
-		auto [sorted_points, sorted_indices] =
+		auto&& [sorted_points, sorted_indices] =
 			sort_with_indices<Point_d>(points, [](const Point_d& a, const Point_d& b) -> bool {
 				return a < b;
 			});
-		auto delY = DelaunayTriangulation(dim);
+		auto delY = DelaunayTriangulation(max_dim);
 		delY.insert(points.begin(), points.end());
 		// iterate over all finite vertices and associate them with their
 		// original label
@@ -184,14 +184,17 @@ FilteredComplex delaunay(const RealMatrix<double>& X, const vector<index_t>& col
 			vert_it->data()      = sorted_indices[p - sorted_points.data()];
 		}
 		// iterate over the top dimensional cells and add them to the filtration
+		auto dim = delY.current_dimension();
 		vector<index_t> max_cell_vertex_labels(dim + 1);
 		for (auto cell_it = delY.finite_full_cells_begin(); cell_it != delY.finite_full_cells_end();
 		     cell_it++) {
 			// iterate over the vertices of the cell and get their labels
-			for (auto [label_it, vert_it] =
+			for (auto&& [label_it, vert_it] =
 			         tuple{max_cell_vertex_labels.begin(), cell_it->vertices_begin()};
-			     vert_it != cell_it->vertices_end();
-			     label_it++, vert_it++) {
+			     // vert_it != cell_it->vertices_end();
+			     // vert_it++) { // BUG IN CGAL: vertices_end segfaults for cells with less vertices than maximal_dimension
+				vert_it != cell_it->vertices_end() && label_it != max_cell_vertex_labels.end();
+				label_it++, vert_it++) {
 				*label_it = (*vert_it)->data();
 			}
 			result.add_simplex(max_cell_vertex_labels, 0.0);
@@ -234,8 +237,8 @@ std::tuple<FilteredComplex, bool> alpha(const RealMatrix<double>& points,
 	// Partition the vertices by colour
 	// We will need this later to check if stacks are empty
 	map<index_t, vector<index_t>> verts_by_colour;
-	for (index_t i = 0; i < points.cols(); i++) {
-		verts_by_colour[colours[i]].push_back(i);
+	for (auto&& [i, colour] = tuple{0, colours.begin()}; colour != colours.end(); colour++, i++) {
+		verts_by_colour[*colour].push_back(i);
 	}
 	bool numerical_instability = false;  // flag to check numerical instability
 

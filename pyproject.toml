@@ -4,7 +4,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "chalc"
-version = "8.0.0"
+version = "8.0.1"
 authors = [{ name = "Abhinav Natarajan", email = "natarajan@maths.ox.ac.uk" }]
 description = "Persistent homology of chromatic Delaunay filtrations"
 readme = { file = "README.md", content-type = "text/markdown" }
@@ -59,7 +59,7 @@ dev = [
 
 [tool.scikit-build]
 cmake.verbose = true
-cmake.build-type = "Release"
+cmake.build-type = "Debug"
 cmake.minimum-version = "3.23"
 logging.level = "DEBUG"
 sdist.exclude = [".github/", ".git/"]
@@ -89,5 +89,5 @@ ignore = [
 	"W191", # pylint (disallows tab indentation)
 	"D206", # pydocstyle (disallows tab indentation in docstring)
 	"PLR0913", # refactor (too many arguments in function signature)
-	"ERA"
+	"ERA" # commented code
 ]
