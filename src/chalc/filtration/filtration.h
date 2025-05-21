@@ -53,9 +53,6 @@ struct FilteredComplex {
 
 	/* PUBLIC MEMBERS OF FilteredComplex */
 
-	index_t N;        // number of vertices, labelled from 0 to n-1
-	index_t max_dim;  // maximum dimension of any simplex in the complex
-
 	/* PUBLIC METHODS OF FilteredComplex */
 
 	// Constructors
@@ -115,6 +112,8 @@ struct FilteredComplex {
 	index_t num_simplices;       // total number of simplices
 	index_t cur_dim;             // current maximum dimension of a maximal simplex
 	value_t cur_max_filt_value;  // current maximum filtration value
+	index_t N;        // number of vertices, labelled from 0 to n-1
+	index_t max_dim;  // maximum dimension of any simplex in the complex
 
 	/* PRIVATE METHODS OF FilteredComplex */
 

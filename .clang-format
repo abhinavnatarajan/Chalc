@@ -49,10 +49,10 @@ BreakAfterAttributes: Always
 BreakBeforeBinaryOperators: None # break after
 BreakBeforeBraces: Attach # never break before braces
 BreakBeforeTernaryOperators: true
-# KeepEmptyLines:
-#   AtEndOfFile: false
-#   AtStartOfBlock: false
-#   AtStartOfFile: false
+KeepEmptyLines:
+  AtEndOfFile: false
+  AtStartOfBlock: false
+  AtStartOfFile: false
 ReflowComments: true
 SeparateDefinitionBlocks: Always
 
@@ -71,7 +71,7 @@ SpaceBeforeParens: ControlStatements
 SpaceBeforeRangeBasedForLoopColon: false
 
 # Switch case
-# AllowShortCaseExpressionOnASingleLine: true
+AllowShortCaseExpressionOnASingleLine: true
 AllowShortCaseLabelsOnASingleLine: false
 IndentCaseBlocks: false
 IndentCaseLabels: true
@@ -79,7 +79,7 @@ AlignConsecutiveShortCaseStatements:
   Enabled: true
   AcrossEmptyLines: false
   AcrossComments: false
-  # AlignCaseArrows: true
+  AlignCaseArrows: true
   AlignCaseColons: true
 SpaceBeforeCaseColon: true
 

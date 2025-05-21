@@ -303,6 +303,7 @@ def draw_filtration(
 	time: float,
 	include_colours: Collection[int] | None = None,
 	ax: Axes | None = None,
+	plot_colours: str | np.ndarray | None = None,
 ) -> Axes:
 	r"""Visualise a 2D filtration at given time, optionally including only certain colours.
 
@@ -316,6 +317,9 @@ def draw_filtration(
 		ax              :
 			A matplotlib axes object.
 			If provided then the diagram will be plotted on the given axes.
+		plot_colours    :
+			Either the name of a matplotlib qualitative colour map, or a list of colours.
+			If not provided, the current matplotlib colour cycle will be used.
 
 	"""
 	if len(points.shape) != 2:  # noqa: PLR2004
@@ -334,7 +338,12 @@ def draw_filtration(
 	else:
 		ax1 = ax
 
-	plot_colours = np.array(plt.rcParams["axes.prop_cycle"].by_key()["color"])
+	if isinstance(plot_colours, str):
+		num_colours = K.dimension - 1
+		colour_indices = np.arange(num_colours)
+		plot_colours = plt.get_cmap(plot_colours)(colour_indices)
+	elif plot_colours is None:
+		plot_colours = np.array(plt.rcParams["axes.prop_cycle"].by_key()["color"])
 
 	# Plot the vertices
 	vertex_colours = []
@@ -396,6 +405,7 @@ def animate_filtration(
 	points: np.ndarray[tuple[Literal[2], int], np.dtype[np.floating]],
 	filtration_times: Sequence[float],
 	animation_length: float,
+	plot_colours: str | np.ndarray | None = None,
 ) -> animation.FuncAnimation:
 	r"""Create animation of 2-skeleton of filtered simplicial complex.
 
@@ -405,7 +415,10 @@ def animate_filtration(
 		filtration_times : Sequence of filtration times for which to draw animation frames.
 		animation_length :
 			Total length of the animation in seconds, unrelated to the
-		filtration times.
+			filtration times.
+		plot_colours    :
+			Either the name of a matplotlib qualitative colour map, or a list of colours.
+			If not provided, the current matplotlib colour cycle will be used.
 
 	"""
 	if len(points.shape) != 2:  # noqa: PLR2004
@@ -414,7 +427,14 @@ def animate_filtration(
 	fig: Figure
 	ax: Axes
 	fig, ax = plt.subplots()
-	plot_colours = np.array(plt.rcParams["axes.prop_cycle"].by_key()["color"])
+
+	if isinstance(plot_colours, str):
+		num_colours = K.dimension - 1
+		colour_indices = np.arange(num_colours)
+		plot_colours = plt.get_cmap(plot_colours)(colour_indices)
+	elif plot_colours is None:
+		plot_colours = np.array(plt.rcParams["axes.prop_cycle"].by_key()["color"])
+
 	vertex_colours = []
 	for simplex in K.simplices[0].values():
 		i = _bitmask_to_colours(simplex.colours)[0]
