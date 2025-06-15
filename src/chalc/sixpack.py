@@ -24,10 +24,10 @@ if TYPE_CHECKING:
 	from chalc.filtration import FilteredComplex
 
 __all__ = [
-	"from_filtration",
-	"compute",
-	"SimplexPairings",
 	"DiagramEnsemble",
+	"SimplexPairings",
+	"compute",
+	"from_filtration",
 ]
 
 ChromaticMethod = {

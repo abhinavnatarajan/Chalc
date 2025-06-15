@@ -38,7 +38,7 @@ def plot_sixpack(
 	truncations: Mapping[DiagramEnsemble.DiagramName, float] | float | None = None,
 	dimensions: AbstractSet[int] | int | None = None,
 	tolerance: float = 0,
-) -> tuple[Figure, np.ndarray[tuple[Literal[2], Literal[3]], np.dtype[Axes]]]:
+) -> tuple[Figure, np.ndarray[tuple[Literal[2], Literal[3]], np.dtype[Any]]]:
 	"""Plot the 6-pack of persistence diagrams returned by :func:`compute <.sixpack.compute>`.
 
 	Args:
@@ -70,7 +70,7 @@ def plot_sixpack(
 	elif isinstance(dimensions, int):
 		dims = {name: {dimensions} for name in diagram_names}
 	elif isinstance(dimensions, AbstractSet) and all(isinstance(dim, int) for dim in dimensions):
-		dims = {name: dimensions for name in diagram_names}
+		dims = dict.fromkeys(diagram_names, dimensions)
 	else:
 		errmsg = "Invalid dimensions argument."
 		raise ValueError(errmsg)
@@ -97,7 +97,7 @@ def plot_sixpack(
 			]
 			truncs[diagram_name] = _get_truncation(ycoords) if ycoords else 1.0
 	elif isinstance(truncations, float):
-		truncs = {diagram_name: truncations for diagram_name in diagram_names}
+		truncs = dict.fromkeys(diagram_names, truncations)
 	else:
 		errmsg = "Invalid truncations argument."
 		raise TypeError(errmsg)
