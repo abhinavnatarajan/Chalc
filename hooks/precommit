@@ -1,3 +1,8 @@
 #! /usr/bin/env bash
 
+echo "Starting pre-commit hook..."
+echo "Clearing output of documentation notebooks."
 jupyter nbconvert --clear-output --inplace "$GIT_WORK_TREE"/docs/source/example.ipynb
+echo "Exporting virtual environment to pylock.toml."
+uv export -o pylock.toml
+git add "$GIT_WORK_TREE"/pylock.toml "$GIT_WORK_TREE"/docs/source/example.ipynb

@@ -28,7 +28,6 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-uv.lock
 
 # scikit-build
 _skbuild/
@@ -72,4 +71,11 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.envrc
+.python-version
+
+# Dev tooling
 .clangd
+
+# Documentation artifacts
+*.h5
