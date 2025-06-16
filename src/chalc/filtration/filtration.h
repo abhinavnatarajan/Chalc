@@ -86,6 +86,12 @@ struct FilteredComplex {
 	// Returns the current dimension
 	index_t dimension() const noexcept;
 
+	// Returns the maximum dimension that can be stored
+	index_t max_dimension() const noexcept;
+
+	// Returns the number of vertices of the complex
+	index_t num_vertices() const noexcept;
+
 	// Returns the current maximum filtration value
 	value_t max_filt_value() const noexcept;
 
@@ -93,8 +99,8 @@ struct FilteredComplex {
 	std::vector<std::tuple<std::vector<index_t>, index_t, value_t, unsigned long long int>>
 	serialised() const;
 
-	// Returns the k-skeleton of the clique complex on n vertices
-	static FilteredComplex clique_complex(const index_t n, const index_t k);
+	// Returns the k-skeleton of the complete simplicial complex on n vertices.
+	static FilteredComplex complete_complex(const index_t n, const index_t k);
 
 	// bitwise OR accumulates colours upwards from vertices
 	void propagate_colours();
@@ -112,44 +118,42 @@ struct FilteredComplex {
 	index_t num_simplices;       // total number of simplices
 	index_t cur_dim;             // current maximum dimension of a maximal simplex
 	value_t cur_max_filt_value;  // current maximum filtration value
-	index_t N;        // number of vertices, labelled from 0 to n-1
-	index_t max_dim;  // maximum dimension of any simplex in the complex
+	index_t n_vertices;          // number of vertices, labelled from 0 to n-1
+	index_t max_dim;             // maximum dimension of any simplex in the complex
 
 	/* PRIVATE METHODS OF FilteredComplex */
 
-	// Checks that verts is a non-empty subsequence of (0, ..., N-1) and
-	// verts.size() <= max_dim + 1 does not leave verts unmodified
-	void check_vertex_sequence_is_valid(std::vector<index_t>& verts) const;
-
-	// Check that 0 <= dim <= max_dim
-	void check_dimension_is_valid(const index_t dim) const;
+	// Checks that verts is a non-empty subsequence of (0, ..., n_vertices-1) and
+	// verts.size() <= max_dim + 1.
+	// WARNING: modifies verts.
+	void validate_vertex_sequence(std::vector<index_t>& verts) const;
 
 	// Get label of a simplex (possibly not in the complex) from the labels of
-	// its vertices Assumes that verts is valid
+	// its vertices.
+	// Assumes that verts is valid.
 	index_t _get_label_from_vertex_labels(const std::vector<index_t>& verts) const;
 
-	// Check if the complex has a specific simplex
-	// Assumes that dim is valid
+	// Check if the complex has a specific simplex.
+	// Assumes that dim is valid.
 	bool _has_simplex(const index_t dim, const index_t label) const;
 
-	// Check if the complex has a specific simplex
-	// Assumes that verts is valid
+	// Check if the complex has a specific simplex.
+	// Assumes that verts is valid.
 	bool _has_simplex(const std::vector<index_t>& verts) const;
 
 	std::shared_ptr<Simplex> _add_simplex(const std::vector<index_t>& verts,
 	                                      const value_t               filt_value);
 
-	// min accumulate filtration values downwards from start_dim
-	// Assumes that start_dim is valid
+	// Min-fold filtration values downwards from start_dim.
+	// Assumes that start_dim is valid.
 	void propagate_filt_values_up(const index_t start_dim);
 
-	// max accumulate filtration values upwards from start_dim
-	// Assumes that start_dim is valid
+	// Max-fold filtration values upwards from start_dim.
+	// Assumes that start_dim is valid.
 	void propagate_filt_values_down(const index_t start_dim);
 };
 
 struct FilteredComplex::Simplex : public std::enable_shared_from_this<FilteredComplex::Simplex> {
-
 	/* PUBLIC MEMBERS OF Simplex */
 
 	const index_t            label;       // label for the simplex
@@ -173,10 +177,6 @@ struct FilteredComplex::Simplex : public std::enable_shared_from_this<FilteredCo
 	// Return the sorted vertex labels of the simplex
 	// Assumes that the simplex has valid faces
 	std::vector<index_t> get_vertex_labels() const;
-
-	// Writes the sorted vertex labels of the simplex into a buffer
-	// Assumes that the simplex has valid faces
-	template <typename OutputIterator> void get_vertex_labels(OutputIterator&& buf) const;
 
 	// Return the indices of the facets of the simplex, [i]th element of the
 	// result is the [i]th facet
@@ -215,6 +215,11 @@ struct FilteredComplex::Simplex : public std::enable_shared_from_this<FilteredCo
 	        const std::vector<std::shared_ptr<Simplex>>& facets);
 	// Delete the default constructor
 	Simplex() = delete;
+
+	// Writes the sorted vertex labels of the simplex into a buffer
+	// Assumes that the simplex has valid faces
+	template <typename OutputIterator> void _get_vertex_labels(OutputIterator&& buf) const;
+
 };
 
 // The simplicial complex associated to the standard n-simplex.

@@ -42,10 +42,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	#include <optional>
 	#include <tuple>
 	#include <vector>
+	#include <cstdint>
 
 namespace chalc {
 typedef double        value_t;
-typedef long long int index_t;
+typedef uint64_t index_t;
 
 namespace stl {
 using std::vector, std::map, std::tuple, std::iota, std::tie, std::shared_ptr, std::make_shared,

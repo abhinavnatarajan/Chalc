@@ -62,14 +62,14 @@ Current maximum dimension of a maximal simplex in the complex.
 	                           R"docstring(
 Current maximum dimension of a maximal simplex in the complex.
 )docstring")
-		.def_readonly("max_dimension",
-	                  &FilteredComplex::max_dim,
+		.def_property_readonly("max_dimension",
+	                  &FilteredComplex::max_dimension,
 	                  R"docstring(
 Maximum dimension of simplex that this complex can store. \
 Set during initialisation.
 )docstring")
-		.def_readonly("num_vertices",
-	                  &FilteredComplex::N,
+		.def_property_readonly("num_vertices",
+	                  &FilteredComplex::num_vertices,
 	                  R"docstring(
 Number of vertices in the simplicial complex. \
 Set during initialisation.
@@ -135,7 +135,7 @@ Args:
 			 )docstring")
 		.def("__repr__", [](const FilteredComplex& K) {
 			return "<" + std::to_string(K.dimension()) + "-dimensional simplicial complex with " +
-		           std::to_string(K.N) + " vertices>";
+		           std::to_string(K.num_vertices()) + " vertices>";
 		});
 
 	/* Simplex Interface */

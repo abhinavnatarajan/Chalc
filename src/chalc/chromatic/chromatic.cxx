@@ -130,7 +130,7 @@ Colours are provided as a vector.
 RealMatrix<double> stratify(const RealMatrix<double>& points, const vector<index_t>& colours) {
 	// input checks
 	if (std::any_of(colours.begin(), colours.end(), [](const index_t& colour) {
-			return (colour >= MAX_NUM_COLOURS || colour < 0);
+			return (colour >= MAX_NUM_COLOURS);
 		})) {
 		throw std::domain_error("All colours must be between 0 and " +
 		                        std::to_string(MAX_NUM_COLOURS - 1));
@@ -184,7 +184,7 @@ FilteredComplex delaunay(const RealMatrix<double>& X, const vector<index_t>& col
 			vert_it->data()      = sorted_indices[p - sorted_points.data()];
 		}
 		// iterate over the top dimensional cells and add them to the filtration
-		auto dim = delY.current_dimension();
+		auto            dim = delY.current_dimension();
 		vector<index_t> max_cell_vertex_labels(dim + 1);
 		for (auto cell_it = delY.finite_full_cells_begin(); cell_it != delY.finite_full_cells_end();
 		     cell_it++) {
@@ -192,9 +192,10 @@ FilteredComplex delaunay(const RealMatrix<double>& X, const vector<index_t>& col
 			for (auto&& [label_it, vert_it] =
 			         tuple{max_cell_vertex_labels.begin(), cell_it->vertices_begin()};
 			     // vert_it != cell_it->vertices_end();
-			     // vert_it++) { // BUG IN CGAL: vertices_end segfaults for cells with less vertices than maximal_dimension
-				vert_it != cell_it->vertices_end() && label_it != max_cell_vertex_labels.end();
-				label_it++, vert_it++) {
+			     // vert_it++) { // BUG IN CGAL: vertices_end segfaults for cells with less vertices
+			     // than maximal_dimension
+			     vert_it != cell_it->vertices_end() && label_it != max_cell_vertex_labels.end();
+			     label_it++, vert_it++) {
 				*label_it = (*vert_it)->data();
 			}
 			result.add_simplex(max_cell_vertex_labels, 0.0);
@@ -248,8 +249,8 @@ std::tuple<FilteredComplex, bool> alpha(const RealMatrix<double>& points,
 		auto&& points_exact   = points.template cast<Gmpzf>();
 		auto&& points_exact_q = points.template cast<Quotient<Gmpzf>>();
 
-		// Start at the maximum dimension
-		for (int p = delX.dimension(); p >= 1; p--) {
+		// Start at the current dimension
+		for (auto&& p = delX.dimension(); p >= 1; p--) {
 			// Iterate over p-simplices
 			for (auto& [idx, simplex]: delX.get_simplices()[p]) {
 				auto&& verts = simplex->get_vertex_labels();
@@ -286,7 +287,7 @@ std::tuple<FilteredComplex, bool> alpha(const RealMatrix<double>& points,
 				RealMatrix<Gmpzf> E(0, points.rows());
 				RealVector<Gmpzf> b;
 				for (auto& [j, verts_j]: verts_by_colour_in_simplex) {
-					index_t num_new_rows = verts_j.size() - 1;
+					index_t num_new_rows = verts_j.size() - 1;  // each of these has size at least 1
 					E.conservativeResize(E.rows() + num_new_rows, Eigen::NoChange);
 					b.conservativeResize(b.rows() + num_new_rows);
 					RealMatrix<Gmpzf>::BlockXpr           E_new_rows = E.bottomRows(num_new_rows);
@@ -360,7 +361,7 @@ std::tuple<FilteredComplex, bool> delcech(const RealMatrix<double>& points,
 	// modify the filtration values
 	bool numerical_instability = false;
 	if (delX.dimension() >= 1) {
-		for (int p = delX.dimension(); p > 1; p--) {
+		for (auto&& p = delX.dimension(); p > 1; p--) {
 			for (auto& [idx, simplex]: delX.get_simplices()[p]) {
 				auto&& verts = simplex->get_vertex_labels();
 				auto&& [centre, sqRadius, success] =

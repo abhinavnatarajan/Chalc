@@ -102,17 +102,16 @@ shared_ptr<FilteredComplex::Simplex> FilteredComplex::Simplex::get_handle() {
 
 vector<index_t> FilteredComplex::Simplex::get_vertex_labels() const {
 	vector<index_t> result(dim + 1);
-	get_vertex_labels(result.begin());
+	_get_vertex_labels(result.begin());
 	return result;
 }
 
 template <typename OutputIterator>
-void FilteredComplex::Simplex::get_vertex_labels(OutputIterator&& buf) const {
+void FilteredComplex::Simplex::_get_vertex_labels(OutputIterator&& buf) const {
 	if (dim > 0) {
 		// vertices of a simplex are the vertices of its last face along with
 		// its last vertex
-		facets.back()->get_vertex_labels(buf);
-		buf++;
+		facets.back()->_get_vertex_labels(buf++);
 	}
 	*buf = max_vertex;
 }
@@ -171,20 +170,17 @@ FilteredComplex::FilteredComplex(const index_t num_vertices, const index_t max_d
 		max_dimension + 1)),  // we want nCk for all 0 <= n <= num_vertices and 0 <= k <=
                               // max_num_verts_in_a_simplex = max_dim + 1
 	simplices(max_dimension + 1),
-	N(num_vertices),
+	n_vertices(num_vertices),
 	max_dim(max_dimension),
 	num_simplices(num_vertices),
 	cur_dim(0) {
 	if (max_dim < 0) {
 		throw invalid_argument("Dimension cannot be negative.");
 	}
-	if (N <= 0) {
-		throw invalid_argument("Number of points must be positive.");
-	}
-	if (max_dim >= N) {
+	if (max_dim >= n_vertices) {
 		throw invalid_argument("Dimension must be less than number of points.");
 	}
-	for (index_t i = 0; i < N; i++) {
+	for (index_t i = 0; i < n_vertices; i++) {
 		simplices[0][i] = Simplex::make_Simplex(i, i, 0.0);
 		// simplices are initialised with colours unset
 		// so we set them here
@@ -192,35 +188,34 @@ FilteredComplex::FilteredComplex(const index_t num_vertices, const index_t max_d
 	}
 }
 
-void FilteredComplex::check_vertex_sequence_is_valid(vector<index_t>& verts) const {
-	check_dimension_is_valid(verts.size() - 1);
+void FilteredComplex::validate_vertex_sequence(vector<index_t>& verts) const {
+	if (verts.size() == 0) {
+		throw invalid_argument("Vertex sequence cannot be empty.");
+	}
+	if (verts.size() > max_dim + 1) {
+		throw invalid_argument("Vertex sequence is too long.");
+	}
 	sort(verts.begin(), verts.end());
-	if (!(verts.back() < N && verts.front() >= 0 &&
-	      adjacent_find(verts.begin(), verts.end()) == verts.end())) {
-		throw invalid_argument("Invalid vertex sequence.");
+	if (!(verts.back() < n_vertices && adjacent_find(verts.cbegin(), verts.cend()) == verts.cend())) {
+		throw invalid_argument("Vertex sequence cannot have repetitions.");
 	};
 }
 
-void FilteredComplex::check_dimension_is_valid(const index_t dim) const {
-	if (dim > max_dim || dim < 0) {
-		throw invalid_argument("Invalid dimension.");
-	}
-}
-
 index_t FilteredComplex::_get_label_from_vertex_labels(const vector<index_t>& verts) const {
+	if (verts.size() == 1) {
+		return verts[0];  // if we have a vertex, return its label
+	}
 	index_t label = 0;
-	auto    dim   = verts.size() - 1;
-	for (index_t i = 0, prev_vert = -1; i < verts.size(); i++) {
-		for (index_t j = prev_vert + 1; j < verts[i]; j++) {
-			label += (*binomial)(N - j - 1, dim - i);
+	for (index_t i = 0, v = 0; i < verts.size(); v = verts[i++] + 1) {
+		for (index_t j = v; j < verts[i]; j++) {
+			label += (*binomial)(n_vertices - (j + 1), verts.size() - (i + 1));
 		}
-		prev_vert = verts[i];
 	}
 	return label;
 }
 
 index_t FilteredComplex::get_label_from_vertex_labels(vector<index_t>& verts) const {
-	check_vertex_sequence_is_valid(verts);
+	validate_vertex_sequence(verts);
 	return _get_label_from_vertex_labels(verts);
 }
 
@@ -233,21 +228,26 @@ bool FilteredComplex::_has_simplex(const index_t dim, const index_t label) const
 }
 
 bool FilteredComplex::has_simplex(const index_t dim, const index_t label) const {
-	check_dimension_is_valid(dim);
-	if (label < 0 || label >= (*binomial)(N, dim)) {
+	if (dim > max_dim) {
+		throw invalid_argument("Invalid dimension.");
+	}
+	if (label >= (*binomial)(n_vertices, dim)) {
+		// The check above is valid because we have
+		// binomial coefficients for all 0 <= n <=
+		// n_vertices and 0 <= k <= max_dim + 1.
 		throw invalid_argument("Invalid label.");
 	}
 	return _has_simplex(dim, label);
 }
 
 bool FilteredComplex::_has_simplex(const vector<index_t>& verts) const {
-	auto dim   = verts.size() - 1;
+	auto dim   = verts.size() - 1;  // we assume that verts is valid
 	auto label = _get_label_from_vertex_labels(verts);
 	return (_has_simplex(dim, label));
 }
 
 bool FilteredComplex::has_simplex(vector<index_t>& verts) const {
-	check_vertex_sequence_is_valid(verts);
+	validate_vertex_sequence(verts);
 	return (_has_simplex(verts));
 }
 
@@ -260,20 +260,18 @@ shared_ptr<FilteredComplex::Simplex> FilteredComplex::_add_simplex(const vector<
 	if (search_simplex != simplices[dim].end()) {
 		// the simplex already exists
 		new_simplex        = search_simplex->second;
-		new_simplex->value = min(max(filt_value, static_cast<value_t>(0)), new_simplex->value);
+		new_simplex->value = min(max(filt_value, 0.0), new_simplex->value);
 	} else {
 		// simplex does not exist so we need to add it
 		// first we recursively add faces of the simplex
 		vector<shared_ptr<Simplex>> facets(dim + 1);
 		vector<index_t>             facet_verts(dim);
+		facet_verts.reserve(dim);
 		for (auto i = 0; i <= dim; i++) {
-			for (auto j = 0, k = 0; j < verts.size(); j++) {
-				if (j == i) {
-					continue;
-				}
-				facet_verts[k] = verts[j];
-				k++;
-			}
+			facet_verts.insert(facet_verts.cend(), verts.cbegin(), verts.cbegin() + i);
+			facet_verts.insert(facet_verts.cend(),
+			                   verts.cbegin() + i + 1,
+			                   verts.cend());  // copy all except the i-th vertex
 			facets[i] = _add_simplex(facet_verts, filt_value);
 		}
 		auto max_vertex = verts.back();
@@ -287,12 +285,12 @@ shared_ptr<FilteredComplex::Simplex> FilteredComplex::_add_simplex(const vector<
 bool FilteredComplex::add_simplex(
 	vector<index_t>& verts,
 	value_t          filt_value = FilteredComplex::Simplex::DEFAULT_FILT_VALUE) {
-	check_vertex_sequence_is_valid(verts);
+	validate_vertex_sequence(verts);
 	if (_has_simplex(verts)) {
 		return false;
 	} else {
 		_add_simplex(verts, filt_value);
-		cur_dim            = max(static_cast<size_t>(cur_dim), verts.size() - 1);
+		cur_dim            = max(cur_dim, verts.size() - 1);  // need verts to be valid
 		cur_max_filt_value = max(cur_max_filt_value, filt_value);
 		return true;
 	}
@@ -317,8 +315,11 @@ void FilteredComplex::propagate_filt_values_up(const index_t start_dim) {
 }
 
 void FilteredComplex::propagate_filt_values_down(const index_t start_dim) {
+	if (start_dim == 0) {
+		return;
+	}
 	int p = static_cast<int>(start_dim) - 1;
-	while (p >= 1) {
+	for (index_t p = start_dim - 1; p >= 1; p--) {
 		// iterate over the p-simplices
 		for (const auto& [label, simplex]: simplices[p]) {
 			// iterate over cofacets of simplex and
@@ -336,7 +337,6 @@ void FilteredComplex::propagate_filt_values_down(const index_t start_dim) {
 				throw runtime_error("Tried to dereference expired cofacet handle.");
 			}
 		}
-		p--;
 	}
 }
 
@@ -352,7 +352,7 @@ void FilteredComplex::propagate_colours() {
 }
 
 void FilteredComplex::propagate_filt_values(const index_t start_dim, const bool up) {
-	if (start_dim > cur_dim || start_dim < 0) {
+	if (start_dim > cur_dim) {
 		throw invalid_argument("Invalid starting dimension.");
 	}
 	if (up) {
@@ -373,6 +373,14 @@ index_t FilteredComplex::size() const noexcept {
 
 index_t FilteredComplex::dimension() const noexcept {
 	return cur_dim;
+}
+
+index_t FilteredComplex::max_dimension() const noexcept {
+	return max_dim;
+}
+
+index_t FilteredComplex::num_vertices() const noexcept {
+	return n_vertices;
 }
 
 value_t FilteredComplex::max_filt_value() const noexcept {
@@ -412,11 +420,8 @@ FilteredComplex::serialised() const {
 	return result;
 }
 
-FilteredComplex FilteredComplex::clique_complex(const index_t n, const index_t k) {
-	if (n <= 0) {
-		throw invalid_argument("number of vertices must be >= 0.");
-	}
-	if (k < 0 || k >= n) {
+FilteredComplex FilteredComplex::complete_complex(const index_t n, const index_t k) {
+	if (k >= n) {
 		throw invalid_argument("k must satisfy 0 <= k < n");
 	}
 	FilteredComplex result(n, k);
@@ -436,7 +441,7 @@ FilteredComplex FilteredComplex::clique_complex(const index_t n, const index_t k
 }
 
 bool FilteredComplex::is_filtration() const {
-	for (int i = cur_dim; i >= 0; i--) {
+	for (int i = 1; i <= cur_dim; i++) {
 		for (auto& s: simplices[i]) {
 			for (auto& f: s.second->get_facets()) {
 				if (f->value > s.second->value) {
@@ -449,6 +454,6 @@ bool FilteredComplex::is_filtration() const {
 }
 
 FilteredComplex standard_simplex(const index_t n) {
-	return chalc::FilteredComplex::clique_complex(n + 1, n);
+	return chalc::FilteredComplex::complete_complex(n + 1, n);
 }
 }  // namespace chalc
