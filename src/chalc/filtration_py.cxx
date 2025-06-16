@@ -202,8 +202,8 @@ Args:
 			return "<" + std::to_string(s_ptr->dim) + "-simplex>";
 		});
 
-	m.def("clique_complex",
-	      &FilteredComplex::clique_complex,
+	m.def("complete_complex",
+	      &FilteredComplex::complete_complex,
 	      R"docstring(
 			Returns the :math:`k`-skeleton of the complete simplicial complex on :math:`n` vertices, with filtration values initialised to zero and all vertices coloured with the colour 0.
 		)docstring",

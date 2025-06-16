@@ -38,13 +38,13 @@ class TestChromatic:
 	def test_degenerate_delaunay(self) -> None:
 		"""Test the Delaunay construction on degenerate examples."""
 		points = np.array([[0, 0], [1, 0], [2, 0]]).T
-		colours = [0,0,0]
+		colours = [0, 0, 0]
 		delaunay = ch.chromatic.delaunay(points, colours)
 		assert delaunay.dimension == 1
 		assert len(delaunay.simplices[1]) == 2
 
 		points = np.array([[0, 0], [0, 1], [1, 0], [1, 2]]).T
-		colours = [0,0,1,1]
+		colours = [0, 0, 1, 1]
 		delaunay = ch.chromatic.delaunay(points, colours)
 		assert delaunay.dimension == 2
 		assert len(delaunay.simplices[1]) == 5
@@ -164,11 +164,11 @@ class TestFiltration:
 		filtration = ch.filtration.standard_simplex(n)
 		assert_standard_simplex(n, filtration, is_filtered=False, is_chromatic=False)
 
-	def test_clique_complex(self) -> None:
+	def test_complete_complex(self) -> None:
 		"""Test construction of a clique complex."""
 		n = 5
 		k = 3
-		filtration = ch.filtration.clique_complex(n, k)
+		filtration = ch.filtration.complete_complex(n, k)
 		for i in range(k + 1):
 			num_simplices = math.comb(n, i + 1)
 			assert list(filtration.simplices[i].keys()) == list(range(num_simplices))

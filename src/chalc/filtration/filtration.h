@@ -165,7 +165,7 @@ struct FilteredComplex::Simplex : public std::enable_shared_from_this<FilteredCo
 	/* PUBLIC METHODS OF Simplex */
 	// Factory method - only way to create new simplex
 	static std::shared_ptr<Simplex>
-	make_Simplex(index_t label,
+	_make_simplex(index_t label,
 	             index_t max_vertex,
 	             value_t value = DEFAULT_FILT_VALUE,
 	             const std::vector<std::shared_ptr<Simplex>>& facets =

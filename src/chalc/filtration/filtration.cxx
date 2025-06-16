@@ -32,13 +32,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-#include <chalc/filtration/filtration.h>
-#include <stdexcept>
-#ifndef NDEBUG
-	#define NDEBUG
-#endif
 #include <algorithm>
 #include <cassert>
+#include <chalc/filtration/filtration.h>
+#include <limits>
+#include <stdexcept>
 
 namespace {
 using namespace chalc::stl;
@@ -51,33 +49,40 @@ class BinomialCoeffTable {
 	vector<vector<index_t>> B;
 
   public:
+	// Constructs a binomial coefficient table that will hold all values of
+	// i_C_j for i = 0, ..., n and j = 0, ..., min(k, floor(i/2)) for i <= n.
 	BinomialCoeffTable(index_t n, index_t k) :
 		B(n + 1) {
-		for (index_t i = 0; i <= n; ++i) {
-			B[i].resize(i + 1, 0);
+		assert(n >= k);
+		B[0].resize(1, 0);
+		index_t j_max;
+		for (index_t i = 1; i <= n; ++i) {
+			j_max = min(i >> 1, k);
+			B[i].resize(j_max + 1, 0);
 			B[i][0] = 1;
-			for (index_t j = 1; j < min(i, k + 1); ++j) {
-				B[i][j] = B[i - 1][j - 1] + B[i - 1][j];
+			for (index_t j = 1; j <= j_max; ++j) {
+				// Use recurrence relation to fill the entries
+				B[i][j] = B[i - 1][min(j - 1, i - j)] + B[i - 1][min(j, i - 1 - j)];
 			}
-			if (i <= k) {
-				B[i][i] = 1;
-			}
-			if (B[i][min(i >> 1, k)] < 0) {
+			// Bounds checking: only check at the largest entry i_C_floor(i/2)
+			// We check by using the recurrence relation and the datatype max.
+			if (B[i - 1][min(j_max - 1, i - j_max)] >
+			    std::numeric_limits<index_t>::max() - B[i - 1][min(j_max, i - 1 - j_max)]) {
 				throw runtime_error("Simplex index is too large.");
 			}
 		}
 	}
 
 	index_t operator()(index_t n, index_t k) const {
-		return B.at(n).at(k);
+		return B.at(n).at(min(k, n - k));
 	}
 };
 
 shared_ptr<FilteredComplex::Simplex>
-FilteredComplex::Simplex::make_Simplex(index_t                            label,
-                                       index_t                            max_vertex,
-                                       value_t                            value,
-                                       const vector<shared_ptr<Simplex>>& facets) {
+FilteredComplex::Simplex::_make_simplex(index_t                            label,
+                                        index_t                            max_vertex,
+                                        value_t                            value,
+                                        const vector<shared_ptr<Simplex>>& facets) {
 	auto self = shared_ptr<Simplex>(new Simplex(label, max_vertex, value, facets));
 	for (auto& f: self->facets) {
 		f->cofacets.push_back(self->get_handle());
@@ -111,7 +116,8 @@ void FilteredComplex::Simplex::_get_vertex_labels(OutputIterator&& buf) const {
 	if (dim > 0) {
 		// vertices of a simplex are the vertices of its last face along with
 		// its last vertex
-		facets.back()->_get_vertex_labels(buf++);
+		facets.back()->_get_vertex_labels(buf);
+		buf++;
 	}
 	*buf = max_vertex;
 }
@@ -181,7 +187,7 @@ FilteredComplex::FilteredComplex(const index_t num_vertices, const index_t max_d
 		throw invalid_argument("Dimension must be less than number of points.");
 	}
 	for (index_t i = 0; i < n_vertices; i++) {
-		simplices[0][i] = Simplex::make_Simplex(i, i, 0.0);
+		simplices[0][i] = Simplex::_make_simplex(i, i, 0.0);
 		// simplices are initialised with colours unset
 		// so we set them here
 		simplices[0][i]->set_colour(0);
@@ -196,12 +202,14 @@ void FilteredComplex::validate_vertex_sequence(vector<index_t>& verts) const {
 		throw invalid_argument("Vertex sequence is too long.");
 	}
 	sort(verts.begin(), verts.end());
-	if (!(verts.back() < n_vertices && adjacent_find(verts.cbegin(), verts.cend()) == verts.cend())) {
+	if (!(verts.back() < n_vertices &&
+	      adjacent_find(verts.cbegin(), verts.cend()) == verts.cend())) {
 		throw invalid_argument("Vertex sequence cannot have repetitions.");
 	};
 }
 
 index_t FilteredComplex::_get_label_from_vertex_labels(const vector<index_t>& verts) const {
+	assert(verts.size() != 0);
 	if (verts.size() == 1) {
 		return verts[0];  // if we have a vertex, return its label
 	}
@@ -241,6 +249,7 @@ bool FilteredComplex::has_simplex(const index_t dim, const index_t label) const 
 }
 
 bool FilteredComplex::_has_simplex(const vector<index_t>& verts) const {
+	assert(verts.size() != 0);
 	auto dim   = verts.size() - 1;  // we assume that verts is valid
 	auto label = _get_label_from_vertex_labels(verts);
 	return (_has_simplex(dim, label));
@@ -253,6 +262,7 @@ bool FilteredComplex::has_simplex(vector<index_t>& verts) const {
 
 shared_ptr<FilteredComplex::Simplex> FilteredComplex::_add_simplex(const vector<index_t>& verts,
                                                                    const value_t filt_value) {
+	assert(verts.size() != 0);
 	shared_ptr<Simplex> new_simplex;
 	auto                dim            = verts.size() - 1;
 	auto                label          = _get_label_from_vertex_labels(verts);
@@ -265,7 +275,7 @@ shared_ptr<FilteredComplex::Simplex> FilteredComplex::_add_simplex(const vector<
 		// simplex does not exist so we need to add it
 		// first we recursively add faces of the simplex
 		vector<shared_ptr<Simplex>> facets(dim + 1);
-		vector<index_t>             facet_verts(dim);
+		vector<index_t>             facet_verts;
 		facet_verts.reserve(dim);
 		for (auto i = 0; i <= dim; i++) {
 			facet_verts.insert(facet_verts.cend(), verts.cbegin(), verts.cbegin() + i);
@@ -273,9 +283,10 @@ shared_ptr<FilteredComplex::Simplex> FilteredComplex::_add_simplex(const vector<
 			                   verts.cbegin() + i + 1,
 			                   verts.cend());  // copy all except the i-th vertex
 			facets[i] = _add_simplex(facet_verts, filt_value);
+			facet_verts.clear();
 		}
 		auto max_vertex = verts.back();
-		new_simplex     = Simplex::make_Simplex(label, max_vertex, filt_value, std::move(facets));
+		new_simplex     = Simplex::_make_simplex(label, max_vertex, filt_value, std::move(facets));
 		simplices[dim][label] = new_simplex;
 		num_simplices++;
 	}

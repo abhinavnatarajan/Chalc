@@ -43,6 +43,7 @@
 #include <CGAL/Triangulation.h>
 
 #include <algorithm>
+#include <iostream>
 #include <stdexcept>
 
 namespace {
@@ -244,7 +245,6 @@ std::tuple<FilteredComplex, bool> alpha(const RealMatrix<double>& points,
 	bool numerical_instability = false;  // flag to check numerical instability
 
 	if (delX.dimension() >= 1) {
-		// Now comes the hard bit
 		// Modify the filtration values
 		auto&& points_exact   = points.template cast<Gmpzf>();
 		auto&& points_exact_q = points.template cast<Quotient<Gmpzf>>();

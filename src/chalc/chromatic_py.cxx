@@ -17,8 +17,8 @@ Module containing geometry routines to compute chromatic Delaunay filtrations.
 	m.attr("MaxColoursChromatic") = py::int_(MAX_NUM_COLOURS);
 	m.def(
 		 "delaunay",
-		 [](const Eigen::MatrixXd& points, const Eigen::VectorXi& colours) {
-			 std::vector<long long int> colours_vec(colours.data(),
+		 [](const Eigen::MatrixXd& points, const Eigen::VectorX<index_t>& colours) {
+			 std::vector<index_t> colours_vec(colours.data(),
 		                                            colours.data() + colours.size());
 			 return delaunay(points, colours_vec);
 		 },
@@ -43,8 +43,8 @@ Returns:
 	         py::arg("colours"))
 		.def(
 			"delrips",
-			[](const Eigen::MatrixXd& points, const Eigen::VectorXi& colours) {
-				std::vector<long long int> colours_vec(colours.data(),
+			[](const Eigen::MatrixXd& points, const Eigen::VectorX<index_t>& colours) {
+				std::vector<index_t> colours_vec(colours.data(),
 		                                               colours.data() + colours.size());
 				return tuple{delrips(points, colours_vec), false};
 			},
@@ -78,8 +78,8 @@ See Also:
 			py::arg("colours"))
 		.def(
 			"alpha",
-			[](const Eigen::MatrixXd& points, const Eigen::VectorXi& colours) {
-				std::vector<long long int> colours_vec(colours.data(),
+			[](const Eigen::MatrixXd& points, const Eigen::VectorX<index_t>& colours) {
+				std::vector<index_t> colours_vec(colours.data(),
 		                                               colours.data() + colours.size());
 				return alpha(points, colours_vec);
 			},
@@ -110,8 +110,8 @@ See Also:
 	         py::arg("colours"))
 		.def(
 			"delcech",
-			[](const Eigen::MatrixXd& points, const Eigen::VectorXi& colours) {
-				std::vector<long long int> colours_vec(colours.data(),
+			[](const Eigen::MatrixXd& points, const Eigen::VectorX<index_t>& colours) {
+				std::vector<index_t> colours_vec(colours.data(),
 		                                               colours.data() + colours.size());
 				return delcech(points, colours_vec);
 			},
