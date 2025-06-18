@@ -12,7 +12,7 @@ from collections.abc import (
 	Sequence,
 	ValuesView,
 )
-from typing import TYPE_CHECKING, Any, Literal, TypeVar, get_args, overload
+from typing import TYPE_CHECKING, Literal, TypeVar, get_args, overload
 
 import numpy as np
 from h5py import Dataset, Group
@@ -39,42 +39,15 @@ ChromaticMethod = {
 BoundaryMatrix = list[tuple[bool, int, list[int]]]
 
 DType = TypeVar("DType", bound=np.generic)
-U = TypeVar("U", bound=Any)
+# U = TypeVar("U", bound=Any)
 NumRows = TypeVar("NumRows", bound=int)
 NumCols = TypeVar("NumCols", bound=int)
 Size = TypeVar("Size", bound=tuple[int])
 
 
-# bitmask that represents a list of colours
-def _colours_to_bitmask(colours: Collection[int]) -> int:
-	return sum(2**i for i in colours)
-
-
-# list of colours represented by a bitmask
-def _bitmask_to_colours(b: int) -> list[int]:
-	i = 0
-	res = []
-	while b:
-		if b & 1:
-			res.append(i)
-		i += 1
-		b >>= 1
-	return res
-
-
-# number of colours specified by a bitmask
-def _num_colours_in_bitmask(b: int) -> int:
-	return len(_bitmask_to_colours(b))
-
-
-# check if the colours specified by bitmask b1 are a subset of those specified by b2
-def _colours_are_subset(b1: int, b2: int) -> bool:
-	return not (~b2 & b1)
-
-
 def _get_diagrams(
 	K: FilteredComplex,  # noqa: N803
-	check_in_domain: Callable[[int], bool],
+	check_in_domain: Callable[[Collection[int]], bool],
 	max_dgm_dim: int,
 	tolerance: float = 0,
 ) -> DiagramEnsemble:
@@ -112,7 +85,8 @@ def from_filtration(
 	max_diagram_dimension: int | None = None,
 	tolerance: float = 0,
 ) -> DiagramEnsemble:
-	r"""Compute 6-pack of persistence diagrams from a chromatic filtration.
+	r"""
+	Compute 6-pack of persistence diagrams from a chromatic filtration.
 
 	Given a filtered chromatic simplicial complex :math:`K`
 	and a subcomplex :math:`L` of :math:`K`,
@@ -159,14 +133,13 @@ def from_filtration(
 			dom = [
 				dom,
 			]
-		colours_bitmask = _colours_to_bitmask(dom)
 
-		def check_in_domain(b: int) -> bool:
-			return _colours_are_subset(b, colours_bitmask)
+		def check_in_domain(c: Collection[int]) -> bool:
+			return set(c).issubset(dom)
 	elif k is not None and dom is None:
 
-		def check_in_domain(b: int) -> bool:
-			return _num_colours_in_bitmask(b) <= k  # k-chromatic simplex
+		def check_in_domain(c: Collection[int]) -> bool:
+			return len(c) <= k
 	elif k is None and dom is None:
 		errmsg = "At least one of k or dom must be provided"
 		raise RuntimeError(errmsg)
@@ -174,9 +147,10 @@ def from_filtration(
 		errmsg = "Only one of k or dom is allowed"
 		raise RuntimeError(errmsg)
 
-	# if (K, L) is a pair of simplicial complexes where dim(L) <= dim(K) = d
-	# then all of the sixpack diagrams except for the relative homology
-	# can be non-zero upto dimension d, and relative can be nontrivial upto dim = d+1
+	# If (K, L) is a pair of simplicial complexes where dim(L) <= dim(K) = d
+	# then all of the sixpack diagrams for the inclusion map L -> K
+	# are zero in dimensions greater than d except for possible the relative diagram.
+	# The relative homology is trivial in dimensions greater than d+1.
 	if max_diagram_dimension is None:
 		max_diagram_dimension = K.dimension + 1
 	else:
@@ -184,7 +158,7 @@ def from_filtration(
 	return _get_diagrams(K, check_in_domain, max_diagram_dimension, tolerance)
 
 
-def compute(
+def compute[NumRows: int, NumCols: int](
 	x: np.ndarray[tuple[NumRows, NumCols], np.dtype[np.floating]],
 	colours: Sequence[int],
 	dom: Collection[int] | int | None = None,
@@ -193,7 +167,8 @@ def compute(
 	max_diagram_dimension: int | None = None,
 	tolerance: float = 0,
 ) -> DiagramEnsemble:
-	r"""Compute the 6-pack of persistence diagrams of a coloured point-cloud.
+	r"""
+	Compute the 6-pack of persistence diagrams of a coloured point-cloud.
 
 	This function constructs a filtered simplicial complex :math:`K`
 	from the point cloud, and computes the 6-pack of persistence diagrams
@@ -237,40 +212,40 @@ def compute(
 
 	"""
 	if dom is not None and k is None:
-		# new colours: 1 -> domain, 0 -> codomain
+		# If computing using the domain, we only need two colours.
+		# new colours: 0 -> domain, 0+1 -> codomain
 		if isinstance(dom, int):
 			dom = [
 				dom,
 			]
-		new_colours = list(np.isin(colours, list(dom)).astype(np.int64))
-
-		def check_in_domain(b: int) -> bool:
-			return b == 2  # noqa: PLR2004
-	elif k is not None and dom is None:
-
-		def check_in_domain(b: int) -> bool:
-			return _num_colours_in_bitmask(b) <= k  # k-chromatic simplex
-
-		new_colours = list(colours)
-	elif k is None and dom is None:
-		errmsg = "At least one of k or dom must be provided"
-		raise RuntimeError(errmsg)
+		new_colours = list(np.isin(colours, list(dom), invert=True).astype(int))
+		dom = [0]
 	else:
-		errmsg = "Only one of k or dom is allowed"
-		raise RuntimeError(errmsg)
-	# can have non-zero homology upto dimension d for everything except rel
-	# rel can have non-zero homology in dimension d+1
+		new_colours = colours
+
+	# If X is a d-dimensional point cloud then any subset of X has trivial
+	# persistent homology in dimensions greater than or equal to d by a corollary of
+	# Alexander duality. This means that in the sixpack of diagrams, only the relative diagram
+	# can have non-trivial features in dimension d, and all diagrams are trivial in any dimension
+	# greater than d.
 	if max_diagram_dimension is None:
 		max_diagram_dimension = x.shape[0]
 	else:
 		max_diagram_dimension = min(max_diagram_dimension, x.shape[0])
+
 	# Compute chromatic complex
 	if method in ChromaticMethod:
 		K, _ = ChromaticMethod[method](x, new_colours)  # noqa: N806
 	else:
 		errmsg = f"method must be one of {ChromaticMethod.keys()}"
 		raise RuntimeError(errmsg)
-	return _get_diagrams(K, check_in_domain, max_diagram_dimension, tolerance)
+	return from_filtration(
+		K,
+		dom=dom,
+		k=k,
+		max_diagram_dimension=max_diagram_dimension,
+		tolerance=tolerance,
+	)
 
 
 class SimplexPairings(Collection):
@@ -308,6 +283,10 @@ class SimplexPairings(Collection):
 			return False
 		return self._paired == other._paired and self._unpaired == other._unpaired
 
+	def __hash__(self) -> int:
+		"""Return a hash of the persistence diagram."""
+		return hash((self._paired, self._unpaired))
+
 	def __bool__(self) -> bool:
 		"""Return true if the diagram is non-empty."""
 		# check if the diagram is non-empty
@@ -324,7 +303,8 @@ class SimplexPairings(Collection):
 		yield from self._unpaired
 
 	def __contains__(self, feature: object) -> bool:
-		"""Return true if a feature is in the diagram.
+		"""
+		Return true if a feature is in the diagram.
 
 		The feature to check should be either a pair of simplices (int, int)
 		or a single simplex (int).
@@ -353,7 +333,7 @@ class SimplexPairings(Collection):
 
 	def paired_as_matrix(self) -> np.ndarray[tuple[int, Literal[2]], np.dtype[np.int64]]:
 		"""Return a matrix representation of the finite persistence features in the diagram."""
-		return np.concatenate(list(self._paired)).reshape((-1, 2))
+		return np.array([[x, y] for (x, y) in self._paired], dtype=np.int64)
 
 
 class DiagramEnsemble(Mapping):
@@ -405,8 +385,9 @@ class DiagramEnsemble(Mapping):
 		"""Access a specific diagram in the 6-pack."""
 		return self._simplex_pairings[key]
 
-	def get(self, key: DiagramName, default: U = None) -> SimplexPairings | U:
-		"""Access a specific diagram in the 6-pack.
+	def get[U](self, key: DiagramName, default: U = None) -> SimplexPairings | U:
+		"""
+		Access a specific diagram in the 6-pack.
 
 		Returns a default value if the diagram does not exist.
 		"""
@@ -457,6 +438,16 @@ class DiagramEnsemble(Mapping):
 			and all(self._dimensions == other._dimensions)
 		)
 
+	def __hash__(self) -> int:
+		"""Return a hash of the 6-pack of persistence diagrams."""
+		return hash(
+			(
+				self._simplex_pairings.items(),
+				self._entrance_times,
+				self._dimensions,
+			),
+		)
+
 	def num_features(self) -> int:
 		"""Count the total number of features across all diagrams in the 6-pack."""
 		return sum(len(dgm) for dgm in self.values())
@@ -487,7 +478,8 @@ class DiagramEnsemble(Mapping):
 	) -> list[np.ndarray[tuple[int, Literal[2]], np.dtype[np.float64]]]: ...
 
 	def get_matrix(self, diagram_name, dim=None):
-		r"""Get a specific diagram as a matrix of birth and death times.
+		r"""
+		Get a specific diagram as a matrix of birth and death times.
 
 		Args:
 			diagram_name :
@@ -518,7 +510,7 @@ class DiagramEnsemble(Mapping):
 			if relevant_dims.size == 0 or relevant_dims.ndim == 0:
 				# there are no features in the diagram
 				return []
-			dim = list(range(max(relevant_dims)))
+			dim = list(range(max([x.item() for x in relevant_dims])))
 
 		if isinstance(dim, int):
 			# a p-dimensional homology class is captured by a pairing of (p+1) simplices for kernels
@@ -547,7 +539,8 @@ class DiagramEnsemble(Mapping):
 		raise TypeError(errmsg)
 
 	def save(self, file: Group) -> None:
-		"""Save a 6-pack of persistence diagrams to a HDF5 file or group.
+		"""
+		Save a 6-pack of persistence diagrams to a HDF5 file or group.
 
 		Args:
 			file : A h5py file or group.
@@ -562,7 +555,8 @@ class DiagramEnsemble(Mapping):
 
 	@classmethod
 	def from_file(cls, file: Group) -> DiagramEnsemble:
-		"""Load a 6-pack of persistence diagrams from a HDF5 file or group.
+		"""
+		Load a 6-pack of persistence diagrams from a HDF5 file or group.
 
 		Args:
 			file : A h5py file or group.
@@ -576,13 +570,13 @@ class DiagramEnsemble(Mapping):
 			errmsg = "Invalid file: missing fields"
 			raise RuntimeError(errmsg)
 
-		dgms._entrance_times = (  # noqa: SLF001
+		dgms._entrance_times = (
 			entrance_times[:]
 			if isinstance((entrance_times := file["entrance_times"]), Dataset)
 			and entrance_times[:].dtype == np.float64
 			else np.array([], dtype=np.float64)
 		)
-		dgms._dimensions = (  # noqa: SLF001
+		dgms._dimensions = (
 			dimensions[:]
 			if isinstance((dimensions := file["dimensions"]), Dataset)
 			and dimensions[:].dtype == np.int64

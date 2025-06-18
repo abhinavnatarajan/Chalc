@@ -1,10 +1,6 @@
-[build-system]
-requires = ["setuptools>=67", "scikit-build-core~=0.6.0", "pybind11~=2.13"]
-build-backend = "scikit_build_core.build"
-
 [project]
 name = "chalc"
-version = "8.1.0"
+version = "9.0.0"
 authors = [{ name = "Abhinav Natarajan", email = "natarajan@maths.ox.ac.uk" }]
 description = "Persistent homology of chromatic Delaunay filtrations"
 readme = { file = "README.md", content-type = "text/markdown" }
@@ -55,16 +51,28 @@ dev = [
 	"sphinx-design~=0.6",
 	"sphinx-toolbox~=3.5",
 	"sphinx~=8.0",
+	"pybind11~=2.13",
 ]
 
+[build-system]
+requires = ["scikit-build-core~=0.11.4", "pybind11~=2.13"]
+build-backend = "scikit_build_core.build"
+
 [tool.scikit-build]
-cmake.verbose = true
+minimum-version = "build-system.requires"
+build.verbose = true
 # cmake.build-type = "Debug"
 cmake.build-type = "Release"
-cmake.minimum-version = "3.23"
 logging.level = "DEBUG"
-sdist.exclude = [".github/", ".git/"]
 build-dir = "build/{wheel_tag}"
+sdist.exclude = [
+	".github/",
+	".git/",
+	".clang-format",
+	".editorconfig",
+	".gitignore",
+	"hooks/",
+]
 wheel.packages = ["src/chalc"]
 wheel.install-dir = "chalc"
 experimental = true
@@ -84,11 +92,22 @@ docstring-code-format = false
 docstring-code-line-length = "dynamic"
 
 [tool.ruff.lint]
-select = [ "ALL" ]
+select = ["ALL"]
 ignore = [
-	# "CPY", # flake8-copyright
-	"W191", # pylint (disallows tab indentation)
-	"D206", # pydocstyle (disallows tab indentation in docstring)
-	"PLR0913", # refactor (too many arguments in function signature)
-	"ERA" # commented code
+	"CPY",     # flake8-copyright
+	"W191",    # pylint: disallows tab indentation
+	"D206",    # pydocstyle: disallows tab indentation in docstring
+	"PLR0913", # refactor: too many arguments in function signature
+	"ERA",     # eradicate: commented code
+	"PYI021",  # flake8-pyi: disallows docstrings in stub files
 ]
+pydocstyle.convention = "pep257"
+flake8-annotations.allow-star-arg-any = true
+
+[tool.ruff.per-file-ignores]
+"tests/**/*.py" = [
+	"S101",    # flake8-bandit: disallows use of assert statements
+	"PLR2004", # pylint: disallows magic values
+	"INP001",  # pylint: test folder does not need __init__.py
+]
+"**.pyi" = ["ALL"]

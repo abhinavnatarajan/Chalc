@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.23)
 cmake_policy(SET CMP0054 NEW)
+cmake_minimum_required(VERSION 3.26.1)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -82,14 +82,7 @@ endif()
 
 # ----------------------------- Build python api ------------------------------
 
-message(STATUS "Python executable: ${PYTHON_EXECUTABLE}")
-# call pybind11-config to obtain the root of the cmake package
-execute_process(
-    COMMAND ${PYTHON_EXECUTABLE} -m pybind11 --cmakedir
-    OUTPUT_VARIABLE pybind11_DIR_RAW
-)
-string(STRIP ${pybind11_DIR_RAW} pybind11_DIR)
-
+set(PYBIND11_FINDPYTHON ON)
 find_package(pybind11 CONFIG REQUIRED)
 # if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 #     add_compile_options(-fvisibility=hidden)
@@ -126,7 +119,7 @@ if(USING_VCPKG AND WIN32)
         RUNTIME_DEPENDENCY_SET
         vcpkg_libs
         DESTINATION
-        bin
+        lib
         PRE_INCLUDE_REGEXES ${VCPKG_SHARED_LIBRARIES}
         PRE_EXCLUDE_REGEXES ".*"
         DIRECTORIES "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/"

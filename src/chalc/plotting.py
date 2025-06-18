@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from collections.abc import Collection, Mapping, Sequence
-from collections.abc import Set as AbstractSet
 from itertools import product
 from typing import TYPE_CHECKING, Any, Literal, get_args
 
@@ -17,10 +16,6 @@ from pandas import DataFrame
 from .sixpack import (
 	DiagramEnsemble,
 	SimplexPairings,
-	_bitmask_to_colours,
-	_colours_are_subset,
-	_colours_to_bitmask,
-	_num_colours_in_bitmask,
 )
 
 if TYPE_CHECKING:
@@ -36,10 +31,11 @@ plt.rcParams["animation.html"] = "jshtml"
 def plot_sixpack(
 	dgms: DiagramEnsemble,
 	truncations: Mapping[DiagramEnsemble.DiagramName, float] | float | None = None,
-	dimensions: AbstractSet[int] | int | None = None,
+	dimensions: Collection[int] | int | None = None,
 	tolerance: float = 0,
 ) -> tuple[Figure, np.ndarray[tuple[Literal[2], Literal[3]], np.dtype[Any]]]:
-	"""Plot the 6-pack of persistence diagrams returned by :func:`compute <.sixpack.compute>`.
+	"""
+	Plot the 6-pack of persistence diagrams returned by :func:`compute <.sixpack.compute>`.
 
 	Args:
 		dgms        : The 6-pack of persistence diagrams.
@@ -56,7 +52,7 @@ def plot_sixpack(
 	diagram_names = get_args(DiagramEnsemble.DiagramName.__value__)
 	if dimensions is None:
 		if dgms:
-			dimensions = set(range(max(dgms.dimensions)))
+			dimensions = set(range(max(x.item() for x in dgms.dimensions)))
 			# The relative diagram may contain features
 			# one dimension higher than that of the filtration.
 			dims = {
@@ -69,7 +65,7 @@ def plot_sixpack(
 			dims = {name: set() for name in diagram_names}
 	elif isinstance(dimensions, int):
 		dims = {name: {dimensions} for name in diagram_names}
-	elif isinstance(dimensions, AbstractSet) and all(isinstance(dim, int) for dim in dimensions):
+	elif isinstance(dimensions, Collection) and all(isinstance(dim, int) for dim in dimensions):
 		dims = dict.fromkeys(diagram_names, dimensions)
 	else:
 		errmsg = "Invalid dimensions argument."
@@ -126,7 +122,7 @@ def plot_sixpack(
 		_plot_diagram(
 			diagram=dgms[diagram_name],
 			entrance_times=list(dgms.entrance_times),
-			dimensions=list(dgms.dimensions),
+			dimensions=[x.item() for x in dgms.dimensions],
 			truncation=truncs[diagram_name],
 			dims=dims[diagram_name],
 			ax=axes[plot_pos[diagram_name]],
@@ -150,11 +146,12 @@ def plot_diagram(
 	dgms: DiagramEnsemble,
 	diagram_name: DiagramEnsemble.DiagramName,
 	truncation: float | None = None,
-	dimensions: AbstractSet[int] | int | None = None,
+	dimensions: Collection[int] | int | None = None,
 	ax: Axes | None = None,
 	tolerance: float = 0,
 ) -> Axes | None:
-	"""Plot a specific diagram from a 6-pack.
+	"""
+	Plot a specific diagram from a 6-pack.
 
 	Args:
 		dgms         : The 6-pack of persistence diagrams.
@@ -179,7 +176,7 @@ def plot_diagram(
 	dim_shift = 1 if diagram_name == "ker" else 0
 
 	if dimensions is None:
-		dimensions = set(range(max(dgms.dimensions))) if dgm else set()
+		dimensions = set(range(max(x.item() for x in dgms.dimensions))) if dgm else set()
 	elif isinstance(dimensions, int):
 		dimensions = {
 			dimensions,
@@ -211,7 +208,7 @@ def plot_diagram(
 	_plot_diagram(
 		diagram=dgm,
 		entrance_times=list(dgms.entrance_times),
-		dimensions=list(dgms.dimensions),
+		dimensions=[x.item() for x in dgms.dimensions],
 		truncation=truncation,
 		dims=dimensions,
 		ax=ax1,
@@ -230,7 +227,7 @@ def _plot_diagram(
 	entrance_times: Sequence[float],  # entrance times of the simplices by index
 	dimensions: Sequence[int],  # dimensions of the simplices by index
 	truncation: float,  # max birth/death time to plot
-	dims: AbstractSet[int],  # dimensions for which features are plotted
+	dims: Collection[int],  # dimensions for which features are plotted
 	ax: Axes,  # axes to plot on
 	title: str,  # title of the plot
 	points_legend: bool,  # show legend for points (which dimension)
@@ -305,7 +302,8 @@ def draw_filtration(
 	ax: Axes | None = None,
 	plot_colours: str | np.ndarray | None = None,
 ) -> Axes:
-	r"""Visualise a 2D filtration at given time, optionally including only certain colours.
+	r"""
+	Visualise a 2D filtration at given time, optionally including only certain colours.
 
 	Args:
 		K               : A filtered 2-dimensional simplicial complex.
@@ -326,11 +324,7 @@ def draw_filtration(
 		raise NotImplementedError
 
 	if include_colours is None:
-		include_colours = {
-			_bitmask_to_colours(vertex.colours)[0] for vertex in K.simplices[0].values()
-		}
-
-	include_colours_bitmask = _colours_to_bitmask(include_colours)
+		include_colours = {vertex.colours[0] for vertex in K.simplices[0].values()}
 
 	if ax is None:
 		ax1: Axes
@@ -349,10 +343,8 @@ def draw_filtration(
 	vertex_colours = []
 	vertices_to_plot = []
 	for idx, vertex in K.simplices[0].items():
-		if (
-			_colours_are_subset(vertex.colours, include_colours_bitmask)
-		) and vertex.filtration_value <= time:
-			vertex_colours += _bitmask_to_colours(vertex.colours)
+		if (set(vertex.colours).issubset(include_colours)) and vertex.filtration_value <= time:
+			vertex_colours += vertex.colours
 			vertices_to_plot.append(idx)
 
 	vertex_colours = np.array(vertex_colours)
@@ -365,12 +357,9 @@ def draw_filtration(
 
 	# Plot the edges
 	for simplex in K.simplices[1].values():
-		if (
-			_colours_are_subset(simplex.colours, include_colours_bitmask)
-			and simplex.filtration_value <= time
-		):
-			if _num_colours_in_bitmask(simplex.colours) == 1:
-				colour = plot_colours[_bitmask_to_colours(simplex.colours)[0]]
+		if set(simplex.colours).issubset(include_colours) and simplex.filtration_value <= time:
+			if len(simplex.colours) == 1:
+				colour = plot_colours[simplex.colours[0]]
 				alpha = 0.5
 			else:
 				colour = "black"
@@ -384,14 +373,8 @@ def draw_filtration(
 			)
 
 	for simplex in K.simplices[2].values():
-		if (
-			_colours_are_subset(simplex.colours, include_colours_bitmask)
-			and simplex.filtration_value <= time
-		):
-			if _num_colours_in_bitmask(simplex.colours) == 1:
-				colour = plot_colours[_bitmask_to_colours(simplex.colours)[0]]
-			else:
-				colour = "grey"
+		if set(simplex.colours).issubset(include_colours) and simplex.filtration_value <= time:
+			colour = plot_colours[simplex.colours[0]] if len(simplex.colours) == 1 else "grey"
 			ax1.fill(points[0, simplex.vertices], points[1, simplex.vertices], c=colour, alpha=0.2)
 
 	ax1.set_aspect("equal")
@@ -407,7 +390,8 @@ def animate_filtration(
 	animation_length: float,
 	plot_colours: str | np.ndarray | None = None,
 ) -> animation.FuncAnimation:
-	r"""Create animation of 2-skeleton of filtered simplicial complex.
+	r"""
+	Create animation of 2-skeleton of filtered simplicial complex.
 
 	Args:
 		K                : A filtered complex.
@@ -437,17 +421,15 @@ def animate_filtration(
 
 	vertex_colours = []
 	for simplex in K.simplices[0].values():
-		i = _bitmask_to_colours(simplex.colours)[0]
-		vertex_colours.append(i)
+		vertex_colours += simplex.colours
 
 	ax.scatter(points[0, :], points[1, :], c=list(plot_colours[vertex_colours]), s=10)
 
 	lines = {}
 	patches = {}
 	for idx, simplex in K.simplices[1].items():
-		if _num_colours_in_bitmask(simplex.colours) == 1:
-			i = _bitmask_to_colours(simplex.colours)[0]
-			colour = plot_colours[i]
+		if len(simplex.colours) == 1:
+			colour = plot_colours[simplex.colours[0]]
 			alpha = 0.5
 		else:
 			colour = "black"
@@ -455,11 +437,7 @@ def animate_filtration(
 		lines[idx] = ax.plot([], [], c=colour, alpha=alpha, linewidth=1)[0]
 
 	for idx, simplex in K.simplices[2].items():
-		if _num_colours_in_bitmask(simplex.colours) == 1:
-			i = _bitmask_to_colours(simplex.colours)[0]
-			colour = plot_colours[i]
-		else:
-			colour = "grey"
+		colour = plot_colours[simplex.colours[0]] if len(simplex.colours) == 1 else "grey"
 		patches[idx] = ax.fill([], [], c=colour, alpha=0.2)[0]
 
 	ax.set_aspect("equal")

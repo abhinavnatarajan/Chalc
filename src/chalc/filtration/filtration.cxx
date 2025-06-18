@@ -166,8 +166,15 @@ colours_t FilteredComplex::Simplex::get_colours() {
 	return colours;
 }
 
-unsigned long long int FilteredComplex::Simplex::get_colours_as_int() {
-	return colours.to_ullong();
+vector<index_t> FilteredComplex::Simplex::get_colours_as_vec() {
+	vector<index_t> result;
+	result.reserve(colours.count());
+	for (size_t i = 0; i < colours.size(); i++) {
+		if (colours[i]) {
+			result.push_back(static_cast<index_t>(i));
+		}
+	}
+	return result;
 }
 
 FilteredComplex::FilteredComplex(const index_t num_vertices, const index_t max_dimension) :
@@ -398,10 +405,10 @@ value_t FilteredComplex::max_filt_value() const noexcept {
 	return cur_max_filt_value;
 }
 
-vector<tuple<vector<index_t>, index_t, value_t, unsigned long long int>>
+vector<tuple<vector<index_t>, index_t, value_t, vector<index_t>>>
 FilteredComplex::serialised() const {
-	vector<tuple<vector<index_t>, index_t, value_t, unsigned long long int>> result(num_simplices);
-	vector<map<index_t, index_t>>                                            indices(cur_dim + 1);
+	vector<tuple<vector<index_t>, index_t, value_t, vector<index_t>>> result(num_simplices);
+	vector<map<index_t, index_t>>                                     indices(cur_dim + 1);
 	for (index_t d = 0, i = 0; d <= cur_dim; d++) {
 		// sort the d-dimensional simplices by filtration value
 		vector<shared_ptr<Simplex>> sort_by_val;
@@ -425,7 +432,7 @@ FilteredComplex::serialised() const {
 			indices[d][simplex->label] = i;
 			sort(faces.begin(), faces.end());
 			result[i++] =
-				tuple{faces, simplex->label, simplex->value, simplex->get_colours_as_int()};
+				tuple{faces, simplex->label, simplex->value, simplex->get_colours_as_vec()};
 		}
 	}
 	return result;

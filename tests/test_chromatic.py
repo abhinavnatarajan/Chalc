@@ -28,12 +28,12 @@ class TestChromatic:
 		"""Test chromatic delaunay on a simple example."""
 		filtration = ch.chromatic.delaunay(self.points, list(self.colours))
 		assert_standard_simplex(3, filtration, is_filtered=False, is_chromatic=True)
-		assert filtration.simplices[0][0].colours == 2
-		assert all(filtration.simplices[0][i].colours == 1 for i in range(1, 4))
-		assert all(filtration.simplices[1][i].colours == 3 for i in range(3))
-		assert all(filtration.simplices[1][i].colours == 1 for i in range(3, 6))
-		assert all(filtration.simplices[2][i].colours == 3 for i in range(3))
-		assert filtration.simplices[3][0].colours == 3
+		assert filtration.simplices[0][0].colours == [1]
+		assert all(filtration.simplices[0][i].colours == [0] for i in range(1, 4))
+		assert all(filtration.simplices[1][i].colours == [0, 1] for i in range(3))
+		assert all(filtration.simplices[1][i].colours == [0] for i in range(3, 6))
+		assert all(filtration.simplices[2][i].colours == [0, 1] for i in range(3))
+		assert filtration.simplices[3][0].colours == [0, 1]
 
 	def test_degenerate_delaunay(self) -> None:
 		"""Test the Delaunay construction on degenerate examples."""
@@ -111,8 +111,8 @@ class TestChromatic:
 		for d in dims:
 			for s in num_colours:
 				points = rng.uniform(size=(d, 200))
-				colours = rng.integers(0, s, size=200)
-				filtration, numerical_errors = ch.chromatic.delcech(points, list(colours))
+				colours = rng.integers(0, s, size=200, dtype=np.uint64)
+				filtration, numerical_errors = ch.chromatic.delcech(points, colours)
 				assert not numerical_errors
 				assert filtration.is_filtration()
 
@@ -124,8 +124,11 @@ class TestChromatic:
 		for d in dims:
 			for s in num_colours:
 				points = rng.uniform(size=(d, 200))
-				colours = rng.integers(0, s, size=200)
-				filtration, numerical_errors = ch.chromatic.alpha(points, list(colours))
+				colours = rng.integers(0, s, size=200, dtype=np.uint64)
+				filtration, numerical_errors = ch.chromatic.alpha(
+					points,
+					[x.item() for x in colours],
+				)
 				assert not numerical_errors
 				assert filtration.is_filtration()
 
@@ -137,8 +140,8 @@ class TestChromatic:
 		for d in dims:
 			for s in num_colours:
 				points = rng.uniform(size=(d, 200))
-				colours = rng.integers(0, s, size=200)
-				filtration, numerical_errors = ch.chromatic.delrips(points, list(colours))
+				colours = rng.integers(0, s, size=200, dtype=np.uint64)
+				filtration, numerical_errors = ch.chromatic.delrips(points, colours)
 				assert not numerical_errors
 				assert filtration.is_filtration()
 
@@ -176,7 +179,7 @@ class TestFiltration:
 			for j in range(num_simplices):
 				assert filtration.simplices[i][j].dimension == i
 				assert filtration.simplices[i][j].vertices == list(next(gen_vertices))
-				assert filtration.simplices[i][j].colours == 1
+				assert filtration.simplices[i][j].colours == [0]
 				assert filtration.simplices[i][j].filtration_value == 0
 				assert filtration.simplices[i][j].label == j
 
@@ -200,6 +203,6 @@ def assert_standard_simplex(
 			assert filtration.simplices[i][k].vertices == list(next(gen_vertices))
 			assert filtration.simplices[i][k].label == k
 			if not is_chromatic:
-				assert filtration.simplices[i][k].colours == 1
+				assert filtration.simplices[i][k].colours == [0]
 			if not is_filtered:
 				assert filtration.simplices[i][k].filtration_value == 0

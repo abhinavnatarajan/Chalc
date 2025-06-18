@@ -79,3 +79,6 @@ venv.bak/
 
 # Documentation artifacts
 *.h5
+
+# Other
+scratch.py

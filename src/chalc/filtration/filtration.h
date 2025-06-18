@@ -41,7 +41,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	#include <chalc/common.h>
 
 namespace chalc {
-constexpr index_t                    MAX_NUM_COLOURS = 64;
+// The maximum number of colours that can be represented.
+constexpr index_t                    MAX_NUM_COLOURS = 16;
 typedef std::bitset<MAX_NUM_COLOURS> colours_t;
 
 class BinomialCoeffTable;
@@ -96,7 +97,7 @@ struct FilteredComplex {
 	value_t max_filt_value() const noexcept;
 
 	// Returns a flat vectorised representation of the complex
-	std::vector<std::tuple<std::vector<index_t>, index_t, value_t, unsigned long long int>>
+	std::vector<std::tuple<std::vector<index_t>, index_t, value_t, std::vector<index_t>>>
 	serialised() const;
 
 	// Returns the k-skeleton of the complete simplicial complex on n vertices.
@@ -141,6 +142,7 @@ struct FilteredComplex {
 	// Assumes that verts is valid.
 	bool _has_simplex(const std::vector<index_t>& verts) const;
 
+	// Add a simplex to the complex with the specified vertices and filtration value.
 	std::shared_ptr<Simplex> _add_simplex(const std::vector<index_t>& verts,
 	                                      const value_t               filt_value);
 
@@ -166,10 +168,10 @@ struct FilteredComplex::Simplex : public std::enable_shared_from_this<FilteredCo
 	// Factory method - only way to create new simplex
 	static std::shared_ptr<Simplex>
 	_make_simplex(index_t label,
-	             index_t max_vertex,
-	             value_t value = DEFAULT_FILT_VALUE,
-	             const std::vector<std::shared_ptr<Simplex>>& facets =
-	                 std::vector<std::shared_ptr<Simplex>>{});
+	              index_t max_vertex,
+	              value_t value = DEFAULT_FILT_VALUE,
+	              const std::vector<std::shared_ptr<Simplex>>& facets =
+	                  std::vector<std::shared_ptr<Simplex>>{});
 
 	// Get a handle to this simplex
 	std::shared_ptr<Simplex> get_handle();
@@ -190,7 +192,7 @@ struct FilteredComplex::Simplex : public std::enable_shared_from_this<FilteredCo
 
 	void set_colour(index_t c);  // not inline since we export this
 
-	unsigned long long int get_colours_as_int();
+	std::vector<index_t> get_colours_as_vec();
 
 	inline void set_colours(colours_t c);
 
@@ -219,7 +221,6 @@ struct FilteredComplex::Simplex : public std::enable_shared_from_this<FilteredCo
 	// Writes the sorted vertex labels of the simplex into a buffer
 	// Assumes that the simplex has valid faces
 	template <typename OutputIterator> void _get_vertex_labels(OutputIterator&& buf) const;
-
 };
 
 // The simplicial complex associated to the standard n-simplex.
