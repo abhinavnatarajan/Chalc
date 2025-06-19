@@ -205,7 +205,7 @@ void FilteredComplex::validate_vertex_sequence(vector<index_t>& verts) const {
 	if (verts.size() == 0) {
 		throw invalid_argument("Vertex sequence cannot be empty.");
 	}
-	if (verts.size() > max_dim + 1) {
+	if (static_cast<index_t>(verts.size() - 1) > max_dim) {
 		throw invalid_argument("Vertex sequence is too long.");
 	}
 	sort(verts.begin(), verts.end());
@@ -216,14 +216,15 @@ void FilteredComplex::validate_vertex_sequence(vector<index_t>& verts) const {
 }
 
 index_t FilteredComplex::_get_label_from_vertex_labels(const vector<index_t>& verts) const {
-	assert(verts.size() != 0);
-	if (verts.size() == 1) {
+	index_t num_verts = static_cast<index_t>(verts.size());
+	assert(num_verts != 0);
+	if (num_verts == 1) {
 		return verts[0];  // if we have a vertex, return its label
 	}
 	index_t label = 0;
-	for (index_t i = 0, v = 0; i < verts.size(); v = verts[i++] + 1) {
+	for (index_t i = 0, v = 0; i < static_cast<index_t>(num_verts); v = verts[i++] + 1) {
 		for (index_t j = v; j < verts[i]; j++) {
-			label += (*binomial)(n_vertices - (j + 1), verts.size() - (i + 1));
+			label += (*binomial)(n_vertices - (j + 1), num_verts - (i + 1));
 		}
 	}
 	return label;
@@ -256,8 +257,9 @@ bool FilteredComplex::has_simplex(const index_t dim, const index_t label) const 
 }
 
 bool FilteredComplex::_has_simplex(const vector<index_t>& verts) const {
-	assert(verts.size() != 0);
-	auto dim   = verts.size() - 1;  // we assume that verts is valid
+	index_t num_verts = static_cast<index_t>(verts.size());
+	assert(num_verts != 0);
+	auto dim   = num_verts - 1;  // we assume that verts is valid
 	auto label = _get_label_from_vertex_labels(verts);
 	return (_has_simplex(dim, label));
 }
@@ -269,9 +271,10 @@ bool FilteredComplex::has_simplex(vector<index_t>& verts) const {
 
 shared_ptr<FilteredComplex::Simplex> FilteredComplex::_add_simplex(const vector<index_t>& verts,
                                                                    const value_t filt_value) {
-	assert(verts.size() != 0);
+	index_t num_verts = static_cast<index_t>(verts.size());
+	assert(num_verts != 0);
 	shared_ptr<Simplex> new_simplex;
-	auto                dim            = verts.size() - 1;
+	auto                dim            = num_verts - 1;
 	auto                label          = _get_label_from_vertex_labels(verts);
 	auto                search_simplex = simplices[dim].find(label);
 	if (search_simplex != simplices[dim].end()) {
@@ -308,7 +311,7 @@ bool FilteredComplex::add_simplex(
 		return false;
 	} else {
 		_add_simplex(verts, filt_value);
-		cur_dim            = max(cur_dim, verts.size() - 1);  // need verts to be valid
+		cur_dim = max(cur_dim, static_cast<index_t>(verts.size() - 1));  // need verts to be valid
 		cur_max_filt_value = max(cur_max_filt_value, filt_value);
 		return true;
 	}

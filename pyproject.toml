@@ -101,7 +101,6 @@ ignore = [
 	"W191",    # pylint: disallows tab indentation
 	"D206",    # pydocstyle: disallows tab indentation in docstring
 	"PLR0913", # refactor: too many arguments in function signature
-	"ERA",     # eradicate: commented code
 	"PYI021",  # flake8-pyi: disallows docstrings in stub files
 ]
 pydocstyle.convention = "pep257"
