@@ -27,8 +27,11 @@ jobs:
         with:
           submodules: "recursive"
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
       - name: Build SDist
-        run: pipx run build --sdist
+        run: uv build --sdist --no-progress --verbose
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -48,9 +51,12 @@ jobs:
         with:
           submodules: "recursive"
 
-      - name: Get CMake
-        uses: lukka/get-cmake@v3.28.0
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
 
+      # - name: Get CMake
+      #   uses: lukka/get-cmake@v3.28.0
+       #
       - name: Setup build tools on macOS
         run: brew install automake autoconf libtool
         if: ${{ runner.os == 'macos' }}
@@ -77,16 +83,8 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.21.3
         env:
-          CIBW_ARCHS: auto64
-          CIBW_SKIP: "pp* *-musllinux_*"
-          CIBW_BUILD_VERBOSITY: 1
-          CIBW_ENVIRONMENT_PASS_LINUX: CI
-          CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28
           # We need rustup to build phimaker from source if necessary
           CIBW_BEFORE_ALL_LINUX: dnf install -y zip && curl -sSf https://sh.rustup.rs | sh -s -- -y
-          CIBW_ENVIRONMENT_LINUX: "PATH=$HOME/.cargo/bin:$PATH"
-          CIBW_TEST_COMMAND: pytest {package}/tests
-          CIBW_TEST_REQUIRES: pytest~=8.2
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

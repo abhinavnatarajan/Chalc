@@ -46,11 +46,14 @@ dev = [
 	"ipython~=8.29",
 	"nbsphinx~=0.9",
 	"pybind11-stubgen~=2.5",
-	"pytest~=8.3",
 	"sphinx-autoapi~=3.3",
 	"sphinx-design~=0.6",
 	"sphinx-toolbox~=3.5",
 	"sphinx~=8.0",
+	# Needs to be kept in sync with cibuildwheel.test-requires below
+	"pytest~=8.3",
+	# Pybind11 headers for LSP
+	# Needs to be kept in sync with build-system.requires below
 	"pybind11~=2.13",
 ]
 
@@ -111,3 +114,17 @@ flake8-annotations.allow-star-arg-any = true
 	"INP001",  # pylint: test folder does not need __init__.py
 ]
 "**.pyi" = ["ALL"]
+
+[tool.cibuildwheel]
+archs = "auto64"
+build-verbosity = 1
+build-frontend = "build[uv]"
+skip = "pp* *-musllinux_*"
+test-command = "pytest {package}/tests"
+test-requires = "pytest~=8.3"
+
+[tool.cibuildwheel.linux]
+          # We need rustup to build phimaker from source if necessary
+          # CIBW_BEFORE_ALL_LINUX: dnf install -y zip && curl -sSf https://sh.rustup.rs | sh -s -- -y
+environment = { PATH = "$HOME/.cargo/bin:$PATH" }
+environment-pass = "CI"
