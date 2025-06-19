@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import (
+	Collection,
+)
 from itertools import combinations
 from typing import TYPE_CHECKING, Literal, NewType, TypeVar
 from warnings import warn
@@ -17,7 +20,6 @@ from ._simplex_pairings import SimplexPairings
 if TYPE_CHECKING:
 	from collections.abc import (
 		Callable,
-		Collection,
 		Sequence,
 	)
 
@@ -25,31 +27,52 @@ if TYPE_CHECKING:
 
 __all__ = [
 	"DiagramEnsemble",
-	# "KChromaticGluingMap",
-	# "KChromaticInclusion",
+	"KChromaticGluingMap",
+	"KChromaticInclusion",
 	"SimplexPairings",
-	# "SubsetInclusion",
+	"SubsetInclusion",
 	"compute",
 	"from_filtration",
 ]
-
-ChromaticMethod = {
-	"alpha": alpha,
-	"delcech": delcech,
-	"delrips": delrips,
-}
-
 
 NumRows = TypeVar("NumRows", bound=int)
 NumCols = TypeVar("NumCols", bound=int)
 Size = TypeVar("Size", bound=tuple[int])
 
-# SubsetInclusion = NewType("SubsetInclusion", set[int])
-# KChromaticInclusion = NewType("KChromaticInclusion", int)
-# KChromaticGluingMap = NewType("KChromaticGluingMap", int)
+
+class SubsetInclusion(set[int]):
+	"""Corresponds to the inclusion of the subcomplex spanned by a given subset of colours."""
+
+	def __init__(self, x: Collection[int]) -> None:
+		if not isinstance(x, Collection) or not all(isinstance(i, int) for i in x):
+			errmsg = "SubsetInclusion must be initialised with a collection of integers."
+			raise TypeError(errmsg)
+		super().__init__(x)
 
 
-def _get_diagrams_sheaf(
+class KChromaticInclusion(int):
+	"""
+	Corresponds to the inclusion of the :math:`k`-chromatic subcomplex of a chromatic filtration.
+
+	Given a chromatic filtration :math:`K`, its :math:`k`-chromatic subcomplex
+	is the subfiltration spanned by simplices having at most :math:`k` colours.
+
+	"""
+
+
+class KChromaticGluingMap(int):
+	r"""
+	Corresponds to gluing all subfiltrations spanned by :math:`k` colours.
+
+	Given a chromatic filtration :math:`K` with colours :math:`C`,
+	this is the gluing map :math:`\bigsqcup_{\substack{I \subset C\\ |I| = k}} K_I \to K`,
+	where :math:`K_I` is the subfiltration spanned by simplices
+	whose colours are a subset of :math:`I`.
+
+	"""
+
+
+def _get_diagrams_gluing_map(
 	filtration: FilteredComplex,
 	k: int,
 	max_dgm_dim: int,
@@ -162,8 +185,7 @@ def _get_diagrams_inclusion(
 
 def from_filtration(
 	filtration: FilteredComplex,
-	dom: Collection[int] | int | None = None,
-	k: int | None = None,
+	mapping_method: SubsetInclusion | KChromaticInclusion | KChromaticGluingMap,
 	max_diagram_dimension: int | None = None,
 	threshold: float = 0,
 ) -> DiagramEnsemble:
@@ -171,22 +193,14 @@ def from_filtration(
 	Compute 6-pack of persistence diagrams from a chromatic filtration.
 
 	Given a filtered chromatic simplicial complex :math:`K`
-	and a subcomplex :math:`L` of :math:`K`,
 	this function computes the 6-pack of persistence diagram
-	associated with the inclusion map :math:`f : L \hookrightarrow K`.
-	The subcomplex is specified by the colours of its vertices,
-	or by an integer :math:`k` wherein all simplices with
-	:math:`k` or fewer colours are considered part of the subcomplex.
+	associated with a map of :math:`f : L \to K` of filtrations,
+	where :math:`L` is some filtration constructed from :math:`K`.
 
 	Args:
 		filtration            : A filtered chromatic simplicial complex.
-		dom                   :
-			Integer or collection of integers describing the
-			colours of the points in the domain (the subcomplex :math:`L`).
-		k                     :
-			If not ``None``, then the domain is taken to be the
-			:math:`k`-chromatic subcomplex of :math:`K`, i.e.,
-			the subcomplex of simplices having at most :math:`k` colours.
+		mapping_method        : The method for constructing the map
+			of filtrations.
 		max_diagram_dimension :
 			Maximum homological dimension for which the persistence diagrams are computed.
 			By default diagrams of all dimensions are computed.
@@ -210,25 +224,6 @@ def from_filtration(
 		entrance times of the simplices and their dimensions.
 
 	"""
-	if dom is not None and k is None:
-		if isinstance(dom, int):
-			dom = [
-				dom,
-			]
-
-		def check_in_domain(c: Collection[int]) -> bool:
-			return set(c).issubset(dom)
-	elif k is not None and dom is None:
-
-		def check_in_domain(c: Collection[int]) -> bool:
-			return len(c) <= k
-	elif k is None and dom is None:
-		errmsg = "At least one of k or dom must be provided"
-		raise RuntimeError(errmsg)
-	else:
-		errmsg = "Only one of k or dom is allowed"
-		raise RuntimeError(errmsg)
-
 	# If (K, L) is a pair of simplicial complexes where dim(L) <= dim(K) = d
 	# then all of the sixpack diagrams for the inclusion map L -> K
 	# are zero in dimensions greater than d except for possible the relative diagram.
@@ -237,15 +232,48 @@ def from_filtration(
 		max_diagram_dimension = filtration.dimension + 1
 	else:
 		max_diagram_dimension = min(max_diagram_dimension, filtration.dimension + 1)
-	return _get_diagrams_inclusion(filtration, check_in_domain, max_diagram_dimension, threshold)
+
+	if isinstance(mapping_method, SubsetInclusion):
+
+		def check_in_domain(c: Collection[int]) -> bool:
+			return set(c).issubset(mapping_method)
+
+		return _get_diagrams_inclusion(
+			filtration,
+			check_in_domain,
+			max_dgm_dim=max_diagram_dimension,
+			threshold=threshold,
+		)
+
+	if isinstance(mapping_method, KChromaticInclusion):
+
+		def check_in_domain(c: Collection[int]) -> bool:
+			return len(c) <= mapping_method
+
+		return _get_diagrams_inclusion(
+			filtration,
+			check_in_domain,
+			max_dgm_dim=max_diagram_dimension,
+			threshold=threshold,
+		)
+
+	if isinstance(mapping_method, KChromaticInclusion):
+		return _get_diagrams_gluing_map(
+			filtration,
+			k=mapping_method,
+			max_dgm_dim=max_diagram_dimension,
+			threshold=threshold,
+		)
+
+	errmsg = "Invalid mapping method."
+	raise TypeError(errmsg)
 
 
 def compute[NumRows: int, NumCols: int](
-	x: np.ndarray[tuple[NumRows, NumCols], np.dtype[np.floating]],
+	x: np.ndarray[tuple[NumRows, NumCols], np.dtype[np.float64]],
 	colours: Sequence[int],
-	dom: Collection[int] | int | None = None,
-	k: int | None = None,
-	method: Literal["alpha", "delcech", "delrips"] = "alpha",
+	mapping_method: SubsetInclusion | KChromaticInclusion | KChromaticGluingMap,
+	filtration_algorithm: Literal["alpha", "delcech", "delrips"] = "delcech",
 	max_diagram_dimension: int | None = None,
 	threshold: float = 0,
 ) -> DiagramEnsemble:
@@ -254,20 +282,15 @@ def compute[NumRows: int, NumCols: int](
 
 	This function constructs a filtered simplicial complex :math:`K`
 	from the point cloud, and computes the 6-pack of persistence diagrams
-	associated with the inclusion :math:`f : L \hookrightarrow K`
-	where :math:`L` is some filtered subcomplex of :math:`K`.
+	associated with a map of :math:`f : L \to K` of filtrations,
+	where :math:`L` is some filtration constructed from :math:`K`.
 
 	Args:
 		x                     : Numpy matrix whose columns are points.
 		colours               : Sequence of integers describing the colours of the points.
-		dom                   :
-			Integer or collection of integers describing the colours of
-			the points in the domain (the subcomplex :math:`L`).
-		k                     :
-			If not ``None``, then the domain is taken to be the
-			:math:`k`-chromatic subcomplex of :math:`K`, i.e.,
-			the subcomplex of simplices having at most :math:`k` colours.
-		method                :
+		mapping_method        : The method for constructing the map
+			of filtrations.
+		filtration_algorithm  :
 			Filtration used to construct the chromatic complex.
 			Must be one of ``'alpha'``, ``'delcech'``, or ``'delrips'``.
 		max_diagram_dimension :
@@ -293,17 +316,15 @@ def compute[NumRows: int, NumCols: int](
 		entrance times of the simplices and their dimensions.
 
 	"""
-	if dom is not None and k is None:
+	if isinstance(mapping_method, SubsetInclusion):
 		# If computing using the domain, we only need two colours.
 		# new colours: 0 -> domain, 0+1 -> codomain
-		if isinstance(dom, int):
-			dom = [
-				dom,
-			]
-		new_colours = list(np.isin(colours, list(dom), invert=True).astype(int))
-		dom = [0]
+		new_colours: list[int] = (
+			np.isin(colours, list(mapping_method), invert=True).astype(int).tolist()
+		)
+		mapping_method = SubsetInclusion({0})
 	else:
-		new_colours = colours
+		new_colours = list(colours)
 
 	# If X is a d-dimensional point cloud then any subset of X has trivial
 	# persistent homology in dimensions greater than or equal to d by a corollary of
@@ -316,21 +337,24 @@ def compute[NumRows: int, NumCols: int](
 		max_diagram_dimension = min(max_diagram_dimension, x.shape[0])
 
 	# Compute chromatic complex
-	if method in ChromaticMethod:
-		filtration, numerical_issues = ChromaticMethod[method](x, new_colours)
-		if numerical_issues:
-			warn(
-				"Numerical issues found when computing filtration",
-				category=RuntimeWarning,
-				stacklevel=1,  # warn about
-			)
+	if filtration_algorithm == "delcech":
+		filtration, numerical_issues = delcech(x, new_colours)
+	elif filtration_algorithm == "alpha":
+		filtration, numerical_issues = alpha(x, new_colours)
+	elif filtration_algorithm == "delrips":
+		filtration, numerical_issues = delrips(x, new_colours)
 	else:
-		errmsg = f"method must be one of {ChromaticMethod.keys()}"
+		errmsg = "Invalid filtration algorithm."
 		raise RuntimeError(errmsg)
+	if numerical_issues:
+		warn(
+			"Numerical issues found when computing filtration",
+			category=RuntimeWarning,
+			stacklevel=1,  # warn about
+		)
 	return from_filtration(
 		filtration,
-		dom=dom,
-		k=k,
+		mapping_method=mapping_method,
 		max_diagram_dimension=max_diagram_dimension,
 		threshold=threshold,
 	)
