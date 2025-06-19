@@ -66,9 +66,10 @@ Returns:
 	In case of numerical issues, a warning is also raised.
 
 Raises:
-	ValueError: If any value in ``colours`` is
-	>= :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>` or < 0,
-	or if the length of ``colours`` does not match the number of points.
+	ValueError:
+		If any value in ``colours`` is
+		>= :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>` or < 0,
+		or if the length of ``colours`` does not match the number of points.
 
 Notes:
 	The chromatic Delaunay--Rips filtration of the point cloud

@@ -44,6 +44,7 @@ class SubsetInclusion(set[int]):
 	"""Corresponds to the inclusion of the subcomplex spanned by a given subset of colours."""
 
 	def __init__(self, x: Collection[int]) -> None:
+		"""Initialise this method."""
 		if not isinstance(x, Collection) or not all(isinstance(i, int) for i in x):
 			errmsg = "SubsetInclusion must be initialised with a collection of integers."
 			raise TypeError(errmsg)
@@ -223,6 +224,11 @@ def from_filtration(
 		and contain simplices of all dimensions. ``dgms`` also contains the
 		entrance times of the simplices and their dimensions.
 
+	See Also:
+		:func:`compute`, :class:`SubsetInclusion`,
+		:class:`KChromaticInclusion`, :class:`KChromaticGluingMap`
+
+
 	"""
 	# If (K, L) is a pair of simplicial complexes where dim(L) <= dim(K) = d
 	# then all of the sixpack diagrams for the inclusion map L -> K
@@ -270,7 +276,7 @@ def from_filtration(
 
 
 def compute[NumRows: int, NumCols: int](
-	x: np.ndarray[tuple[NumRows, NumCols], np.dtype[np.float64]],
+	points: np.ndarray[tuple[NumRows, NumCols], np.dtype[np.float64]],
 	colours: Sequence[int],
 	mapping_method: SubsetInclusion | KChromaticInclusion | KChromaticGluingMap,
 	filtration_algorithm: Literal["alpha", "delcech", "delrips"] = "delcech",
@@ -286,7 +292,7 @@ def compute[NumRows: int, NumCols: int](
 	where :math:`L` is some filtration constructed from :math:`K`.
 
 	Args:
-		x                     : Numpy matrix whose columns are points.
+		points                : Numpy matrix whose columns are points.
 		colours               : Sequence of integers describing the colours of the points.
 		mapping_method        : The method for constructing the map
 			of filtrations.
@@ -315,6 +321,10 @@ def compute[NumRows: int, NumCols: int](
 		and contains simplices of all dimensions. ``dgms`` also contains the
 		entrance times of the simplices and their dimensions.
 
+	See Also:
+		:func:`from_filtration`, :class:`SubsetInclusion`,
+		:class:`KChromaticInclusion`, :class:`KChromaticGluingMap`
+
 	"""
 	if isinstance(mapping_method, SubsetInclusion):
 		# If computing using the domain, we only need two colours.
@@ -332,17 +342,17 @@ def compute[NumRows: int, NumCols: int](
 	# can have non-trivial features in dimension d, and all diagrams are trivial in any dimension
 	# greater than d.
 	if max_diagram_dimension is None:
-		max_diagram_dimension = x.shape[0]
+		max_diagram_dimension = points.shape[0]
 	else:
-		max_diagram_dimension = min(max_diagram_dimension, x.shape[0])
+		max_diagram_dimension = min(max_diagram_dimension, points.shape[0])
 
 	# Compute chromatic complex
 	if filtration_algorithm == "delcech":
-		filtration, numerical_issues = delcech(x, new_colours)
+		filtration, numerical_issues = delcech(points, new_colours)
 	elif filtration_algorithm == "alpha":
-		filtration, numerical_issues = alpha(x, new_colours)
+		filtration, numerical_issues = alpha(points, new_colours)
 	elif filtration_algorithm == "delrips":
-		filtration, numerical_issues = delrips(x, new_colours)
+		filtration, numerical_issues = delrips(points, new_colours)
 	else:
 		errmsg = "Invalid filtration algorithm."
 		raise RuntimeError(errmsg)

@@ -1,8 +1,8 @@
 import os
 from pathlib import Path
+from tomllib import loads
 
 from packaging.version import parse
-from tomllib import loads
 
 # Configuration file for the Sphinx documentation builder.
 #
