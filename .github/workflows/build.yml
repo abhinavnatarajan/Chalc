@@ -82,9 +82,6 @@ jobs:
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.21.3
-        env:
-          # We need rustup to build phimaker from source if necessary
-          CIBW_BEFORE_ALL_LINUX: dnf install -y zip && curl -sSf https://sh.rustup.rs | sh -s -- -y
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

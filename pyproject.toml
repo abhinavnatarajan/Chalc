@@ -124,7 +124,7 @@ test-command = "pytest {package}/tests"
 test-requires = "pytest~=8.3"
 
 [tool.cibuildwheel.linux]
-          # We need rustup to build phimaker from source if necessary
-          # CIBW_BEFORE_ALL_LINUX: dnf install -y zip && curl -sSf https://sh.rustup.rs | sh -s -- -y
+# We need rustup to build phimaker from source if necessary
+# CIBW_BEFORE_ALL_LINUX: dnf install -y zip && curl -sSf https://sh.rustup.rs | sh -s -- -y
 environment = { PATH = "$HOME/.cargo/bin:$PATH" }
 environment-pass = "CI"
