@@ -13,10 +13,7 @@ from matplotlib import animation
 from matplotlib.legend import Legend
 from pandas import DataFrame
 
-from .sixpack import (
-	DiagramEnsemble,
-	SimplexPairings,
-)
+from .sixpack import DiagramEnsemble, SimplexPairings
 
 if TYPE_CHECKING:
 	from matplotlib.artist import Artist
@@ -32,7 +29,7 @@ def plot_sixpack(
 	dgms: DiagramEnsemble,
 	truncations: Mapping[DiagramEnsemble.DiagramName, float] | float | None = None,
 	dimensions: Collection[int] | int | None = None,
-	tolerance: float = 0,
+	threshold: float = 0,
 ) -> tuple[Figure, np.ndarray[tuple[Literal[2], Literal[3]], np.dtype[Any]]]:
 	"""
 	Plot the 6-pack of persistence diagrams returned by :func:`compute <.sixpack.compute>`.
@@ -46,27 +43,28 @@ def plot_sixpack(
 		dimensions  :
 			The homological dimensions for which to plot features.
 			If not provided, all dimensions will be included in the plots.
-		tolerance   : Only features with persistence greater than this value will be plotted.
+		threshold   : Only features with persistence greater than this value will be plotted.
 
 	"""
 	diagram_names = get_args(DiagramEnsemble.DiagramName.__value__)
+	dims: dict[DiagramEnsemble.DiagramName, list[int]]
 	if dimensions is None:
 		if dgms:
-			dimensions = set(range(max(x.item() for x in dgms.dimensions)))
+			dim_range = list(range(max(dgms.dimensions.tolist())))
 			# The relative diagram may contain features
 			# one dimension higher than that of the filtration.
 			dims = {
-				name: (dimensions if name != "rel" else dimensions | {max(dimensions) + 1})
+				name: (dim_range if name != "rel" else [*dim_range, max(dim_range) + 1])
 				for name in diagram_names
 			}
 		else:
 			# if the diagrams are all empty then we gracefully fail
 			# by plotting empty diagrams
-			dims = {name: set() for name in diagram_names}
+			dims = {name: [] for name in diagram_names}
 	elif isinstance(dimensions, int):
-		dims = {name: {dimensions} for name in diagram_names}
+		dims = {name: [dimensions] for name in diagram_names}
 	elif isinstance(dimensions, Collection) and all(isinstance(dim, int) for dim in dimensions):
-		dims = dict.fromkeys(diagram_names, dimensions)
+		dims = {key: sorted(dimensions) for key in diagram_names}
 	else:
 		errmsg = "Invalid dimensions argument."
 		raise ValueError(errmsg)
@@ -74,14 +72,16 @@ def plot_sixpack(
 	# In general, the dimension of a feature represented by a simplex pair (a, b)
 	# is dim(a), unless the diagram is in the kernel, in which case
 	# it is dim(a) - 1.
-	dim_shift = {name: (1 if name == "ker" else 0) for name in diagram_names}
+	dim_shift: dict[DiagramEnsemble.DiagramName, int] = {
+		name: (1 if name == "ker" else 0) for name in diagram_names
+	}
 
 	if truncations is None:
 		truncations = {}
 	if isinstance(truncations, Mapping) and all(
 		isinstance(val, float) for val in truncations.values()
 	):
-		truncs = {}
+		truncs: dict[DiagramEnsemble.DiagramName, float] = {}
 		for diagram_name in diagram_names:
 			if diagram_name in truncations and isinstance(truncations[diagram_name], float):
 				truncs[diagram_name] = truncations[diagram_name]
@@ -90,6 +90,8 @@ def plot_sixpack(
 				dgms.entrance_times[death_simplex]
 				for birth_simplex, death_simplex in dgms[diagram_name].paired
 				if dgms.dimensions[birth_simplex] - dim_shift[diagram_name] in dims[diagram_name]
+				and dgms.entrance_times[death_simplex] - dgms.entrance_times[birth_simplex]
+				> threshold
 			]
 			truncs[diagram_name] = _get_truncation(ycoords) if ycoords else 1.0
 	elif isinstance(truncations, float):
@@ -98,11 +100,11 @@ def plot_sixpack(
 		errmsg = "Invalid truncations argument."
 		raise TypeError(errmsg)
 
-	plot_pos = {
+	plot_pos: dict[DiagramEnsemble.DiagramName, tuple[int, int]] = {
 		name: (val[1], val[0])
 		for name, val in zip(diagram_names, product((0, 1, 2), (0, 1)), strict=True)
 	}
-	plot_titles = {
+	plot_titles: dict[DiagramEnsemble.DiagramName, str] = {
 		"ker": "Kernel",
 		"cok": "Cokernel",
 		"im": "Image",
@@ -110,7 +112,9 @@ def plot_sixpack(
 		"cod": "Codomain",
 		"rel": "Relative",
 	}
-	points_legend = {name: (name == "rel") for name in diagram_names}
+	points_legend: dict[DiagramEnsemble.DiagramName, bool] = {
+		name: (name == "rel") for name in diagram_names
+	}
 	fig, axes = plt.subplots(
 		nrows=2,
 		ncols=3,
@@ -121,8 +125,8 @@ def plot_sixpack(
 	for diagram_name in diagram_names:
 		_plot_diagram(
 			diagram=dgms[diagram_name],
-			entrance_times=list(dgms.entrance_times),
-			dimensions=[x.item() for x in dgms.dimensions],
+			entrance_times=dgms.entrance_times.tolist(),
+			dimensions=dgms.dimensions.tolist(),
 			truncation=truncs[diagram_name],
 			dims=dims[diagram_name],
 			ax=axes[plot_pos[diagram_name]],
@@ -130,7 +134,7 @@ def plot_sixpack(
 			title=plot_titles[diagram_name],
 			points_legend=points_legend[diagram_name],
 			lines_legend=False,
-			tolerance=tolerance,
+			threshold=threshold,
 		)
 	legends = {}
 	for ax in fig.axes:
@@ -148,7 +152,7 @@ def plot_diagram(
 	truncation: float | None = None,
 	dimensions: Collection[int] | int | None = None,
 	ax: Axes | None = None,
-	tolerance: float = 0,
+	threshold: float = 0,
 ) -> Axes | None:
 	"""
 	Plot a specific diagram from a 6-pack.
@@ -165,7 +169,7 @@ def plot_diagram(
 		ax           :
 			A matplotlib axes object.
 			If provided then the diagram will be plotted on the given axes.
-		tolerance    : Only features with persistence greater than this value will be plotted.
+		threshold    : Only features with persistence greater than this value will be plotted.
 
 	"""
 	dgm = dgms[diagram_name]
@@ -176,17 +180,21 @@ def plot_diagram(
 	dim_shift = 1 if diagram_name == "ker" else 0
 
 	if dimensions is None:
-		dimensions = set(range(max(x.item() for x in dgms.dimensions))) if dgm else set()
+		dimensions = list(range(max(dgms.dimensions.tolist()))) if dgm else []
 	elif isinstance(dimensions, int):
-		dimensions = {
-			dimensions,
-		}
+		dimensions = [dimensions]
+	elif isinstance(dimensions, Collection) and all(isinstance(dim, int) for dim in dimensions):
+		dimensions = sorted(dimensions)
+	else:
+		errmsg = "Invalid dimensions argument."
+		raise ValueError(errmsg)
 
 	if truncation is None:
 		ycoord = [
 			dgms.entrance_times[death_simplex]
 			for birth_simplex, death_simplex in dgms[diagram_name].paired
 			if dgms.dimensions[birth_simplex] - dim_shift in dimensions
+			and dgms.entrance_times[death_simplex] - dgms.entrance_times[birth_simplex] > threshold
 		]
 		truncation = _get_truncation(ycoord) if ycoord else 1.0
 
@@ -207,8 +215,8 @@ def plot_diagram(
 
 	_plot_diagram(
 		diagram=dgm,
-		entrance_times=list(dgms.entrance_times),
-		dimensions=[x.item() for x in dgms.dimensions],
+		entrance_times=dgms.entrance_times.tolist(),
+		dimensions=dgms.dimensions.tolist(),
 		truncation=truncation,
 		dims=dimensions,
 		ax=ax1,
@@ -216,7 +224,7 @@ def plot_diagram(
 		points_legend=True,
 		lines_legend=True,
 		dim_shift=dim_shift,
-		tolerance=tolerance,
+		threshold=threshold,
 	)
 	return ax1
 
@@ -233,7 +241,7 @@ def _plot_diagram(
 	points_legend: bool,  # show legend for points (which dimension)
 	lines_legend: bool,  # show legend for lines (truncation, infinity)
 	dim_shift: int,  # dimension shift if any; only relevant for kernel
-	tolerance: float,
+	threshold: float,
 	**kwargs: Any,
 ) -> None:
 	# Truncate all times
@@ -251,7 +259,7 @@ def _plot_diagram(
 		)
 		for birth_idx, death_idx in diagram.paired
 		if dimensions[birth_idx] - dim_shift in dims
-		and entrance_times[death_idx] - entrance_times[birth_idx] > tolerance
+		and entrance_times[death_idx] - entrance_times[birth_idx] > threshold
 	] + [
 		(
 			entrance_times[birth_idx],

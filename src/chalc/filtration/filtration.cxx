@@ -86,7 +86,7 @@ FilteredComplex::Simplex::_make_simplex(index_t                            label
 	auto self = shared_ptr<Simplex>(new Simplex(label, max_vertex, value, facets));
 	for (auto& f: self->facets) {
 		f->cofacets.push_back(self->get_handle());
-		self->add_colours(f->colours);
+		self->_add_colours(f->colours);
 	}
 	return self;
 }
@@ -145,13 +145,13 @@ inline void FilteredComplex::Simplex::add_colour(index_t c) {
 	colours.set(c);
 }
 
-inline void FilteredComplex::Simplex::add_colours(colours_t c) {
+inline void FilteredComplex::Simplex::_add_colours(colours_t c) {
 	colours |= c;
 }
 
-inline void FilteredComplex::Simplex::set_colours(colours_t c) {
+inline void FilteredComplex::Simplex::_set_colours(colours_t c) {
 	colours.reset();
-	add_colours(c);
+	_add_colours(c);
 }
 
 inline void FilteredComplex::Simplex::make_colourless() {
@@ -162,7 +162,7 @@ void FilteredComplex::Simplex::set_colour(index_t c) {
 	colours.reset().set(c);
 }
 
-colours_t FilteredComplex::Simplex::get_colours() {
+colours_t FilteredComplex::Simplex::_get_colours() {
 	return colours;
 }
 
@@ -187,9 +187,6 @@ FilteredComplex::FilteredComplex(const index_t num_vertices, const index_t max_d
 	max_dim(max_dimension),
 	num_simplices(num_vertices),
 	cur_dim(0) {
-	if (max_dim < 0) {
-		throw invalid_argument("Dimension cannot be negative.");
-	}
 	if (max_dim >= n_vertices) {
 		throw invalid_argument("Dimension must be less than number of points.");
 	}
@@ -366,7 +363,7 @@ void FilteredComplex::propagate_colours() {
 		for (auto& [idx, s]: simplices[d]) {
 			s->make_colourless();
 			for (auto& f: s->get_facets()) {
-				s->add_colours(f->get_colours());
+				s->_add_colours(f->_get_colours());
 			}
 		}
 	}

@@ -194,13 +194,13 @@ struct FilteredComplex::Simplex : public std::enable_shared_from_this<FilteredCo
 
 	std::vector<index_t> get_colours_as_vec();
 
-	inline void set_colours(colours_t c);
+	inline void _set_colours(colours_t c);
 
 	inline void add_colour(index_t c);
 
-	inline void add_colours(colours_t c);
+	inline void _add_colours(colours_t c);
 
-	colours_t get_colours();
+	colours_t _get_colours();
 
 	inline void make_colourless();
 

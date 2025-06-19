@@ -55,6 +55,7 @@ dev = [
 	# Pybind11 headers for LSP
 	# Needs to be kept in sync with build-system.requires below
 	"pybind11~=2.13",
+	"pyqt6>=6.9.1",
 ]
 
 [build-system]
@@ -98,10 +99,12 @@ docstring-code-line-length = "dynamic"
 select = ["ALL"]
 ignore = [
 	"CPY",     # flake8-copyright
+	"ERA",     # eradicate: disallows commented code
 	"W191",    # pylint: disallows tab indentation
 	"D206",    # pydocstyle: disallows tab indentation in docstring
 	"PLR0913", # refactor: too many arguments in function signature
 	"PYI021",  # flake8-pyi: disallows docstrings in stub files
+	"TD003",   # flake8-todos: allow todos without an issue link
 ]
 pydocstyle.convention = "pep257"
 flake8-annotations.allow-star-arg-any = true

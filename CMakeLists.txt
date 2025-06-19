@@ -1,8 +1,9 @@
-cmake_policy(SET CMP0054 NEW)
-cmake_minimum_required(VERSION 3.26.1)
+cmake_minimum_required(VERSION 4.0.0)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+cmake_policy(SET CMP0167 NEW) # Let Boost find its own BoostConfig.cmake
 
 if(NOT DEFINED ENV{NO_USE_VCPKG})
     if(DEFINED ENV{CI})
@@ -80,13 +81,10 @@ if(DEFINED CGAL_MODULES_DIR AND Eigen3_FOUND)
     message(STATUS "CGAL has Eigen3 support.")
 endif()
 
-# ----------------------------- Build python api ------------------------------
-
 set(PYBIND11_FINDPYTHON ON)
 find_package(pybind11 CONFIG REQUIRED)
-# if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-#     add_compile_options(-fvisibility=hidden)
-# endif()
+
+# ----------------------------- Build python api ------------------------------
 
 add_library(_filtration STATIC src/chalc/filtration/filtration.cxx)
 target_include_directories(_filtration PUBLIC src)
