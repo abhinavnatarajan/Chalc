@@ -1,8 +1,7 @@
 name: Deploy to PyPI
 on:
-  push:
-    tags-ignore: ['*.docs*']
-    # only run on tags, and only if they don't end with docs
+  release:
+    types: [published]
 
 jobs:
   pypi-publish:
