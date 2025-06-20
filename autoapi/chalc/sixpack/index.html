@@ -6,8 +6,8 @@
 <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="License" href="../../../license.html" /><link rel="prev" title="chalc.plotting" href="../plotting/index.html" />
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
-        <title>chalc.sixpack - chalc 8.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+        <title>chalc.sixpack - chalc 9.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -169,7 +169,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">chalc 8.0.1 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">chalc 9.0.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
   
-  <span class="sidebar-brand-text">chalc 8.0.1 documentation</span>
+  <span class="sidebar-brand-text">chalc 9.0.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -272,11 +272,14 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble" title="chalc.sixpack.DiagramEnsemble"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DiagramEnsemble</span></code></a></p></td>
-<td><p>6-pack of persistence diagrams.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#chalc.sixpack.KChromaticGluingMap" title="chalc.sixpack.KChromaticGluingMap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">KChromaticGluingMap</span></code></a></p></td>
+<td><p>Corresponds to gluing all subfiltrations spanned by <span class="math notranslate nohighlight">\(k\)</span> colours.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#chalc.sixpack.SimplexPairings" title="chalc.sixpack.SimplexPairings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimplexPairings</span></code></a></p></td>
-<td><p>Persistence diagram object.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#chalc.sixpack.KChromaticInclusion" title="chalc.sixpack.KChromaticInclusion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">KChromaticInclusion</span></code></a></p></td>
+<td><p>Corresponds to the inclusion of the <span class="math notranslate nohighlight">\(k\)</span>-chromatic subcomplex of a chromatic filtration.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#chalc.sixpack.SubsetInclusion" title="chalc.sixpack.SubsetInclusion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SubsetInclusion</span></code></a></p></td>
+<td><p>Corresponds to the inclusion of the subcomplex spanned by a given subset of colours.</p></td>
 </tr>
 </tbody>
 </table>
@@ -287,238 +290,43 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#chalc.sixpack.compute" title="chalc.sixpack.compute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute</span></code></a>(→ DiagramEnsemble)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#chalc.sixpack.compute" title="chalc.sixpack.compute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute</span></code></a>(→ _diagram_ensemble.DiagramEnsemble)</p></td>
 <td><p>Compute the 6-pack of persistence diagrams of a coloured point-cloud.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#chalc.sixpack.from_filtration" title="chalc.sixpack.from_filtration"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_filtration</span></code></a>(→ DiagramEnsemble)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#chalc.sixpack.from_filtration" title="chalc.sixpack.from_filtration"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_filtration</span></code></a>(→ _diagram_ensemble.DiagramEnsemble)</p></td>
 <td><p>Compute 6-pack of persistence diagrams from a chromatic filtration.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 </section>
-<section id="module-contents">
-<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
+<section id="package-contents">
+<h2>Package Contents<a class="headerlink" href="#package-contents" title="Link to this heading">¶</a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="chalc.sixpack.DiagramEnsemble">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DiagramEnsemble</span></span><span class="sig-paren">(</span>
-
-<dl>
-<dd><em class="sig-param"><span class="n"><span class="pre">ker</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#chalc.sixpack.SimplexPairings" title="chalc.sixpack.SimplexPairings"><span class="pre">SimplexPairings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
-<dd><em class="sig-param"><span class="n"><span class="pre">cok</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#chalc.sixpack.SimplexPairings" title="chalc.sixpack.SimplexPairings"><span class="pre">SimplexPairings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
-<dd><em class="sig-param"><span class="n"><span class="pre">dom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#chalc.sixpack.SimplexPairings" title="chalc.sixpack.SimplexPairings"><span class="pre">SimplexPairings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
-<dd><em class="sig-param"><span class="n"><span class="pre">cod</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#chalc.sixpack.SimplexPairings" title="chalc.sixpack.SimplexPairings"><span class="pre">SimplexPairings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
-<dd><em class="sig-param"><span class="n"><span class="pre">im</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#chalc.sixpack.SimplexPairings" title="chalc.sixpack.SimplexPairings"><span class="pre">SimplexPairings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
-<dd><em class="sig-param"><span class="n"><span class="pre">rel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#chalc.sixpack.SimplexPairings" title="chalc.sixpack.SimplexPairings"><span class="pre">SimplexPairings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
-<dd><em class="sig-param"><span class="n"><span class="pre">entrance_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.13)"><span class="pre">collections.abc.Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>,</dd>
-<dd><em class="sig-param"><span class="n"><span class="pre">dimensions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.13)"><span class="pre">collections.abc.Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>,</dd>
-</dl>
-
-<span class="sig-paren">)</span><a class="headerlink" href="#chalc.sixpack.DiagramEnsemble" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">collections.abc.Mapping</span></code></a></p>
-<p>6-pack of persistence diagrams.</p>
-<dl class="py data">
-<dt class="sig sig-object py" id="chalc.sixpack.DiagramEnsemble.DiagramName">
-<span class="sig-name descname"><span class="pre">DiagramName</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">TypeAlias</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Literal['ker',</span> <span class="pre">'cok',</span> <span class="pre">'dom',</span> <span class="pre">'cod',</span> <span class="pre">'im',</span> <span class="pre">'rel']</span></em><a class="headerlink" href="#chalc.sixpack.DiagramEnsemble.DiagramName" title="Link to this definition">¶</a></dt>
-<dd><p>Names of the diagrams in the 6-pack.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="chalc.sixpack.DiagramEnsemble.__bool__">
-<span class="sig-name descname"><span class="pre">__bool__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#chalc.sixpack.DiagramEnsemble.__bool__" title="Link to this definition">¶</a></dt>
-<dd><p>Return true if any diagram in the 6-pack is non-empty.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="chalc.sixpack.DiagramEnsemble.__contains__">
-<span class="sig-name descname"><span class="pre">__contains__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#chalc.sixpack.DiagramEnsemble.__contains__" title="Link to this definition">¶</a></dt>
-<dd><p>Return true if a diagram is in the 6-pack.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="chalc.sixpack.DiagramEnsemble.__eq__">
-<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#chalc.sixpack.DiagramEnsemble.__eq__" title="Link to this definition">¶</a></dt>
-<dd><p>Check if two 6-packs of persistence diagrams are equal.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="chalc.sixpack.DiagramEnsemble.__getitem__">
-<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DiagramName</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#chalc.sixpack.SimplexPairings" title="chalc.sixpack.SimplexPairings"><span class="pre">SimplexPairings</span></a></span></span><a class="headerlink" href="#chalc.sixpack.DiagramEnsemble.__getitem__" title="Link to this definition">¶</a></dt>
-<dd><p>Access a specific diagram in the 6-pack.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="chalc.sixpack.DiagramEnsemble.__iter__">
-<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterator" title="(in Python v3.13)"><span class="pre">collections.abc.Iterator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">DiagramName</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#chalc.sixpack.SimplexPairings" title="chalc.sixpack.SimplexPairings"><span class="pre">SimplexPairings</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#chalc.sixpack.DiagramEnsemble.__iter__" title="Link to this definition">¶</a></dt>
-<dd><p>Iterate over all diagrams in the 6-pack.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="chalc.sixpack.DiagramEnsemble.__len__">
-<span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#chalc.sixpack.DiagramEnsemble.__len__" title="Link to this definition">¶</a></dt>
-<dd><p>Return the number of diagrams in the 6-pack.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="chalc.sixpack.DiagramEnsemble.from_file">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.h5py.org/en/stable/high/group.html#h5py.Group" title="(in h5py v3.12)"><span class="pre">h5py.Group</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble" title="chalc.sixpack.DiagramEnsemble"><span class="pre">DiagramEnsemble</span></a></span></span><a class="headerlink" href="#chalc.sixpack.DiagramEnsemble.from_file" title="Link to this definition">¶</a></dt>
-<dd><p>Load a 6-pack of persistence diagrams from a HDF5 file or group.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>file</strong> – A h5py file or group.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="chalc.sixpack.DiagramEnsemble.get">
-<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DiagramName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">U</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#chalc.sixpack.SimplexPairings" title="chalc.sixpack.SimplexPairings"><span class="pre">SimplexPairings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">U</span></span></span><a class="headerlink" href="#chalc.sixpack.DiagramEnsemble.get" title="Link to this definition">¶</a></dt>
-<dd><p>Access a specific diagram in the 6-pack.</p>
-<p>Returns a default value if the diagram does not exist.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="chalc.sixpack.DiagramEnsemble.get_matrix">
-<span class="sig-name descname"><span class="pre">get_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">diagram_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DiagramName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.1)"><span class="pre">numpy.dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#chalc.sixpack.DiagramEnsemble.get_matrix" title="Link to this definition">¶</a></dt>
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">get_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">diagram_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DiagramName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.1)"><span class="pre">numpy.dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span></dt>
-<dd><p>Get a specific diagram as a matrix of birth and death times.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>diagram_name</strong> – One of <code class="docutils literal notranslate"><span class="pre">'ker'</span></code>, <code class="docutils literal notranslate"><span class="pre">'cok'</span></code>, <code class="docutils literal notranslate"><span class="pre">'dom'</span></code>,
-<code class="docutils literal notranslate"><span class="pre">'cod'</span></code>, <code class="docutils literal notranslate"><span class="pre">'im'</span></code>, or <code class="docutils literal notranslate"><span class="pre">'rel'</span></code>.</p></li>
-<li><p><strong>dim</strong> – Dimension(s) of the diagram desired.
-If a list is provided then a list of matrices is returned,
-with the order of matrices respecting the order of entries of <cite>dim</cite>.
-If <cite>dim</cite> is not provided then the returned matrix will contain
-persistent features from all homological dimensions
-from zero to <code class="docutils literal notranslate"><span class="pre">max(self.dimensions)</span></code>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An <span class="math notranslate nohighlight">\(m \times 2\)</span> matrix whose rows are
-a pair of birth and death times, or a list of such matrices.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="chalc.sixpack.DiagramEnsemble.items">
-<span class="sig-name descname"><span class="pre">items</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.ItemsView" title="(in Python v3.13)"><span class="pre">collections.abc.ItemsView</span></a><span class="p"><span class="pre">[</span></span><span class="pre">DiagramName</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#chalc.sixpack.SimplexPairings" title="chalc.sixpack.SimplexPairings"><span class="pre">SimplexPairings</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#chalc.sixpack.DiagramEnsemble.items" title="Link to this definition">¶</a></dt>
-<dd><p>View of the diagrams in the 6-pack.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="chalc.sixpack.DiagramEnsemble.keys">
-<span class="sig-name descname"><span class="pre">keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.KeysView" title="(in Python v3.13)"><span class="pre">collections.abc.KeysView</span></a><span class="p"><span class="pre">[</span></span><span class="pre">DiagramName</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#chalc.sixpack.DiagramEnsemble.keys" title="Link to this definition">¶</a></dt>
-<dd><p>View of the names of the diagrams in the 6-pack.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="chalc.sixpack.DiagramEnsemble.num_features">
-<span class="sig-name descname"><span class="pre">num_features</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#chalc.sixpack.DiagramEnsemble.num_features" title="Link to this definition">¶</a></dt>
-<dd><p>Count the total number of features across all diagrams in the 6-pack.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="chalc.sixpack.DiagramEnsemble.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.h5py.org/en/stable/high/group.html#h5py.Group" title="(in h5py v3.12)"><span class="pre">h5py.Group</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#chalc.sixpack.DiagramEnsemble.save" title="Link to this definition">¶</a></dt>
-<dd><p>Save a 6-pack of persistence diagrams to a HDF5 file or group.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>file</strong> – A h5py file or group.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="chalc.sixpack.DiagramEnsemble.threshold">
-<span class="sig-name descname"><span class="pre">threshold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble" title="chalc.sixpack.DiagramEnsemble"><span class="pre">DiagramEnsemble</span></a></span></span><a class="headerlink" href="#chalc.sixpack.DiagramEnsemble.threshold" title="Link to this definition">¶</a></dt>
-<dd><p>Discard all features with persistence <code class="docutils literal notranslate"><span class="pre">&lt;=tolerance</span></code>.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="chalc.sixpack.DiagramEnsemble.values">
-<span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.ValuesView" title="(in Python v3.13)"><span class="pre">collections.abc.ValuesView</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#chalc.sixpack.SimplexPairings" title="chalc.sixpack.SimplexPairings"><span class="pre">SimplexPairings</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#chalc.sixpack.DiagramEnsemble.values" title="Link to this definition">¶</a></dt>
-<dd><p>View of the diagrams in the 6-pack.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="chalc.sixpack.DiagramEnsemble.dimensions">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dimensions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.1)"><span class="pre">numpy.dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.sixpack.DiagramEnsemble.dimensions" title="Link to this definition">¶</a></dt>
-<dd><p>Dimensions of the simplices.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="chalc.sixpack.DiagramEnsemble.entrance_times">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">entrance_times</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.1)"><span class="pre">numpy.dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.sixpack.DiagramEnsemble.entrance_times" title="Link to this definition">¶</a></dt>
-<dd><p>Entrance times of the simplices.</p>
-</dd></dl>
-
+<dt class="sig sig-object py" id="chalc.sixpack.KChromaticGluingMap">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">KChromaticGluingMap</span></span><a class="headerlink" href="#chalc.sixpack.KChromaticGluingMap" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a></p>
+<p>Corresponds to gluing all subfiltrations spanned by <span class="math notranslate nohighlight">\(k\)</span> colours.</p>
+<p>Given a chromatic filtration <span class="math notranslate nohighlight">\(K\)</span> with colours <span class="math notranslate nohighlight">\(C\)</span>,
+this is the gluing map <span class="math notranslate nohighlight">\(\bigsqcup_{\substack{I \subset C\\ |I| = k}} K_I \to K\)</span>,
+where <span class="math notranslate nohighlight">\(K_I\)</span> is the subfiltration spanned by simplices
+whose colours are a subset of <span class="math notranslate nohighlight">\(I\)</span>.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="chalc.sixpack.SimplexPairings">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SimplexPairings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paired</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection" title="(in Python v3.13)"><span class="pre">collections.abc.Collection</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">set()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unpaired</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection" title="(in Python v3.13)"><span class="pre">collections.abc.Collection</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">set()</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.sixpack.SimplexPairings" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">collections.abc.Collection</span></code></a></p>
-<p>Persistence diagram object.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="chalc.sixpack.SimplexPairings.__bool__">
-<span class="sig-name descname"><span class="pre">__bool__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#chalc.sixpack.SimplexPairings.__bool__" title="Link to this definition">¶</a></dt>
-<dd><p>Return true if the diagram is non-empty.</p>
+<dt class="sig sig-object py" id="chalc.sixpack.KChromaticInclusion">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">KChromaticInclusion</span></span><a class="headerlink" href="#chalc.sixpack.KChromaticInclusion" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a></p>
+<p>Corresponds to the inclusion of the <span class="math notranslate nohighlight">\(k\)</span>-chromatic subcomplex of a chromatic filtration.</p>
+<p>Given a chromatic filtration <span class="math notranslate nohighlight">\(K\)</span>, its <span class="math notranslate nohighlight">\(k\)</span>-chromatic subcomplex
+is the subfiltration spanned by simplices having at most <span class="math notranslate nohighlight">\(k\)</span> colours.</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="chalc.sixpack.SimplexPairings.__contains__">
-<span class="sig-name descname"><span class="pre">__contains__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#chalc.sixpack.SimplexPairings.__contains__" title="Link to this definition">¶</a></dt>
-<dd><p>Return true if a feature is in the diagram.</p>
-<p>The feature to check should be either a pair of simplices (int, int)
-or a single simplex (int).</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="chalc.sixpack.SimplexPairings.__eq__">
-<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#chalc.sixpack.SimplexPairings.__eq__" title="Link to this definition">¶</a></dt>
-<dd><p>Check if two diagrams have the same paired and unpaired simplices.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="chalc.sixpack.SimplexPairings.__iter__">
-<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterator" title="(in Python v3.13)"><span class="pre">collections.abc.Iterator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#chalc.sixpack.SimplexPairings.__iter__" title="Link to this definition">¶</a></dt>
-<dd><p>Iterate over all features in the diagram.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="chalc.sixpack.SimplexPairings.__len__">
-<span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#chalc.sixpack.SimplexPairings.__len__" title="Link to this definition">¶</a></dt>
-<dd><p>Return the number of features in the diagram.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="chalc.sixpack.SimplexPairings.__str__">
-<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#chalc.sixpack.SimplexPairings.__str__" title="Link to this definition">¶</a></dt>
-<dd><p>Return string representation of the persistence diagram.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="chalc.sixpack.SimplexPairings.paired_as_matrix">
-<span class="sig-name descname"><span class="pre">paired_as_matrix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.1)"><span class="pre">numpy.dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#chalc.sixpack.SimplexPairings.paired_as_matrix" title="Link to this definition">¶</a></dt>
-<dd><p>Return a matrix representation of the finite persistence features in the diagram.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="chalc.sixpack.SimplexPairings.paired">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">paired</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.13)"><span class="pre">set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.sixpack.SimplexPairings.paired" title="Link to this definition">¶</a></dt>
-<dd><p>Set of indices of paired simplices (read-only).</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="chalc.sixpack.SimplexPairings.unpaired">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unpaired</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.13)"><span class="pre">set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.sixpack.SimplexPairings.unpaired" title="Link to this definition">¶</a></dt>
-<dd><p>Set of indices of unpaired simplices (read-only).</p>
-</dd></dl>
-
+<dl class="py class">
+<dt class="sig sig-object py" id="chalc.sixpack.SubsetInclusion">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SubsetInclusion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection" title="(in Python v3.13)"><span class="pre">collections.abc.Collection</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.sixpack.SubsetInclusion" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>]</p>
+<p>Corresponds to the inclusion of the subcomplex spanned by a given subset of colours.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -526,36 +334,32 @@ or a single simplex (int).</p>
 <span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span>
 
 <dl>
-<dd><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">NumRows</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">NumCols</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.1)"><span class="pre">numpy.dtype</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.floating" title="(in NumPy v2.1)"><span class="pre">numpy.floating</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">compute.NumRows</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">compute.NumCols</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.3)"><span class="pre">numpy.dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>,</dd>
 <dd><em class="sig-param"><span class="n"><span class="pre">colours</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.13)"><span class="pre">collections.abc.Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>,</dd>
-<dd><em class="sig-param"><span class="n"><span class="pre">dom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection" title="(in Python v3.13)"><span class="pre">collections.abc.Collection</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
-<dd><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
-<dd><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'alpha'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'delcech'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'delrips'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'alpha'</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">mapping_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#chalc.sixpack.SubsetInclusion" title="chalc.sixpack.SubsetInclusion"><span class="pre">SubsetInclusion</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#chalc.sixpack.KChromaticInclusion" title="chalc.sixpack.KChromaticInclusion"><span class="pre">KChromaticInclusion</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#chalc.sixpack.KChromaticGluingMap" title="chalc.sixpack.KChromaticGluingMap"><span class="pre">KChromaticGluingMap</span></a></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">filtration_algorithm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'alpha'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'delcech'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'delrips'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'delcech'</span></span></em>,</dd>
 <dd><em class="sig-param"><span class="n"><span class="pre">max_diagram_dimension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
-<dd><em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>,</dd>
 </dl>
 
-<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble" title="chalc.sixpack.DiagramEnsemble"><span class="pre">DiagramEnsemble</span></a></span></span><a class="headerlink" href="#chalc.sixpack.compute" title="Link to this definition">¶</a></dt>
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">_diagram_ensemble.DiagramEnsemble</span></span></span><a class="headerlink" href="#chalc.sixpack.compute" title="Link to this definition">¶</a></dt>
 <dd><p>Compute the 6-pack of persistence diagrams of a coloured point-cloud.</p>
 <p>This function constructs a filtered simplicial complex <span class="math notranslate nohighlight">\(K\)</span>
 from the point cloud, and computes the 6-pack of persistence diagrams
-associated with the inclusion <span class="math notranslate nohighlight">\(f : L \hookrightarrow K\)</span>
-where <span class="math notranslate nohighlight">\(L\)</span> is some filtered subcomplex of <span class="math notranslate nohighlight">\(K\)</span>.</p>
+associated with a map of <span class="math notranslate nohighlight">\(f : L \to K\)</span> of filtrations,
+where <span class="math notranslate nohighlight">\(L\)</span> is some filtration constructed from <span class="math notranslate nohighlight">\(K\)</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> – Numpy matrix whose columns are points.</p></li>
+<li><p><strong>points</strong> – Numpy matrix whose columns are points.</p></li>
 <li><p><strong>colours</strong> – Sequence of integers describing the colours of the points.</p></li>
-<li><p><strong>dom</strong> – Integer or collection of integers describing the colours of
-the points in the domain (the subcomplex <span class="math notranslate nohighlight">\(L\)</span>).</p></li>
-<li><p><strong>k</strong> – If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, then the domain is taken to be the
-<span class="math notranslate nohighlight">\(k\)</span>-chromatic subcomplex of <span class="math notranslate nohighlight">\(K\)</span>, i.e.,
-the subcomplex of simplices having at most <span class="math notranslate nohighlight">\(k\)</span> colours.</p></li>
-<li><p><strong>method</strong> – Filtration used to construct the chromatic complex.
+<li><p><strong>mapping_method</strong> – The method for constructing the map
+of filtrations.</p></li>
+<li><p><strong>filtration_algorithm</strong> – Filtration used to construct the chromatic complex.
 Must be one of <code class="docutils literal notranslate"><span class="pre">'alpha'</span></code>, <code class="docutils literal notranslate"><span class="pre">'delcech'</span></code>, or <code class="docutils literal notranslate"><span class="pre">'delrips'</span></code>.</p></li>
 <li><p><strong>max_diagram_dimension</strong> – Maximum homological dimension for which the persistence diagrams are computed.
 By default diagrams of all dimensions are computed.</p></li>
-<li><p><strong>tolerance</strong> – Retain only points with persistence strictly greater than this value.</p></li>
+<li><p><strong>threshold</strong> – Retain only points with persistence strictly greater than this value.</p></li>
 </ul>
 </dd>
 </dl>
@@ -576,6 +380,11 @@ and contains simplices of all dimensions. <code class="docutils literal notransl
 entrance times of the simplices and their dimensions.</p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#chalc.sixpack.from_filtration" title="chalc.sixpack.from_filtration"><code class="xref py py-func docutils literal notranslate"><span class="pre">from_filtration()</span></code></a>, <a class="reference internal" href="#chalc.sixpack.SubsetInclusion" title="chalc.sixpack.SubsetInclusion"><code class="xref py py-class docutils literal notranslate"><span class="pre">SubsetInclusion</span></code></a>,
+<a class="reference internal" href="#chalc.sixpack.KChromaticInclusion" title="chalc.sixpack.KChromaticInclusion"><code class="xref py py-class docutils literal notranslate"><span class="pre">KChromaticInclusion</span></code></a>, <a class="reference internal" href="#chalc.sixpack.KChromaticGluingMap" title="chalc.sixpack.KChromaticGluingMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">KChromaticGluingMap</span></code></a></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -583,34 +392,27 @@ entrance times of the simplices and their dimensions.</p>
 <span class="sig-name descname"><span class="pre">from_filtration</span></span><span class="sig-paren">(</span>
 
 <dl>
-<dd><em class="sig-param"><span class="n"><span class="pre">K</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../filtration/index.html#chalc.filtration.FilteredComplex" title="chalc.filtration.FilteredComplex"><span class="pre">chalc.filtration.FilteredComplex</span></a></span></em>,</dd>
-<dd><em class="sig-param"><span class="n"><span class="pre">dom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection" title="(in Python v3.13)"><span class="pre">collections.abc.Collection</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
-<dd><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">filtration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../filtration/index.html#chalc.filtration.FilteredComplex" title="chalc.filtration.FilteredComplex"><span class="pre">chalc.filtration.FilteredComplex</span></a></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">mapping_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#chalc.sixpack.SubsetInclusion" title="chalc.sixpack.SubsetInclusion"><span class="pre">SubsetInclusion</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#chalc.sixpack.KChromaticInclusion" title="chalc.sixpack.KChromaticInclusion"><span class="pre">KChromaticInclusion</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#chalc.sixpack.KChromaticGluingMap" title="chalc.sixpack.KChromaticGluingMap"><span class="pre">KChromaticGluingMap</span></a></span></em>,</dd>
 <dd><em class="sig-param"><span class="n"><span class="pre">max_diagram_dimension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
-<dd><em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>,</dd>
 </dl>
 
-<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble" title="chalc.sixpack.DiagramEnsemble"><span class="pre">DiagramEnsemble</span></a></span></span><a class="headerlink" href="#chalc.sixpack.from_filtration" title="Link to this definition">¶</a></dt>
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">_diagram_ensemble.DiagramEnsemble</span></span></span><a class="headerlink" href="#chalc.sixpack.from_filtration" title="Link to this definition">¶</a></dt>
 <dd><p>Compute 6-pack of persistence diagrams from a chromatic filtration.</p>
 <p>Given a filtered chromatic simplicial complex <span class="math notranslate nohighlight">\(K\)</span>
-and a subcomplex <span class="math notranslate nohighlight">\(L\)</span> of <span class="math notranslate nohighlight">\(K\)</span>,
 this function computes the 6-pack of persistence diagram
-associated with the inclusion map <span class="math notranslate nohighlight">\(f : L \hookrightarrow K\)</span>.
-The subcomplex is specified by the colours of its vertices,
-or by an integer <span class="math notranslate nohighlight">\(k\)</span> wherein all simplices with
-<span class="math notranslate nohighlight">\(k\)</span> or fewer colours are considered part of the subcomplex.</p>
+associated with a map of <span class="math notranslate nohighlight">\(f : L \to K\)</span> of filtrations,
+where <span class="math notranslate nohighlight">\(L\)</span> is some filtration constructed from <span class="math notranslate nohighlight">\(K\)</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>K</strong> – A filtered chromatic simplicial complex.</p></li>
-<li><p><strong>dom</strong> – Integer or collection of integers describing the
-colours of the points in the domain (the subcomplex <span class="math notranslate nohighlight">\(L\)</span>).</p></li>
-<li><p><strong>k</strong> – If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, then the domain is taken to be the
-<span class="math notranslate nohighlight">\(k\)</span>-chromatic subcomplex of <span class="math notranslate nohighlight">\(K\)</span>, i.e.,
-the subcomplex of simplices having at most <span class="math notranslate nohighlight">\(k\)</span> colours.</p></li>
+<li><p><strong>filtration</strong> – A filtered chromatic simplicial complex.</p></li>
+<li><p><strong>mapping_method</strong> – The method for constructing the map
+of filtrations.</p></li>
 <li><p><strong>max_diagram_dimension</strong> – Maximum homological dimension for which the persistence diagrams are computed.
 By default diagrams of all dimensions are computed.</p></li>
-<li><p><strong>tolerance</strong> – Retain only points with persistence strictly greater than this value.</p></li>
+<li><p><strong>threshold</strong> – Retain only points with persistence strictly greater than this value.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -631,6 +433,11 @@ entrance times of the simplices and their dimensions.</p>
 </p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#chalc.sixpack.compute" title="chalc.sixpack.compute"><code class="xref py py-func docutils literal notranslate"><span class="pre">compute()</span></code></a>, <a class="reference internal" href="#chalc.sixpack.SubsetInclusion" title="chalc.sixpack.SubsetInclusion"><code class="xref py py-class docutils literal notranslate"><span class="pre">SubsetInclusion</span></code></a>,
+<a class="reference internal" href="#chalc.sixpack.KChromaticInclusion" title="chalc.sixpack.KChromaticInclusion"><code class="xref py py-class docutils literal notranslate"><span class="pre">KChromaticInclusion</span></code></a>, <a class="reference internal" href="#chalc.sixpack.KChromaticGluingMap" title="chalc.sixpack.KChromaticGluingMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">KChromaticGluingMap</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>
@@ -694,40 +501,10 @@ entrance times of the simplices and their dimensions.</p>
 <li><a class="reference internal" href="#">chalc.sixpack</a><ul>
 <li><a class="reference internal" href="#classes">Classes</a></li>
 <li><a class="reference internal" href="#functions">Functions</a></li>
-<li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
-<li><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble"><code class="docutils literal notranslate"><span class="pre">DiagramEnsemble</span></code></a><ul>
-<li><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble.DiagramName"><code class="docutils literal notranslate"><span class="pre">DiagramName</span></code></a></li>
-<li><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble.__bool__"><code class="docutils literal notranslate"><span class="pre">__bool__()</span></code></a></li>
-<li><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble.__contains__"><code class="docutils literal notranslate"><span class="pre">__contains__()</span></code></a></li>
-<li><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble.__eq__"><code class="docutils literal notranslate"><span class="pre">__eq__()</span></code></a></li>
-<li><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble.__getitem__"><code class="docutils literal notranslate"><span class="pre">__getitem__()</span></code></a></li>
-<li><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble.__iter__"><code class="docutils literal notranslate"><span class="pre">__iter__()</span></code></a></li>
-<li><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble.__len__"><code class="docutils literal notranslate"><span class="pre">__len__()</span></code></a></li>
-<li><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble.from_file"><code class="docutils literal notranslate"><span class="pre">from_file()</span></code></a></li>
-<li><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble.get"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
-<li><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble.get_matrix"><code class="docutils literal notranslate"><span class="pre">get_matrix()</span></code></a></li>
-<li><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble.items"><code class="docutils literal notranslate"><span class="pre">items()</span></code></a></li>
-<li><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble.keys"><code class="docutils literal notranslate"><span class="pre">keys()</span></code></a></li>
-<li><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble.num_features"><code class="docutils literal notranslate"><span class="pre">num_features()</span></code></a></li>
-<li><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble.save"><code class="docutils literal notranslate"><span class="pre">save()</span></code></a></li>
-<li><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble.threshold"><code class="docutils literal notranslate"><span class="pre">threshold()</span></code></a></li>
-<li><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble.values"><code class="docutils literal notranslate"><span class="pre">values()</span></code></a></li>
-<li><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble.dimensions"><code class="docutils literal notranslate"><span class="pre">dimensions</span></code></a></li>
-<li><a class="reference internal" href="#chalc.sixpack.DiagramEnsemble.entrance_times"><code class="docutils literal notranslate"><span class="pre">entrance_times</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#chalc.sixpack.SimplexPairings"><code class="docutils literal notranslate"><span class="pre">SimplexPairings</span></code></a><ul>
-<li><a class="reference internal" href="#chalc.sixpack.SimplexPairings.__bool__"><code class="docutils literal notranslate"><span class="pre">__bool__()</span></code></a></li>
-<li><a class="reference internal" href="#chalc.sixpack.SimplexPairings.__contains__"><code class="docutils literal notranslate"><span class="pre">__contains__()</span></code></a></li>
-<li><a class="reference internal" href="#chalc.sixpack.SimplexPairings.__eq__"><code class="docutils literal notranslate"><span class="pre">__eq__()</span></code></a></li>
-<li><a class="reference internal" href="#chalc.sixpack.SimplexPairings.__iter__"><code class="docutils literal notranslate"><span class="pre">__iter__()</span></code></a></li>
-<li><a class="reference internal" href="#chalc.sixpack.SimplexPairings.__len__"><code class="docutils literal notranslate"><span class="pre">__len__()</span></code></a></li>
-<li><a class="reference internal" href="#chalc.sixpack.SimplexPairings.__str__"><code class="docutils literal notranslate"><span class="pre">__str__()</span></code></a></li>
-<li><a class="reference internal" href="#chalc.sixpack.SimplexPairings.paired_as_matrix"><code class="docutils literal notranslate"><span class="pre">paired_as_matrix()</span></code></a></li>
-<li><a class="reference internal" href="#chalc.sixpack.SimplexPairings.paired"><code class="docutils literal notranslate"><span class="pre">paired</span></code></a></li>
-<li><a class="reference internal" href="#chalc.sixpack.SimplexPairings.unpaired"><code class="docutils literal notranslate"><span class="pre">unpaired</span></code></a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#package-contents">Package Contents</a><ul>
+<li><a class="reference internal" href="#chalc.sixpack.KChromaticGluingMap"><code class="docutils literal notranslate"><span class="pre">KChromaticGluingMap</span></code></a></li>
+<li><a class="reference internal" href="#chalc.sixpack.KChromaticInclusion"><code class="docutils literal notranslate"><span class="pre">KChromaticInclusion</span></code></a></li>
+<li><a class="reference internal" href="#chalc.sixpack.SubsetInclusion"><code class="docutils literal notranslate"><span class="pre">SubsetInclusion</span></code></a></li>
 <li><a class="reference internal" href="#chalc.sixpack.compute"><code class="docutils literal notranslate"><span class="pre">compute()</span></code></a></li>
 <li><a class="reference internal" href="#chalc.sixpack.from_filtration"><code class="docutils literal notranslate"><span class="pre">from_filtration()</span></code></a></li>
 </ul>
@@ -743,7 +520,7 @@ entrance times of the simplices and their dimensions.</p>
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=521b6f53"></script>
+</div><script src="../../../_static/documentation_options.js?v=0b13d40c"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>

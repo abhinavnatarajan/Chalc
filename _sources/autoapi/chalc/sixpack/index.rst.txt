@@ -14,8 +14,9 @@ Classes
 
 .. autoapisummary::
 
-   chalc.sixpack.DiagramEnsemble
-   chalc.sixpack.SimplexPairings
+   chalc.sixpack.KChromaticGluingMap
+   chalc.sixpack.KChromaticInclusion
+   chalc.sixpack.SubsetInclusion
 
 
 Functions
@@ -27,238 +28,61 @@ Functions
    chalc.sixpack.from_filtration
 
 
-Module Contents
----------------
+Package Contents
+----------------
 
-.. py:class:: DiagramEnsemble(ker: SimplexPairings | None = None, cok: SimplexPairings | None = None, dom: SimplexPairings | None = None, cod: SimplexPairings | None = None, im: SimplexPairings | None = None, rel: SimplexPairings | None = None, entrance_times: collections.abc.Sequence[float] = [], dimensions: collections.abc.Sequence[int] = [])
+.. py:class:: KChromaticGluingMap
 
-   Bases: :py:obj:`collections.abc.Mapping`
+   Bases: :py:obj:`int`
 
 
-   6-pack of persistence diagrams.
+   Corresponds to gluing all subfiltrations spanned by :math:`k` colours.
 
+   Given a chromatic filtration :math:`K` with colours :math:`C`,
+   this is the gluing map :math:`\bigsqcup_{\substack{I \subset C\\ |I| = k}} K_I \to K`,
+   where :math:`K_I` is the subfiltration spanned by simplices
+   whose colours are a subset of :math:`I`.
 
-   .. py:data:: DiagramName
-      :type:  TypeAlias
-      :value: Literal['ker', 'cok', 'dom', 'cod', 'im', 'rel']
 
 
-      Names of the diagrams in the 6-pack.
+.. py:class:: KChromaticInclusion
 
+   Bases: :py:obj:`int`
 
-   .. py:method:: __bool__() -> bool
 
-      Return true if any diagram in the 6-pack is non-empty.
+   Corresponds to the inclusion of the :math:`k`-chromatic subcomplex of a chromatic filtration.
 
+   Given a chromatic filtration :math:`K`, its :math:`k`-chromatic subcomplex
+   is the subfiltration spanned by simplices having at most :math:`k` colours.
 
 
-   .. py:method:: __contains__(key: object) -> bool
 
-      Return true if a diagram is in the 6-pack.
+.. py:class:: SubsetInclusion(x: collections.abc.Collection[int])
 
+   Bases: :py:obj:`set`\ [\ :py:obj:`int`\ ]
 
 
-   .. py:method:: __eq__(other: object) -> bool
+   Corresponds to the inclusion of the subcomplex spanned by a given subset of colours.
 
-      Check if two 6-packs of persistence diagrams are equal.
 
-
-
-   .. py:method:: __getitem__(key: DiagramName) -> SimplexPairings
-
-      Access a specific diagram in the 6-pack.
-
-
-
-   .. py:method:: __iter__() -> collections.abc.Iterator[tuple[DiagramName, SimplexPairings]]
-
-      Iterate over all diagrams in the 6-pack.
-
-
-
-   .. py:method:: __len__() -> int
-
-      Return the number of diagrams in the 6-pack.
-
-
-
-   .. py:method:: from_file(file: h5py.Group) -> DiagramEnsemble
-      :classmethod:
-
-
-      Load a 6-pack of persistence diagrams from a HDF5 file or group.
-
-      :param file: A h5py file or group.
-
-
-
-   .. py:method:: get(key: DiagramName, default: U = None) -> SimplexPairings | U
-
-      Access a specific diagram in the 6-pack.
-
-      Returns a default value if the diagram does not exist.
-
-
-
-   .. py:method:: get_matrix(diagram_name: DiagramName, dim: int) -> numpy.ndarray[tuple[int, Literal[2]], numpy.dtype[numpy.float64]]
-                  get_matrix(diagram_name: DiagramName, dim: list[int] | None = None) -> list[numpy.ndarray[tuple[int, Literal[2]], numpy.dtype[numpy.float64]]]
-
-      Get a specific diagram as a matrix of birth and death times.
-
-      :param diagram_name: One of ``'ker'``, ``'cok'``, ``'dom'``,
-                           ``'cod'``, ``'im'``, or ``'rel'``.
-      :param dim: Dimension(s) of the diagram desired.
-                  If a list is provided then a list of matrices is returned,
-                  with the order of matrices respecting the order of entries of `dim`.
-                  If `dim` is not provided then the returned matrix will contain
-                  persistent features from all homological dimensions
-                  from zero to ``max(self.dimensions)``.
-
-      :returns: An :math:`m \times 2` matrix whose rows are
-                a pair of birth and death times, or a list of such matrices.
-
-
-
-   .. py:method:: items() -> collections.abc.ItemsView[DiagramName, SimplexPairings]
-
-      View of the diagrams in the 6-pack.
-
-
-
-   .. py:method:: keys() -> collections.abc.KeysView[DiagramName]
-
-      View of the names of the diagrams in the 6-pack.
-
-
-
-   .. py:method:: num_features() -> int
-
-      Count the total number of features across all diagrams in the 6-pack.
-
-
-
-   .. py:method:: save(file: h5py.Group) -> None
-
-      Save a 6-pack of persistence diagrams to a HDF5 file or group.
-
-      :param file: A h5py file or group.
-
-
-
-   .. py:method:: threshold(tolerance: float) -> DiagramEnsemble
-
-      Discard all features with persistence ``<=tolerance``.
-
-
-
-   .. py:method:: values() -> collections.abc.ValuesView[SimplexPairings]
-
-      View of the diagrams in the 6-pack.
-
-
-
-   .. py:property:: dimensions
-      :type: numpy.ndarray[tuple[int], numpy.dtype[numpy.int64]]
-
-
-      Dimensions of the simplices.
-
-
-   .. py:property:: entrance_times
-      :type: numpy.ndarray[tuple[int], numpy.dtype[numpy.float64]]
-
-
-      Entrance times of the simplices.
-
-
-.. py:class:: SimplexPairings(paired: collections.abc.Collection[tuple[int, int]] = set(), unpaired: collections.abc.Collection[int] = set())
-
-   Bases: :py:obj:`collections.abc.Collection`
-
-
-   Persistence diagram object.
-
-
-   .. py:method:: __bool__() -> bool
-
-      Return true if the diagram is non-empty.
-
-
-
-   .. py:method:: __contains__(feature: object) -> bool
-
-      Return true if a feature is in the diagram.
-
-      The feature to check should be either a pair of simplices (int, int)
-      or a single simplex (int).
-
-
-
-   .. py:method:: __eq__(other: object) -> bool
-
-      Check if two diagrams have the same paired and unpaired simplices.
-
-
-
-   .. py:method:: __iter__() -> collections.abc.Iterator[tuple[int, int] | int]
-
-      Iterate over all features in the diagram.
-
-
-
-   .. py:method:: __len__() -> int
-
-      Return the number of features in the diagram.
-
-
-
-   .. py:method:: __str__() -> str
-
-      Return string representation of the persistence diagram.
-
-
-
-   .. py:method:: paired_as_matrix() -> numpy.ndarray[tuple[int, Literal[2]], numpy.dtype[numpy.int64]]
-
-      Return a matrix representation of the finite persistence features in the diagram.
-
-
-
-   .. py:property:: paired
-      :type: set[tuple[int, int]]
-
-
-      Set of indices of paired simplices (read-only).
-
-
-   .. py:property:: unpaired
-      :type: set[int]
-
-
-      Set of indices of unpaired simplices (read-only).
-
-
-.. py:function:: compute(x: numpy.ndarray[tuple[NumRows, NumCols], numpy.dtype[numpy.floating]], colours: collections.abc.Sequence[int], dom: collections.abc.Collection[int] | int | None = None, k: int | None = None, method: Literal['alpha', 'delcech', 'delrips'] = 'alpha', max_diagram_dimension: int | None = None, tolerance: float = 0) -> DiagramEnsemble
+.. py:function:: compute(points: numpy.ndarray[tuple[compute.NumRows, compute.NumCols], numpy.dtype[numpy.float64]], colours: collections.abc.Sequence[int], mapping_method: SubsetInclusion | KChromaticInclusion | KChromaticGluingMap, filtration_algorithm: Literal['alpha', 'delcech', 'delrips'] = 'delcech', max_diagram_dimension: int | None = None, threshold: float = 0) -> _diagram_ensemble.DiagramEnsemble
 
    Compute the 6-pack of persistence diagrams of a coloured point-cloud.
 
    This function constructs a filtered simplicial complex :math:`K`
    from the point cloud, and computes the 6-pack of persistence diagrams
-   associated with the inclusion :math:`f : L \hookrightarrow K`
-   where :math:`L` is some filtered subcomplex of :math:`K`.
+   associated with a map of :math:`f : L \to K` of filtrations,
+   where :math:`L` is some filtration constructed from :math:`K`.
 
-   :param x: Numpy matrix whose columns are points.
+   :param points: Numpy matrix whose columns are points.
    :param colours: Sequence of integers describing the colours of the points.
-   :param dom: Integer or collection of integers describing the colours of
-               the points in the domain (the subcomplex :math:`L`).
-   :param k: If not ``None``, then the domain is taken to be the
-             :math:`k`-chromatic subcomplex of :math:`K`, i.e.,
-             the subcomplex of simplices having at most :math:`k` colours.
-   :param method: Filtration used to construct the chromatic complex.
-                  Must be one of ``'alpha'``, ``'delcech'``, or ``'delrips'``.
+   :param mapping_method: The method for constructing the map
+                          of filtrations.
+   :param filtration_algorithm: Filtration used to construct the chromatic complex.
+                                Must be one of ``'alpha'``, ``'delcech'``, or ``'delrips'``.
    :param max_diagram_dimension: Maximum homological dimension for which the persistence diagrams are computed.
                                  By default diagrams of all dimensions are computed.
-   :param tolerance: Retain only points with persistence strictly greater than this value.
+   :param threshold: Retain only points with persistence strictly greater than this value.
 
    Returns :
            Diagrams corresponding to the following persistence modules
@@ -276,29 +100,27 @@ Module Contents
            and contains simplices of all dimensions. ``dgms`` also contains the
            entrance times of the simplices and their dimensions.
 
+   .. seealso::
+
+      :func:`from_filtration`, :class:`SubsetInclusion`,
+      :class:`KChromaticInclusion`, :class:`KChromaticGluingMap`
 
 
-.. py:function:: from_filtration(K: chalc.filtration.FilteredComplex, dom: collections.abc.Collection[int] | int | None = None, k: int | None = None, max_diagram_dimension: int | None = None, tolerance: float = 0) -> DiagramEnsemble
+.. py:function:: from_filtration(filtration: chalc.filtration.FilteredComplex, mapping_method: SubsetInclusion | KChromaticInclusion | KChromaticGluingMap, max_diagram_dimension: int | None = None, threshold: float = 0) -> _diagram_ensemble.DiagramEnsemble
 
    Compute 6-pack of persistence diagrams from a chromatic filtration.
 
    Given a filtered chromatic simplicial complex :math:`K`
-   and a subcomplex :math:`L` of :math:`K`,
    this function computes the 6-pack of persistence diagram
-   associated with the inclusion map :math:`f : L \hookrightarrow K`.
-   The subcomplex is specified by the colours of its vertices,
-   or by an integer :math:`k` wherein all simplices with
-   :math:`k` or fewer colours are considered part of the subcomplex.
+   associated with a map of :math:`f : L \to K` of filtrations,
+   where :math:`L` is some filtration constructed from :math:`K`.
 
-   :param K: A filtered chromatic simplicial complex.
-   :param dom: Integer or collection of integers describing the
-               colours of the points in the domain (the subcomplex :math:`L`).
-   :param k: If not ``None``, then the domain is taken to be the
-             :math:`k`-chromatic subcomplex of :math:`K`, i.e.,
-             the subcomplex of simplices having at most :math:`k` colours.
+   :param filtration: A filtered chromatic simplicial complex.
+   :param mapping_method: The method for constructing the map
+                          of filtrations.
    :param max_diagram_dimension: Maximum homological dimension for which the persistence diagrams are computed.
                                  By default diagrams of all dimensions are computed.
-   :param tolerance: Retain only points with persistence strictly greater than this value.
+   :param threshold: Retain only points with persistence strictly greater than this value.
 
    :returns: Diagrams corresponding to the following persistence modules
              (where :math:`H_*` is the persistent homology functor and
@@ -314,5 +136,10 @@ Module Contents
              Each diagram is represented by sets of paired and unpaired simplices,
              and contain simplices of all dimensions. ``dgms`` also contains the
              entrance times of the simplices and their dimensions.
+
+   .. seealso::
+
+      :func:`compute`, :class:`SubsetInclusion`,
+      :class:`KChromaticInclusion`, :class:`KChromaticGluingMap`
 
 

@@ -6,8 +6,8 @@
 <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="chalc.plotting" href="../plotting/index.html" /><link rel="prev" title="chalc.chromatic" href="../chromatic/index.html" />
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
-        <title>chalc.filtration - chalc 8.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+        <title>chalc.filtration - chalc 9.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -169,7 +169,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">chalc 8.0.1 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">chalc 9.0.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
   
-  <span class="sidebar-brand-text">chalc 8.0.1 documentation</span>
+  <span class="sidebar-brand-text">chalc 9.0.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -266,8 +266,7 @@
         <article role="main" id="furo-main-content">
           <section id="module-chalc.filtration">
 <span id="chalc-filtration"></span><h1>chalc.filtration<a class="headerlink" href="#module-chalc.filtration" title="Link to this heading">¶</a></h1>
-<p>Module containing utilities to store and manipulate
-abstract filtered simplicial complexes.</p>
+<p>Module containing utilities to store and manipulate abstract filtered simplicial complexes.</p>
 <section id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
@@ -288,11 +287,11 @@ abstract filtered simplicial complexes.</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#chalc.filtration.clique_complex" title="chalc.filtration.clique_complex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clique_complex</span></code></a>(→ FilteredComplex)</p></td>
-<td><p>Returns the <span class="math notranslate nohighlight">\(k\)</span>-skeleton of the complete simplicial complex on <span class="math notranslate nohighlight">\(n\)</span> vertices, with filtration values initialised to zero and all vertices coloured with the colour 0.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#chalc.filtration.complete_complex" title="chalc.filtration.complete_complex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">complete_complex</span></code></a>(→ FilteredComplex)</p></td>
+<td><p>Compute the <span class="math notranslate nohighlight">\(k\)</span>-skeleton of the complete simplicial complex on <span class="math notranslate nohighlight">\(n\)</span> vertices.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#chalc.filtration.standard_simplex" title="chalc.filtration.standard_simplex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">standard_simplex</span></code></a>(→ FilteredComplex)</p></td>
-<td><p>Returns the filtered simplicial complex corresponding to the standard abstract <span class="math notranslate nohighlight">\(n\)</span>-simplex, with filtration values initialised to zero and all vertices coloured with the colour 0.</p></td>
+<td><p>Compute the filtered simplicial complex corresponding to the standard abstract <span class="math notranslate nohighlight">\(n\)</span>-simplex.</p></td>
 </tr>
 </tbody>
 </table>
@@ -318,15 +317,20 @@ abstract filtered simplicial complexes.</p>
 </dl>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Faces of the added simplex that are already present in the simplicial complex will have their filtration values reduced if necessary.</p>
+<p>Faces of the added simplex that are already present
+in the simplicial complex will have their filtration values reduced if necessary.</p>
 </div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="chalc.filtration.FilteredComplex.get_label_from_vertex_labels">
 <span class="sig-name descname"><span class="pre">get_label_from_vertex_labels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vertices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#chalc.filtration.FilteredComplex.get_label_from_vertex_labels" title="Link to this definition">¶</a></dt>
-<dd><p>Returns the dictionary key of a simplex with respect to its vertex labels sorted in ascending order, counting all
-possible sorted subsequences of <span class="math notranslate nohighlight">\((0, ..., N-1)\)</span> of length <span class="math notranslate nohighlight">\(k\)</span>, where <span class="math notranslate nohighlight">\(N\)</span> is the number of vertices in the complex. The simplex need not be present in the simplicial complex.</p>
+<dd><p>Get the dictionary key of a simplex.</p>
+<p>The key of a simplex is its lexicographic index with respect to
+its vertex labels sorted in ascending order, counting all
+possible sorted subsequences of <span class="math notranslate nohighlight">\((0, ..., N-1)\)</span> of length <span class="math notranslate nohighlight">\(k\)</span>,
+where <span class="math notranslate nohighlight">\(N\)</span> is the number of vertices in the complex.
+The simplex need not be present in the simplicial complex.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>vertices</strong> – List of vertex labels of the simplex.</p>
@@ -348,19 +352,28 @@ possible sorted subsequences of <span class="math notranslate nohighlight">\((0,
 <dl class="py method">
 <dt class="sig sig-object py" id="chalc.filtration.FilteredComplex.is_filtration">
 <span class="sig-name descname"><span class="pre">is_filtration</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#chalc.filtration.FilteredComplex.is_filtration" title="Link to this definition">¶</a></dt>
-<dd><p>Returns true if the filtration property is satisfied; that is, if each simplex has a filtration value at least as large as each of its faces.</p>
+<dd><p>Check if the filtration property is satisfied.</p>
+<p>Returns true if each simplex has a filtration value at least as large as each of its faces.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="chalc.filtration.FilteredComplex.propagate_colours">
 <span class="sig-name descname"><span class="pre">propagate_colours</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#chalc.filtration.FilteredComplex.propagate_colours" title="Link to this definition">¶</a></dt>
-<dd><p>Function to make sure that simplex colours are consistent with the colours of their vertices. You should call this whenever you change the colour of any vertices.</p>
+<dd><p>Ensure that simplex colours are consistent
+with the colours of their vertices.</p>
+<p>You should call this whenever you change the colour of any vertices.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="chalc.filtration.FilteredComplex.propagate_filt_values">
 <span class="sig-name descname"><span class="pre">propagate_filt_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">upwards</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#chalc.filtration.FilteredComplex.propagate_filt_values" title="Link to this definition">¶</a></dt>
-<dd><p>Propagate filtration values upwards or downwards to ensure that every simplex appears after its faces. For example, setting the filtration values in dimension 1 and propagating upwards is akin to the Rips filtration.</p>
+<dd><p>Propagate filtration values upwards or downwards.</p>
+<p>If propagating upwards, the filtration value of each simplex
+will be set to the maximum filtration value of any of its faces.
+If propagating downwards, the filtration value of each simplex
+will be set to the minimum filtration value of any of its cofaces.
+For example, setting the filtration values in dimension 1
+to edge lengths and propagating upwards gives Rips-type filtration.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -373,8 +386,8 @@ possible sorted subsequences of <span class="math notranslate nohighlight">\((0,
 
 <dl class="py method">
 <dt class="sig sig-object py" id="chalc.filtration.FilteredComplex.serialised">
-<span class="sig-name descname"><span class="pre">serialised</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#chalc.filtration.FilteredComplex.serialised" title="Link to this definition">¶</a></dt>
-<dd><p>Serialised representation of the simplicial complex in a format suitable for persistent homology computations.</p>
+<span class="sig-name descname"><span class="pre">serialised</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#chalc.filtration.FilteredComplex.serialised" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the boundary matrix of the simplicial complex.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><p>A list <cite>x</cite> of simplices in the simplicial complex ordered by dimension followed by filtration time. Each simplex <span class="math notranslate nohighlight">\(\sigma\)</span> is represented by a tuple containing the following items.</p>
@@ -382,7 +395,7 @@ possible sorted subsequences of <span class="math notranslate nohighlight">\((0,
 <li><p>A list containing the indices in <cite>x</cite> of the facets of <span class="math notranslate nohighlight">\(\sigma\)</span>, sorted in ascending order.</p></li>
 <li><p>The lexicographic key of <span class="math notranslate nohighlight">\(\sigma\)</span> in the simplicial complex.</p></li>
 <li><p>The filtration time of <span class="math notranslate nohighlight">\(\sigma\)</span>.</p></li>
-<li><p>The colour bitmask of <span class="math notranslate nohighlight">\(\sigma\)</span>.</p></li>
+<li><p>The set of colours of the vertices of <span class="math notranslate nohighlight">\(\sigma\)</span>.</p></li>
 </ol>
 </p>
 </dd>
@@ -398,7 +411,8 @@ possible sorted subsequences of <span class="math notranslate nohighlight">\((0,
 <dl class="py property">
 <dt class="sig sig-object py" id="chalc.filtration.FilteredComplex.max_dimension">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_dimension</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#chalc.filtration.FilteredComplex.max_dimension" title="Link to this definition">¶</a></dt>
-<dd><p>Maximum dimension of simplex that this complex can store. Set during initialisation.</p>
+<dd><p>Maximum dimension of simplex that this complex can store.</p>
+<p>Set during initialisation.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -416,13 +430,18 @@ possible sorted subsequences of <span class="math notranslate nohighlight">\((0,
 <dl class="py property">
 <dt class="sig sig-object py" id="chalc.filtration.FilteredComplex.num_vertices">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">num_vertices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#chalc.filtration.FilteredComplex.num_vertices" title="Link to this definition">¶</a></dt>
-<dd><p>Number of vertices in the simplicial complex. Set during initialisation.</p>
+<dd><p>Number of vertices in the simplicial complex.</p>
+<p>Set during initialisation.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="chalc.filtration.FilteredComplex.simplices">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">simplices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#chalc.filtration.Simplex" title="chalc.filtration.Simplex"><span class="pre">Simplex</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.filtration.FilteredComplex.simplices" title="Link to this definition">¶</a></dt>
-<dd><p>A list such that <code class="docutils literal notranslate"><span class="pre">simplices[k]</span></code> is a dictionary of handles to the <span class="math notranslate nohighlight">\(k\)</span>-simplices in the complex. The key of a <span class="math notranslate nohighlight">\(k\)</span>-simplex in <code class="docutils literal notranslate"><span class="pre">simplices[k]</span></code> is the lexicographic index of that simplex with respect to its vertex labels sorted in ascending order, counting all possible sorted subsequences of <span class="math notranslate nohighlight">\((0, ..., N-1)\)</span> of length <span class="math notranslate nohighlight">\(k\)</span>.</p>
+<dd><p>A list such that <code class="docutils literal notranslate"><span class="pre">simplices[k]</span></code> is a dictionary of handles
+to the <span class="math notranslate nohighlight">\(k\)</span>-simplices in the complex.</p>
+<p>The key of a <span class="math notranslate nohighlight">\(k\)</span>-simplex in <code class="docutils literal notranslate"><span class="pre">simplices[k]</span></code> is the lexicographic index
+of that simplex with respect to its vertex labels sorted in ascending order,
+counting all possible sorted subsequences of <span class="math notranslate nohighlight">\((0, ..., N-1)\)</span> of length <span class="math notranslate nohighlight">\(k\)</span>.</p>
 </dd></dl>
 
 </dd></dl>
@@ -442,14 +461,15 @@ possible sorted subsequences of <span class="math notranslate nohighlight">\((0,
 </dl>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>It is recommended to call the member function <a class="reference internal" href="#chalc.filtration.FilteredComplex.propagate_colours" title="chalc.filtration.FilteredComplex.propagate_colours"><code class="xref py py-meth docutils literal notranslate"><span class="pre">propagate_colours()</span></code></a> from the parent simplicial complex after changing the colour of a vertex.</p>
+<p>It is recommended to call the member function <a class="reference internal" href="#chalc.filtration.FilteredComplex.propagate_colours" title="chalc.filtration.FilteredComplex.propagate_colours"><code class="xref py py-meth docutils literal notranslate"><span class="pre">propagate_colours()</span></code></a>
+from the parent simplicial complex after changing the colour of a vertex.</p>
 </div>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="chalc.filtration.Simplex.colours">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">colours</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#chalc.filtration.Simplex.colours" title="Link to this definition">¶</a></dt>
-<dd><p>Bitmask of colours in the simplex, where the rightmost bit represents the smallest colour index. More precisely, <span class="math notranslate nohighlight">\(\mathrm{bitmask} = \sum_{c \in \mathrm{colours}(\sigma)} 2^c\)</span>. For example, a simplex having vertices of colours 0 and 1 has a colour bitmask of 3.</p>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">colours</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.filtration.Simplex.colours" title="Link to this definition">¶</a></dt>
+<dd><p>List of colours of the vertices of the simplex.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -467,13 +487,18 @@ possible sorted subsequences of <span class="math notranslate nohighlight">\((0,
 <dl class="py property">
 <dt class="sig sig-object py" id="chalc.filtration.Simplex.filtration_value">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">filtration_value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></em><a class="headerlink" href="#chalc.filtration.Simplex.filtration_value" title="Link to this definition">¶</a></dt>
-<dd><p>Filtration value of the simplex. If you modify this value, you should call <a class="reference internal" href="#chalc.filtration.FilteredComplex.propagate_filt_values" title="chalc.filtration.FilteredComplex.propagate_filt_values"><code class="xref py py-meth docutils literal notranslate"><span class="pre">propagate_filt_values()</span></code></a> from the parent complex to ensure that filtration times remain monotonic.</p>
+<dd><p>Filtration value of the simplex.</p>
+<p>If you modify this value, you should call <a class="reference internal" href="#chalc.filtration.FilteredComplex.propagate_filt_values" title="chalc.filtration.FilteredComplex.propagate_filt_values"><code class="xref py py-meth docutils literal notranslate"><span class="pre">propagate_filt_values()</span></code></a>
+from the parent complex to ensure that filtration times remain monotonic.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="chalc.filtration.Simplex.label">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">label</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#chalc.filtration.Simplex.label" title="Link to this definition">¶</a></dt>
-<dd><p>Label of the simplex in its parent filtered complex. A <span class="math notranslate nohighlight">\(k\)</span>-simplex <span class="math notranslate nohighlight">\(\sigma\)</span> is labelled by the lexicographic index of <span class="math notranslate nohighlight">\(\sigma\)</span> with respect to its vertex labels sorted in ascending order, counting all possible sorted subsequences of <span class="math notranslate nohighlight">\((0, ..., N-1)\)</span> of length <span class="math notranslate nohighlight">\(k\)</span>.</p>
+<dd><p>Label of the simplex in its parent filtered complex.</p>
+<p>A <span class="math notranslate nohighlight">\(k\)</span>-simplex <span class="math notranslate nohighlight">\(\sigma\)</span> is labelled by the lexicographic index of <span class="math notranslate nohighlight">\(\sigma\)</span>
+with respect to its vertex labels sorted in ascending order,
+counting all possible sorted subsequences of <span class="math notranslate nohighlight">\((0, ..., N-1)\)</span> of length <span class="math notranslate nohighlight">\(k\)</span>.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -485,15 +510,17 @@ possible sorted subsequences of <span class="math notranslate nohighlight">\((0,
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="chalc.filtration.clique_complex">
-<span class="sig-name descname"><span class="pre">clique_complex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#chalc.filtration.FilteredComplex" title="chalc.filtration.FilteredComplex"><span class="pre">FilteredComplex</span></a></span></span><a class="headerlink" href="#chalc.filtration.clique_complex" title="Link to this definition">¶</a></dt>
-<dd><p>Returns the <span class="math notranslate nohighlight">\(k\)</span>-skeleton of the complete simplicial complex on <span class="math notranslate nohighlight">\(n\)</span> vertices, with filtration values initialised to zero and all vertices coloured with the colour 0.</p>
+<dt class="sig sig-object py" id="chalc.filtration.complete_complex">
+<span class="sig-name descname"><span class="pre">complete_complex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#chalc.filtration.FilteredComplex" title="chalc.filtration.FilteredComplex"><span class="pre">FilteredComplex</span></a></span></span><a class="headerlink" href="#chalc.filtration.complete_complex" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the <span class="math notranslate nohighlight">\(k\)</span>-skeleton of the complete simplicial complex on <span class="math notranslate nohighlight">\(n\)</span> vertices.</p>
+<p>Filtration values are initialised to zero and all vertices coloured with the colour 0.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="chalc.filtration.standard_simplex">
 <span class="sig-name descname"><span class="pre">standard_simplex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#chalc.filtration.FilteredComplex" title="chalc.filtration.FilteredComplex"><span class="pre">FilteredComplex</span></a></span></span><a class="headerlink" href="#chalc.filtration.standard_simplex" title="Link to this definition">¶</a></dt>
-<dd><p>Returns the filtered simplicial complex corresponding to the standard abstract <span class="math notranslate nohighlight">\(n\)</span>-simplex, with filtration values initialised to zero and all vertices coloured with the colour 0.</p>
+<dd><p>Compute the filtered simplicial complex corresponding to the standard abstract <span class="math notranslate nohighlight">\(n\)</span>-simplex.</p>
+<p>Filtration values are initialised to zero and all vertices coloured with the colour 0.</p>
 </dd></dl>
 
 </section>
@@ -584,7 +611,7 @@ possible sorted subsequences of <span class="math notranslate nohighlight">\((0,
 <li><a class="reference internal" href="#chalc.filtration.Simplex.vertices"><code class="docutils literal notranslate"><span class="pre">vertices</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#chalc.filtration.clique_complex"><code class="docutils literal notranslate"><span class="pre">clique_complex()</span></code></a></li>
+<li><a class="reference internal" href="#chalc.filtration.complete_complex"><code class="docutils literal notranslate"><span class="pre">complete_complex()</span></code></a></li>
 <li><a class="reference internal" href="#chalc.filtration.standard_simplex"><code class="docutils literal notranslate"><span class="pre">standard_simplex()</span></code></a></li>
 </ul>
 </li>
@@ -599,7 +626,7 @@ possible sorted subsequences of <span class="math notranslate nohighlight">\((0,
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=521b6f53"></script>
+</div><script src="../../../_static/documentation_options.js?v=0b13d40c"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>

@@ -5,7 +5,7 @@ chalc
 
 .. autoapi-nested-parse::
 
-   Chalc is a package to compute the persistent homology of chromatic complexes of points clouds in Euclidean space.
+   Analyse spatial relationships in low-dimensional data using persistent homology.
 
 
 

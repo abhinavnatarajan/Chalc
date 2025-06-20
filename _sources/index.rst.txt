@@ -59,3 +59,4 @@ References
 ----------
 
 #. _`Sebastiano` Cultrera di Montesano, Ondřej Draganov, Herbert Edelsbrunner, and Morteza Saghafian. "Chromatic Alpha Complexes". Feb. 7, 2024. arXiv: `2212.03128 <https://arxiv.org/abs/2212.03128>`_.
+
