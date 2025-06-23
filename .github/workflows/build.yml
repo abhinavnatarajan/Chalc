@@ -66,7 +66,7 @@ jobs:
           runVcpkgInstall: false
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.21.3
+        uses: pypa/cibuildwheel@v3.0.0
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
