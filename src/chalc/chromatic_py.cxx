@@ -18,15 +18,16 @@ PYBIND11_MODULE(chromatic, m) {
 			 std::vector<index_t> colours_vec(colours.data(), colours.data() + colours.size());
 			 return delaunay(points, colours_vec);
 		 },
-		 py::arg("x"),
-		 py::arg("colours"))
+		 py::arg("points"),
+		 py::arg("colours")
+	)
 		.def(
 			"delaunay",
 			&delaunay,
 			R"docstring(Compute the chromatic Delaunay triangulation of a coloured point cloud in Euclidean space.
 
 Args:
-	x : Numpy matrix whose columns are points in the point cloud.
+	points : Numpy matrix whose columns are points in the point cloud.
 	colours : List or numpy array of integers describing the colours of the points.
 
 Raises:
@@ -39,26 +40,45 @@ Returns:
 	The Delaunay triangulation.
 
 )docstring",
-			py::arg("x"),
-			py::arg("colours"))
+			py::arg("points"),
+			py::arg("colours")
+		)
 		.def(
 			"delrips",
-			[](const Eigen::MatrixXd& points, const Eigen::VectorX<index_t>& colours) {
-				std::vector<index_t> colours_vec(colours.data(), colours.data() + colours.size());
-				return tuple{delrips(points, colours_vec), false};
+			[](const Eigen::MatrixXd&         points,
+	           const Eigen::VectorX<index_t>& colours_ndarray,
+	           const size_t                   max_num_threads) {
+				std::vector<index_t> colours(
+					colours_ndarray.data(),
+					colours_ndarray.data() + colours_ndarray.size()
+				);
+				if (max_num_threads != 1) {
+					return tuple{delrips_parallel(points, colours, max_num_threads), false};
+				} else {
+					return tuple{delrips(points, colours), false};
+				}
 			},
-			py::arg("x"),
-			py::arg("colours"))
+			py::arg("points"),
+			py::arg("colours"),
+			py::arg("max_num_threads") = 1
+		)
 		.def(
 			"delrips",
-			[](const Eigen::MatrixXd& points, const vector<index_t>& colours) {
-				return tuple{delrips(points, colours), false};
+			[](const Eigen::MatrixXd& points,
+	           const vector<index_t>& colours,
+	           const size_t max_num_threads) {
+				if (max_num_threads != 1) {
+					return tuple{delrips_parallel(points, colours, max_num_threads), false};
+				} else {
+					return tuple{delrips(points, colours), false};
+				}
 			},
 			R"docstring(Compute the chromatic Delaunay--Rips filtration of a coloured point cloud.
 
 Args:
-	x : Numpy matrix whose columns are points in the point cloud.
+	points : Numpy matrix whose columns are points in the point cloud.
 	colours : List or numpy array of integers describing the colours of the points.
+	max_num_threads: Maximum number of parallel threads to use. Set to 0 for maximum parallelism.
 
 Returns:
 	The chromatic Delaunay--Rips filtration and a boolean flag to indicate
@@ -85,23 +105,46 @@ See Also:
 	:func:`alpha`, :func:`delcech`
 
 )docstring",
-			py::arg("x"),
-			py::arg("colours"))
+			py::arg("points"),
+			py::arg("colours"),
+			py::arg("max_num_threads") = 1
+		)
 		.def(
 			"alpha",
-			[](const Eigen::MatrixXd& points, const Eigen::VectorX<index_t>& colours) {
-				std::vector<index_t> colours_vec(colours.data(), colours.data() + colours.size());
-				return alpha(points, colours_vec);
+			[](const Eigen::MatrixXd& points,
+	           const Eigen::VectorX<index_t>& colours_ndarray,
+	           size_t max_num_threads) {
+				std::vector<index_t> colours(
+					colours_ndarray.data(),
+					colours_ndarray.data() + colours_ndarray.size()
+				);
+				if (max_num_threads != 1) {
+					return alpha_parallel(points, colours, max_num_threads);
+				} else {
+					return alpha(points, colours);
+				}
 			},
-			py::arg("x"),
-			py::arg("colours"))
-		.def("alpha",
-	         &alpha,
-	         R"docstring(Compute the chromatic alpha filtration of a coloured point cloud.
+			py::arg("points"),
+			py::arg("colours"),
+			py::arg("max_num_threads") = 1
+		)
+		.def(
+			"alpha",
+			[](const Eigen::MatrixXd& points,
+	           const std::vector<index_t>& colours,
+	           size_t max_num_threads) {
+				if (max_num_threads != 1) {
+					return alpha_parallel(points, colours, max_num_threads);
+				} else {
+					return alpha(points, colours);
+				}
+			},
+			R"docstring(Compute the chromatic alpha filtration of a coloured point cloud.
 
 Args:
-	x : Numpy matrix whose columns are points in the point cloud.
+	points : Numpy matrix whose columns are points in the point cloud.
 	colours : List or numpy array of integers describing the colours of the points.
+	max_num_threads: Maximum number of parallel threads to use. Set to 0 for maximum parallelism.
 
 Returns:
 	The chromatic alpha filtration and a boolean flag to
@@ -123,23 +166,46 @@ See Also:
 	:func:`delrips`, :func:`delcech`
 
 )docstring",
-	         py::arg("x"),
-	         py::arg("colours"))
+			py::arg("points"),
+			py::arg("colours"),
+			py::arg("max_num_threads") = 1
+		)
 		.def(
 			"delcech",
-			[](const Eigen::MatrixXd& points, const Eigen::VectorX<index_t>& colours) {
-				std::vector<index_t> colours_vec(colours.data(), colours.data() + colours.size());
-				return delcech(points, colours_vec);
+			[](const Eigen::MatrixXd& points,
+	           const Eigen::VectorX<index_t>& colours_ndarray,
+	           size_t max_num_threads) {
+				std::vector<index_t> colours(
+					colours_ndarray.data(),
+					colours_ndarray.data() + colours_ndarray.size()
+				);
+				if (max_num_threads != 1) {
+					return delcech_parallel(points, colours, max_num_threads);
+				} else {
+					return delcech(points, colours);
+				}
 			},
-			py::arg("x"),
-			py::arg("colours"))
-		.def("delcech",
-	         &delcech,
-	         R"docstring(Compute the chromatic Delaunay--Čech filtration of a coloured point cloud.
+			py::arg("points"),
+			py::arg("colours"),
+			py::arg("max_num_threads") = 1
+		)
+		.def(
+			"delcech",
+			[](const Eigen::MatrixXd& points,
+	           const std::vector<index_t>& colours,
+	           size_t max_num_threads) {
+				if (max_num_threads != 1) {
+					return delcech_parallel(points, colours, max_num_threads);
+				} else {
+					return delcech(points, colours);
+				}
+			},
+			R"docstring(Compute the chromatic Delaunay--Čech filtration of a coloured point cloud.
 
 Args:
-	x : Numpy matrix whose columns are points in the point cloud.
+	points : Numpy matrix whose columns are points in the point cloud.
 	colours : List or numpy array of integers describing the colours of the points.
+	max_num_threads: Maximum number of parallel threads to use. Set to 0 for maximum parallelism.
 
 Returns:
 	The chromatic Delaunay--Čech filtration and a boolean flag to indicate
@@ -161,6 +227,8 @@ See Also:
 	:func:`alpha`, :func:`delrips`
 
 )docstring",
-	         py::arg("x"),
-	         py::arg("colours"));
+			py::arg("points"),
+			py::arg("colours"),
+			py::arg("max_num_threads") = 1
+		);
 }

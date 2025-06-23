@@ -35,28 +35,41 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 #ifndef CHROMATIC_H
-#define CHROMATIC_H
+	#define CHROMATIC_H
 
-#include <Eigen/Dense>
-#include <chalc/common.h>
-#include <chalc/filtration/filtration.h>
+	#include <Eigen/Dense>
+	#include <chalc/common.h>
+	#include <chalc/filtration/filtration.h>
 
 namespace chalc {
 namespace chromatic {
 
-// Create a Delaunay triangulation from a collection of coordinate vectors
+// Compute a Delaunay triangulation from a collection of coordinate vectors
 FilteredComplex delaunay(const Eigen::MatrixXd& X, const std::vector<index_t>& colours);
 
-// Create the chromatic delrips complex
+// Compute the chromatic delrips complex
 FilteredComplex delrips(const Eigen::MatrixXd& points, const std::vector<index_t>& colours);
 
-// Create the chromatic alpha complex
-std::tuple<FilteredComplex, bool> alpha(const Eigen::MatrixXd& points,
-	const std::vector<index_t>& colours);
+// Compute the chromatic delrips complex with parallelisation
+FilteredComplex delrips_parallel(const Eigen::MatrixXd& points, const std::vector<index_t>& colours, const size_t max_num_threads);
 
-// Create the chromatic Del-Cech complex
-std::tuple<FilteredComplex, bool> delcech(const Eigen::MatrixXd& points,
-	  const std::vector<index_t>& colours);
+// Compute the chromatic alpha complex
+std::tuple<FilteredComplex, bool> alpha(const Eigen::MatrixXd&      points,
+                                        const std::vector<index_t>& colours);
+
+// Compute the chromatic alpha complex with parallelisation
+std::tuple<FilteredComplex, bool> alpha_parallel(const Eigen::MatrixXd&      points,
+                                                 const std::vector<index_t>& colours,
+                                                 const size_t                max_num_threads);
+
+// Compute the chromatic Delaunay--Cech complex
+std::tuple<FilteredComplex, bool> delcech(const Eigen::MatrixXd&      points,
+                                          const std::vector<index_t>& colours);
+
+// Compute the chromatic Delaunay--Cech complex with parallelisation
+std::tuple<FilteredComplex, bool> delcech_parallel(const Eigen::MatrixXd&      points,
+                                                   const std::vector<index_t>& colours,
+                                                   const size_t                max_num_threads);
 }  // namespace chromatic
 }  // namespace chalc
 

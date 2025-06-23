@@ -84,7 +84,9 @@ class FilteredComplex:
         Compute the boundary matrix of the simplicial complex.
         
         :return:
-        	A list `x` of simplices in the simplicial complex ordered by dimension followed by filtration time. Each simplex :math:`\\sigma` is represented by a tuple containing the following items.
+        	A list `x` of simplices in the simplicial complex ordered by
+        	filtration time, dimension, and label (in that order).
+        	Each simplex :math:`\\sigma` is represented by a tuple containing the following items.
         
         	1.  A list containing the indices in `x` of the facets of :math:`\\sigma`, sorted in ascending order.
         	2.  The lexicographic key of :math:`\\sigma` in the simplicial complex.
@@ -141,10 +143,12 @@ class Simplex:
         Change the colour of a vertex.
         
         Raises:
-        	ValueError: If the simplex is not a vertex or if `colour >=` :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>`.
+        	ValueError: If the simplex is not a vertex or if
+        	`colour >=` :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>`.
         
         Tip:
-        	It is recommended to call the member function :meth:`propagate_colours() <chalc.filtration.FilteredComplex.propagate_colours>`
+        	It is recommended to call the member function
+        	:meth:`propagate_colours() <chalc.filtration.FilteredComplex.propagate_colours>`
         	from the parent simplicial complex after changing the colour of a vertex.
         """
     @property
@@ -167,7 +171,8 @@ class Simplex:
         """
         Filtration value of the simplex.
         
-        If you modify this value, you should call :meth:`propagate_filt_values() <chalc.filtration.FilteredComplex.propagate_filt_values>`
+        If you modify this value, you should call
+        :meth:`propagate_filt_values() <chalc.filtration.FilteredComplex.propagate_filt_values>`
         from the parent complex to ensure that filtration times remain monotonic.
         """
     @filtration_value.setter

@@ -1,11 +1,12 @@
 """Tests for the geometric computations in chalc."""
 
-import itertools
 import math
 
 import numpy as np
 
 import chalc as ch
+
+from .utils import assert_standard_simplex
 
 
 class TestChromatic:
@@ -24,7 +25,7 @@ class TestChromatic:
 	colours = (1, 0, 0, 0)
 	random_seed = 44
 
-	def test_delaunay(self) -> None:
+	def test_delaunay_triangulation_deterministic(self) -> None:
 		"""Test chromatic delaunay on a simple example."""
 		filtration = ch.chromatic.delaunay(self.points, list(self.colours))
 		assert_standard_simplex(3, filtration, is_filtered=False, is_chromatic=True)
@@ -35,7 +36,7 @@ class TestChromatic:
 		assert all(filtration.simplices[2][i].colours == [0, 1] for i in range(3))
 		assert filtration.simplices[3][0].colours == [0, 1]
 
-	def test_degenerate_delaunay(self) -> None:
+	def test_delaunay_triangulation_degenerate(self) -> None:
 		"""Test the Delaunay construction on degenerate examples."""
 		points = np.array([[0, 0], [1, 0], [2, 0]]).T
 		colours = [0, 0, 0]
@@ -50,7 +51,7 @@ class TestChromatic:
 		assert len(delaunay.simplices[1]) == 5
 		assert len(delaunay.simplices[2]) == 2
 
-	def test_alpha(self) -> None:
+	def test_chromatic_alpha_deterministic(self) -> None:
 		"""Test chromatic alpha on a simple example."""
 		filtration, numerical_errors = ch.chromatic.alpha(self.points, list(self.colours))
 		assert not numerical_errors
@@ -68,8 +69,8 @@ class TestChromatic:
 		assert math.isclose(filtration.simplices[2][3].filtration_value, 1)
 		assert math.isclose(filtration.simplices[3][0].filtration_value, 1)
 
-	def test_delcech(self) -> None:
-		"""Test chromatic delcech on a simple example."""
+	def test_chromatic_delcech_deterministic(self) -> None:
+		"""Test chromatic Delaunay--Cech on a simple example."""
 		filtration, numerical_errors = ch.chromatic.delcech(self.points, list(self.colours))
 		assert not numerical_errors
 		assert filtration.is_filtration()
@@ -86,7 +87,7 @@ class TestChromatic:
 		assert math.isclose(filtration.simplices[2][3].filtration_value, 1)
 		assert math.isclose(filtration.simplices[3][0].filtration_value, 1)
 
-	def test_delrips(self) -> None:
+	def test_chromatic_delrips_deterministic(self) -> None:
 		"""Test chromatic delrips on a simple example."""
 		filtration, numerical_errors = ch.chromatic.delrips(self.points, list(self.colours))
 		assert not numerical_errors
@@ -103,37 +104,78 @@ class TestChromatic:
 		)
 		assert math.isclose(filtration.simplices[3][0].filtration_value, np.sqrt(3) / 2)
 
-	def test_delcech_is_filtration(self) -> None:
-		"""Test that the filtration values are monotonic in the Delcech filtration."""
-		rng = np.random.default_rng(self.random_seed)
-		dims = [1, 2, 3]
-		num_colours = [1, 2, 3]
-		for d in dims:
-			for s in num_colours:
-				points = rng.uniform(size=(d, 200))
-				colours = rng.integers(0, s, size=200, dtype=np.uint64)
-				filtration, numerical_errors = ch.chromatic.delcech(points, colours)
-				assert not numerical_errors
-				assert filtration.is_filtration()
+	def test_chromatic_delcech_random(self) -> None:
+		"""Test the chromatic Delaunay--Cech filtration on random data.
 
-	def test_alpha_is_filtration(self) -> None:
-		"""Test that the filtration values are monotonic in the chromatic alpha filtration."""
+		This tests for monotonicity in the filtration values,
+		and for numerical instabilities.
+		Both single-threaded and multi-threaded implementations are tested,
+		and compared for equality.
+		"""
 		rng = np.random.default_rng(self.random_seed)
 		dims = [1, 2, 3]
 		num_colours = [1, 2, 3]
+		num_points = 200
 		for d in dims:
 			for s in num_colours:
-				points = rng.uniform(size=(d, 200))
-				colours = rng.integers(0, s, size=200, dtype=np.uint64)
-				filtration, numerical_errors = ch.chromatic.alpha(
+				points = rng.uniform(size=(d, num_points))
+				colours = rng.integers(0, s, size=num_points, dtype=np.uint64)
+				filtration, numerical_errors = ch.chromatic.delcech(
 					points,
-					[x.item() for x in colours],
+					colours,
+					max_num_threads=1,
 				)
 				assert not numerical_errors
 				assert filtration.is_filtration()
+				filtration_mt, numerical_errors_mt = ch.chromatic.delcech(
+					points,
+					colours,
+					max_num_threads=0,
+				)
+				assert not numerical_errors_mt
+				assert filtration_mt.is_filtration()
+				assert filtration.serialised() == filtration_mt.serialised()
 
-	def test_delrips_is_filtration(self) -> None:
-		"""Test that the filtration values are monotonic in the chromatic delrips filtration."""
+	def test_chromatic_alpha_random(self) -> None:
+		"""Test the chromatic alpha filtration on random data.
+
+		This tests for monotonicity in the filtration values,
+		and for numerical instabilities.
+		Both single-threaded and multi-threaded implementations are tested,
+		and compared for equality.
+		"""
+		rng = np.random.default_rng(self.random_seed)
+		dims = [1, 2, 3]
+		num_colours = [1, 2, 3]
+		num_points = 200
+		for d in dims:
+			for s in num_colours:
+				points = rng.uniform(size=(d, num_points))
+				colours = rng.integers(0, s, size=num_points, dtype=np.uint64)
+				filtration_mt, numerical_errors_mt = ch.chromatic.alpha(
+					points,
+					colours,
+					max_num_threads=0,
+				)
+				assert not numerical_errors_mt
+				assert filtration_mt.is_filtration()
+				filtration, numerical_errors = ch.chromatic.alpha(
+					points,
+					colours,
+					max_num_threads=1,
+				)
+				assert not numerical_errors
+				assert filtration.is_filtration()
+				assert filtration.serialised() == filtration_mt.serialised()
+
+	def test_delrips_random(self) -> None:
+		"""Test the chromatic Delaunay--Rips filtration on random data.
+
+		This tests for monotonicity in the filtration values,
+		and for numerical instabilities.
+		Both single-threaded and multi-threaded implementations are tested,
+		and compared for equality.
+		"""
 		rng = np.random.default_rng(self.random_seed)
 		dims = [1, 2, 3]
 		num_colours = [1, 2, 3]
@@ -141,68 +183,18 @@ class TestChromatic:
 			for s in num_colours:
 				points = rng.uniform(size=(d, 200))
 				colours = rng.integers(0, s, size=200, dtype=np.uint64)
-				filtration, numerical_errors = ch.chromatic.delrips(points, colours)
+				filtration, numerical_errors = ch.chromatic.delrips(
+					points,
+					colours,
+					max_num_threads=1,
+				)
 				assert not numerical_errors
 				assert filtration.is_filtration()
-
-				assert not numerical_errors
-				assert filtration.is_filtration()
-
-
-# class Test_sixpack:
-# 	random_seed = 44
-# 	def test_k_chromatic(self):
-# 		rng = np.random.default_rng(self.random_seed)
-# 		points = rng.uniform(size=(2, 1000))
-# 		colours = rng.integers(0, 3, size=1000)
-# 		dgms = ch.sixpack.compute(points, colours, method='chromatic delcech')
-
-
-class TestFiltration:
-	"""Tests for the filtration module."""
-
-	def test_standard_simplex(self) -> None:
-		"""Test the construction of the standard simplex."""
-		n = 3
-		filtration = ch.filtration.standard_simplex(n)
-		assert_standard_simplex(n, filtration, is_filtered=False, is_chromatic=False)
-
-	def test_complete_complex(self) -> None:
-		"""Test construction of a clique complex."""
-		n = 5
-		k = 3
-		filtration = ch.filtration.complete_complex(n, k)
-		for i in range(k + 1):
-			num_simplices = math.comb(n, i + 1)
-			assert list(filtration.simplices[i].keys()) == list(range(num_simplices))
-			gen_vertices = itertools.combinations(range(n), i + 1)
-			for j in range(num_simplices):
-				assert filtration.simplices[i][j].dimension == i
-				assert filtration.simplices[i][j].vertices == list(next(gen_vertices))
-				assert filtration.simplices[i][j].colours == [0]
-				assert filtration.simplices[i][j].filtration_value == 0
-				assert filtration.simplices[i][j].label == j
-
-
-def assert_standard_simplex(
-	n: int,
-	filtration: ch.filtration.FilteredComplex,
-	*,
-	is_filtered: bool,
-	is_chromatic: bool,
-) -> None:
-	"""Assert that the filtration is a standard simplex of dimension n."""
-	assert filtration.dimension == n
-	assert len(filtration.simplices) == n + 1
-	for i in range(n + 1):
-		num_simplices = math.comb(n + 1, i + 1)
-		assert list(filtration.simplices[i].keys()) == list(range(num_simplices))
-		gen_vertices = itertools.combinations(range(n + 1), i + 1)
-		for k in range(num_simplices):
-			assert filtration.simplices[i][k].dimension == i
-			assert filtration.simplices[i][k].vertices == list(next(gen_vertices))
-			assert filtration.simplices[i][k].label == k
-			if not is_chromatic:
-				assert filtration.simplices[i][k].colours == [0]
-			if not is_filtered:
-				assert filtration.simplices[i][k].filtration_value == 0
+				filtration_mt, numerical_errors_mt = ch.chromatic.delrips(
+					points,
+					colours,
+					max_num_threads=0,
+				)
+				assert not numerical_errors_mt
+				assert filtration_mt.is_filtration()
+				assert filtration.serialised() == filtration_mt.serialised()

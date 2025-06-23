@@ -209,7 +209,7 @@ class DiagramEnsemble(Mapping):
 			)
 			paired_matrix = entrance_times[paired_list.flatten()].reshape((-1, 2))
 			unpaired_matrix = entrance_times[unpaired_list][:, np.newaxis]
-			inf_array = np.array([np.inf] * len(unpaired_list))[:, np.newaxis]
+			inf_array = np.array([np.inf for _ in range(len(unpaired_list))])[:, np.newaxis]
 			unpaired_matrix = np.concatenate((unpaired_matrix, inf_array), axis=1)
 			return np.concatenate((paired_matrix, unpaired_matrix), axis=0)
 

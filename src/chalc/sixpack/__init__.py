@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
+import logging
 from collections.abc import (
 	Collection,
 )
 from itertools import combinations
 from typing import TYPE_CHECKING, Literal, NewType, TypeVar
-from warnings import warn
 
 import numpy as np
 from phimaker import compute_ensemble, compute_ensemble_cylinder
@@ -60,6 +60,13 @@ class KChromaticInclusion(int):
 
 	"""
 
+	def __init__(self, k: int) -> None:
+		"""Initialise this method."""
+		if k <= 0:
+			errmsg = "KChromaticInclusion must be initialised with a positive integer."
+			raise ValueError(errmsg)
+		super().__init__()
+
 
 class KChromaticGluingMap(int):
 	r"""
@@ -72,6 +79,13 @@ class KChromaticGluingMap(int):
 
 	"""
 
+	def __init__(self, k: int) -> None:
+		"""Initialise this method."""
+		if k <= 0:
+			errmsg = "KChromaticGluingMap must be initialised with a positive integer."
+			raise ValueError(errmsg)
+		super().__init__()
+
 
 def _get_diagrams_gluing_map(
 	filtration: FilteredComplex,
@@ -82,21 +96,25 @@ def _get_diagrams_gluing_map(
 	BoundaryColumn = NewType("BoundaryColumn", tuple[float, int, list[int]])
 	BoundaryMatrix = NewType("BoundaryMatrix", list[BoundaryColumn])
 
-	all_colours = sorted({vertex.colours[0] for vertex in filtration.simplices[0].values()})
-	colour_combinations = sorted(combinations(all_colours, k))
+	max_dgm_dim = max(0, filtration.dimension - 1, max_dgm_dim)
 
-	# List of columns in the boundary matrix of the entire filtration
+	simplex_colours = sorted({vertex.colours[0] for vertex in filtration.simplices[0].values()})
+	colour_combinations = sorted(combinations(simplex_colours, k))
+
+	# List of columns in the boundary matrix of the domain and codomain.
 	codomain_matrix: BoundaryMatrix = BoundaryMatrix([])
+	domain_matrix: BoundaryMatrix = BoundaryMatrix([])
+	# List of mappings from domain columns to codomain indices.
+	mapping: list[list[int]] = []
 
-	# We need separate copies of the boundary matrix for each colour subset
-	# Colour subset J -> list of columns in the boundary matrix indexed by simplices of colours J
-	# Each simplex annotated with its corresponding image the in codomain
-	domain_matrix_by_subset: dict[tuple[int, ...], list[tuple[BoundaryColumn, list[int]]]] = {
-		subset: [] for subset in colour_combinations
-	}
+	# Offsets[i] is a dictionary that maps a colour subset J
+	# to the index of the column in the domain matrix
+	# corresponding to the Jth copy of the ith simplex.
+	offsets: list[dict[tuple[int, ...], int]] = []
 
-	# Build the codomain matrix and the domain matrices for each colour subset
-	for idx, column in enumerate(filtration.serialised()):
+	# Build the matrices
+	counter = 0
+	for cod_idx, column in enumerate(filtration.serialised()):
 		facet_idxs = column[0]
 		dimension = max(0, len(facet_idxs) - 1)
 		# Only need k-skeleton for k <= max_dgm_dim + 1
@@ -104,39 +122,45 @@ def _get_diagrams_gluing_map(
 			break
 		entrance_time = column[2]
 		codomain_matrix.append(BoundaryColumn((entrance_time, dimension, facet_idxs)))
-		all_colours = column[3]
-		subsets = [subset for subset in colour_combinations if set(all_colours).issubset(subset)]
-		for subset in subsets:
-			domain_matrix_by_subset[subset].append(
-				(BoundaryColumn((entrance_time, dimension, facet_idxs)), [idx]),
-			)
+		simplex_colours = column[3]
 
-	# Reindex the duplicated columns in the domain
-	shift = 0
-	domain_matrix: BoundaryMatrix = BoundaryMatrix([])
-	mapping: list[list[int]] = []
-	for subset in colour_combinations:
-		for col in domain_matrix_by_subset[subset]:
-			entrance_time, dimension, original_facet_idxs = col[0]
-			facet_idxs = [idx + shift for idx in original_facet_idxs]
-			domain_matrix.append(BoundaryColumn((entrance_time, dimension, facet_idxs)))
-			mapping.append(col[1])
-		shift += len(domain_matrix_by_subset[subset])
+		# Construct the domain matrix
+		offsets.append({})  # Initialize offsets for this codomain column
+		for subset in colour_combinations:
+			if set(simplex_colours).issubset(subset):
+				# If this simplex is J-coloured, we add it to the domain matrix
+				# while remembering that for the Jth copy of this simplex i,
+				# the index in the domain matrix is counter.
+				shifted_facet_idxs = [offsets[facet_idx][subset] for facet_idx in facet_idxs]
+				domain_matrix.append(
+					BoundaryColumn((entrance_time, dimension, shifted_facet_idxs)),
+				)
+				mapping.append([cod_idx])
+				offsets[cod_idx][subset] = counter
+				counter += 1
+
+	logger = logging.getLogger(__name__)
+	logger.debug("Domain boundary matrix: \n%s", domain_matrix)
+	logger.debug("Codomain boundary matrix: \n%s", codomain_matrix)
+	logger.debug("Mappings: \n%s", mapping)
 
 	d, meta = compute_ensemble_cylinder(domain_matrix, codomain_matrix, mapping)
-	dom_cyl_idx = {j: i for i, j in enumerate(meta.domain)} | {
-		j: i for i, j in enumerate(meta.domain_shift)
-	}
-	cod_cyl_idx = {j: i for i, j in enumerate(meta.codomain)}
+
 	n_cells_cyl = len(meta.domain) + len(meta.domain_shift) + len(meta.codomain)
-	entrance_times = [
-		domain_matrix[dom_cyl_idx[i]][0] if i in dom_cyl_idx else codomain_matrix[cod_cyl_idx[i]][0]
-		for i in range(n_cells_cyl)
-	]
-	dimensions = [
-		domain_matrix[dom_cyl_idx[i]][1] if i in dom_cyl_idx else codomain_matrix[cod_cyl_idx[i]][1]
-		for i in range(n_cells_cyl)
-	]
+	entrance_times = [0.0] * n_cells_cyl
+	dimensions = [0] * n_cells_cyl
+
+	for dom_idx, cyl_dom_idx in enumerate(meta.domain):
+		entrance_times[cyl_dom_idx] = domain_matrix[dom_idx][0]
+		dimensions[cyl_dom_idx] = domain_matrix[dom_idx][1]
+
+	for dom_shift_idx, cyl_dom_shift_idx in enumerate(meta.domain_shift):
+		entrance_times[cyl_dom_shift_idx] = domain_matrix[dom_shift_idx][0]
+		dimensions[cyl_dom_shift_idx] = domain_matrix[dom_shift_idx][1] + 1
+
+	for cod_idx, cyl_cod_idx in enumerate(meta.codomain):
+		entrance_times[cyl_cod_idx] = codomain_matrix[cod_idx][0]
+		dimensions[cyl_cod_idx] = codomain_matrix[cod_idx][1]
 
 	dgms = DiagramEnsemble(
 		SimplexPairings(d.ker.paired, d.ker.unpaired),
@@ -170,6 +194,10 @@ def _get_diagrams_inclusion(
 		dimensions.append(dimension)
 		entrance_times.append(column[2])
 		matrix.append((check_in_domain(column[3]), dimension, facet_idxs))
+
+	logger = logging.getLogger(__name__)
+	logger.debug("Boundary matrix: \n%s", matrix)
+
 	d = compute_ensemble(matrix)
 	dgms = DiagramEnsemble(
 		SimplexPairings(d.ker.paired, d.ker.unpaired),
@@ -263,7 +291,7 @@ def from_filtration(
 			threshold=threshold,
 		)
 
-	if isinstance(mapping_method, KChromaticInclusion):
+	if isinstance(mapping_method, KChromaticGluingMap):
 		return _get_diagrams_gluing_map(
 			filtration,
 			k=mapping_method,
@@ -282,6 +310,7 @@ def compute[NumRows: int, NumCols: int](
 	filtration_algorithm: Literal["alpha", "delcech", "delrips"] = "delcech",
 	max_diagram_dimension: int | None = None,
 	threshold: float = 0,
+	max_num_threads: int = 1,
 ) -> DiagramEnsemble:
 	r"""
 	Compute the 6-pack of persistence diagrams of a coloured point-cloud.
@@ -304,6 +333,7 @@ def compute[NumRows: int, NumCols: int](
 			By default diagrams of all dimensions are computed.
 		threshold             :
 			Retain only points with persistence strictly greater than this value.
+		max_num_threads       : Maximum number of threads to use to compute the filtration.
 
 	Returns :
 		Diagrams corresponding to the following persistence modules
@@ -348,19 +378,18 @@ def compute[NumRows: int, NumCols: int](
 
 	# Compute chromatic complex
 	if filtration_algorithm == "delcech":
-		filtration, numerical_issues = delcech(points, new_colours)
+		filtration, numerical_issues = delcech(points, new_colours, max_num_threads=max_num_threads)
 	elif filtration_algorithm == "alpha":
-		filtration, numerical_issues = alpha(points, new_colours)
+		filtration, numerical_issues = alpha(points, new_colours, max_num_threads=max_num_threads)
 	elif filtration_algorithm == "delrips":
-		filtration, numerical_issues = delrips(points, new_colours)
+		filtration, numerical_issues = delrips(points, new_colours, max_num_threads=max_num_threads)
 	else:
 		errmsg = "Invalid filtration algorithm."
 		raise RuntimeError(errmsg)
 	if numerical_issues:
-		warn(
-			"Numerical issues found when computing filtration",
-			category=RuntimeWarning,
-			stacklevel=1,  # warn about
+		logging.getLogger(__name__).warning(
+			"Numerical issues found when computing filtration: %s",
+			numerical_issues,
 		)
 	return from_filtration(
 		filtration,

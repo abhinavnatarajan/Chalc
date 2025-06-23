@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 4.0.0)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
@@ -81,6 +81,8 @@ if(DEFINED CGAL_MODULES_DIR AND Eigen3_FOUND)
     message(STATUS "CGAL has Eigen3 support.")
 endif()
 
+find_package(TBB REQUIRED)
+
 set(PYBIND11_FINDPYTHON ON)
 find_package(pybind11 CONFIG REQUIRED)
 
@@ -91,7 +93,7 @@ target_include_directories(_filtration PUBLIC src)
 add_library(_chromatic STATIC src/chalc/chromatic/chromatic.cxx)
 target_link_libraries(
     _chromatic
-    PUBLIC _filtration Eigen3::Eigen CGAL::CGAL CGAL::Eigen3_support
+    PUBLIC _filtration Eigen3::Eigen CGAL::CGAL CGAL::Eigen3_support TBB::tbb
 )
 set_target_properties(
     _filtration

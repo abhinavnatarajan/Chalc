@@ -36,6 +36,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <cassert>
 #include <chalc/filtration/filtration.h>
 #include <limits>
+#include <ranges>
 #include <stdexcept>
 
 namespace {
@@ -78,11 +79,12 @@ class BinomialCoeffTable {
 	}
 };
 
-shared_ptr<FilteredComplex::Simplex>
-FilteredComplex::Simplex::_make_simplex(index_t                            label,
-                                        index_t                            max_vertex,
-                                        value_t                            value,
-                                        const vector<shared_ptr<Simplex>>& facets) {
+shared_ptr<FilteredComplex::Simplex> FilteredComplex::Simplex::_make_simplex(
+	index_t                            label,
+	index_t                            max_vertex,
+	value_t                            value,
+	const vector<shared_ptr<Simplex>>& facets
+) {
 	auto self = shared_ptr<Simplex>(new Simplex(label, max_vertex, value, facets));
 	for (auto& f: self->facets) {
 		f->cofacets.push_back(self->get_handle());
@@ -91,10 +93,12 @@ FilteredComplex::Simplex::_make_simplex(index_t                            label
 	return self;
 }
 
-FilteredComplex::Simplex::Simplex(index_t                            label,
-                                  index_t                            max_vertex,
-                                  value_t                            value,
-                                  const vector<shared_ptr<Simplex>>& facets) :
+FilteredComplex::Simplex::Simplex(
+	index_t                            label,
+	index_t                            max_vertex,
+	value_t                            value,
+	const vector<shared_ptr<Simplex>>& facets
+) :
 	label(label),
 	max_vertex(max_vertex),
 	dim(facets.size() == 0 ? 0 : facets.size() - 1),
@@ -178,10 +182,13 @@ vector<index_t> FilteredComplex::Simplex::get_colours_as_vec() {
 }
 
 FilteredComplex::FilteredComplex(const index_t num_vertices, const index_t max_dimension) :
-	binomial(make_shared<BinomialCoeffTable>(
-		num_vertices,
-		max_dimension + 1)),  // we want nCk for all 0 <= n <= num_vertices and 0 <= k <=
-                              // max_num_verts_in_a_simplex = max_dim + 1
+	binomial(
+		make_shared<BinomialCoeffTable>(
+			num_vertices,
+			max_dimension + 1
+		)
+	),  // we want nCk for all 0 <= n <= num_vertices and 0 <= k <=
+        // max_num_verts_in_a_simplex = max_dim + 1
 	simplices(max_dimension + 1),
 	n_vertices(num_vertices),
 	max_dim(max_dimension),
@@ -266,8 +273,8 @@ bool FilteredComplex::has_simplex(vector<index_t>& verts) const {
 	return (_has_simplex(verts));
 }
 
-shared_ptr<FilteredComplex::Simplex> FilteredComplex::_add_simplex(const vector<index_t>& verts,
-                                                                   const value_t filt_value) {
+shared_ptr<FilteredComplex::Simplex>
+FilteredComplex::_add_simplex(const vector<index_t>& verts, const value_t filt_value) {
 	index_t num_verts = static_cast<index_t>(verts.size());
 	assert(num_verts != 0);
 	shared_ptr<Simplex> new_simplex;
@@ -286,9 +293,11 @@ shared_ptr<FilteredComplex::Simplex> FilteredComplex::_add_simplex(const vector<
 		facet_verts.reserve(dim);
 		for (auto i = 0; i <= dim; i++) {
 			facet_verts.insert(facet_verts.cend(), verts.cbegin(), verts.cbegin() + i);
-			facet_verts.insert(facet_verts.cend(),
-			                   verts.cbegin() + i + 1,
-			                   verts.cend());  // copy all except the i-th vertex
+			facet_verts.insert(
+				facet_verts.cend(),
+				verts.cbegin() + i + 1,
+				verts.cend()
+			);  // copy all except the i-th vertex
 			facets[i] = _add_simplex(facet_verts, filt_value);
 			facet_verts.clear();
 		}
@@ -302,7 +311,8 @@ shared_ptr<FilteredComplex::Simplex> FilteredComplex::_add_simplex(const vector<
 
 bool FilteredComplex::add_simplex(
 	vector<index_t>& verts,
-	value_t          filt_value = FilteredComplex::Simplex::DEFAULT_FILT_VALUE) {
+	value_t          filt_value = FilteredComplex::Simplex::DEFAULT_FILT_VALUE
+) {
 	validate_vertex_sequence(verts);
 	if (_has_simplex(verts)) {
 		return false;
@@ -407,33 +417,42 @@ value_t FilteredComplex::max_filt_value() const noexcept {
 
 vector<tuple<vector<index_t>, index_t, value_t, vector<index_t>>>
 FilteredComplex::serialised() const {
-	vector<tuple<vector<index_t>, index_t, value_t, vector<index_t>>> result(num_simplices);
-	vector<map<index_t, index_t>>                                     indices(cur_dim + 1);
-	for (index_t d = 0, i = 0; d <= cur_dim; d++) {
-		// sort the d-dimensional simplices by filtration value
-		vector<shared_ptr<Simplex>> sort_by_val;
-		sort_by_val.reserve(simplices[d].size());
-		for (auto& s: simplices[d]) {
+	// Sort the simplices by their filtration value, dimension, and label.
+	vector<shared_ptr<Simplex>> sort_by_val;
+	sort_by_val.reserve(num_simplices);
+	for (index_t d = 0; d <= cur_dim; d++) {
+		for (auto&& s: simplices[d]) {
 			sort_by_val.push_back(s.second);
 		}
-		stable_sort(sort_by_val.begin(),
-		            sort_by_val.end(),
-		            [](const shared_ptr<Simplex>& s1, const shared_ptr<Simplex>& s2) {
-						return (s1->value < s2->value);
-					});
-		// iterate over the sorted simplices
-		for (auto& simplex: sort_by_val) {
-			// replace the labels of the faces with their corresponding indices
-			// in our result faces is empty if simplex is a vertex
-			vector<index_t> faces = simplex->get_facet_labels();
-			for (auto& f: faces) {
-				f = indices[d - 1][f];
-			}
-			indices[d][simplex->label] = i;
-			sort(faces.begin(), faces.end());
-			result[i++] =
-				tuple{faces, simplex->label, simplex->value, simplex->get_colours_as_vec()};
+	}
+	stable_sort(
+		sort_by_val.begin(),
+		sort_by_val.end(),
+		[](const shared_ptr<Simplex>& s1, const shared_ptr<Simplex>& s2) {
+			return (
+				s1->value < s2->value || (s1->value == s2->value && s1->dim < s2->dim) ||
+				(s1->value == s2->value && s1->dim == s2->dim && s1->label < s2->label)
+			);
 		}
+	);
+	// Create mapping from labels to sorted index.
+	vector<tuple<vector<index_t>, index_t, value_t, vector<index_t>>> result(num_simplices);
+	vector<map<index_t, index_t>>                                     indices(cur_dim + 1);
+	for (auto&& [i, s]: std::views::enumerate(sort_by_val)) {
+		auto dim = s->dim;
+		// Add the label to the indices map for this dimension
+		indices[s->dim][s->label] = i;
+		// Add this simplex to the result
+		auto value     = s->value;
+		auto label     = s->label;
+		auto dimension = s->dim;
+		auto colours   = s->get_colours_as_vec();
+		auto faces     = s->get_facet_labels();
+		for (auto&& f: faces) {
+			f = indices[dimension - 1][f];
+		}
+		sort(faces.begin(), faces.end());
+		result[i] = tuple{faces, label, value, colours};
 	}
 	return result;
 }

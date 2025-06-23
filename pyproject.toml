@@ -16,10 +16,9 @@ keywords = [
 ]
 dependencies = [
 	"numpy~=2.0",
-	"phimaker~=0.2",
+	"phimaker~=0.2.2",
 	"pandas~=2.2",
 	"matplotlib~=3.9",
-	"seaborn~=0.13",
 	"h5py~=3.12",
 ]
 classifiers = [
@@ -56,6 +55,7 @@ dev = [
 	# Needs to be kept in sync with build-system.requires below
 	"pybind11~=2.13",
 	"pyqt6>=6.9.1",
+	"gudhi>=3.11.0",
 ]
 
 [build-system]
@@ -91,7 +91,6 @@ line-length = 100
 quote-style = "double"
 indent-style = "tab"
 line-ending = "auto"
-skip-magic-trailing-comma = false
 docstring-code-format = false
 docstring-code-line-length = "dynamic"
 
@@ -114,6 +113,7 @@ flake8-annotations.allow-star-arg-any = true
 	"S101",    # flake8-bandit: disallows use of assert statements
 	"PLR2004", # pylint: disallows magic values
 	"INP001",  # pylint: test folder does not need __init__.py
+	"D", # pydocstyle
 ]
 "**.pyi" = ["ALL"]
 

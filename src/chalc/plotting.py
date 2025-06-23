@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING, Any, Literal, get_args
 
 import matplotlib.pyplot as plt
 import numpy as np
-import seaborn as sns
 from matplotlib import animation
 from matplotlib.legend import Legend
 from pandas import DataFrame
@@ -141,8 +140,12 @@ def plot_sixpack(
 		ax.tick_params(labelleft=True, labelbottom=True)
 		handles, labels = ax.get_legend_handles_labels()
 		legends |= dict(zip(labels, handles, strict=True))
-	axes[plot_pos["rel"]].get_legend().remove()
-	fig.legend(handles=legends.values(), loc="lower center", ncol=5)
+	fig.legend(
+		handles=[legends[key] for key in sorted(legends)],
+		labels=sorted(legends),
+		loc="lower center",
+		ncol=5,
+	)
 	return fig, axes
 
 
@@ -269,24 +272,25 @@ def _plot_diagram(
 		for birth_idx in diagram.unpaired
 		if dimensions[birth_idx] - dim_shift in dims
 	]
+	plot_colours = np.array(plt.rcParams["axes.prop_cycle"].by_key()["color"])
 	plot_df = DataFrame.from_records(data=all_pts, columns=["Birth", "Death", "Dimension"])
 	plot_df["Dimension"] = plot_df["Dimension"].astype("category")
-	ret_ax = sns.scatterplot(
-		data=plot_df,
-		x="Birth",
-		y="Death",
-		hue="Dimension",
-		ax=ax,
-		legend=points_legend,
-		**kwargs,
-	)
-	ret_ax.set(xlabel=None)
-	ret_ax.set(ylabel=None)
-	ret_ax.set(title=title)
-	ret_ax.set_aspect("equal")
-	has_legend = any(True for c in ret_ax.get_children() if isinstance(c, Legend))
+	for d, label in enumerate(sorted(plot_df["Dimension"].cat.categories)):
+		ax.scatter(
+			plot_df.loc[plot_df["Dimension"] == label, "Birth"],
+			plot_df.loc[plot_df["Dimension"] == label, "Death"],
+			c=plot_colours[d],
+			edgecolors="white",
+			label=label,
+			**kwargs,
+		)
+	ax.set(xlabel=None)
+	ax.set(ylabel=None)
+	ax.set(title=title)
+	ax.set_aspect("equal")
+	has_legend = any(True for c in ax.get_children() if isinstance(c, Legend))
 	if points_legend and has_legend:
-		sns.move_legend(ret_ax, "lower right")
+		ax.legend(loc="lower right")
 	handle = ax if ax is not None else plt
 	handle.plot([0, inf_level], [0, inf_level], "k-", alpha=0.4)
 	handle.plot(
@@ -331,14 +335,13 @@ def draw_filtration(
 	if len(points.shape) != 2:  # noqa: PLR2004
 		raise NotImplementedError
 
-	if include_colours is None:
-		include_colours = {vertex.colours[0] for vertex in K.simplices[0].values()}
+	include_colours = (
+		{vertex.colours[0] for vertex in K.simplices[0].values()}
+		if include_colours is None
+		else include_colours
+	)
 
-	if ax is None:
-		ax1: Axes
-		_, ax1 = plt.subplots()
-	else:
-		ax1 = ax
+	ax1 = plt.subplots()[1] if ax is None else ax
 
 	if isinstance(plot_colours, str):
 		num_colours = K.dimension - 1
@@ -386,7 +389,6 @@ def draw_filtration(
 			ax1.fill(points[0, simplex.vertices], points[1, simplex.vertices], c=colour, alpha=0.2)
 
 	ax1.set_aspect("equal")
-	# ax.set_xlabel('Time = ' + f"{0.0:.4f}")
 
 	return ax1
 

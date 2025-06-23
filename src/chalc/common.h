@@ -39,7 +39,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	#include <map>
 	#include <memory>
 	#include <numeric>
-	#include <optional>
 	#include <tuple>
 	#include <vector>
 	#include <cstdint>
@@ -50,7 +49,7 @@ typedef uint64_t index_t;
 
 namespace stl {
 using std::vector, std::map, std::tuple, std::iota, std::tie, std::shared_ptr, std::make_shared,
-	std::enable_shared_from_this, std::weak_ptr, std::optional;
+	std::enable_shared_from_this, std::weak_ptr;
 }
 }  // namespace chalc
 

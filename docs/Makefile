@@ -18,7 +18,10 @@ stubs:
 	@echo "Generating stubs for chalc.filtration"
 	@python -m pybind11_stubgen chalc.filtration --numpy-array-use-type-var --output-dir ../src
 
-.PHONY: help Makefile stubs
+.PHONY: help Makefile stubs clean
+
+clean:
+	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
