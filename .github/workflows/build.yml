@@ -4,7 +4,6 @@ on:
 
 jobs:
   build_sdist:
-    if: ${{ github.event_name == 'push' }}
     name: Build source distribution
     runs-on: ubuntu-latest
     steps:
