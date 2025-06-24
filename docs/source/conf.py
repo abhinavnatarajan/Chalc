@@ -35,13 +35,10 @@ maximum_signature_line_length = 160
 toc_object_entries_show_parents = "hide"
 add_module_names = False
 master_doc = "index"
-# templates_path = ['templates']
 exclude_patterns = [
 	"_build",
-	"templates",
-	"exts",
 	"static",
-	# "example.ipynb",
+	"example.ipynb",
 ]
 
 extensions = [
@@ -74,6 +71,7 @@ autoapi_options = [
 	# "inherited-members",
 	"show-inheritance",
 	"show-inheritance-diagram",
+	"imported-members",
 ]
 autoapi_member_order = "groupwise"
 

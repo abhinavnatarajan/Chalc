@@ -12,8 +12,8 @@ from phimaker import compute_ensemble, compute_ensemble_cylinder
 
 from chalc.chromatic import alpha, delcech, delrips
 
-from .diagram_ensemble import DiagramEnsemble
-from .simplex_pairings import SimplexPairings
+from ._diagram_ensemble import DiagramEnsemble
+from ._simplex_pairings import SimplexPairings
 
 if TYPE_CHECKING:
 	from collections.abc import (
@@ -154,14 +154,16 @@ class SubChromaticInclusion(tuple, FiltrationInclusion):
 			return super().__new__(cls, (tuple(x),))
 		if all(is_homogenous_type(i, int) for i in x):
 			return super().__new__(cls, tuple(tuple(i) for i in x))
-		errmsg = "SubChromaticInclusion must be initialised with a collection of \
-		integers or collections of integers."
+		errmsg = (
+			"SubChromaticInclusion must be initialised with a collection of "
+			"integers or collections of integers."
+		)
 		raise TypeError(errmsg)
 
 	def _simplex_in_domain(
 		self,
 		column: tuple[list[int], int, float, list[int]],
-		filtration: Filtration,
+		filtration: Filtration,   # noqa: ARG002
 	) -> bool:
 		return any(set(column[3]).issubset(s) for s in self)
 
@@ -184,7 +186,7 @@ class KChromaticInclusion(int, FiltrationInclusion):
 	def _simplex_in_domain(
 		self,
 		column: tuple[list[int], int, float, list[int]],
-		filtration: Filtration,
+		filtration: Filtration,  # noqa: ARG002
 	) -> bool:
 		return len(column[3]) <= self
 
