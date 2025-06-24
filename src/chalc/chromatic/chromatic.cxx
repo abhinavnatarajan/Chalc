@@ -47,13 +47,34 @@
 #include <Eigen/src/Core/Matrix.h>
 
 #include <algorithm>
+#include <numeric>
+#include <ranges>
 #include <stdexcept>
 #include <string>
 
 namespace {
-using namespace chalc::stl;
-using chalc::index_t, chalc::MAX_NUM_COLOURS, Eigen::lastN, Eigen::all, std::min, std::sort,
-	std::unique, std::any_of, std::bsearch, std::domain_error, std::to_string, std::same_as;
+using std::bad_weak_ptr;
+using std::bsearch;
+using std::domain_error;
+using std::map;
+using std::min;
+using std::ranges::any_of;
+using std::ranges::iota;
+using std::ranges::sort;
+using std::ranges::unique;
+using std::runtime_error;
+using std::same_as;
+using std::shared_ptr;
+using std::tie;
+using std::to_string;
+using std::tuple;
+using std::vector;
+
+using chalc::index_t;
+using chalc::MAX_NUM_COLOURS;
+using Eigen::all;
+using Eigen::lastN;
+
 using Kernel_d                     = CGAL::Epick_d<CGAL::Dynamic_dimension_tag>;
 using Triangulation_data_structure = CGAL::Triangulation_data_structure<
 	Kernel_d::Dimension,
@@ -71,7 +92,7 @@ template <class Derived, class Real_t>
 concept RealMatrixXpr = MatrixXpr<Derived> && same_as<typename Derived::Scalar, Real_t>;
 
 // Convert a collection of coordinate vectors to a vector of CGAL points
-vector<Point_d> coordvecs_to_points(const MatrixXd& x_arr) {
+auto coordvecs_to_points(const MatrixXd& x_arr) -> vector<Point_d> {
 	vector<Point_d> points(x_arr.cols());
 	for (index_t i = 0; i < x_arr.cols(); i++) {
 		points[i] = Point_d(x_arr.col(i).begin(), x_arr.col(i).end());
@@ -79,7 +100,7 @@ vector<Point_d> coordvecs_to_points(const MatrixXd& x_arr) {
 	return points;
 }
 
-template <typename T> vector<T> reorder(const vector<T>& v, const vector<index_t>& idx) {
+template <typename T> auto reorder(const vector<T>& v, const vector<index_t>& idx) -> vector<T> {
 	vector<T> result(v.size());
 	for (auto i = 0; i < v.size(); i++) {
 		result[i] = v[idx[i]];
@@ -88,11 +109,11 @@ template <typename T> vector<T> reorder(const vector<T>& v, const vector<index_t
 }
 
 template <typename T>
-tuple<vector<T>, vector<index_t>>
-sort_with_indices(const vector<T>& v, bool (*compare)(const T& a, const T& b)) {
+auto sort_with_indices(const vector<T>& v, bool (*compare)(const T& a, const T& b))
+	-> tuple<vector<T>, vector<index_t>> {
 	vector<index_t> idx(v.size());
-	iota(idx.begin(), idx.end(), 0);
-	sort(idx.begin(), idx.end(), [&v, &compare](index_t i1, index_t i2) {
+	iota(idx, 0);
+	sort(idx, [&v, &compare](index_t i1, index_t i2) {
 		return compare(v[i1], v[i2]);
 	});
 	return tuple{reorder(v, idx), idx};
@@ -100,10 +121,11 @@ sort_with_indices(const vector<T>& v, bool (*compare)(const T& a, const T& b)) {
 
 template <typename T> void remove_duplicates_inplace(vector<T>& vec) {
 	sort(vec.begin(), vec.end());
-	vec.erase(unique(vec.begin(), vec.end()), vec.end());
+	const auto [last, end] = unique(vec);
+	vec.erase(last, end);
 }
 
-template <typename T> int compare(const void* a, const void* b) {
+template <typename T> auto compare(const void* a, const void* b) -> int {
 	const auto& arg1 = *(static_cast<const T*>(a));
 	const auto& arg2 = *(static_cast<const T*>(b));
 	return arg1 < arg2 ? -1 : arg1 > arg2 ? +1 : 0;
@@ -111,7 +133,7 @@ template <typename T> int compare(const void* a, const void* b) {
 
 // make a vector contiguous and start at zero
 // returns new vector and number of distinct elements
-tuple<vector<index_t>, index_t> canonicalise(const vector<index_t>& vec) {
+auto canonicalise(const vector<index_t>& vec) -> tuple<vector<index_t>, index_t> {
 	vector<index_t>       new_vec(vec.size());
 	map<index_t, index_t> m;
 	for (auto&& [c, i] = tuple{vec.begin(), 0}; c != vec.end(); c++) {
@@ -130,9 +152,9 @@ Stratify a coloured point set.
 Points are provided as columns of a matrix or matrix expression.
 Colours are provided as a vector.
 */
-MatrixXd stratify(const MatrixXd& points, const vector<index_t>& colours) {
+auto stratify(const MatrixXd& points, const vector<index_t>& colours) -> MatrixXd {
 	// input checks
-	if (any_of(colours.begin(), colours.end(), [](const index_t& colour) {
+	if (any_of(colours, [](const index_t& colour) {
 			return (colour >= MAX_NUM_COLOURS);
 		})) {
 		throw domain_error("All colours must be between 0 and " + to_string(MAX_NUM_COLOURS - 1));
@@ -158,9 +180,10 @@ MatrixXd stratify(const MatrixXd& points, const vector<index_t>& colours) {
 
 }  // namespace
 
-namespace chalc::chromatic {
+namespace chalc {
+
 // Create a Delaunay triangulation from a collection of coordinate vectors
-FilteredComplex delaunay(const MatrixXd& X, const vector<index_t>& colours) {
+auto delaunay(const MatrixXd& X, const vector<index_t>& colours) -> FilteredComplex {
 	MatrixXd        Y(stratify(X, colours));
 	auto            max_dim = Y.rows();
 	FilteredComplex result(Y.cols(), max_dim);
@@ -214,7 +237,7 @@ FilteredComplex delaunay(const MatrixXd& X, const vector<index_t>& colours) {
 }
 
 // Create the chromatic Del-VR complex
-FilteredComplex delrips(const MatrixXd& points, const vector<index_t>& colours) {
+auto delrips(const MatrixXd& points, const vector<index_t>& colours) -> FilteredComplex {
 	// Get the delaunay triangulation
 	FilteredComplex delX(delaunay(points, colours));
 
@@ -230,8 +253,11 @@ FilteredComplex delrips(const MatrixXd& points, const vector<index_t>& colours) 
 }
 
 // Create the chromatic Del-VR complex with parallelisation
-FilteredComplex
-delrips_parallel(const MatrixXd& points, const vector<index_t>& colours, const size_t max_num_threads) {
+auto delrips_parallel(
+	const MatrixXd&        points,
+	const vector<index_t>& colours,
+	const size_t           max_num_threads
+) -> FilteredComplex {
 	// Get the delaunay triangulation
 	FilteredComplex delX(delaunay(points, colours));
 
@@ -263,7 +289,7 @@ delrips_parallel(const MatrixXd& points, const vector<index_t>& colours, const s
 }
 
 // Compute the chromatic alpha complex
-tuple<FilteredComplex, bool> alpha(const MatrixXd& points, const vector<index_t>& colours) {
+auto alpha(const MatrixXd& points, const vector<index_t>& colours) -> tuple<FilteredComplex, bool> {
 	using CGAL::Gmpzf, CGAL::Quotient;
 	using cmb::equidistant_subspace, cmb::SolutionPrecision;
 	// Start
@@ -364,32 +390,44 @@ tuple<FilteredComplex, bool> alpha(const MatrixXd& points, const vector<index_t>
 					// If the stack is empty, assign the filtration value
 					if (stack_is_empty) {
 						simplex->value = sqrt(CGAL::to_double(sqRadius));
-						// The following block is only needed if CGAL::to_double is not monotonic
-						// On all IEEE-754 compliant architectures, this is not needed
+						// The following block is only needed if
+						// CGAL::to_double is not monotonic.
+						// On all IEEE-754 compliant architectures,
+						// this is not needed.
+						//
 						// for (auto& cofacet: simplex->get_cofacets()) {
-						// 	simplex->value =
-						// 		min(simplex->value,
-						// 	        shared_ptr<FilteredComplex::Simplex>(cofacet)->value);
+						// simplex->value = min(simplex->value,
+						// shared_ptr<FilteredComplex::Simplex>(cofacet)->value);
 						// }
+					} else {
+						auto& cofacets = simplex->get_cofacets();
+						if (cofacets.size() == 0) {
+							continue;
+						}
+						try {
+							simplex->value = cofacets[0].lock()->value;
+							for (auto&& cofacet: cofacets) {
+								simplex->value = min(simplex->value, cofacet.lock()->value);
+							}
+						} catch (const bad_weak_ptr& e) {
+							throw runtime_error("Tried to dereference expired cofacet handle.");
+						}
 					}
 				}
 				// Check if there were any numerical issues
 				numerical_instability |= !success;
 			}
-			// Propagate filtration values down
-			// TODO: do we need this?
-			delX.propagate_filt_values(p, false);
 		}
 	}
 
 	return tuple{delX, static_cast<bool>(numerical_instability)};
 }
 
-tuple<FilteredComplex, bool> alpha_parallel(
+auto alpha_parallel(
 	const MatrixXd&        points,
 	const vector<index_t>& colours,
 	const size_t           max_num_threads
-) {
+) -> tuple<FilteredComplex, bool> {
 	using CGAL::Gmpzf, CGAL::Quotient;
 	using cmb::equidistant_subspace, cmb::SolutionPrecision;
 	// Start
@@ -511,13 +549,31 @@ tuple<FilteredComplex, bool> alpha_parallel(
 								// If the stack is empty, assign the filtration value
 								if (stack_is_empty) {
 									simplex->value = sqrt(CGAL::to_double(sqRadius));
-									// The following block is only needed if CGAL::to_double is not
-								    // monotonic On all IEEE-754 compliant architectures, this is
-								    // not needed for (auto& cofacet: simplex->get_cofacets()) {
-								    // 	simplex->value =
-								    // 		min(simplex->value,
-								    // 	        shared_ptr<FilteredComplex::Simplex>(cofacet)->value);
+									// The following block is only needed if
+								    // CGAL::to_double is not monotonic.
+								    // On all IEEE-754 compliant architectures,
+								    // this is not needed.
+								    //
+								    // for (auto& cofacet: simplex->get_cofacets()) {
+								    // simplex->value = min(simplex->value,
+								    // shared_ptr<FilteredComplex::Simplex>(cofacet)->value);
 								    // }
+								} else {
+									auto& cofacets = simplex->get_cofacets();
+									if (cofacets.size() == 0) {
+										continue;
+									}
+									try {
+										simplex->value = cofacets[0].lock()->value;
+										for (auto&& cofacet: cofacets) {
+											simplex->value =
+												min(simplex->value, cofacet.lock()->value);
+										}
+									} catch (const bad_weak_ptr& e) {
+										throw runtime_error(
+											"Tried to dereference expired cofacet handle."
+										);
+									}
 								}
 							}
 							// Check if there were any numerical issues
@@ -526,12 +582,9 @@ tuple<FilteredComplex, bool> alpha_parallel(
 					}
 				);
 			});
-			numerical_instability |= std::any_of(issues.begin(), issues.end(), [](bool issue) {
+			numerical_instability |= any_of(issues, [](bool issue) {
 				return issue;
 			});
-			// Propagate filtration values down
-			// TODO: do we need this?
-			delX.propagate_filt_values(p, false);
 		}
 	}
 
@@ -539,7 +592,8 @@ tuple<FilteredComplex, bool> alpha_parallel(
 }
 
 // Create the chromatic Del-Cech complex
-tuple<FilteredComplex, bool> delcech(const MatrixXd& points, const vector<index_t>& colours) {
+auto delcech(const MatrixXd& points, const vector<index_t>& colours)
+	-> tuple<FilteredComplex, bool> {
 	using CGAL::Gmpzf, CGAL::Quotient;
 	using cmb::SolutionPrecision;
 	// Start
@@ -555,17 +609,16 @@ tuple<FilteredComplex, bool> delcech(const MatrixXd& points, const vector<index_
 					cmb::miniball<SolutionPrecision::DOUBLE>(points(all, verts));
 				simplex->value         = sqrt(CGAL::to_double(sqRadius));
 				numerical_instability |= !success;
-				// The following block is only needed if CGAL::to_double is not monotonic
-				// On all IEEE-754 compliant architectures, this is not needed
+				// The following block is only needed if
+				// CGAL::to_double is not monotonic.
+				// On all IEEE-754 compliant architectures,
+				// this is not needed.
+				//
 				// for (auto& cofacet: simplex->get_cofacets()) {
-				// 	simplex->value =
-				// 		min(simplex->value,
+				// simplex->value = min(simplex->value,
 				// shared_ptr<FilteredComplex::Simplex>(cofacet)->value);
 				// }
 			}
-			// Propagate filtration values down
-			// TODO: do we need this?
-			delX.propagate_filt_values(p, false);
 		}
 		// fast version for dimension 1
 		for (auto& [idx, edge]: delX.get_simplices()[1]) {
@@ -585,11 +638,11 @@ tuple<FilteredComplex, bool> delcech(const MatrixXd& points, const vector<index_
 }
 
 // Create the chromatic Del-Cech complex
-tuple<FilteredComplex, bool> delcech_parallel(
+auto delcech_parallel(
 	const MatrixXd&        points,
 	const vector<index_t>& colours,
 	const size_t           max_num_threads
-) {
+) -> tuple<FilteredComplex, bool> {
 	using CGAL::Gmpzf, CGAL::Quotient;
 	using cmb::SolutionPrecision;
 	// Start
@@ -621,23 +674,21 @@ tuple<FilteredComplex, bool> delcech_parallel(
 							simplex->value = sqrt(CGAL::to_double(sqRadius));
 							issues[idx]    = !success;
 							// The following block is only needed if
-						    // CGAL::to_double is not monotonic On all
-						    // IEEE-754 compliant architectures, this is not
-						    // needed for (auto& cofacet:
-						    // simplex->get_cofacets()) { simplex->value =
-						    // min(simplex->value,
+						    // CGAL::to_double is not monotonic.
+						    // On all IEEE-754 compliant architectures,
+						    // this is not needed.
+						    //
+						    // for (auto& cofacet: simplex->get_cofacets()) {
+						    // simplex->value = min(simplex->value,
 						    // shared_ptr<FilteredComplex::Simplex>(cofacet)->value);
 						    // }
 						}
 					}
 				);
 			});
-			numerical_instability |= std::any_of(issues.begin(), issues.end(), [](bool issue) {
+			numerical_instability |= any_of(issues, [](bool issue) {
 				return issue;
 			});
-			// Propagate filtration values down
-			// TODO: do we need this?
-			delX.propagate_filt_values(p, false);
 		}
 		// Fast version for dimension 1.
 		vector<const shared_ptr<FilteredComplex::Simplex>*> edges;
@@ -672,4 +723,4 @@ tuple<FilteredComplex, bool> delcech_parallel(
 	return tuple{delX, numerical_instability};
 }
 
-}  // namespace chalc::chromatic
+}  // namespace chalc

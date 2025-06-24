@@ -2,10 +2,17 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-PYBIND11_MODULE(filtration, m) {
-	using namespace chalc;
-	using namespace chalc::stl;
+PYBIND11_MODULE(filtration, m) {  // NOLINT
+	using chalc::FilteredComplex;
+	using chalc::index_t;
+	using chalc::MAX_NUM_COLOURS;
+	using chalc::standard_simplex;
+	using std::domain_error;
+	using std::shared_ptr;
+	using std::to_string;
+	using std::vector;
 	namespace py = pybind11;
+
 	m.doc() =
 		"Module containing utilities to store and manipulate abstract filtered simplicial complexes.";
 
@@ -182,8 +189,8 @@ Returns true if each simplex has a filtration value at least as large as each of
 )docstring"
 		)
 		.def("__repr__", [](const FilteredComplex& K) {
-			return "<" + std::to_string(K.dimension()) + "-dimensional simplicial complex with " +
-		           std::to_string(K.num_vertices()) + " vertices>";
+			return "<" + to_string(K.dimension()) + "-dimensional simplicial complex with " +
+		           to_string(K.num_vertices()) + " vertices>";
 		});
 
 	/* Simplex Interface */
@@ -237,10 +244,10 @@ from the parent complex to ensure that filtration times remain monotonic.
 					if (c < MAX_NUM_COLOURS) {
 						s_ptr->set_colour(c);
 					} else {
-						throw std::domain_error("Colour index too large.");
+						throw domain_error("Colour index too large.");
 					}
 				} else {
-					throw std::domain_error("Can't change colour unless simplex is a vertex.");
+					throw domain_error("Can't change colour unless simplex is a vertex.");
 				}
 			},
 			R"docstring(Change the colour of a vertex.
@@ -263,7 +270,7 @@ Tip:
 			"Read-only list of handles to the facets of the simplex."
 		)
 		.def("__repr__", [](const shared_ptr<FilteredComplex::Simplex>& s_ptr) {
-			return "<" + std::to_string(s_ptr->dim) + "-simplex>";
+			return "<" + to_string(s_ptr->dim) + "-simplex>";
 		});
 
 	m.def(

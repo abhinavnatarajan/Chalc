@@ -1,0 +1,14 @@
+Checks:
+  [
+    modernize*,
+    bugprone*,
+    -bugprone-easily-swappable-parameters,
+    performance*,
+    portability*,
+    cppcoreguidelines*,
+    clang-analyzer*,
+    concurrency*,
+    misc*,
+    -misc-no-recursion,
+    google*,
+  ]

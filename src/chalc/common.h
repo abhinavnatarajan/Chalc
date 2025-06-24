@@ -36,21 +36,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #ifndef CHALC_COMMON_H
 	#define CHALC_COMMON_H
 
-	#include <map>
-	#include <memory>
-	#include <numeric>
-	#include <tuple>
-	#include <vector>
 	#include <cstdint>
 
 namespace chalc {
-typedef double        value_t;
-typedef uint64_t index_t;
+using value_t = double;
+using index_t = uint64_t;
 
-namespace stl {
-using std::vector, std::map, std::tuple, std::iota, std::tie, std::shared_ptr, std::make_shared,
-	std::enable_shared_from_this, std::weak_ptr;
-}
 }  // namespace chalc
 
 #endif

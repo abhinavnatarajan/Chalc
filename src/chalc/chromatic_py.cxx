@@ -3,11 +3,20 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-PYBIND11_MODULE(chromatic, m) {
-	using namespace chalc::chromatic;
-	using namespace chalc::stl;
-	using namespace chalc;
+PYBIND11_MODULE(chromatic, m) {  // NOLINT
+	using chalc::alpha;
+	using chalc::alpha_parallel;
+	using chalc::delaunay;
+	using chalc::delcech;
+	using chalc::delcech_parallel;
+	using chalc::delrips;
+	using chalc::delrips_parallel;
+	using chalc::index_t;
+	using chalc::MAX_NUM_COLOURS;
+	using std::tuple;
+	using std::vector;
 	namespace py = pybind11;
+
 	py::object log_warn =
 		py::module_::import("logging").attr("getLogger")("chalc.chromatic").attr("warning");
 	m.doc() = "Module containing geometry routines to compute chromatic Delaunay filtrations.";
@@ -15,7 +24,7 @@ PYBIND11_MODULE(chromatic, m) {
 	m.def(
 		 "delaunay",
 		 [](const Eigen::MatrixXd& points, const Eigen::VectorX<index_t>& colours) {
-			 std::vector<index_t> colours_vec(colours.data(), colours.data() + colours.size());
+			 const vector<index_t> colours_vec(colours.cbegin(), colours.cend());
 			 return delaunay(points, colours_vec);
 		 },
 		 py::arg("points"),
@@ -48,10 +57,7 @@ Returns:
 			[](const Eigen::MatrixXd&         points,
 	           const Eigen::VectorX<index_t>& colours_ndarray,
 	           const size_t                   max_num_threads) {
-				std::vector<index_t> colours(
-					colours_ndarray.data(),
-					colours_ndarray.data() + colours_ndarray.size()
-				);
+				const vector<index_t> colours(colours_ndarray.cbegin(), colours_ndarray.cend());
 				if (max_num_threads != 1) {
 					return tuple{delrips_parallel(points, colours, max_num_threads), false};
 				} else {
@@ -113,11 +119,8 @@ See Also:
 			"alpha",
 			[](const Eigen::MatrixXd& points,
 	           const Eigen::VectorX<index_t>& colours_ndarray,
-	           size_t max_num_threads) {
-				std::vector<index_t> colours(
-					colours_ndarray.data(),
-					colours_ndarray.data() + colours_ndarray.size()
-				);
+	           const size_t max_num_threads) {
+				const vector<index_t> colours(colours_ndarray.cbegin(), colours_ndarray.cend());
 				if (max_num_threads != 1) {
 					return alpha_parallel(points, colours, max_num_threads);
 				} else {
@@ -131,8 +134,8 @@ See Also:
 		.def(
 			"alpha",
 			[](const Eigen::MatrixXd& points,
-	           const std::vector<index_t>& colours,
-	           size_t max_num_threads) {
+	           const vector<index_t>& colours,
+	           const size_t max_num_threads) {
 				if (max_num_threads != 1) {
 					return alpha_parallel(points, colours, max_num_threads);
 				} else {
@@ -174,11 +177,8 @@ See Also:
 			"delcech",
 			[](const Eigen::MatrixXd& points,
 	           const Eigen::VectorX<index_t>& colours_ndarray,
-	           size_t max_num_threads) {
-				std::vector<index_t> colours(
-					colours_ndarray.data(),
-					colours_ndarray.data() + colours_ndarray.size()
-				);
+	           const size_t max_num_threads) {
+				const vector<index_t> colours(colours_ndarray.cbegin(), colours_ndarray.cend());
 				if (max_num_threads != 1) {
 					return delcech_parallel(points, colours, max_num_threads);
 				} else {
@@ -192,13 +192,12 @@ See Also:
 		.def(
 			"delcech",
 			[](const Eigen::MatrixXd& points,
-	           const std::vector<index_t>& colours,
-	           size_t max_num_threads) {
+	           const vector<index_t>& colours,
+	           const size_t max_num_threads) {
 				if (max_num_threads != 1) {
 					return delcech_parallel(points, colours, max_num_threads);
-				} else {
-					return delcech(points, colours);
 				}
+				return delcech(points, colours);
 			},
 			R"docstring(Compute the chromatic Delaunay--Čech filtration of a coloured point cloud.
 

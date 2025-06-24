@@ -39,11 +39,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 	#include <bitset>
 	#include <chalc/common.h>
+	#include <map>
+	#include <memory>
+	#include <vector>
 
 namespace chalc {
 // The maximum number of colours that can be represented.
-constexpr index_t                    MAX_NUM_COLOURS = 16;
-typedef std::bitset<MAX_NUM_COLOURS> colours_t;
+constexpr index_t MAX_NUM_COLOURS = 16;
+using colours_t                   = std::bitset<MAX_NUM_COLOURS>;
 
 class BinomialCoeffTable;
 
@@ -61,53 +64,64 @@ struct FilteredComplex {
 	FilteredComplex(const index_t num_vertices, const index_t max_dimension);
 
 	// Get label of a simplex from the labels of its vertices
-	index_t get_label_from_vertex_labels(std::vector<index_t>& verts) const;
+	auto get_label_from_vertex_labels(std::vector<index_t>& verts) const -> index_t;
 
 	// Check if the complex has a specific simplex
-	bool has_simplex(const index_t dim, const index_t label) const;
+	[[nodiscard]]
+	auto has_simplex(const index_t dim, const index_t label) const -> bool;
 
 	// Check if the complex has a specific simplex
-	bool has_simplex(std::vector<index_t>& verts) const;
+	auto has_simplex(std::vector<index_t>& verts) const -> bool;
 
 	// Add a new simplex to the complex by its vertices
-	bool add_simplex(std::vector<index_t>& verts, const value_t filt_value);
+	auto add_simplex(std::vector<index_t>& verts, const value_t filt_value) -> bool;
 
 	// Propagate filtration values from start_dim
 	void propagate_filt_values(const index_t start_dim, const bool upwards);
 
 	// Returns a handle to the simplices
-	const std::vector<std::map<index_t, std::shared_ptr<Simplex>>>& get_simplices() const noexcept;
+	[[nodiscard]]
+	auto get_simplices() const noexcept
+		-> const std::vector<std::map<index_t, std::shared_ptr<Simplex>>>&;
 
 	// Returns the number of simplices in the complex
-	index_t size() const noexcept;
+	[[nodiscard]]
+	auto size() const noexcept -> index_t;
 
 	// Returns the number of simplices of a specific dimension
-	index_t size_in_dim(const index_t dim) const;
+	[[nodiscard]]
+	auto size_in_dim(const index_t dim) const -> index_t;
 
 	// Returns the current dimension
-	index_t dimension() const noexcept;
+	[[nodiscard]]
+	auto dimension() const noexcept -> index_t;
 
 	// Returns the maximum dimension that can be stored
-	index_t max_dimension() const noexcept;
+	[[nodiscard]]
+	auto max_dimension() const noexcept -> index_t;
 
 	// Returns the number of vertices of the complex
-	index_t num_vertices() const noexcept;
+	[[nodiscard]]
+	auto num_vertices() const noexcept -> index_t;
 
 	// Returns the current maximum filtration value
-	value_t max_filt_value() const noexcept;
+	[[nodiscard]]
+	auto max_filt_value() const noexcept -> value_t;
 
 	// Returns a flat vectorised representation of the complex
-	std::vector<std::tuple<std::vector<index_t>, index_t, value_t, std::vector<index_t>>>
-	serialised() const;
+	[[nodiscard]]
+	auto serialised() const
+		-> std::vector<std::tuple<std::vector<index_t>, index_t, value_t, std::vector<index_t>>>;
 
 	// Returns the k-skeleton of the complete simplicial complex on n vertices.
-	static FilteredComplex complete_complex(const index_t n, const index_t k);
+	static auto complete_complex(const index_t n, const index_t k) -> FilteredComplex;
 
 	// bitwise OR accumulates colours upwards from vertices
 	void propagate_colours();
 
 	// check if filtration property is satisfied
-	bool is_filtration() const;
+	[[nodiscard]]
+	auto is_filtration() const -> bool;
 
   private:
 	/* PRIVATE MEMBERS OF FilteredComplex */
@@ -132,19 +146,22 @@ struct FilteredComplex {
 	// Get label of a simplex (possibly not in the complex) from the labels of
 	// its vertices.
 	// Assumes that verts is valid.
-	index_t _get_label_from_vertex_labels(const std::vector<index_t>& verts) const;
+	[[nodiscard]]
+	auto _get_label_from_vertex_labels(const std::vector<index_t>& verts) const -> index_t;
 
 	// Check if the complex has a specific simplex.
 	// Assumes that dim is valid.
-	bool _has_simplex(const index_t dim, const index_t label) const;
+	[[nodiscard]]
+	auto _has_simplex(const index_t dim, const index_t label) const -> bool;
 
 	// Check if the complex has a specific simplex.
 	// Assumes that verts is valid.
-	bool _has_simplex(const std::vector<index_t>& verts) const;
+	[[nodiscard]]
+	auto _has_simplex(const std::vector<index_t>& verts) const -> bool;
 
 	// Add a simplex to the complex with the specified vertices and filtration value.
-	std::shared_ptr<Simplex> _add_simplex(const std::vector<index_t>& verts,
-	                                      const value_t               filt_value);
+	auto _add_simplex(const std::vector<index_t>& verts, const value_t filt_value)
+		-> std::shared_ptr<Simplex>;
 
 	// Min-fold filtration values downwards from start_dim.
 	// Assumes that start_dim is valid.
@@ -156,6 +173,7 @@ struct FilteredComplex {
 };
 
 struct FilteredComplex::Simplex : public std::enable_shared_from_this<FilteredComplex::Simplex> {
+	// friend class FilteredComplex;  // allow FilteredComplex to access private members
 	/* PUBLIC MEMBERS OF Simplex */
 
 	const index_t            label;       // label for the simplex
@@ -165,34 +183,37 @@ struct FilteredComplex::Simplex : public std::enable_shared_from_this<FilteredCo
 	static constexpr value_t DEFAULT_FILT_VALUE = 0.0;
 
 	/* PUBLIC METHODS OF Simplex */
+	// Delete the default constructor
+	Simplex() = delete;
 	// Factory method - only way to create new simplex
-	static std::shared_ptr<Simplex>
-	_make_simplex(index_t label,
-	              index_t max_vertex,
-	              value_t value = DEFAULT_FILT_VALUE,
-	              const std::vector<std::shared_ptr<Simplex>>& facets =
-	                  std::vector<std::shared_ptr<Simplex>>{});
+	static auto _make_simplex(
+		index_t label,
+		index_t max_vertex,
+		value_t value = DEFAULT_FILT_VALUE,
+		const std::vector<std::shared_ptr<Simplex>>& facets =
+			std::vector<std::shared_ptr<Simplex>>{}
+	) -> std::shared_ptr<Simplex>;
 
 	// Get a handle to this simplex
-	std::shared_ptr<Simplex> get_handle();
+	auto get_handle() -> std::shared_ptr<Simplex>;
 
 	// Return the sorted vertex labels of the simplex
 	// Assumes that the simplex has valid faces
-	std::vector<index_t> get_vertex_labels() const;
+	auto get_vertex_labels() const -> std::vector<index_t>;
 
 	// Return the indices of the facets of the simplex, [i]th element of the
 	// result is the [i]th facet
-	std::vector<index_t> get_facet_labels() const;
+	auto get_facet_labels() const -> std::vector<index_t>;
 
 	// Return a const reference to the facets
-	const std::vector<std::shared_ptr<Simplex>>& get_facets() const;
+	auto get_facets() const -> const std::vector<std::shared_ptr<Simplex>>&;
 
 	// Return a const reference to the cofacets
-	const std::vector<std::weak_ptr<Simplex>>& get_cofacets() const;
+	auto get_cofacets() const -> const std::vector<std::weak_ptr<Simplex>>&;
 
 	void set_colour(index_t c);  // not inline since we export this
 
-	std::vector<index_t> get_colours_as_vec();
+	auto get_colours_as_vec() -> std::vector<index_t>;
 
 	inline void _set_colours(colours_t c);
 
@@ -200,7 +221,7 @@ struct FilteredComplex::Simplex : public std::enable_shared_from_this<FilteredCo
 
 	inline void _add_colours(colours_t c);
 
-	colours_t _get_colours();
+	auto _get_colours() -> colours_t;
 
 	inline void make_colourless();
 
@@ -211,12 +232,12 @@ struct FilteredComplex::Simplex : public std::enable_shared_from_this<FilteredCo
 	std::vector<std::weak_ptr<Simplex>> cofacets;  // pointers to the cofacets of the simplex
 	colours_t colours;  // bitmask representing the colours of its vertices
 	// Constructor
-	Simplex(index_t                                      label,
-	        index_t                                      max_vertex,
-	        value_t                                      value,
-	        const std::vector<std::shared_ptr<Simplex>>& facets);
-	// Delete the default constructor
-	Simplex() = delete;
+	Simplex(
+		index_t                                      label,
+		index_t                                      max_vertex,
+		value_t                                      value,
+		const std::vector<std::shared_ptr<Simplex>>& facets
+	);
 
 	// Writes the sorted vertex labels of the simplex into a buffer
 	// Assumes that the simplex has valid faces
@@ -224,7 +245,7 @@ struct FilteredComplex::Simplex : public std::enable_shared_from_this<FilteredCo
 };
 
 // The simplicial complex associated to the standard n-simplex.
-FilteredComplex standard_simplex(const index_t n);
+auto standard_simplex(const index_t n) -> FilteredComplex;
 
 }  // namespace chalc
 
