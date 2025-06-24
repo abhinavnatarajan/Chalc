@@ -49,14 +49,12 @@ dev = [
 	"sphinx-design~=0.6",
 	"sphinx-toolbox~=3.5",
 	"sphinx~=8.0",
-	# Needs to be kept in sync with cibuildwheel.test-requires below
-	"pytest~=8.3",
 	# Pybind11 headers for LSP
 	# Needs to be kept in sync with build-system.requires below
 	"pybind11~=2.13",
-	"pyqt6>=6.9.1",
-	"gudhi>=3.11.0",
+	"pyqt6~=6.9.1",
 ]
+test = ["pytest~=8.3", "gudhi~=3.11.0"]
 
 [build-system]
 requires = ["scikit-build-core~=0.11.4", "pybind11~=2.13"]
@@ -113,7 +111,7 @@ flake8-annotations.allow-star-arg-any = true
 	"S101",    # flake8-bandit: disallows use of assert statements
 	"PLR2004", # pylint: disallows magic values
 	"INP001",  # pylint: test folder does not need __init__.py
-	"D", # pydocstyle
+	"D",       # pydocstyle
 ]
 "**.pyi" = ["ALL"]
 
@@ -123,7 +121,7 @@ build-verbosity = 1
 build-frontend = "build[uv]"
 skip = "pp* *-musllinux_*"
 test-command = "pytest {package}/tests"
-test-requires = "pytest~=8.3"
+test-groups = ["test"]
 
 [tool.cibuildwheel.linux]
 # We need rustup to build phimaker from source if necessary
