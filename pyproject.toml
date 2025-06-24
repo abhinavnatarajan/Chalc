@@ -4,7 +4,7 @@ version = "9.1.0"
 authors = [{ name = "Abhinav Natarajan", email = "natarajan@maths.ox.ac.uk" }]
 description = "Persistent homology of chromatic Delaunay filtrations"
 readme = { file = "README.md", content-type = "text/markdown" }
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 license = { file = "COPYING" }
 keywords = [
 	"topological data analysis",
@@ -54,7 +54,7 @@ dev = [
 	"pybind11~=2.13",
 	"pyqt6~=6.9.1",
 ]
-test = ["pytest~=8.3", "gudhi~=3.11.0"]
+test = ["pytest~=8.3", "gudhi~=3.11"]
 
 [build-system]
 requires = ["scikit-build-core~=0.11.4", "pybind11~=2.13"]
@@ -102,6 +102,7 @@ ignore = [
 	"PLR0913", # refactor: too many arguments in function signature
 	"PYI021",  # flake8-pyi: disallows docstrings in stub files
 	"TD003",   # flake8-todos: allow todos without an issue link
+	"ANN401",  # flake8-annotations: disallows type 'Any' in function signatures
 ]
 pydocstyle.convention = "pep257"
 flake8-annotations.allow-star-arg-any = true

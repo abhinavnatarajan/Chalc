@@ -188,13 +188,13 @@ auto stratify(const MatrixXd& points, const vector<index_t>& colours) -> MatrixX
 namespace chalc {
 
 // Create a Delaunay triangulation from a collection of coordinate vectors
-auto delaunay(const MatrixXd& X, const vector<index_t>& colours) -> FilteredComplex {
+auto delaunay(const MatrixXd& X, const vector<index_t>& colours) -> Filtration {
 	MatrixXd Y(stratify(X, colours));
 	if (Y.rows() > numeric_limits<int>::max()) {
 		throw runtime_error("Dimension of stratified points exceeds maximum allowed by CGAL.");
 	}
 	int             max_dim = Y.rows(); // NOLINT
-	FilteredComplex result(Y.cols(), max_dim);
+	Filtration result(Y.cols(), max_dim);
 	if (Y.cols() != 0) {
 		auto points = coordvecs_to_points(Y);
 		auto&& [sorted_points, sorted_indices] =
@@ -245,9 +245,9 @@ auto delaunay(const MatrixXd& X, const vector<index_t>& colours) -> FilteredComp
 }
 
 // Create the chromatic Del-VR complex
-auto delrips(const MatrixXd& points, const vector<index_t>& colours) -> FilteredComplex {
+auto delrips(const MatrixXd& points, const vector<index_t>& colours) -> Filtration {
 	// Get the delaunay triangulation
-	FilteredComplex delX(delaunay(points, colours));
+	Filtration delX(delaunay(points, colours));
 
 	// Modify the filtration values
 	if (delX.dimension() >= 1) {
@@ -265,16 +265,16 @@ auto delrips_parallel(
 	const MatrixXd&        points,
 	const vector<index_t>& colours,
 	const size_t           max_num_threads
-) -> FilteredComplex {
+) -> Filtration {
 	// Get the delaunay triangulation
-	FilteredComplex delX(delaunay(points, colours));
+	Filtration delX(delaunay(points, colours));
 
 	// Modify the filtration values
 	if (delX.dimension() >= 1) {
 		task_arena arena(max_num_threads == 0 ? task_arena::automatic : max_num_threads); // NOLINT
 		// Store all the simplex pointers in a vector,
 		// which is convenient to iterate over using the TBB API.
-		vector<const shared_ptr<FilteredComplex::Simplex>*> edges;
+		vector<const shared_ptr<Filtration::Simplex>*> edges;
 		edges.reserve(delX.get_simplices()[1].size());
 		for (auto&& [_, edge]: delX.get_simplices()[1]) {
 			edges.push_back(&edge);
@@ -297,12 +297,12 @@ auto delrips_parallel(
 }
 
 // Compute the chromatic alpha complex
-auto alpha(const MatrixXd& points, const vector<index_t>& colours) -> tuple<FilteredComplex, bool> {
+auto alpha(const MatrixXd& points, const vector<index_t>& colours) -> tuple<Filtration, bool> {
 	using CGAL::Gmpzf, CGAL::Quotient;
 	using cmb::equidistant_subspace, cmb::SolutionPrecision;
 	// Start
 	// Get the delaunay triangulation
-	FilteredComplex delX(delaunay(points, colours));
+	Filtration delX(delaunay(points, colours));
 
 	// Partition the vertices by colour
 	// We will need this later to check if stacks are empty
@@ -332,7 +332,7 @@ auto alpha(const MatrixXd& points, const vector<index_t>& colours) -> tuple<Filt
 				map<index_t, vector<index_t>> verts_by_colour_all_cofaces;
 				for (auto& cofacet: simplex->get_cofacets()) {
 					for (auto& v:
-					     shared_ptr<FilteredComplex::Simplex>(cofacet)->get_vertex_labels()) {
+					     shared_ptr<Filtration::Simplex>(cofacet)->get_vertex_labels()) {
 						verts_by_colour_all_cofaces[colours[v]].push_back(v);
 					}
 				}
@@ -405,7 +405,7 @@ auto alpha(const MatrixXd& points, const vector<index_t>& colours) -> tuple<Filt
 						//
 						// for (auto& cofacet: simplex->get_cofacets()) {
 						// simplex->value = min(simplex->value,
-						// shared_ptr<FilteredComplex::Simplex>(cofacet)->value);
+						// shared_ptr<Filtration::Simplex>(cofacet)->value);
 						// }
 					} else {
 						auto& cofacets = simplex->get_cofacets();
@@ -435,12 +435,12 @@ auto alpha_parallel(
 	const MatrixXd&        points,
 	const vector<index_t>& colours,
 	const size_t           max_num_threads
-) -> tuple<FilteredComplex, bool> {
+) -> tuple<Filtration, bool> {
 	using CGAL::Gmpzf, CGAL::Quotient;
 	using cmb::equidistant_subspace, cmb::SolutionPrecision;
 	// Start
 	// Get the delaunay triangulation
-	FilteredComplex delX(delaunay(points, colours));
+	Filtration delX(delaunay(points, colours));
 
 	// Partition the vertices by colour
 	// We will need this later to check if stacks are empty
@@ -461,7 +461,7 @@ auto alpha_parallel(
 			vector<bool> issues(delX.get_simplices()[p].size(), false);
 			// Store all the simplex pointers in a vector,
 			// which is convenient to iterate over using the TBB API.
-			vector<const shared_ptr<FilteredComplex::Simplex>*> simplices;
+			vector<const shared_ptr<Filtration::Simplex>*> simplices;
 			simplices.reserve(delX.get_simplices()[p].size());
 			for (auto&& [_, simplex]: delX.get_simplices()[p]) {
 				simplices.push_back(&simplex);
@@ -483,7 +483,7 @@ auto alpha_parallel(
 							// Partition the vertices of all cofaces of the simplex by colour
 							map<index_t, vector<index_t>> verts_by_colour_all_cofaces;
 							for (auto& cofacet: simplex->get_cofacets()) {
-								for (auto& v: shared_ptr<FilteredComplex::Simplex>(cofacet)
+								for (auto& v: shared_ptr<Filtration::Simplex>(cofacet)
 							                      ->get_vertex_labels()) {
 									verts_by_colour_all_cofaces[colours[v]].push_back(v);
 								}
@@ -564,7 +564,7 @@ auto alpha_parallel(
 								    //
 								    // for (auto& cofacet: simplex->get_cofacets()) {
 								    // simplex->value = min(simplex->value,
-								    // shared_ptr<FilteredComplex::Simplex>(cofacet)->value);
+								    // shared_ptr<Filtration::Simplex>(cofacet)->value);
 								    // }
 								} else {
 									auto& cofacets = simplex->get_cofacets();
@@ -601,12 +601,12 @@ auto alpha_parallel(
 
 // Create the chromatic Del-Cech complex
 auto delcech(const MatrixXd& points, const vector<index_t>& colours)
-	-> tuple<FilteredComplex, bool> {
+	-> tuple<Filtration, bool> {
 	using CGAL::Gmpzf, CGAL::Quotient;
 	using cmb::SolutionPrecision;
 	// Start
 	// Get the delaunay triangulation
-	FilteredComplex delX(delaunay(points, colours));
+	Filtration delX(delaunay(points, colours));
 	// modify the filtration values
 	bool numerical_instability = false;
 	if (delX.dimension() >= 1) {
@@ -624,7 +624,7 @@ auto delcech(const MatrixXd& points, const vector<index_t>& colours)
 				//
 				// for (auto& cofacet: simplex->get_cofacets()) {
 				// simplex->value = min(simplex->value,
-				// shared_ptr<FilteredComplex::Simplex>(cofacet)->value);
+				// shared_ptr<Filtration::Simplex>(cofacet)->value);
 				// }
 			}
 		}
@@ -637,7 +637,7 @@ auto delcech(const MatrixXd& points, const vector<index_t>& colours)
 			// Possibly because of floating point rounding
 			for (auto& cofacet: edge->get_cofacets()) {
 				edge->value() =
-					min(edge->value(), shared_ptr<FilteredComplex::Simplex>(cofacet)->value());
+					min(edge->value(), shared_ptr<Filtration::Simplex>(cofacet)->value());
 			}
 		}
 	}
@@ -650,12 +650,12 @@ auto delcech_parallel(
 	const MatrixXd&        points,
 	const vector<index_t>& colours,
 	const size_t           max_num_threads
-) -> tuple<FilteredComplex, bool> {
+) -> tuple<Filtration, bool> {
 	using CGAL::Gmpzf, CGAL::Quotient;
 	using cmb::SolutionPrecision;
 	// Start
 	// Get the delaunay triangulation
-	FilteredComplex delX(delaunay(points, colours));
+	Filtration delX(delaunay(points, colours));
 	// modify the filtration values
 	bool numerical_instability = false;
 	if (delX.dimension() >= 1) {
@@ -665,7 +665,7 @@ auto delcech_parallel(
 			vector<bool> issues(delX.get_simplices()[p].size(), false);
 			// Store all the simplex pointers in a vector,
 			// which is convenient to iterate over using the TBB API.
-			vector<const shared_ptr<FilteredComplex::Simplex>*> simplices;
+			vector<const shared_ptr<Filtration::Simplex>*> simplices;
 			simplices.reserve(delX.get_simplices()[p].size());
 			for (auto&& [_, simplex]: delX.get_simplices()[p]) {
 				simplices.push_back(&simplex);
@@ -688,7 +688,7 @@ auto delcech_parallel(
 						    //
 						    // for (auto& cofacet: simplex->get_cofacets()) {
 						    // simplex->value = min(simplex->value,
-						    // shared_ptr<FilteredComplex::Simplex>(cofacet)->value);
+						    // shared_ptr<Filtration::Simplex>(cofacet)->value);
 						    // }
 						}
 					}
@@ -699,7 +699,7 @@ auto delcech_parallel(
 			});
 		}
 		// Fast version for dimension 1.
-		vector<const shared_ptr<FilteredComplex::Simplex>*> edges;
+		vector<const shared_ptr<Filtration::Simplex>*> edges;
 		edges.reserve(delX.get_simplices()[1].size());
 		for (auto&& [_, edge]: delX.get_simplices()[1]) {
 			edges.push_back(&edge);
@@ -720,7 +720,7 @@ auto delcech_parallel(
 						for (auto& cofacet: edge->get_cofacets()) {
 							edge->value() =
 								min(edge->value(),
-						            shared_ptr<FilteredComplex::Simplex>(cofacet)->value());
+						            shared_ptr<Filtration::Simplex>(cofacet)->value());
 						}
 					}
 				}

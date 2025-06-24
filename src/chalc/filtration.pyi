@@ -2,8 +2,8 @@
 Module containing utilities to store and manipulate abstract filtered simplicial complexes.
 """
 from __future__ import annotations
-__all__ = ['FilteredComplex', 'Simplex', 'complete_complex', 'standard_simplex']
-class FilteredComplex:
+__all__ = ['Filtration', 'Simplex', 'complete_complex', 'standard_simplex']
+class Filtration:
     """
     Class representing a filtered simplicial complex.
     """
@@ -148,13 +148,13 @@ class Simplex:
         
         Tip:
         	It is recommended to call the member function
-        	:meth:`propagate_colours() <chalc.filtration.FilteredComplex.propagate_colours>`
+        	:meth:`propagate_colours() <chalc.filtration.Filtration.propagate_colours>`
         	from the parent simplicial complex after changing the colour of a vertex.
         """
     @property
     def colours(self) -> list[int]:
         """
-        List of colours of the vertices of the simplex.
+        Set of colours of the vertices of the simplex.
         """
     @property
     def dimension(self) -> int:
@@ -172,7 +172,7 @@ class Simplex:
         Filtration value of the simplex.
         
         If you modify this value, you should call
-        :meth:`propagate_filt_values() <chalc.filtration.FilteredComplex.propagate_filt_values>`
+        :meth:`propagate_filt_values() <chalc.filtration.Filtration.propagate_filt_values>`
         from the parent complex to ensure that filtration times remain monotonic.
         """
     @filtration_value.setter
@@ -192,13 +192,13 @@ class Simplex:
         """
         List of (sorted, ascending) vertex labels of the simplex.
         """
-def complete_complex(n: int, k: int) -> FilteredComplex:
+def complete_complex(n: int, k: int) -> Filtration:
     """
     Compute the :math:`k`-skeleton of the complete simplicial complex on :math:`n` vertices.
     
     Filtration values are initialised to zero and all vertices coloured with the colour 0.
     """
-def standard_simplex(n: int) -> FilteredComplex:
+def standard_simplex(n: int) -> Filtration:
     """
     Compute the filtered simplicial complex corresponding to the standard abstract :math:`n`-simplex.
     

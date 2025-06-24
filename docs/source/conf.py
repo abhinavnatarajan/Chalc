@@ -54,6 +54,7 @@ extensions = [
 	"sphinx_toolbox.sidebar_links",
 	"sphinx_toolbox.github",
 	"sphinx.ext.githubpages",
+	"sphinx.ext.inheritance_diagram",
 ]
 
 # autosectionlabel options
@@ -70,8 +71,9 @@ autoapi_options = [
 	"members",
 	"show-module-summary",
 	"special-members",
-	"inherited-members",
+	# "inherited-members",
 	"show-inheritance",
+	"show-inheritance-diagram",
 ]
 autoapi_member_order = "groupwise"
 

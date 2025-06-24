@@ -3,7 +3,7 @@
 #include <pybind11/stl.h>
 
 PYBIND11_MODULE(filtration, m) {  // NOLINT
-	using chalc::FilteredComplex;
+	using chalc::Filtration;
 	using chalc::index_t;
 	using chalc::MAX_NUM_COLOURS;
 	using chalc::standard_simplex;
@@ -17,13 +17,13 @@ PYBIND11_MODULE(filtration, m) {  // NOLINT
 		"Module containing utilities to store and manipulate abstract filtered simplicial complexes.";
 
 	// forward declare classes
-	py::class_<FilteredComplex> filtered_complex(m, "FilteredComplex");
-	py::class_<FilteredComplex::Simplex, shared_ptr<FilteredComplex::Simplex>> simplex(
+	py::class_<Filtration> filtered_complex(m, "Filtration");
+	py::class_<Filtration::Simplex, shared_ptr<Filtration::Simplex>> simplex(
 		m,
 		"Simplex"
 	);
 
-	/* FilteredComplex Interface */
+	/* Filtration Interface */
 	filtered_complex.doc() = "Class representing a filtered simplicial complex.";
 	filtered_complex
 		.def(
@@ -42,7 +42,7 @@ Args:
 		)
 		.def(
 			"add_simplex",
-			&FilteredComplex::add_simplex,
+			&Filtration::add_simplex,
 			R"docstring(Add a simplex to a filtered simplicial complex.
 
 Args:
@@ -59,22 +59,22 @@ Note:
 		)
 		.def_property_readonly(
 			"num_simplices",
-			&FilteredComplex::size,
+			&Filtration::size,
 			"The total number of simplices in the complex."
 		)
 		.def_property_readonly(
 			"dimension",
-			&FilteredComplex::dimension,
+			&Filtration::dimension,
 			"Current maximum dimension of a maximal simplex in the complex."
 		)
 		.def_property_readonly(
 			"max_filtration_time",
-			&FilteredComplex::max_filt_value,
+			&Filtration::max_filt_value,
 			"Current maximum filtration value in the complex."
 		)
 		.def_property_readonly(
 			"max_dimension",
-			&FilteredComplex::max_dimension,
+			&Filtration::max_dimension,
 			R"docstring(Maximum dimension of simplex that this complex can store.
 
 Set during initialisation.
@@ -83,7 +83,7 @@ Set during initialisation.
 		)
 		.def_property_readonly(
 			"num_vertices",
-			&FilteredComplex::num_vertices,
+			&Filtration::num_vertices,
 			R"docstring(Number of vertices in the simplicial complex.
 
 Set during initialisation.
@@ -92,7 +92,7 @@ Set during initialisation.
 		)
 		.def(
 			"propagate_filt_values",
-			&FilteredComplex::propagate_filt_values,
+			&Filtration::propagate_filt_values,
 			R"docstring(Propagate filtration values upwards or downwards.
 
 If propagating upwards, the filtration value of each simplex
@@ -112,8 +112,8 @@ Args:
 		)
 		.def(
 			"has_simplex",
-			static_cast<bool (FilteredComplex::*)(vector<index_t>& v) const>(
-				&FilteredComplex::has_simplex
+			static_cast<bool (Filtration::*)(vector<index_t>& v) const>(
+				&Filtration::has_simplex
 			),
 			R"docstring(Check for membership of a simplex in the complex.
 
@@ -125,7 +125,7 @@ Args:
 		)
 		.def_property_readonly(
 			"simplices",
-			&FilteredComplex::get_simplices,
+			&Filtration::get_simplices,
 			R"docstring(A list such that ``simplices[k]`` is a dictionary of handles
 to the :math:`k`-simplices in the complex.
 
@@ -137,7 +137,7 @@ counting all possible sorted subsequences of :math:`(0, ..., N-1)` of length :ma
 		)
 		.def(
 			"get_label_from_vertex_labels",
-			&FilteredComplex::get_label_from_vertex_labels,
+			&Filtration::get_label_from_vertex_labels,
 			R"docstring(Get the dictionary key of a simplex.
 
 The key of a simplex is its lexicographic index with respect to
@@ -154,7 +154,7 @@ Args:
 		)
 		.def(
 			"propagate_colours",
-			&FilteredComplex::propagate_colours,
+			&Filtration::propagate_colours,
 			R"docstring(Ensure that simplex colours are consistent
 with the colours of their vertices.
 
@@ -164,7 +164,7 @@ You should call this whenever you change the colour of any vertices.
 		)
 		.def(
 			"serialised",
-			&FilteredComplex::serialised,
+			&Filtration::serialised,
 			R"docstring(Compute the boundary matrix of the simplicial complex.
 
 :return:
@@ -181,14 +181,14 @@ You should call this whenever you change the colour of any vertices.
 		)
 		.def(
 			"is_filtration",
-			&FilteredComplex::is_filtration,
+			&Filtration::is_filtration,
 			R"docstring(Check if the filtration property is satisfied.
 
 Returns true if each simplex has a filtration value at least as large as each of its faces.
 
 )docstring"
 		)
-		.def("__repr__", [](const FilteredComplex& K) {
+		.def("__repr__", [](const Filtration& K) {
 			return "<" + to_string(K.dimension()) + "-dimensional simplicial complex with " +
 		           to_string(K.num_vertices()) + " vertices>";
 		});
@@ -198,14 +198,14 @@ Returns true if each simplex has a filtration value at least as large as each of
 	simplex
 		.def_property_readonly(
 			"dimension",
-			&FilteredComplex::Simplex::get_dim,
+			&Filtration::Simplex::get_dim,
 			R"docstring(
 			Dimension of the simplex.
 		)docstring"
 		)
 		.def_property_readonly(
 			"label",
-			&FilteredComplex::Simplex::get_label,
+			&Filtration::Simplex::get_label,
 			R"docstring(Label of the simplex in its parent filtered complex.
 
 A :math:`k`-simplex :math:`\sigma` is labelled by the lexicographic index of :math:`\sigma`
@@ -216,31 +216,31 @@ counting all possible sorted subsequences of :math:`(0, ..., N-1)` of length :ma
 		)
 		.def_property_readonly(
 			"vertices",
-			static_cast<vector<index_t> (FilteredComplex::Simplex::*)() const>(
-				&FilteredComplex::Simplex::get_vertex_labels
+			static_cast<vector<index_t> (Filtration::Simplex::*)() const>(
+				&Filtration::Simplex::get_vertex_labels
 			),
 			"List of (sorted, ascending) vertex labels of the simplex."
 		)
 		.def_property(
 			"filtration_value",
-			&FilteredComplex::Simplex::get_value,
-			&FilteredComplex::Simplex::set_value,
+			&Filtration::Simplex::get_value,
+			&Filtration::Simplex::set_value,
 			R"docstring(Filtration value of the simplex.
 
 If you modify this value, you should call
-:meth:`propagate_filt_values() <chalc.filtration.FilteredComplex.propagate_filt_values>`
+:meth:`propagate_filt_values() <chalc.filtration.Filtration.propagate_filt_values>`
 from the parent complex to ensure that filtration times remain monotonic.
 
 )docstring"
 		)
 		.def_property_readonly(
 			"colours",
-			&FilteredComplex::Simplex::get_colours_as_vec,
-			"List of colours of the vertices of the simplex."
+			&Filtration::Simplex::get_colours_as_vec,
+			"Set of colours of the vertices of the simplex."
 		)
 		.def(
 			"set_colour",
-			[](const shared_ptr<FilteredComplex::Simplex>& s_ptr, index_t c) {
+			[](const shared_ptr<Filtration::Simplex>& s_ptr, index_t c) {
 				if (s_ptr->get_dim() == 0) {
 					if (c < MAX_NUM_COLOURS) {
 						s_ptr->set_colour(c);
@@ -259,7 +259,7 @@ Raises:
 
 Tip:
 	It is recommended to call the member function
-	:meth:`propagate_colours() <chalc.filtration.FilteredComplex.propagate_colours>`
+	:meth:`propagate_colours() <chalc.filtration.Filtration.propagate_colours>`
 	from the parent simplicial complex after changing the colour of a vertex.
 
 )docstring",
@@ -267,16 +267,16 @@ Tip:
 		)
 		.def_property_readonly(
 			"facets",
-			&FilteredComplex::Simplex::get_facets,
+			&Filtration::Simplex::get_facets,
 			"Read-only list of handles to the facets of the simplex."
 		)
-		.def("__repr__", [](const shared_ptr<FilteredComplex::Simplex>& s_ptr) {
+		.def("__repr__", [](const shared_ptr<Filtration::Simplex>& s_ptr) {
 			return "<" + to_string(s_ptr->get_dim()) + "-simplex>";
 		});
 
 	m.def(
 		"complete_complex",
-		&FilteredComplex::complete_complex,
+		&Filtration::complete_complex,
 		R"docstring(Compute the :math:`k`-skeleton of the complete simplicial complex on :math:`n` vertices.
 
 Filtration values are initialised to zero and all vertices coloured with the colour 0.

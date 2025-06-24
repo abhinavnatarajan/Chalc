@@ -44,39 +44,39 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 namespace chalc {
 
 // Compute a Delaunay triangulation from a collection of coordinate vectors
-auto delaunay(const Eigen::MatrixXd& X, const std::vector<index_t>& colours) -> FilteredComplex;
+auto delaunay(const Eigen::MatrixXd& X, const std::vector<index_t>& colours) -> Filtration;
 
 // Compute the chromatic delrips complex
-auto delrips(const Eigen::MatrixXd& points, const std::vector<index_t>& colours) -> FilteredComplex;
+auto delrips(const Eigen::MatrixXd& points, const std::vector<index_t>& colours) -> Filtration;
 
 // Compute the chromatic delrips complex with parallelisation
 auto delrips_parallel(
 	const Eigen::MatrixXd&      points,
 	const std::vector<index_t>& colours,
 	const size_t                max_num_threads
-) -> FilteredComplex;
+) -> Filtration;
 
 // Compute the chromatic alpha complex
 auto alpha(const Eigen::MatrixXd& points, const std::vector<index_t>& colours)
-	-> std::tuple<FilteredComplex, bool>;
+	-> std::tuple<Filtration, bool>;
 
 // Compute the chromatic alpha complex with parallelisation
 auto alpha_parallel(
 	const Eigen::MatrixXd&      points,
 	const std::vector<index_t>& colours,
 	const size_t                max_num_threads
-) -> std::tuple<FilteredComplex, bool>;
+) -> std::tuple<Filtration, bool>;
 
 // Compute the chromatic Delaunay--Cech complex
 auto delcech(const Eigen::MatrixXd& points, const std::vector<index_t>& colours)
-	-> std::tuple<FilteredComplex, bool>;
+	-> std::tuple<Filtration, bool>;
 
 // Compute the chromatic Delaunay--Cech complex with parallelisation
 auto delcech_parallel(
 	const Eigen::MatrixXd&      points,
 	const std::vector<index_t>& colours,
 	const size_t                max_num_threads
-) -> std::tuple<FilteredComplex, bool>;
+) -> std::tuple<Filtration, bool>;
 }  // namespace chalc
 
 #endif

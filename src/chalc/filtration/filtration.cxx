@@ -96,12 +96,12 @@ class BinomialCoeffTable {
 	}
 };
 
-auto FilteredComplex::Simplex::_make_simplex(
+auto Filtration::Simplex::_make_simplex(
 	index_t                            label,
 	index_t                            max_vertex,
 	value_t                            value,
 	const vector<shared_ptr<Simplex>>& facets
-) -> shared_ptr<FilteredComplex::Simplex> {
+) -> shared_ptr<Filtration::Simplex> {
 	auto self = shared_ptr<Simplex>(new Simplex(label, max_vertex, value, facets));
 	for (auto& f: self->facets) {
 		f->cofacets.push_back(self->get_handle());
@@ -110,7 +110,7 @@ auto FilteredComplex::Simplex::_make_simplex(
 	return self;
 }
 
-FilteredComplex::Simplex::Simplex(
+Filtration::Simplex::Simplex(
 	index_t                            label,
 	index_t                            max_vertex,
 	value_t                            value,
@@ -122,18 +122,18 @@ FilteredComplex::Simplex::Simplex(
 	m_filt_value(value),
 	facets(facets) {}
 
-auto FilteredComplex::Simplex::get_handle() -> shared_ptr<FilteredComplex::Simplex> {
+auto Filtration::Simplex::get_handle() -> shared_ptr<Filtration::Simplex> {
 	return shared_from_this();
 }
 
-auto FilteredComplex::Simplex::get_vertex_labels() const -> vector<index_t> {
+auto Filtration::Simplex::get_vertex_labels() const -> vector<index_t> {
 	vector<index_t> result(m_dim + 1);
 	_get_vertex_labels(result.begin());
 	return result;
 }
 
 template <typename OutputIterator>
-void FilteredComplex::Simplex::_get_vertex_labels(OutputIterator&& buf) const {
+void Filtration::Simplex::_get_vertex_labels(OutputIterator&& buf) const {
 	if (m_dim > 0) {
 		// vertices of a simplex are the vertices of its last face along with
 		// its last vertex
@@ -143,7 +143,7 @@ void FilteredComplex::Simplex::_get_vertex_labels(OutputIterator&& buf) const {
 	*buf = m_max_vertex;
 }
 
-auto FilteredComplex::Simplex::get_facet_labels() const -> vector<index_t> {
+auto Filtration::Simplex::get_facet_labels() const -> vector<index_t> {
 	vector<index_t> result;
 	if (m_dim != 0) {
 		result.reserve(facets.size());
@@ -154,7 +154,7 @@ auto FilteredComplex::Simplex::get_facet_labels() const -> vector<index_t> {
 	return result;
 }
 
-auto FilteredComplex::Simplex::get_colours_as_vec() const -> vector<index_t> {
+auto Filtration::Simplex::get_colours_as_vec() const -> vector<index_t> {
 	vector<index_t> result;
 	result.reserve(colours.count());
 	for (size_t i = 0; i < colours.size(); i++) {
@@ -165,7 +165,7 @@ auto FilteredComplex::Simplex::get_colours_as_vec() const -> vector<index_t> {
 	return result;
 }
 
-FilteredComplex::FilteredComplex(const index_t num_vertices, const index_t max_dimension) :
+Filtration::Filtration(const index_t num_vertices, const index_t max_dimension) :
 	binomial(
 		make_shared<BinomialCoeffTable>(
 			num_vertices,
@@ -190,7 +190,7 @@ FilteredComplex::FilteredComplex(const index_t num_vertices, const index_t max_d
 	}
 }
 
-void FilteredComplex::validate_vertex_sequence(vector<index_t>& verts) const {
+void Filtration::validate_vertex_sequence(vector<index_t>& verts) const {
 	if (verts.size() == 0) {
 		throw invalid_argument("Vertex sequence cannot be empty.");
 	}
@@ -203,7 +203,7 @@ void FilteredComplex::validate_vertex_sequence(vector<index_t>& verts) const {
 	};
 }
 
-auto FilteredComplex::_get_label_from_vertex_labels(const vector<index_t>& verts) const -> index_t {
+auto Filtration::_get_label_from_vertex_labels(const vector<index_t>& verts) const -> index_t {
 	auto num_verts = static_cast<index_t>(verts.size());
 	assert(num_verts != 0);
 	if (num_verts == 1) {
@@ -218,12 +218,12 @@ auto FilteredComplex::_get_label_from_vertex_labels(const vector<index_t>& verts
 	return label;
 }
 
-auto FilteredComplex::get_label_from_vertex_labels(vector<index_t>& verts) const -> index_t {
+auto Filtration::get_label_from_vertex_labels(vector<index_t>& verts) const -> index_t {
 	validate_vertex_sequence(verts);
 	return _get_label_from_vertex_labels(verts);
 }
 
-auto FilteredComplex::_has_simplex(const index_t dim, const index_t label) const -> bool {
+auto Filtration::_has_simplex(const index_t dim, const index_t label) const -> bool {
 	if (simplices[dim].find(label) == simplices[dim].end()) {
 		return false;
 	} else {
@@ -231,7 +231,7 @@ auto FilteredComplex::_has_simplex(const index_t dim, const index_t label) const
 	}
 }
 
-auto FilteredComplex::has_simplex(const index_t dim, const index_t label) const -> bool {
+auto Filtration::has_simplex(const index_t dim, const index_t label) const -> bool {
 	if (dim > max_dim) {
 		throw invalid_argument("Invalid dimension.");
 	}
@@ -244,7 +244,7 @@ auto FilteredComplex::has_simplex(const index_t dim, const index_t label) const 
 	return _has_simplex(dim, label);
 }
 
-auto FilteredComplex::_has_simplex(const vector<index_t>& verts) const noexcept -> bool {
+auto Filtration::_has_simplex(const vector<index_t>& verts) const noexcept -> bool {
 	auto num_verts = static_cast<index_t>(verts.size());
 	assert(num_verts != 0);
 	auto dim   = num_verts - 1;  // we assume that verts is valid
@@ -252,13 +252,13 @@ auto FilteredComplex::_has_simplex(const vector<index_t>& verts) const noexcept 
 	return (_has_simplex(dim, label));
 }
 
-auto FilteredComplex::has_simplex(vector<index_t>& verts) const -> bool {
+auto Filtration::has_simplex(vector<index_t>& verts) const -> bool {
 	validate_vertex_sequence(verts);
 	return (_has_simplex(verts));
 }
 
-auto FilteredComplex::_add_simplex(const vector<index_t>& verts, const value_t filt_value)
-	-> shared_ptr<FilteredComplex::Simplex> {
+auto Filtration::_add_simplex(const vector<index_t>& verts, const value_t filt_value)
+	-> shared_ptr<Filtration::Simplex> {
 	auto num_verts = static_cast<index_t>(verts.size());
 	assert(num_verts != 0);
 	shared_ptr<Simplex> new_simplex;
@@ -293,9 +293,9 @@ auto FilteredComplex::_add_simplex(const vector<index_t>& verts, const value_t f
 	return new_simplex;
 }
 
-auto FilteredComplex::add_simplex(
+auto Filtration::add_simplex(
 	vector<index_t>& verts,
-	value_t          filt_value = FilteredComplex::Simplex::DEFAULT_FILT_VALUE
+	value_t          filt_value = Filtration::Simplex::DEFAULT_FILT_VALUE
 ) -> bool {
 	validate_vertex_sequence(verts);
 	if (_has_simplex(verts)) {
@@ -308,7 +308,7 @@ auto FilteredComplex::add_simplex(
 	}
 }
 
-void FilteredComplex::propagate_filt_values_up(const index_t start_dim) noexcept {
+void Filtration::propagate_filt_values_up(const index_t start_dim) noexcept {
 	auto p = start_dim + 1;
 	while (p <= cur_dim) {
 		value_t max_facet_filt_value = NAN;
@@ -326,7 +326,7 @@ void FilteredComplex::propagate_filt_values_up(const index_t start_dim) noexcept
 	}
 }
 
-void FilteredComplex::propagate_filt_values_down(const index_t start_dim) {
+void Filtration::propagate_filt_values_down(const index_t start_dim) {
 	if (start_dim == 0) {
 		return;
 	}
@@ -352,7 +352,7 @@ void FilteredComplex::propagate_filt_values_down(const index_t start_dim) {
 	}
 }
 
-void FilteredComplex::propagate_colours() noexcept {
+void Filtration::propagate_colours() noexcept {
 	for (index_t d = 1; d <= cur_dim; d++) {
 		for (auto& [idx, s]: simplices[d]) {
 			s->make_colourless();
@@ -363,7 +363,7 @@ void FilteredComplex::propagate_colours() noexcept {
 	}
 }
 
-void FilteredComplex::propagate_filt_values(const index_t start_dim, const bool up) {
+void Filtration::propagate_filt_values(const index_t start_dim, const bool up) {
 	if (start_dim > cur_dim) {
 		throw invalid_argument("Invalid starting dimension.");
 	}
@@ -374,7 +374,7 @@ void FilteredComplex::propagate_filt_values(const index_t start_dim, const bool 
 	}
 }
 
-auto FilteredComplex::serialised() const
+auto Filtration::serialised() const
 	-> vector<tuple<vector<index_t>, index_t, value_t, vector<index_t>>> {
 	// Sort the simplices by their filtration value, dimension, and label.
 	vector<shared_ptr<Simplex>> sort_by_val;
@@ -414,11 +414,11 @@ auto FilteredComplex::serialised() const
 	return result;
 }
 
-auto FilteredComplex::complete_complex(const index_t n, const index_t k) -> FilteredComplex {
+auto Filtration::complete_complex(const index_t n, const index_t k) -> Filtration {
 	if (k >= n) {
 		throw invalid_argument("k must satisfy 0 <= k < n");
 	}
-	FilteredComplex result(n, k);
+	Filtration result(n, k);
 	vector<bool>    verts_mask(n);
 	auto end = verts_mask.begin();
 	for (index_t i = 0; i < k + 1; i++) {
@@ -441,7 +441,7 @@ auto FilteredComplex::complete_complex(const index_t n, const index_t k) -> Filt
 	return result;
 }
 
-auto FilteredComplex::is_filtration() const noexcept -> bool {
+auto Filtration::is_filtration() const noexcept -> bool {
 	for (int i = 1; i <= cur_dim; i++) {
 		for (auto& s: simplices[i]) {
 			for (auto& f: s.second->get_facets()) {
@@ -454,7 +454,7 @@ auto FilteredComplex::is_filtration() const noexcept -> bool {
 	return true;
 }
 
-auto standard_simplex(const index_t n) -> FilteredComplex {
-	return chalc::FilteredComplex::complete_complex(n + 1, n);
+auto standard_simplex(const index_t n) -> Filtration {
+	return chalc::Filtration::complete_complex(n + 1, n);
 }
 }  // namespace chalc

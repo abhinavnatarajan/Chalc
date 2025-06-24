@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 	from matplotlib.axes import Axes
 	from matplotlib.figure import Figure
 
-	from chalc.filtration import FilteredComplex
+	from chalc.filtration import Filtration
 
 plt.rcParams["animation.html"] = "jshtml"
 
@@ -86,7 +86,7 @@ def plot_sixpack(
 				truncs[diagram_name] = truncations[diagram_name]
 				continue
 			ycoords = [
-				dgms.entrance_times[death_simplex]
+				dgms.entrance_times[death_simplex].item()
 				for birth_simplex, death_simplex in dgms[diagram_name].paired
 				if dgms.dimensions[birth_simplex] - dim_shift[diagram_name] in dims[diagram_name]
 				and dgms.entrance_times[death_simplex] - dgms.entrance_times[birth_simplex]
@@ -194,7 +194,7 @@ def plot_diagram(
 
 	if truncation is None:
 		ycoord = [
-			dgms.entrance_times[death_simplex]
+			dgms.entrance_times[death_simplex].item()
 			for birth_simplex, death_simplex in dgms[diagram_name].paired
 			if dgms.dimensions[birth_simplex] - dim_shift in dimensions
 			and dgms.entrance_times[death_simplex] - dgms.entrance_times[birth_simplex] > threshold
@@ -307,7 +307,7 @@ def _plot_diagram(
 
 
 def draw_filtration(
-	K: FilteredComplex,  # noqa: N803
+	K: Filtration,  # noqa: N803
 	points: np.ndarray[tuple[Literal[2], int], np.dtype[np.floating]],
 	time: float,
 	include_colours: Collection[int] | None = None,
@@ -394,7 +394,7 @@ def draw_filtration(
 
 
 def animate_filtration(
-	K: FilteredComplex,  # noqa: N803
+	K: Filtration,  # noqa: N803
 	points: np.ndarray[tuple[Literal[2], int], np.dtype[np.floating]],
 	filtration_times: Sequence[float],
 	animation_length: float,

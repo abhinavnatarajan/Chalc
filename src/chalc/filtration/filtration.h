@@ -50,18 +50,18 @@ using colours_t                   = std::bitset<MAX_NUM_COLOURS>;
 
 class BinomialCoeffTable;
 
-struct FilteredComplex {
-	/* PUBLIC CLASSES OF FilteredComplex */
+struct Filtration {
+	/* PUBLIC CLASSES OF Filtration */
 
 	struct Simplex;
 
-	/* PUBLIC MEMBERS OF FilteredComplex */
+	/* PUBLIC MEMBERS OF Filtration */
 
-	/* PUBLIC METHODS OF FilteredComplex */
+	/* PUBLIC METHODS OF Filtration */
 
 	// Constructors
 	// Create a vertex set.
-	FilteredComplex(const index_t num_vertices, const index_t max_dimension);
+	Filtration(const index_t num_vertices, const index_t max_dimension);
 
 	// Get label of a simplex from the labels of its vertices.
 	[[nodiscard]]
@@ -126,7 +126,7 @@ struct FilteredComplex {
 
 	// Returns the k-skeleton of the complete simplicial complex on n vertices.
 	[[nodiscard]]
-	static auto complete_complex(const index_t n, const index_t k) -> FilteredComplex;  // exported
+	static auto complete_complex(const index_t n, const index_t k) -> Filtration;  // exported
 
 	// Bitwise OR accumulates colours upwards from vertices.
 	void propagate_colours() noexcept;  // exported
@@ -136,7 +136,7 @@ struct FilteredComplex {
 	auto is_filtration() const noexcept -> bool;  // exported
 
   private:
-	/* PRIVATE MEMBERS OF FilteredComplex */
+	/* PRIVATE MEMBERS OF Filtration */
 
 	std::shared_ptr<const BinomialCoeffTable> binomial;  // binomial coefficients
 	std::vector<std::map<index_t, std::shared_ptr<Simplex>>>
@@ -148,7 +148,7 @@ struct FilteredComplex {
 	index_t n_vertices;          // number of vertices, labelled from 0 to n-1
 	index_t max_dim;             // maximum dimension of any simplex in the complex
 
-	/* PRIVATE METHODS OF FilteredComplex */
+	/* PRIVATE METHODS OF Filtration */
 
 	// Checks that verts is a non-empty subsequence of (0, ..., n_vertices-1) and
 	// verts.size() <= max_dim + 1.
@@ -184,8 +184,8 @@ struct FilteredComplex {
 	void propagate_filt_values_down(const index_t start_dim);
 };
 
-struct FilteredComplex::Simplex : public std::enable_shared_from_this<FilteredComplex::Simplex> {
-	friend class FilteredComplex;  // allow FilteredComplex to access private members
+struct Filtration::Simplex : public std::enable_shared_from_this<Filtration::Simplex> {
+	friend class Filtration;  // allow Filtration to access private members
 	/* PUBLIC MEMBERS OF Simplex */
 
 	static constexpr value_t DEFAULT_FILT_VALUE = 0.0;
@@ -315,7 +315,7 @@ struct FilteredComplex::Simplex : public std::enable_shared_from_this<FilteredCo
 };
 
 // The simplicial complex associated to the standard n-simplex.
-auto standard_simplex(const index_t n) -> FilteredComplex;  // exported
+auto standard_simplex(const index_t n) -> Filtration;  // exported
 
 }  // namespace chalc
 

@@ -6,7 +6,7 @@ import chalc as ch
 
 def assert_standard_simplex(
 	n: int,
-	filtration: ch.filtration.FilteredComplex,
+	filtration: ch.filtration.Filtration,
 	*,
 	is_filtered: bool,
 	is_chromatic: bool,

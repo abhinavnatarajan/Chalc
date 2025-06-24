@@ -9,10 +9,10 @@ __all__ = ['MaxColoursChromatic', 'alpha', 'delaunay', 'delcech', 'delrips']
 M = typing.TypeVar("M", bound=int)
 N = typing.TypeVar("N", bound=int)
 @typing.overload
-def alpha(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, typing.Literal[1]], numpy.dtype[numpy.uint64]], max_num_threads: int = 1) -> tuple[chalc.filtration.FilteredComplex, bool]:
+def alpha(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, typing.Literal[1]], numpy.dtype[numpy.uint64]], max_num_threads: int = 1) -> tuple[chalc.filtration.Filtration, bool]:
     ...
 @typing.overload
-def alpha(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 1) -> tuple[chalc.filtration.FilteredComplex, bool]:
+def alpha(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 1) -> tuple[chalc.filtration.Filtration, bool]:
     """
     Compute the chromatic alpha filtration of a coloured point cloud.
     
@@ -41,10 +41,10 @@ def alpha(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colour
     	:func:`delrips`, :func:`delcech`
     """
 @typing.overload
-def delaunay(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, typing.Literal[1]], numpy.dtype[numpy.uint64]]) -> chalc.filtration.FilteredComplex:
+def delaunay(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, typing.Literal[1]], numpy.dtype[numpy.uint64]]) -> chalc.filtration.Filtration:
     ...
 @typing.overload
-def delaunay(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int]) -> chalc.filtration.FilteredComplex:
+def delaunay(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int]) -> chalc.filtration.Filtration:
     """
     Compute the chromatic Delaunay triangulation of a coloured point cloud in Euclidean space.
     
@@ -62,10 +62,10 @@ def delaunay(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], col
     	The Delaunay triangulation.
     """
 @typing.overload
-def delcech(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, typing.Literal[1]], numpy.dtype[numpy.uint64]], max_num_threads: int = 1) -> tuple[chalc.filtration.FilteredComplex, bool]:
+def delcech(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, typing.Literal[1]], numpy.dtype[numpy.uint64]], max_num_threads: int = 1) -> tuple[chalc.filtration.Filtration, bool]:
     ...
 @typing.overload
-def delcech(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 1) -> tuple[chalc.filtration.FilteredComplex, bool]:
+def delcech(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 1) -> tuple[chalc.filtration.Filtration, bool]:
     """
     Compute the chromatic Delaunay--Čech filtration of a coloured point cloud.
     
@@ -94,10 +94,10 @@ def delcech(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colo
     	:func:`alpha`, :func:`delrips`
     """
 @typing.overload
-def delrips(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, typing.Literal[1]], numpy.dtype[numpy.uint64]], max_num_threads: int = 1) -> tuple[chalc.filtration.FilteredComplex, bool]:
+def delrips(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, typing.Literal[1]], numpy.dtype[numpy.uint64]], max_num_threads: int = 1) -> tuple[chalc.filtration.Filtration, bool]:
     ...
 @typing.overload
-def delrips(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 1) -> tuple[chalc.filtration.FilteredComplex, bool]:
+def delrips(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 1) -> tuple[chalc.filtration.Filtration, bool]:
     """
     Compute the chromatic Delaunay--Rips filtration of a coloured point cloud.
     

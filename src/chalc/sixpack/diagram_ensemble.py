@@ -1,3 +1,5 @@
+"""Implementation of 6-pack of persistence diagrams."""
+
 from __future__ import annotations
 
 from collections.abc import (
@@ -13,7 +15,7 @@ from typing import Literal, get_args, overload
 import numpy as np
 from h5py import Dataset, Group
 
-from ._simplex_pairings import SimplexPairings
+from .simplex_pairings import SimplexPairings
 
 
 class DiagramEnsemble(Mapping):
