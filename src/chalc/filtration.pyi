@@ -108,7 +108,7 @@ class FilteredComplex:
     @property
     def max_filtration_time(self) -> float:
         """
-        Current maximum dimension of a maximal simplex in the complex.
+        Current maximum filtration value in the complex.
         """
     @property
     def num_simplices(self) -> int:
@@ -176,7 +176,7 @@ class Simplex:
         from the parent complex to ensure that filtration times remain monotonic.
         """
     @filtration_value.setter
-    def filtration_value(self, arg0: float) -> None:
+    def filtration_value(self, arg1: float) -> None:
         ...
     @property
     def label(self) -> int:
