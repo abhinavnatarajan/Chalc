@@ -36,13 +36,14 @@ toc_object_entries_show_parents = "hide"
 add_module_names = False
 master_doc = "index"
 exclude_patterns = [
-	"_build",
+	"build",
 	"static",
 	"example.ipynb",
 ]
 
 extensions = [
 	"sphinx.ext.autosectionlabel",
+	"sphinx.ext.autodoc",
 	"sphinx.ext.napoleon",
 	"autoapi.extension",
 	"sphinx.ext.intersphinx",
@@ -74,6 +75,7 @@ autoapi_options = [
 	"imported-members",
 ]
 autoapi_member_order = "groupwise"
+autodoc_typehints = "description"
 
 # intersphinx options
 intersphinx_mapping = {
