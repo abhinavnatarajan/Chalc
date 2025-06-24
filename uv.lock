@@ -205,7 +205,6 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "furo" },
-    { name = "gudhi" },
     { name = "ipykernel" },
     { name = "ipympl" },
     { name = "ipython" },
@@ -213,11 +212,14 @@ dev = [
     { name = "pybind11" },
     { name = "pybind11-stubgen" },
     { name = "pyqt6" },
-    { name = "pytest" },
     { name = "sphinx" },
     { name = "sphinx-autoapi" },
     { name = "sphinx-design" },
     { name = "sphinx-toolbox" },
+]
+test = [
+    { name = "gudhi" },
+    { name = "pytest" },
 ]
 
 [package.metadata]
@@ -232,19 +234,21 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "furo", specifier = ">=2024.8.6" },
-    { name = "gudhi", specifier = ">=3.11.0" },
     { name = "ipykernel", specifier = "~=6.29" },
     { name = "ipympl", specifier = "~=0.9" },
     { name = "ipython", specifier = "~=8.29" },
     { name = "nbsphinx", specifier = "~=0.9" },
     { name = "pybind11", specifier = "~=2.13" },
     { name = "pybind11-stubgen", specifier = "~=2.5" },
-    { name = "pyqt6", specifier = ">=6.9.1" },
-    { name = "pytest", specifier = "~=8.3" },
+    { name = "pyqt6", specifier = "~=6.9.1" },
     { name = "sphinx", specifier = "~=8.0" },
     { name = "sphinx-autoapi", specifier = "~=3.3" },
     { name = "sphinx-design", specifier = "~=0.6" },
     { name = "sphinx-toolbox", specifier = "~=3.5" },
+]
+test = [
+    { name = "gudhi", specifier = "~=3.11.0" },
+    { name = "pytest", specifier = "~=8.3" },
 ]
 
 [[package]]
@@ -1719,19 +1723,21 @@ wheels = [
 
 [[package]]
 name = "sphinx-prompt"
-version = "1.9.0"
+version = "1.10.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "certifi" },
     { name = "docutils" },
     { name = "idna" },
+    { name = "jinja2" },
     { name = "pygments" },
+    { name = "requests" },
     { name = "sphinx" },
     { name = "urllib3" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/34/fe/ac4e24f35b5148b31ac717ae7dcc7a2f7ec56eb729e22c7252ed8ad2d9a5/sphinx_prompt-1.9.0.tar.gz", hash = "sha256:471b3c6d466dce780a9b167d9541865fd4e9a80ed46e31b06a52a0529ae995a1", size = 5340, upload-time = "2024-08-07T15:46:51.428Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c7/2b/8f3a87784e6313e48b4d91dfb4aae1e5af3fa0c94ef9e875eb2e471e1418/sphinx_prompt-1.10.0.tar.gz", hash = "sha256:23dca4c07ade840c9e87089d79d3499040fa524b3c422941427454e215fdd111", size = 5181, upload-time = "2025-06-24T08:32:18.684Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/76/98/e90ca466e0ede452d3e5a8d92b8fb68db6de269856e019ed9cab69440522/sphinx_prompt-1.9.0-py3-none-any.whl", hash = "sha256:fd731446c03f043d1ff6df9f22414495b23067c67011cc21658ea8d36b3575fc", size = 7311, upload-time = "2024-08-07T15:46:50.329Z" },
+    { url = "https://files.pythonhosted.org/packages/3f/5e/f359e06019dbf0d7f8e23f46c535085c7dc367190a7e19456a09a0153a70/sphinx_prompt-1.10.0-py3-none-any.whl", hash = "sha256:d62f7a1aa346225d30222a271dc78997031204a5f199ce5006c14ece0d94b217", size = 5308, upload-time = "2025-06-24T08:32:17.768Z" },
 ]
 
 [[package]]
