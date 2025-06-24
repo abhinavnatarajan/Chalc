@@ -58,6 +58,7 @@ using std::bsearch;
 using std::domain_error;
 using std::map;
 using std::min;
+using std::numeric_limits;
 using std::ranges::any_of;
 using std::ranges::iota;
 using std::ranges::sort;
@@ -94,8 +95,12 @@ concept RealMatrixXpr = MatrixXpr<Derived> && same_as<typename Derived::Scalar, 
 // Convert a collection of coordinate vectors to a vector of CGAL points
 auto coordvecs_to_points(const MatrixXd& x_arr) -> vector<Point_d> {
 	vector<Point_d> points(x_arr.cols());
-	for (index_t i = 0; i < x_arr.cols(); i++) {
-		points[i] = Point_d(x_arr.col(i).begin(), x_arr.col(i).end());
+	auto            cols_begin = x_arr.colwise().cbegin();
+	auto            cols_end   = x_arr.colwise().cend();
+	for (auto&& [i, column] = tuple<index_t, decltype(cols_begin)>{0, cols_begin};
+	     column != cols_end;
+	     column++, i++) {
+		points[i] = Point_d(column->cbegin(), column->cend());
 	}
 	return points;
 }
@@ -184,8 +189,11 @@ namespace chalc {
 
 // Create a Delaunay triangulation from a collection of coordinate vectors
 auto delaunay(const MatrixXd& X, const vector<index_t>& colours) -> FilteredComplex {
-	MatrixXd        Y(stratify(X, colours));
-	auto            max_dim = Y.rows();
+	MatrixXd Y(stratify(X, colours));
+	if (Y.rows() > numeric_limits<int>::max()) {
+		throw runtime_error("Dimension of stratified points exceeds maximum allowed by CGAL.");
+	}
+	int             max_dim = Y.rows(); // NOLINT
 	FilteredComplex result(Y.cols(), max_dim);
 	if (Y.cols() != 0) {
 		auto points = coordvecs_to_points(Y);
@@ -244,8 +252,8 @@ auto delrips(const MatrixXd& points, const vector<index_t>& colours) -> Filtered
 	// Modify the filtration values
 	if (delX.dimension() >= 1) {
 		for (auto& [idx, edge]: delX.get_simplices()[1]) {
-			auto&& verts = edge->get_vertex_labels();
-			edge->value  = (points.col(verts[0]) - points.col(verts[1])).norm() * 0.5;
+			auto&& verts  = edge->get_vertex_labels();
+			edge->value() = (points.col(verts[0]) - points.col(verts[1])).norm() * 0.5;
 		}
 		delX.propagate_filt_values(1, true);
 	}
@@ -263,7 +271,7 @@ auto delrips_parallel(
 
 	// Modify the filtration values
 	if (delX.dimension() >= 1) {
-		task_arena arena(max_num_threads == 0 ? task_arena::automatic : max_num_threads);
+		task_arena arena(max_num_threads == 0 ? task_arena::automatic : max_num_threads); // NOLINT
 		// Store all the simplex pointers in a vector,
 		// which is convenient to iterate over using the TBB API.
 		vector<const shared_ptr<FilteredComplex::Simplex>*> edges;
@@ -276,9 +284,9 @@ auto delrips_parallel(
 				blocked_range<size_t>(0, edges.size()),
 				[&](const blocked_range<size_t>& r) {
 					for (size_t idx = r.begin(); idx < r.end(); idx++) {
-						auto&& edge  = *edges[idx];
-						auto&& verts = edge->get_vertex_labels();
-						edge->value  = (points.col(verts[0]) - points.col(verts[1])).norm() * 0.5;
+						auto&& edge   = *edges[idx];
+						auto&& verts  = edge->get_vertex_labels();
+						edge->value() = (points.col(verts[0]) - points.col(verts[1])).norm() * 0.5;
 					}
 				}
 			);
@@ -346,7 +354,7 @@ auto alpha(const MatrixXd& points, const vector<index_t>& colours) -> tuple<Filt
 				MatrixX<Gmpzf> E(0, points.rows());
 				VectorX<Gmpzf> b;
 				for (auto& [j, verts_j]: verts_by_colour_in_simplex) {
-					index_t num_new_rows = verts_j.size() - 1;  // each of these has size at least 1
+					Eigen::Index num_new_rows = verts_j.size() - 1;  // each of these has size at least 1
 					E.conservativeResize(E.rows() + num_new_rows, Eigen::NoChange);
 					b.conservativeResize(b.rows() + num_new_rows);
 					MatrixX<Gmpzf>::BlockXpr           E_new_rows = E.bottomRows(num_new_rows);
@@ -370,7 +378,7 @@ auto alpha(const MatrixXd& points, const vector<index_t>& colours) -> tuple<Filt
 				bool stack_is_empty = true;
 				if (p == delX.dimension()) {
 					// For maximal simplices there is nothing more to do
-					simplex->value = sqrt(CGAL::to_double(sqRadius));
+					simplex->value() = sqrt(CGAL::to_double(sqRadius));
 				} else {
 					// If the simplex is not maximal, check if the stack is empty
 					for (auto& [j, verts_j]: verts_by_colour_in_simplex) {
@@ -389,7 +397,7 @@ auto alpha(const MatrixXd& points, const vector<index_t>& colours) -> tuple<Filt
 					}
 					// If the stack is empty, assign the filtration value
 					if (stack_is_empty) {
-						simplex->value = sqrt(CGAL::to_double(sqRadius));
+						simplex->value() = sqrt(CGAL::to_double(sqRadius));
 						// The following block is only needed if
 						// CGAL::to_double is not monotonic.
 						// On all IEEE-754 compliant architectures,
@@ -405,9 +413,9 @@ auto alpha(const MatrixXd& points, const vector<index_t>& colours) -> tuple<Filt
 							continue;
 						}
 						try {
-							simplex->value = cofacets[0].lock()->value;
+							simplex->value() = cofacets[0].lock()->value();
 							for (auto&& cofacet: cofacets) {
-								simplex->value = min(simplex->value, cofacet.lock()->value);
+								simplex->value() = min(simplex->value(), cofacet.lock()->value());
 							}
 						} catch (const bad_weak_ptr& e) {
 							throw runtime_error("Tried to dereference expired cofacet handle.");
@@ -525,7 +533,7 @@ auto alpha_parallel(
 							bool stack_is_empty = true;
 							if (p == delX.dimension()) {
 								// For maximal simplices there is nothing more to do
-								simplex->value = sqrt(CGAL::to_double(sqRadius));
+								simplex->value() = sqrt(CGAL::to_double(sqRadius));
 							} else {
 								// If the simplex is not maximal, check if the stack is empty
 								for (auto& [j, verts_j]: verts_by_colour_in_simplex) {
@@ -548,7 +556,7 @@ auto alpha_parallel(
 								}
 								// If the stack is empty, assign the filtration value
 								if (stack_is_empty) {
-									simplex->value = sqrt(CGAL::to_double(sqRadius));
+									simplex->value() = sqrt(CGAL::to_double(sqRadius));
 									// The following block is only needed if
 								    // CGAL::to_double is not monotonic.
 								    // On all IEEE-754 compliant architectures,
@@ -564,10 +572,10 @@ auto alpha_parallel(
 										continue;
 									}
 									try {
-										simplex->value = cofacets[0].lock()->value;
+										simplex->value() = cofacets[0].lock()->value();
 										for (auto&& cofacet: cofacets) {
-											simplex->value =
-												min(simplex->value, cofacet.lock()->value);
+											simplex->value() =
+												min(simplex->value(), cofacet.lock()->value());
 										}
 									} catch (const bad_weak_ptr& e) {
 										throw runtime_error(
@@ -607,7 +615,7 @@ auto delcech(const MatrixXd& points, const vector<index_t>& colours)
 				auto&& verts = simplex->get_vertex_labels();
 				auto&& [centre, sqRadius, success] =
 					cmb::miniball<SolutionPrecision::DOUBLE>(points(all, verts));
-				simplex->value         = sqrt(CGAL::to_double(sqRadius));
+				simplex->value()       = sqrt(CGAL::to_double(sqRadius));
 				numerical_instability |= !success;
 				// The following block is only needed if
 				// CGAL::to_double is not monotonic.
@@ -623,13 +631,13 @@ auto delcech(const MatrixXd& points, const vector<index_t>& colours)
 		// fast version for dimension 1
 		for (auto& [idx, edge]: delX.get_simplices()[1]) {
 			auto&& verts = edge->get_vertex_labels();
-			edge->value =
+			edge->value() =
 				static_cast<double>((points.col(verts[0]) - points.col(verts[1])).norm()) * 0.5;
 			// Tests fail if we don't do this
 			// Possibly because of floating point rounding
 			for (auto& cofacet: edge->get_cofacets()) {
-				edge->value =
-					min(edge->value, shared_ptr<FilteredComplex::Simplex>(cofacet)->value);
+				edge->value() =
+					min(edge->value(), shared_ptr<FilteredComplex::Simplex>(cofacet)->value());
 			}
 		}
 	}
@@ -671,8 +679,8 @@ auto delcech_parallel(
 							auto&& verts   = simplex->get_vertex_labels();
 							auto&& [centre, sqRadius, success] =
 								cmb::miniball<SolutionPrecision::DOUBLE>(points(all, verts));
-							simplex->value = sqrt(CGAL::to_double(sqRadius));
-							issues[idx]    = !success;
+							simplex->value() = sqrt(CGAL::to_double(sqRadius));
+							issues[idx]      = !success;
 							// The following block is only needed if
 						    // CGAL::to_double is not monotonic.
 						    // On all IEEE-754 compliant architectures,
@@ -701,18 +709,18 @@ auto delcech_parallel(
 				blocked_range<size_t>(0, edges.size()),
 				[&](const blocked_range<size_t>& r) {
 					for (size_t idx = r.begin(); idx < r.end(); idx++) {
-						auto&& edge  = *edges[idx];
-						auto&& verts = edge->get_vertex_labels();
-						edge->value  = static_cast<double>(
-                                          (points.col(verts[0]) - points.col(verts[1])).norm()
-                                      ) *
-					                  0.5;
+						auto&& edge   = *edges[idx];
+						auto&& verts  = edge->get_vertex_labels();
+						edge->value() = static_cast<double>(
+											(points.col(verts[0]) - points.col(verts[1])).norm()
+										) *
+					                    0.5;
 						// Tests fail if we don't do this
 					    // Possibly because of floating point rounding
 						for (auto& cofacet: edge->get_cofacets()) {
-							edge->value =
-								min(edge->value,
-						            shared_ptr<FilteredComplex::Simplex>(cofacet)->value);
+							edge->value() =
+								min(edge->value(),
+						            shared_ptr<FilteredComplex::Simplex>(cofacet)->value());
 						}
 					}
 				}

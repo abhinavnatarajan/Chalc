@@ -48,6 +48,7 @@ using std::make_shared;
 using std::map;
 using std::max;
 using std::min;
+using std::numeric_limits;
 using std::ranges::adjacent_find;
 using std::ranges::fill;
 using std::ranges::prev_permutation;
@@ -58,8 +59,6 @@ using std::shared_ptr;
 using std::tuple;
 using std::vector;
 using std::views::enumerate;
-using std::weak_ptr;
-using std::numeric_limits;
 }  // namespace
 
 namespace chalc {
@@ -117,10 +116,10 @@ FilteredComplex::Simplex::Simplex(
 	value_t                            value,
 	const vector<shared_ptr<Simplex>>& facets
 ) :
-	label(label),
-	max_vertex(max_vertex),
-	dim(facets.size() == 0 ? 0 : facets.size() - 1),
-	value(value),
+	m_label(label),
+	m_max_vertex(max_vertex),
+	m_dim(facets.size() == 0 ? 0 : facets.size() - 1),
+	m_filt_value(value),
 	facets(facets) {}
 
 auto FilteredComplex::Simplex::get_handle() -> shared_ptr<FilteredComplex::Simplex> {
@@ -128,69 +127,34 @@ auto FilteredComplex::Simplex::get_handle() -> shared_ptr<FilteredComplex::Simpl
 }
 
 auto FilteredComplex::Simplex::get_vertex_labels() const -> vector<index_t> {
-	vector<index_t> result(dim + 1);
+	vector<index_t> result(m_dim + 1);
 	_get_vertex_labels(result.begin());
 	return result;
 }
 
 template <typename OutputIterator>
 void FilteredComplex::Simplex::_get_vertex_labels(OutputIterator&& buf) const {
-	if (dim > 0) {
+	if (m_dim > 0) {
 		// vertices of a simplex are the vertices of its last face along with
 		// its last vertex
 		facets.back()->_get_vertex_labels(std::forward<OutputIterator>(buf));
 		buf++;
 	}
-	*buf = max_vertex;
+	*buf = m_max_vertex;
 }
 
 auto FilteredComplex::Simplex::get_facet_labels() const -> vector<index_t> {
 	vector<index_t> result;
-	if (dim != 0) {
+	if (m_dim != 0) {
 		result.reserve(facets.size());
 		for (auto& f: facets) {
-			result.push_back(f->label);
+			result.push_back(f->m_label);
 		}
 	}
 	return result;
 }
 
-auto FilteredComplex::Simplex::get_facets() const
-	-> const vector<shared_ptr<FilteredComplex::Simplex>>& {
-	return facets;
-}
-
-auto FilteredComplex::Simplex::get_cofacets() const
-	-> const vector<weak_ptr<FilteredComplex::Simplex>>& {
-	return cofacets;
-}
-
-inline void FilteredComplex::Simplex::add_colour(index_t c) {
-	colours.set(c);
-}
-
-inline void FilteredComplex::Simplex::_add_colours(colours_t c) {
-	colours |= c;
-}
-
-inline void FilteredComplex::Simplex::_set_colours(colours_t c) {
-	colours.reset();
-	_add_colours(c);
-}
-
-inline void FilteredComplex::Simplex::make_colourless() {
-	colours.reset();
-}
-
-void FilteredComplex::Simplex::set_colour(index_t c) {
-	colours.reset().set(c);
-}
-
-auto FilteredComplex::Simplex::_get_colours() -> colours_t {
-	return colours;
-}
-
-auto FilteredComplex::Simplex::get_colours_as_vec() -> vector<index_t> {
+auto FilteredComplex::Simplex::get_colours_as_vec() const -> vector<index_t> {
 	vector<index_t> result;
 	result.reserve(colours.count());
 	for (size_t i = 0; i < colours.size(); i++) {
@@ -280,7 +244,7 @@ auto FilteredComplex::has_simplex(const index_t dim, const index_t label) const 
 	return _has_simplex(dim, label);
 }
 
-auto FilteredComplex::_has_simplex(const vector<index_t>& verts) const -> bool {
+auto FilteredComplex::_has_simplex(const vector<index_t>& verts) const noexcept -> bool {
 	auto num_verts = static_cast<index_t>(verts.size());
 	assert(num_verts != 0);
 	auto dim   = num_verts - 1;  // we assume that verts is valid
@@ -303,8 +267,8 @@ auto FilteredComplex::_add_simplex(const vector<index_t>& verts, const value_t f
 	auto                search_simplex = simplices[dim].find(label);
 	if (search_simplex != simplices[dim].end()) {
 		// the simplex already exists
-		new_simplex        = search_simplex->second;
-		new_simplex->value = min(max(filt_value, 0.0), new_simplex->value);
+		new_simplex               = search_simplex->second;
+		new_simplex->m_filt_value = min(max(filt_value, 0.0), new_simplex->m_filt_value);
 	} else {
 		// simplex does not exist so we need to add it
 		// first we recursively add faces of the simplex
@@ -344,19 +308,19 @@ auto FilteredComplex::add_simplex(
 	}
 }
 
-void FilteredComplex::propagate_filt_values_up(const index_t start_dim) {
+void FilteredComplex::propagate_filt_values_up(const index_t start_dim) noexcept {
 	auto p = start_dim + 1;
 	while (p <= cur_dim) {
 		value_t max_facet_filt_value = NAN;
 		// iterate over the p-simplices
 		for (auto& [label, simplex]: simplices[p]) {
-			max_facet_filt_value = simplex->get_facets()[0]->value;
+			max_facet_filt_value = simplex->get_facets()[0]->m_filt_value;
 			// iterate over faces of simplex and get the maximum filtration
 			// value
 			for (const auto& facet: simplex->get_facets()) {
-				max_facet_filt_value = max(max_facet_filt_value, facet->value);
+				max_facet_filt_value = max(max_facet_filt_value, facet->m_filt_value);
 			}
-			simplex->value = max_facet_filt_value;
+			simplex->m_filt_value = max_facet_filt_value;
 		}
 		p++;
 	}
@@ -366,7 +330,6 @@ void FilteredComplex::propagate_filt_values_down(const index_t start_dim) {
 	if (start_dim == 0) {
 		return;
 	}
-	int p = static_cast<int>(start_dim) - 1;
 	for (index_t p = start_dim - 1; p >= 1; p--) {
 		// iterate over the p-simplices
 		for (const auto& [label, simplex]: simplices[p]) {
@@ -377,9 +340,10 @@ void FilteredComplex::propagate_filt_values_down(const index_t start_dim) {
 				continue;
 			}
 			try {
-				simplex->value = cofacets[0].lock()->value;
+				simplex->m_filt_value = cofacets[0].lock()->m_filt_value;
 				for (auto&& cofacet: cofacets) {
-					simplex->value = min(simplex->value, cofacet.lock()->value);
+					simplex->m_filt_value =
+						min(simplex->m_filt_value, cofacet.lock()->m_filt_value);
 				}
 			} catch (const bad_weak_ptr& e) {
 				throw runtime_error("Tried to dereference expired cofacet handle.");
@@ -388,7 +352,7 @@ void FilteredComplex::propagate_filt_values_down(const index_t start_dim) {
 	}
 }
 
-void FilteredComplex::propagate_colours() {
+void FilteredComplex::propagate_colours() noexcept {
 	for (index_t d = 1; d <= cur_dim; d++) {
 		for (auto& [idx, s]: simplices[d]) {
 			s->make_colourless();
@@ -410,31 +374,6 @@ void FilteredComplex::propagate_filt_values(const index_t start_dim, const bool 
 	}
 }
 
-auto FilteredComplex::get_simplices() const noexcept
-	-> const vector<map<index_t, shared_ptr<FilteredComplex::Simplex>>>& {
-	return simplices;
-}
-
-auto FilteredComplex::size() const noexcept -> index_t {
-	return num_simplices;
-}
-
-auto FilteredComplex::dimension() const noexcept -> index_t {
-	return cur_dim;
-}
-
-auto FilteredComplex::max_dimension() const noexcept -> index_t {
-	return max_dim;
-}
-
-auto FilteredComplex::num_vertices() const noexcept -> index_t {
-	return n_vertices;
-}
-
-auto FilteredComplex::max_filt_value() const noexcept -> value_t {
-	return cur_max_filt_value;
-}
-
 auto FilteredComplex::serialised() const
 	-> vector<tuple<vector<index_t>, index_t, value_t, vector<index_t>>> {
 	// Sort the simplices by their filtration value, dimension, and label.
@@ -447,21 +386,23 @@ auto FilteredComplex::serialised() const
 	}
 	stable_sort(sort_by_val, [](const shared_ptr<Simplex>& s1, const shared_ptr<Simplex>& s2) {
 		return (
-			s1->value < s2->value || (s1->value == s2->value && s1->dim < s2->dim) ||
-			(s1->value == s2->value && s1->dim == s2->dim && s1->label < s2->label)
+			s1->m_filt_value < s2->m_filt_value ||
+			(s1->m_filt_value == s2->m_filt_value && s1->m_dim < s2->m_dim) ||
+			(s1->m_filt_value == s2->m_filt_value && s1->m_dim == s2->m_dim &&
+		     s1->m_label < s2->m_label)
 		);
 	});
 	// Create mapping from labels to sorted index.
 	vector<tuple<vector<index_t>, index_t, value_t, vector<index_t>>> result(num_simplices);
 	vector<map<index_t, index_t>>                                     indices(cur_dim + 1);
 	for (auto&& [i, s]: enumerate(sort_by_val)) {
-		auto dim = s->dim;
+		auto dim = s->m_dim;
 		// Add the label to the indices map for this dimension
-		indices[s->dim][s->label] = i;
+		indices[s->m_dim][s->m_label] = i;
 		// Add this simplex to the result
-		auto value     = s->value;
-		auto label     = s->label;
-		auto dimension = s->dim;
+		auto value     = s->m_filt_value;
+		auto label     = s->m_label;
+		auto dimension = s->m_dim;
 		auto colours   = s->get_colours_as_vec();
 		auto faces     = s->get_facet_labels();
 		for (auto&& f: faces) {
@@ -478,26 +419,33 @@ auto FilteredComplex::complete_complex(const index_t n, const index_t k) -> Filt
 		throw invalid_argument("k must satisfy 0 <= k < n");
 	}
 	FilteredComplex result(n, k);
-	vector<bool>    v(n);
-	fill(v.begin(), v.begin() + k + 1, true);
+	vector<bool>    verts_mask(n);
+	auto end = verts_mask.begin();
+	for (index_t i = 0; i < k + 1; i++) {
+		end++;
+	}
+	fill(verts_mask.begin(), end, true);
 	vector<index_t> verts(k + 1);
-	do {
-		for (index_t i = 0, j = 0; i < n; ++i) {
-			if (v[i]) {
+	bool perm_found = true;
+	while (perm_found) {
+		index_t j = 0;
+		for (auto&& [i, mask_val] : enumerate(verts_mask)) {
+			if (mask_val) {
 				verts[j++] = i;
 			}
 		}
 		result._add_simplex(verts, 0.0);
-	} while (prev_permutation(v).found);
+		perm_found = prev_permutation(verts_mask).found;
+	}
 	result.cur_dim = k;
 	return result;
 }
 
-auto FilteredComplex::is_filtration() const -> bool {
+auto FilteredComplex::is_filtration() const noexcept -> bool {
 	for (int i = 1; i <= cur_dim; i++) {
 		for (auto& s: simplices[i]) {
 			for (auto& f: s.second->get_facets()) {
-				if (f->value > s.second->value) {
+				if (f->m_filt_value > s.second->m_filt_value) {
 					return false;
 				}
 			}

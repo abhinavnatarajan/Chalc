@@ -70,7 +70,7 @@ Note:
 		.def_property_readonly(
 			"max_filtration_time",
 			&FilteredComplex::max_filt_value,
-			"Current maximum dimension of a maximal simplex in the complex."
+			"Current maximum filtration value in the complex."
 		)
 		.def_property_readonly(
 			"max_dimension",
@@ -196,16 +196,16 @@ Returns true if each simplex has a filtration value at least as large as each of
 	/* Simplex Interface */
 	simplex.doc() = "Class representing a simplex in a filtered simplicial complex.";
 	simplex
-		.def_readonly(
+		.def_property_readonly(
 			"dimension",
-			&FilteredComplex::Simplex::dim,
+			&FilteredComplex::Simplex::get_dim,
 			R"docstring(
 			Dimension of the simplex.
 		)docstring"
 		)
-		.def_readonly(
+		.def_property_readonly(
 			"label",
-			&FilteredComplex::Simplex::label,
+			&FilteredComplex::Simplex::get_label,
 			R"docstring(Label of the simplex in its parent filtered complex.
 
 A :math:`k`-simplex :math:`\sigma` is labelled by the lexicographic index of :math:`\sigma`
@@ -221,9 +221,10 @@ counting all possible sorted subsequences of :math:`(0, ..., N-1)` of length :ma
 			),
 			"List of (sorted, ascending) vertex labels of the simplex."
 		)
-		.def_readwrite(
+		.def_property(
 			"filtration_value",
-			&FilteredComplex::Simplex::value,
+			&FilteredComplex::Simplex::get_value,
+			&FilteredComplex::Simplex::set_value,
 			R"docstring(Filtration value of the simplex.
 
 If you modify this value, you should call
@@ -240,7 +241,7 @@ from the parent complex to ensure that filtration times remain monotonic.
 		.def(
 			"set_colour",
 			[](const shared_ptr<FilteredComplex::Simplex>& s_ptr, index_t c) {
-				if (s_ptr->dim == 0) {
+				if (s_ptr->get_dim() == 0) {
 					if (c < MAX_NUM_COLOURS) {
 						s_ptr->set_colour(c);
 					} else {
@@ -270,7 +271,7 @@ Tip:
 			"Read-only list of handles to the facets of the simplex."
 		)
 		.def("__repr__", [](const shared_ptr<FilteredComplex::Simplex>& s_ptr) {
-			return "<" + to_string(s_ptr->dim) + "-simplex>";
+			return "<" + to_string(s_ptr->get_dim()) + "-simplex>";
 		});
 
 	m.def(
