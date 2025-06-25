@@ -258,30 +258,30 @@ def _plot_diagram(
 		(
 			entrance_times[birth_idx],
 			entrance_times[death_idx],
-			f"$H_{{{dimensions[birth_idx] - dim_shift}}}$",
+			feature_dimension,
 		)
 		for birth_idx, death_idx in diagram.paired
-		if dimensions[birth_idx] - dim_shift in dims
+		if (feature_dimension := dimensions[birth_idx] - dim_shift) in dims
 		and entrance_times[death_idx] - entrance_times[birth_idx] > threshold
 	] + [
 		(
 			entrance_times[birth_idx],
 			inf_level,
-			f"$H_{{{dimensions[birth_idx] - dim_shift}}}$",
+			feature_dimension,
 		)
 		for birth_idx in diagram.unpaired
-		if dimensions[birth_idx] - dim_shift in dims
+		if (feature_dimension := dimensions[birth_idx] - dim_shift) in dims
 	]
 	plot_colours = np.array(plt.rcParams["axes.prop_cycle"].by_key()["color"])
 	plot_df = DataFrame.from_records(data=all_pts, columns=["Birth", "Death", "Dimension"])
 	plot_df["Dimension"] = plot_df["Dimension"].astype("category")
-	for d, label in enumerate(sorted(plot_df["Dimension"].cat.categories)):
+	for d in sorted(plot_df["Dimension"].cat.categories):
 		ax.scatter(
-			plot_df.loc[plot_df["Dimension"] == label, "Birth"],
-			plot_df.loc[plot_df["Dimension"] == label, "Death"],
+			plot_df.loc[plot_df["Dimension"] == d, "Birth"],
+			plot_df.loc[plot_df["Dimension"] == d, "Death"],
 			c=plot_colours[d],
 			edgecolors="white",
-			label=label,
+			label=f"$H_{{{d}}}$",
 			**kwargs,
 		)
 	ax.set(xlabel=None)
