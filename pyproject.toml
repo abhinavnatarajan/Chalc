@@ -120,7 +120,7 @@ flake8-annotations.allow-star-arg-any = true
 archs = "auto64"
 build-verbosity = 1
 build-frontend = "build[uv]"
-skip = "pp* *-musllinux_*"
+skip = ["pp*", "*-musllinux_*"]
 test-command = "pytest {package}/tests"
 test-groups = ["test"]
 
