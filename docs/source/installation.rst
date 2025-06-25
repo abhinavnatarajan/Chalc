@@ -5,9 +5,24 @@ Using pip
 ---------
 The recommended way to download and install chalc is from the `PyPI repository <https://pypi.org/project/chalc/>`_ using pip. Pre-packaged binary distributions are available for Windows and Linux (x86_64), and macOS (x86_64 and aarch64). Chalc works with CPython and PyPy ≥ 3.12.
 
-.. code-block:: bash
+.. tab-set::
 
-    pip install chalc
+    .. tab-item:: uv
+        :sync: uv
+
+        .. code-block:: bash
+
+            # To chalc to your uv project
+            uv add chalc
+
+    .. tab-item:: pip
+        :sync: pip
+
+        .. code-block:: bash
+
+            # To install chalc into the current Python environment
+            pip install chalc
+
 
 Build from source
 -----------------
@@ -17,10 +32,11 @@ Dependencies
 ^^^^^^^^^^^^
 Chalc is a C++ extension module for Python and has several additional dependencies.
 
-1. The `Eigen C++ library <https://eigen.tuxfamily.org/index.php?title=Main_Page>`_ (tested with version 3.4.0).
-2. The `GNU MP Library <https://gmplib.org/>`_ (tested with version 6.3.1) and the `GNU MPFR Library <https://www.mpfr.org/>`_ (tested with version 4.2.0) for exact geometric computation.
-3. The `Computational Geometry Algorithms Library (CGAL) <https://www.cgal.org/>`_ library (tested with version 6.0.1).
-4. The `Boost C++ libraries <https://www.boost.org/>`_ (transitive dependency through CGAL).
+1. `Eigen C++ library <https://eigen.tuxfamily.org/index.php?title=Main_Page>`_ (tested with version 3.4.0).
+2. `GNU MP Library <https://gmplib.org/>`_ (tested with version 6.3.1) and the `GNU MPFR Library <https://www.mpfr.org/>`_ (tested with version 4.2.0) for exact geometric computation.
+3. `Computational Geometry Algorithms Library (CGAL) <https://www.cgal.org/>`_ library (tested with version 6.0.1).
+4. `Boost C++ libraries <https://www.boost.org/>`_ (transitive dependency through CGAL).
+5. `Intel OneAPI Threading Building Blocks (TBB) <https://www.threadingbuildingblocks.org/>`_ (tested with version 2022.1.0).
 
 The recommended way to obtain and manage these dependencies is using vcpkg (see the build dependencies section) . It is also recommended to use a `Python virtual environment <https://docs.python.org/3/tutorial/venv.html>`_ for the build process to avoid polluting the package namespace.
 
@@ -61,7 +77,7 @@ Build steps
 
             $Env:VCPKG_ROOT = 'C:\path\to\vcpkg\dir'
 
-If you do not have vcpkg installed, the build process will automatically download vcpkg into a temporary directory and fetch the required dependencies.
+If you do not have vcpkg installed, the build process will automatically download vcpkg into a temporary directory, and fetch and build the required dependencies.
 
 .. note::
     If you would like to disable the use of vcpkg altogether, set the environment variable ``NO_USE_VPKG``. You will have to ensure that all build requirements are met and the appropriate entries are recorded in ``PATH`` (see the file `CMakeLists.txt <https://github.com/abhinavnatarajan/Chalc/blob/master/CMakeLists.txt>`_ for details).
@@ -82,24 +98,32 @@ If you do not have vcpkg installed, the build process will automatically downloa
 
                 $Env:NO_USE_VPKG = $null
 
-3. Build the package wheel using ``pip wheel`` and install the compiled binary.
+3. Build the package using your build tool of choice.
 
-.. code-block:: bash
+.. tab-set::
 
-    pip wheel . -w outputdir
-    pip install outputdir/<name_of_generated_wheel>.whl
+    .. tab-item:: uv
+        :sync: uv
+
+        .. code-block:: bash
+
+            # To build chalc as an editable package in a new virtual environment.
+            # This will also install the dependencies for testing and building documentation.
+            uv sync --frozen --all-groups
+
+    .. tab-item:: pip
+        :sync: pip
+
+        .. code-block:: bash
+
+            # To install chalc into the current Python environment from the package lock file.
+            # This will also install the dependencies for testing and building documentation.
+            pip lock -r pylock.toml
 
 Building the Documentation
 --------------------------
 
-To build the documentation, the development dependencies of the project need to be installed into a virtual environment:
-
-.. code-block:: bash
-
-    python -m venv .venv
-    source .venv/bin/activate
-    pip install -e .
-
+To build the documentation, the development dependencies of the project need to be installed into the current environment.
 Then run the following commands from the project root directory to build the documentation files.
 
 .. tab-set::
@@ -111,7 +135,7 @@ Then run the following commands from the project root directory to build the doc
 
             make -C docs html
 
-    .. tab-item:: Powershell
+    .. tab-item:: Windows Powershell
         :sync: powershell
 
         .. code-block:: powershell
@@ -122,20 +146,4 @@ Then run the following commands from the project root directory to build the doc
             sphinx-build -M html source build
 
 This will build the documentation into the folder ``docs/build`` with root ``index.html``.
-You can then clean up the generated virtual environment.
 
-.. tab-set::
-
-    .. tab-item:: Bash
-        :sync: bash
-
-        .. code-block:: bash
-
-            deactivate && rm -rf .venv
-
-    .. tab-item:: Powershell
-        :sync: powershell
-
-        .. code-block:: powershell
-
-            Set-Location .. && deactivate && Remove-Item -Path .venv -Recurse -Force
