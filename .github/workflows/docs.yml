@@ -23,9 +23,6 @@ jobs:
           enable-cache: true
           cache-dependency-glob: ""
 
-      - name: Install Python
-        run: uv python install cpython@3.12
-
       - name: Checkout
         uses: actions/checkout@v4
         with:
