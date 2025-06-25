@@ -125,7 +125,7 @@ Filtration::Simplex::Simplex(
 	// Narrowing cast here is not a problem in 64-bit systems
     // unless we are using a ridiculously large number of vertices,
     // in which case we have other problems to worry about.
-	m_dim(facets.size() == 0 ? 0 : facets.size() - 1), // NOLINT
+	m_dim(facets.size() == 0 ? 0 : facets.size() - 1),  // NOLINT
 	m_filt_value(value),
 	facets(facets) {}
 
@@ -259,9 +259,9 @@ auto Filtration::has_simplex(const index_t dim, const label_t label) const -> bo
 auto Filtration::_has_simplex(const vector<index_t>& verts) const noexcept -> bool {
 	// Narrowing cast here is not a problem since this is
 	// called only from has_simplex, which performs validation.
-	index_t num_verts = verts.size(); // NOLINT
+	index_t num_verts = verts.size();  // NOLINT
 	assert(num_verts != 0);
-	auto dim   = num_verts - 1;  // we assume that verts is valid
+	auto dim   = num_verts - 1;        // we assume that verts is valid
 	auto label = _get_label_from_vertex_labels(verts);
 	return (_has_simplex(dim, label));
 }
@@ -275,7 +275,7 @@ auto Filtration::_add_simplex(const vector<index_t>& verts, const value_t filt_v
 	-> shared_ptr<Filtration::Simplex> {
 	// Narrowing cast here is not a problem since this is
 	// called only from add_simplex, which performs validation.
-	index_t num_verts = verts.size(); // NOLINT
+	index_t num_verts = verts.size();  // NOLINT
 	assert(num_verts != 0);
 	shared_ptr<Simplex> new_simplex;
 	auto                dim            = num_verts - 1;
@@ -325,7 +325,7 @@ auto Filtration::add_simplex(
 }
 
 void Filtration::propagate_filt_values_up(const index_t start_dim) noexcept {
-	auto p = max(start_dim + 1L, 1L);
+	auto p = max(start_dim + static_cast<index_t>(1), static_cast<index_t>(1));
 	while (p <= cur_dim) {
 		value_t max_facet_filt_value = NAN;
 		// iterate over the p-simplices
