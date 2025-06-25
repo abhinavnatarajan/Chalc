@@ -79,11 +79,18 @@ class BinomialCoeffTable {
 		B[0].resize(1, 0);
 		index_t j_max = 0;
 		for (index_t i = 1; i <= n; ++i) {
-			j_max = min(i >> 1, k);
+			j_max = min(i / 2, k);
 			B[i].resize(j_max + 1, 0);
 			B[i][0] = 1;
 			for (index_t j = 1; j <= j_max; ++j) {
 				// Use recurrence relation to fill the entries
+				// SAFETY:
+				// If i == 1 then j_max == 0 and hence
+				// this inner loop is not executed.
+				// Therefore we can assume that inside this loop
+				// 2 <= i <= n and i - 1 >= i/2.
+				// Therefore 1 <= j <= j_max <= min(k, i/2), so that
+				// i - 1 - j >= i/2 - j_max >= 0.
 				B[i][j] = B[i - 1][min(j - 1, i - j)] + B[i - 1][min(j, i - 1 - j)];
 			}
 			// Bounds checking: only check at the largest entry i_C_floor(i/2)
