@@ -38,7 +38,7 @@ master_doc = "index"
 exclude_patterns = [
 	"build",
 	"static",
-	"example.ipynb",
+	# "example.ipynb",
 ]
 
 extensions = [
