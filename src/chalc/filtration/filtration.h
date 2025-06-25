@@ -38,15 +38,27 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	#define FILTRATION_H
 
 	#include <bitset>
-	#include <chalc/common.h>
+	#include <cstdint>
 	#include <map>
 	#include <memory>
 	#include <vector>
 
 namespace chalc {
+// The type for filtration values.
+using value_t = double;
+// The type for simplex labels.
+using label_t = uint64_t;
 // The maximum number of colours that can be represented.
-constexpr index_t MAX_NUM_COLOURS = 16;
-using colours_t                   = std::bitset<MAX_NUM_COLOURS>;
+// 16 colours means that we can represent a colour label
+// in a uint16_t.
+constexpr int MAX_NUM_COLOURS = 16;
+// The type for colour bitmasks.
+using colours_t = std::bitset<MAX_NUM_COLOURS>;
+// The type for colour labels.
+using colour_t = uint16_t;
+// Type for dimension, number of vertices, number of simplices,
+// and most other counts that should not become too big.
+using index_t = int64_t;
 
 class BinomialCoeffTable;
 
@@ -65,11 +77,11 @@ struct Filtration {
 
 	// Get label of a simplex from the labels of its vertices.
 	[[nodiscard]]
-	auto get_label_from_vertex_labels(std::vector<index_t>& verts) const -> index_t;  // exported
+	auto get_label_from_vertex_labels(std::vector<index_t>& verts) const -> label_t;  // exported
 
 	// Check if the complex has a specific simplex.
 	[[nodiscard]]
-	auto has_simplex(const index_t dim, const index_t label) const -> bool;
+	auto has_simplex(const index_t dim, const label_t label) const -> bool;
 
 	// Check if the complex has a specific simplex.
 	[[nodiscard]]
@@ -85,7 +97,7 @@ struct Filtration {
 	// Returns a handle to the simplices.
 	[[nodiscard]]
 	auto get_simplices() const noexcept  // exported
-		-> const std::vector<std::map<index_t, std::shared_ptr<Simplex>>>& {
+		-> const std::vector<std::map<label_t, std::shared_ptr<Simplex>>>& {
 		return simplices;
 	}
 
@@ -122,7 +134,7 @@ struct Filtration {
 	// Returns a flat vectorised representation of the complex.
 	[[nodiscard]]
 	auto serialised() const -> std::vector<
-		std::tuple<std::vector<index_t>, index_t, value_t, std::vector<index_t>>>;  // exported
+		std::tuple<std::vector<index_t>, label_t, value_t, std::vector<colour_t>>>;  // exported
 
 	// Returns the k-skeleton of the complete simplicial complex on n vertices.
 	[[nodiscard]]
@@ -139,7 +151,7 @@ struct Filtration {
 	/* PRIVATE MEMBERS OF Filtration */
 
 	std::shared_ptr<const BinomialCoeffTable> binomial;  // binomial coefficients
-	std::vector<std::map<index_t, std::shared_ptr<Simplex>>>
+	std::vector<std::map<label_t, std::shared_ptr<Simplex>>>
 		simplices;               // std::vector whose kth element is a table of k-simplices,
 	                             // labelled by their lexicographic index
 	index_t num_simplices;       // total number of simplices
@@ -159,12 +171,12 @@ struct Filtration {
 	// its vertices.
 	// Assumes that verts is valid.
 	[[nodiscard]]
-	auto _get_label_from_vertex_labels(const std::vector<index_t>& verts) const -> index_t;
+	auto _get_label_from_vertex_labels(const std::vector<index_t>& verts) const -> label_t;
 
 	// Check if the complex has a specific simplex.
 	// Assumes that dim is valid.
 	[[nodiscard]]
-	auto _has_simplex(const index_t dim, const index_t label) const -> bool;
+	auto _has_simplex(const index_t dim, const label_t label) const -> bool;
 
 	// Check if the complex has a specific simplex.
 	// Assumes that verts is valid.
@@ -195,7 +207,7 @@ struct Filtration::Simplex : public std::enable_shared_from_this<Filtration::Sim
 	Simplex() = delete;
 	// Factory method - only way to create new simplex
 	static auto _make_simplex(
-		index_t label,
+		label_t label,
 		index_t max_vertex,
 		value_t value = DEFAULT_FILT_VALUE,
 		const std::vector<std::shared_ptr<Simplex>>& facets =
@@ -214,7 +226,7 @@ struct Filtration::Simplex : public std::enable_shared_from_this<Filtration::Sim
 	// Return the indices of the facets of the simplex, [i]th element of the
 	// result is the [i]th facet.
 	[[nodiscard]]
-	auto get_facet_labels() const -> std::vector<index_t>;
+	auto get_facet_labels() const -> std::vector<label_t>;
 
 	// Return a const reference to the facets.
 	[[nodiscard]]
@@ -229,13 +241,13 @@ struct Filtration::Simplex : public std::enable_shared_from_this<Filtration::Sim
 	}
 
 	// Set a monochromatic colour for the simplex.
-	void set_colour(index_t c) {  // exported
+	void set_colour(colour_t c) {  // exported
 		colours.reset().set(c);
 	}
 
 	// Colours of the simplex as a vector of colour labels.
 	[[nodiscard]]
-	auto get_colours_as_vec() const -> std::vector<index_t>;  // exported
+	auto get_colours_as_vec() const -> std::vector<colour_t>;  // exported
 
 	// Dimension of this simplex.
 	[[nodiscard]]
@@ -245,7 +257,7 @@ struct Filtration::Simplex : public std::enable_shared_from_this<Filtration::Sim
 
 	// Get label of the simplex.
 	[[nodiscard]]
-	auto get_label() const noexcept -> index_t {  // exported
+	auto get_label() const noexcept -> label_t {  // exported
 		return m_label;
 	}
 
@@ -273,7 +285,7 @@ struct Filtration::Simplex : public std::enable_shared_from_this<Filtration::Sim
 	}
 
 	// Add a colour to the simplex from a colour label.
-	void add_colour(index_t c) {
+	void add_colour(colour_t c) {
 		colours.set(c);
 	}
 
@@ -294,7 +306,7 @@ struct Filtration::Simplex : public std::enable_shared_from_this<Filtration::Sim
 
 	/* PRIVATE MEMBERS OF Simplex */
   private:
-	index_t                               m_label;       // label for the simplex
+	label_t                               m_label;       // label for the simplex
 	index_t                               m_max_vertex;  // largest vertex label
 	index_t                               m_dim;         // number of vertices minus 1
 	value_t                               m_filt_value;  // filtration value
@@ -303,7 +315,7 @@ struct Filtration::Simplex : public std::enable_shared_from_this<Filtration::Sim
 	colours_t colours;  // bitmask representing the colours of its vertices
 	// Constructor
 	Simplex(
-		index_t                                      label,
+		label_t                                      label,
 		index_t                                      max_vertex,
 		value_t                                      value,
 		const std::vector<std::shared_ptr<Simplex>>& facets

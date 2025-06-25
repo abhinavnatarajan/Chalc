@@ -56,11 +56,11 @@ namespace {
 using std::bad_weak_ptr;
 using std::bsearch;
 using std::domain_error;
+using std::iota;
 using std::map;
 using std::min;
 using std::numeric_limits;
 using std::ranges::any_of;
-using std::ranges::iota;
 using std::ranges::sort;
 using std::ranges::unique;
 using std::runtime_error;
@@ -71,6 +71,8 @@ using std::to_string;
 using std::tuple;
 using std::vector;
 
+using chalc::colour_t;
+using chalc::Filtration;
 using chalc::index_t;
 using chalc::MAX_NUM_COLOURS;
 using Eigen::all;
@@ -79,7 +81,7 @@ using Eigen::lastN;
 using Kernel_d                     = CGAL::Epick_d<CGAL::Dynamic_dimension_tag>;
 using Triangulation_data_structure = CGAL::Triangulation_data_structure<
 	Kernel_d::Dimension,
-	CGAL::Triangulation_vertex<Kernel_d, size_t>,
+	CGAL::Triangulation_vertex<Kernel_d, index_t>,
 	CGAL::Triangulation_full_cell<Kernel_d>>;
 using DelaunayTriangulation = CGAL::Delaunay_triangulation<Kernel_d, Triangulation_data_structure>;
 using Point_d               = Kernel_d::Point_d;
@@ -117,7 +119,7 @@ template <typename T>
 auto sort_with_indices(const vector<T>& v, bool (*compare)(const T& a, const T& b))
 	-> tuple<vector<T>, vector<index_t>> {
 	vector<index_t> idx(v.size());
-	iota(idx, 0);
+	iota(idx.begin(), idx.end(), 0);
 	sort(idx, [&v, &compare](index_t i1, index_t i2) {
 		return compare(v[i1], v[i2]);
 	});
@@ -138,15 +140,15 @@ template <typename T> auto compare(const void* a, const void* b) -> int {
 
 // make a vector contiguous and start at zero
 // returns new vector and number of distinct elements
-auto canonicalise(const vector<index_t>& vec) -> tuple<vector<index_t>, index_t> {
-	vector<index_t>       new_vec(vec.size());
-	map<index_t, index_t> m;
-	for (auto&& [c, i] = tuple{vec.begin(), 0}; c != vec.end(); c++) {
+auto canonicalise(const vector<colour_t>& vec) -> tuple<vector<colour_t>, index_t> {
+	vector<colour_t>       new_vec(vec.size());
+	map<index_t, colour_t> m;
+	for (auto&& [c, i] = tuple{vec.begin(), static_cast<colour_t>(0)}; c != vec.end(); c++) {
 		if (!m.contains(*c)) {
 			m[*c] = i++;
 		}
 	}
-	for (index_t i = 0; i < vec.size(); i++) {
+	for (size_t i = 0; i < vec.size(); i++) {
 		new_vec[i] = m[vec[i]];
 	}
 	return tuple{new_vec, m.size()};
@@ -157,7 +159,7 @@ Stratify a coloured point set.
 Points are provided as columns of a matrix or matrix expression.
 Colours are provided as a vector.
 */
-auto stratify(const MatrixXd& points, const vector<index_t>& colours) -> MatrixXd {
+auto stratify(const MatrixXd& points, const vector<colour_t>& colours) -> MatrixXd {
 	// input checks
 	if (any_of(colours, [](const index_t& colour) {
 			return (colour >= MAX_NUM_COLOURS);
@@ -167,7 +169,7 @@ auto stratify(const MatrixXd& points, const vector<index_t>& colours) -> MatrixX
 	if (colours.size() != points.cols()) {
 		throw domain_error("len(colours) must equal number of points.");
 	}
-	index_t dim = points.rows();
+	auto dim = points.rows();
 	// Make sure colours are contiguous and start at zero
 	auto&& [new_colours, num_colours] = canonicalise(colours);
 	MatrixXd result(dim + num_colours - 1, points.cols());
@@ -176,7 +178,7 @@ auto stratify(const MatrixXd& points, const vector<index_t>& colours) -> MatrixX
 		result.bottomRows(num_colours - 1).setZero();
 		for (auto i = 0; i < result.cols(); i++) {
 			if (new_colours[i] != 0) {
-				result(dim - 1 + new_colours[i], i) = 1.0;
+				result((dim + new_colours[i]) - 1, i) = 1.0;
 			}
 		}
 	}
@@ -188,12 +190,15 @@ auto stratify(const MatrixXd& points, const vector<index_t>& colours) -> MatrixX
 namespace chalc {
 
 // Create a Delaunay triangulation from a collection of coordinate vectors
-auto delaunay(const MatrixXd& X, const vector<index_t>& colours) -> Filtration {
+auto delaunay(const MatrixXd& X, const vector<colour_t>& colours) -> Filtration {
+	if (X.cols() > numeric_limits<index_t>::max()) {
+		throw runtime_error("Number of points is too large.");
+	}
 	MatrixXd Y(stratify(X, colours));
 	if (Y.rows() > numeric_limits<int>::max()) {
-		throw runtime_error("Dimension of stratified points exceeds maximum allowed by CGAL.");
+		throw runtime_error("Dimension of stratified points is too large.");
 	}
-	int             max_dim = Y.rows(); // NOLINT
+	int        max_dim = Y.rows();  // NOLINT
 	Filtration result(Y.cols(), max_dim);
 	if (Y.cols() != 0) {
 		auto points = coordvecs_to_points(Y);
@@ -245,7 +250,7 @@ auto delaunay(const MatrixXd& X, const vector<index_t>& colours) -> Filtration {
 }
 
 // Create the chromatic Del-VR complex
-auto delrips(const MatrixXd& points, const vector<index_t>& colours) -> Filtration {
+auto delrips(const MatrixXd& points, const vector<colour_t>& colours) -> Filtration {
 	// Get the delaunay triangulation
 	Filtration delX(delaunay(points, colours));
 
@@ -262,16 +267,16 @@ auto delrips(const MatrixXd& points, const vector<index_t>& colours) -> Filtrati
 
 // Create the chromatic Del-VR complex with parallelisation
 auto delrips_parallel(
-	const MatrixXd&        points,
-	const vector<index_t>& colours,
-	const size_t           max_num_threads
+	const MatrixXd&         points,
+	const vector<colour_t>& colours,
+	const int               max_num_threads
 ) -> Filtration {
 	// Get the delaunay triangulation
 	Filtration delX(delaunay(points, colours));
 
 	// Modify the filtration values
 	if (delX.dimension() >= 1) {
-		task_arena arena(max_num_threads == 0 ? task_arena::automatic : max_num_threads); // NOLINT
+		task_arena arena(max_num_threads == 0 ? task_arena::automatic : max_num_threads);  // NOLINT
 		// Store all the simplex pointers in a vector,
 		// which is convenient to iterate over using the TBB API.
 		vector<const shared_ptr<Filtration::Simplex>*> edges;
@@ -297,7 +302,7 @@ auto delrips_parallel(
 }
 
 // Compute the chromatic alpha complex
-auto alpha(const MatrixXd& points, const vector<index_t>& colours) -> tuple<Filtration, bool> {
+auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Filtration, bool> {
 	using CGAL::Gmpzf, CGAL::Quotient;
 	using cmb::equidistant_subspace, cmb::SolutionPrecision;
 	// Start
@@ -323,7 +328,7 @@ auto alpha(const MatrixXd& points, const vector<index_t>& colours) -> tuple<Filt
 				auto&& verts = simplex->get_vertex_labels();
 
 				// Partition the vertices of this simplex by colour
-				map<index_t, vector<index_t>> verts_by_colour_in_simplex;
+				map<colour_t, vector<index_t>> verts_by_colour_in_simplex;
 				for (auto& v: verts) {
 					verts_by_colour_in_simplex[colours[v]].push_back(v);
 				}
@@ -331,8 +336,7 @@ auto alpha(const MatrixXd& points, const vector<index_t>& colours) -> tuple<Filt
 				// Partition the vertices of all cofaces of the simplex by colour
 				map<index_t, vector<index_t>> verts_by_colour_all_cofaces;
 				for (auto& cofacet: simplex->get_cofacets()) {
-					for (auto& v:
-					     shared_ptr<Filtration::Simplex>(cofacet)->get_vertex_labels()) {
+					for (auto& v: shared_ptr<Filtration::Simplex>(cofacet)->get_vertex_labels()) {
 						verts_by_colour_all_cofaces[colours[v]].push_back(v);
 					}
 				}
@@ -354,7 +358,10 @@ auto alpha(const MatrixXd& points, const vector<index_t>& colours) -> tuple<Filt
 				MatrixX<Gmpzf> E(0, points.rows());
 				VectorX<Gmpzf> b;
 				for (auto& [j, verts_j]: verts_by_colour_in_simplex) {
-					Eigen::Index num_new_rows = verts_j.size() - 1;  // each of these has size at least 1
+					// each of these has size at least 1, so the -1 in the following is safe
+					// The narrowing cast is safe because verts_j.size() is always at most
+					// the number of points, which is less than Eigen::Index::max().
+					auto num_new_rows = static_cast<Eigen::Index>(verts_j.size() - 1);
 					E.conservativeResize(E.rows() + num_new_rows, Eigen::NoChange);
 					b.conservativeResize(b.rows() + num_new_rows);
 					MatrixX<Gmpzf>::BlockXpr           E_new_rows = E.bottomRows(num_new_rows);
@@ -432,9 +439,9 @@ auto alpha(const MatrixXd& points, const vector<index_t>& colours) -> tuple<Filt
 }
 
 auto alpha_parallel(
-	const MatrixXd&        points,
-	const vector<index_t>& colours,
-	const size_t           max_num_threads
+	const MatrixXd&         points,
+	const vector<colour_t>& colours,
+	const int               max_num_threads
 ) -> tuple<Filtration, bool> {
 	using CGAL::Gmpzf, CGAL::Quotient;
 	using cmb::equidistant_subspace, cmb::SolutionPrecision;
@@ -506,8 +513,11 @@ auto alpha_parallel(
 							MatrixX<Gmpzf> E(0, points.rows());
 							VectorX<Gmpzf> b;
 							for (auto& [j, verts_j]: verts_by_colour_in_simplex) {
-								index_t num_new_rows =
-									verts_j.size() - 1;  // each of these has size at least 1
+								// each of these has size at least 1, so the -1 in the following is
+							    // safe The narrowing cast is safe because verts_j.size() is always
+							    // at most the number of points, which is less than
+							    // Eigen::Index::max().
+								auto num_new_rows = static_cast<Eigen::Index>(verts_j.size() - 1);
 								E.conservativeResize(E.rows() + num_new_rows, Eigen::NoChange);
 								b.conservativeResize(b.rows() + num_new_rows);
 								MatrixX<Gmpzf>::BlockXpr E_new_rows = E.bottomRows(num_new_rows);
@@ -600,8 +610,7 @@ auto alpha_parallel(
 }
 
 // Create the chromatic Del-Cech complex
-auto delcech(const MatrixXd& points, const vector<index_t>& colours)
-	-> tuple<Filtration, bool> {
+auto delcech(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Filtration, bool> {
 	using CGAL::Gmpzf, CGAL::Quotient;
 	using cmb::SolutionPrecision;
 	// Start
@@ -647,9 +656,9 @@ auto delcech(const MatrixXd& points, const vector<index_t>& colours)
 
 // Create the chromatic Del-Cech complex
 auto delcech_parallel(
-	const MatrixXd&        points,
-	const vector<index_t>& colours,
-	const size_t           max_num_threads
+	const MatrixXd&         points,
+	const vector<colour_t>& colours,
+	const int               max_num_threads
 ) -> tuple<Filtration, bool> {
 	using CGAL::Gmpzf, CGAL::Quotient;
 	using cmb::SolutionPrecision;

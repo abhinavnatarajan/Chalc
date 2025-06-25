@@ -6,12 +6,14 @@
 PYBIND11_MODULE(chromatic, m) {  // NOLINT
 	using chalc::alpha;
 	using chalc::alpha_parallel;
+	using chalc::colour_t;
 	using chalc::delaunay;
 	using chalc::delcech;
 	using chalc::delcech_parallel;
 	using chalc::delrips;
 	using chalc::delrips_parallel;
 	using chalc::index_t;
+	using chalc::label_t;
 	using chalc::MAX_NUM_COLOURS;
 	using std::tuple;
 	using std::vector;
@@ -23,8 +25,8 @@ PYBIND11_MODULE(chromatic, m) {  // NOLINT
 	m.attr("MaxColoursChromatic") = py::int_(MAX_NUM_COLOURS);
 	m.def(
 		 "delaunay",
-		 [](const Eigen::MatrixXd& points, const Eigen::VectorX<index_t>& colours) {
-			 const vector<index_t> colours_vec(colours.cbegin(), colours.cend());
+		 [](const Eigen::MatrixXd& points, const Eigen::VectorX<colour_t>& colours) {
+			 const vector<colour_t> colours_vec(colours.cbegin(), colours.cend());
 			 return delaunay(points, colours_vec);
 		 },
 		 py::arg("points"),
@@ -54,10 +56,10 @@ Returns:
 		)
 		.def(
 			"delrips",
-			[](const Eigen::MatrixXd&         points,
-	           const Eigen::VectorX<index_t>& colours_ndarray,
-	           const size_t                   max_num_threads) {
-				const vector<index_t> colours(colours_ndarray.cbegin(), colours_ndarray.cend());
+			[](const Eigen::MatrixXd&          points,
+	           const Eigen::VectorX<colour_t>& colours_ndarray,
+	           const int                       max_num_threads) {
+				const vector<colour_t> colours(colours_ndarray.cbegin(), colours_ndarray.cend());
 				if (max_num_threads != 1) {
 					return tuple{delrips_parallel(points, colours, max_num_threads), false};
 				} else {
@@ -71,8 +73,8 @@ Returns:
 		.def(
 			"delrips",
 			[](const Eigen::MatrixXd& points,
-	           const vector<index_t>& colours,
-	           const size_t max_num_threads) {
+	           const vector<colour_t>& colours,
+	           const int max_num_threads) {
 				if (max_num_threads != 1) {
 					return tuple{delrips_parallel(points, colours, max_num_threads), false};
 				} else {
@@ -84,7 +86,11 @@ Returns:
 Args:
 	points : Numpy matrix whose columns are points in the point cloud.
 	colours : List or numpy array of integers describing the colours of the points.
-	max_num_threads: Maximum number of parallel threads to use. Set to 0 for maximum parallelism.
+	max_num_threads: Maximum number of parallel threads to use.
+		If non-positive, the number of threads to use is automatically determined
+		by the threading library (Intel OneAPI TBB). Note that this may be less
+		than the number of available CPU cores depending on the number of points
+		and the system load. The default is 1, which means no parallelism.
 
 Returns:
 	The chromatic Delaunay--Rips filtration and a boolean flag to indicate
@@ -118,9 +124,9 @@ See Also:
 		.def(
 			"alpha",
 			[](const Eigen::MatrixXd& points,
-	           const Eigen::VectorX<index_t>& colours_ndarray,
-	           const size_t max_num_threads) {
-				const vector<index_t> colours(colours_ndarray.cbegin(), colours_ndarray.cend());
+	           const Eigen::VectorX<colour_t>& colours_ndarray,
+	           const int max_num_threads) {
+				const vector<colour_t> colours(colours_ndarray.cbegin(), colours_ndarray.cend());
 				if (max_num_threads != 1) {
 					return alpha_parallel(points, colours, max_num_threads);
 				} else {
@@ -134,8 +140,8 @@ See Also:
 		.def(
 			"alpha",
 			[](const Eigen::MatrixXd& points,
-	           const vector<index_t>& colours,
-	           const size_t max_num_threads) {
+	           const vector<colour_t>& colours,
+	           const int max_num_threads) {
 				if (max_num_threads != 1) {
 					return alpha_parallel(points, colours, max_num_threads);
 				} else {
@@ -147,7 +153,11 @@ See Also:
 Args:
 	points : Numpy matrix whose columns are points in the point cloud.
 	colours : List or numpy array of integers describing the colours of the points.
-	max_num_threads: Maximum number of parallel threads to use. Set to 0 for maximum parallelism.
+	max_num_threads: Maximum number of parallel threads to use.
+		If non-positive, the number of threads to use is automatically determined
+		by the threading library (Intel OneAPI TBB). Note that this may be less
+		than the number of available CPU cores depending on the number of points
+		and the system load. The default is 1, which means no parallelism.
 
 Returns:
 	The chromatic alpha filtration and a boolean flag to
@@ -176,9 +186,9 @@ See Also:
 		.def(
 			"delcech",
 			[](const Eigen::MatrixXd& points,
-	           const Eigen::VectorX<index_t>& colours_ndarray,
-	           const size_t max_num_threads) {
-				const vector<index_t> colours(colours_ndarray.cbegin(), colours_ndarray.cend());
+	           const Eigen::VectorX<colour_t>& colours_ndarray,
+	           const int max_num_threads) {
+				const vector<colour_t> colours(colours_ndarray.cbegin(), colours_ndarray.cend());
 				if (max_num_threads != 1) {
 					return delcech_parallel(points, colours, max_num_threads);
 				} else {
@@ -192,8 +202,8 @@ See Also:
 		.def(
 			"delcech",
 			[](const Eigen::MatrixXd& points,
-	           const vector<index_t>& colours,
-	           const size_t max_num_threads) {
+	           const vector<colour_t>& colours,
+	           const int max_num_threads) {
 				if (max_num_threads != 1) {
 					return delcech_parallel(points, colours, max_num_threads);
 				}
@@ -204,7 +214,11 @@ See Also:
 Args:
 	points : Numpy matrix whose columns are points in the point cloud.
 	colours : List or numpy array of integers describing the colours of the points.
-	max_num_threads: Maximum number of parallel threads to use. Set to 0 for maximum parallelism.
+	max_num_threads: Maximum number of parallel threads to use.
+		If non-positive, the number of threads to use is automatically determined
+		by the threading library (Intel OneAPI TBB). Note that this may be less
+		than the number of available CPU cores depending on the number of points
+		and the system load. The default is 1, which means no parallelism.
 
 Returns:
 	The chromatic Delaunay--Čech filtration and a boolean flag to indicate
