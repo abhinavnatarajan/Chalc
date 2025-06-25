@@ -96,7 +96,7 @@ class BinomialCoeffTable {
 			// Bounds checking: only check at the largest entry i_C_floor(i/2)
 			// We check by using the recurrence relation and the datatype max.
 			if (B[i - 1][min(j_max - 1, i - j_max)] >
-			    numeric_limits<index_t>::max() - B[i - 1][min(j_max, i - 1 - j_max)]) {
+			    numeric_limits<label_t>::max() - B[i - 1][min(j_max, i - 1 - j_max)]) {
 				throw runtime_error("Simplex index is too large.");
 			}
 		}

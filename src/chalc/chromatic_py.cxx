@@ -46,6 +46,9 @@ Raises:
 		If any value in ``colours`` is
 		>= :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>` or < 0,
 		or if the length of ``colours`` does not match the number of points.
+	RuntimeError:
+		If the dimension of the point cloud + the number of colours is too large
+		for computations to run without overflowing.
 
 Returns:
 	The Delaunay triangulation.
@@ -102,6 +105,9 @@ Raises:
 		If any value in ``colours`` is
 		>= :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>` or < 0,
 		or if the length of ``colours`` does not match the number of points.
+	RuntimeError:
+		If the dimension of the point cloud + the number of colours is too large
+		for computations to run without overflowing.
 
 Notes:
 	The chromatic Delaunay--Rips filtration of the point cloud
@@ -169,6 +175,9 @@ Raises:
 		If any value in ``colours`` is
 		>= :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>` or < 0,
 		or if the length of ``colours`` does not match the number of points.
+	RuntimeError:
+		If the dimension of the point cloud + the number of colours is too large
+		for computations to run without overflowing.
 
 Notes:
 	This function is included for pedantic reasons.
@@ -230,6 +239,9 @@ Raises:
 		If any value in ``colours`` is
 		>= :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>` or < 0,
 		or if the length of ``colours`` does not match the number of points.
+	RuntimeError:
+		If the dimension of the point cloud + the number of colours is too large
+		for computations to run without overflowing.
 
 Notes:
 	The chromatic Delaunay--Čech filtration of the point cloud
