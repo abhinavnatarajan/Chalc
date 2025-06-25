@@ -23,13 +23,18 @@ Functions
 Module Contents
 ---------------
 
-.. py:function:: alpha(x: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, Literal[1]], numpy.dtype[numpy.uint64]]) -> tuple[chalc.filtration.FilteredComplex, bool]
-                 alpha(x: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int]) -> tuple[chalc.filtration.FilteredComplex, bool]
+.. py:function:: alpha(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, Literal[1]], numpy.dtype[numpy.uint16]], max_num_threads: int = 1) -> tuple[chalc.filtration.Filtration, bool]
+                 alpha(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 1) -> tuple[chalc.filtration.Filtration, bool]
 
    Compute the chromatic alpha filtration of a coloured point cloud.
 
-   :param x: Numpy matrix whose columns are points in the point cloud.
+   :param points: Numpy matrix whose columns are points in the point cloud.
    :param colours: List or numpy array of integers describing the colours of the points.
+   :param max_num_threads: Maximum number of parallel threads to use.
+                           If non-positive, the number of threads to use is automatically determined
+                           by the threading library (Intel OneAPI TBB). Note that this may be less
+                           than the number of available CPU cores depending on the number of points
+                           and the system load. The default is 1, which means no parallelism.
 
    :returns: The chromatic alpha filtration and a boolean flag to
              indicate if numerical issues were encountered.
@@ -38,6 +43,8 @@ Module Contents
    :raises ValueError: If any value in ``colours`` is
        >= :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>` or < 0,
        or if the length of ``colours`` does not match the number of points.
+   :raises RuntimeError: If the dimension of the point cloud + the number of colours is too large
+       for computations to run without overflowing.
 
    .. rubric:: Notes
 
@@ -48,28 +55,35 @@ Module Contents
    .. seealso:: :func:`delrips`, :func:`delcech`
 
 
-.. py:function:: delaunay(x: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, Literal[1]], numpy.dtype[numpy.uint64]]) -> chalc.filtration.FilteredComplex
-                 delaunay(x: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int]) -> chalc.filtration.FilteredComplex
+.. py:function:: delaunay(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, Literal[1]], numpy.dtype[numpy.uint16]]) -> chalc.filtration.Filtration
+                 delaunay(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int]) -> chalc.filtration.Filtration
 
    Compute the chromatic Delaunay triangulation of a coloured point cloud in Euclidean space.
 
-   :param x: Numpy matrix whose columns are points in the point cloud.
+   :param points: Numpy matrix whose columns are points in the point cloud.
    :param colours: List or numpy array of integers describing the colours of the points.
 
    :raises ValueError: If any value in ``colours`` is
        >= :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>` or < 0,
        or if the length of ``colours`` does not match the number of points.
+   :raises RuntimeError: If the dimension of the point cloud + the number of colours is too large
+       for computations to run without overflowing.
 
    :returns: The Delaunay triangulation.
 
 
-.. py:function:: delcech(x: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, Literal[1]], numpy.dtype[numpy.uint64]]) -> tuple[chalc.filtration.FilteredComplex, bool]
-                 delcech(x: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int]) -> tuple[chalc.filtration.FilteredComplex, bool]
+.. py:function:: delcech(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, Literal[1]], numpy.dtype[numpy.uint16]], max_num_threads: int = 1) -> tuple[chalc.filtration.Filtration, bool]
+                 delcech(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 1) -> tuple[chalc.filtration.Filtration, bool]
 
    Compute the chromatic Delaunay--Čech filtration of a coloured point cloud.
 
-   :param x: Numpy matrix whose columns are points in the point cloud.
+   :param points: Numpy matrix whose columns are points in the point cloud.
    :param colours: List or numpy array of integers describing the colours of the points.
+   :param max_num_threads: Maximum number of parallel threads to use.
+                           If non-positive, the number of threads to use is automatically determined
+                           by the threading library (Intel OneAPI TBB). Note that this may be less
+                           than the number of available CPU cores depending on the number of points
+                           and the system load. The default is 1, which means no parallelism.
 
    :returns: The chromatic Delaunay--Čech filtration and a boolean flag to indicate
              if numerical issues were encountered.
@@ -78,6 +92,8 @@ Module Contents
    :raises ValueError: If any value in ``colours`` is
        >= :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>` or < 0,
        or if the length of ``colours`` does not match the number of points.
+   :raises RuntimeError: If the dimension of the point cloud + the number of colours is too large
+       for computations to run without overflowing.
 
    .. rubric:: Notes
 
@@ -88,13 +104,18 @@ Module Contents
    .. seealso:: :func:`alpha`, :func:`delrips`
 
 
-.. py:function:: delrips(x: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, Literal[1]], numpy.dtype[numpy.uint64]]) -> tuple[chalc.filtration.FilteredComplex, bool]
-                 delrips(x: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int]) -> tuple[chalc.filtration.FilteredComplex, bool]
+.. py:function:: delrips(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, Literal[1]], numpy.dtype[numpy.uint16]], max_num_threads: int = 1) -> tuple[chalc.filtration.Filtration, bool]
+                 delrips(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 1) -> tuple[chalc.filtration.Filtration, bool]
 
    Compute the chromatic Delaunay--Rips filtration of a coloured point cloud.
 
-   :param x: Numpy matrix whose columns are points in the point cloud.
+   :param points: Numpy matrix whose columns are points in the point cloud.
    :param colours: List or numpy array of integers describing the colours of the points.
+   :param max_num_threads: Maximum number of parallel threads to use.
+                           If non-positive, the number of threads to use is automatically determined
+                           by the threading library (Intel OneAPI TBB). Note that this may be less
+                           than the number of available CPU cores depending on the number of points
+                           and the system load. The default is 1, which means no parallelism.
 
    :returns: The chromatic Delaunay--Rips filtration and a boolean flag to indicate
              if numerical issues were encountered.
@@ -103,6 +124,8 @@ Module Contents
    :raises ValueError: If any value in ``colours`` is
        >= :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>` or < 0,
        or if the length of ``colours`` does not match the number of points.
+   :raises RuntimeError: If the dimension of the point cloud + the number of colours is too large
+       for computations to run without overflowing.
 
    .. rubric:: Notes
 

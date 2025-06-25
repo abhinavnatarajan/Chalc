@@ -5,8 +5,8 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Example Usage" href="example.html" /><link rel="prev" title="Chalc Documentation" href="index.html" />
 
-    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
-        <title>Installation - chalc 9.0.0 documentation</title>
+    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
+        <title>Installation - chalc 10.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
@@ -169,7 +169,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">chalc 9.0.0 documentation</div></a>
+      <a href="index.html"><div class="brand">chalc 10.0.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
-  <span class="sidebar-brand-text">chalc 9.0.0 documentation</span>
+  <span class="sidebar-brand-text">chalc 10.0.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -269,8 +269,23 @@
 <section id="using-pip">
 <h2>Using pip<a class="headerlink" href="#using-pip" title="Link to this heading">¶</a></h2>
 <p>The recommended way to download and install chalc is from the <a class="reference external" href="https://pypi.org/project/chalc/">PyPI repository</a> using pip. Pre-packaged binary distributions are available for Windows and Linux (x86_64), and macOS (x86_64 and aarch64). Chalc works with CPython and PyPy ≥ 3.12.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>chalc
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="uv" for="sd-tab-item-0">
+uv</label><div class="sd-tab-content docutils">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># To chalc to your uv project</span>
+uv<span class="w"> </span>add<span class="w"> </span>chalc
 </pre></div>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="pip" for="sd-tab-item-1">
+pip</label><div class="sd-tab-content docutils">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># To install chalc into the current Python environment</span>
+pip<span class="w"> </span>install<span class="w"> </span>chalc
+</pre></div>
+</div>
+</div>
 </div>
 </section>
 <section id="build-from-source">
@@ -280,10 +295,11 @@
 <h3>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">¶</a></h3>
 <p>Chalc is a C++ extension module for Python and has several additional dependencies.</p>
 <ol class="arabic simple">
-<li><p>The <a class="reference external" href="https://eigen.tuxfamily.org/index.php?title=Main_Page">Eigen C++ library</a> (tested with version 3.4.0).</p></li>
-<li><p>The <a class="reference external" href="https://gmplib.org/">GNU MP Library</a> (tested with version 6.3.1) and the <a class="reference external" href="https://www.mpfr.org/">GNU MPFR Library</a> (tested with version 4.2.0) for exact geometric computation.</p></li>
-<li><p>The <a class="reference external" href="https://www.cgal.org/">Computational Geometry Algorithms Library (CGAL)</a> library (tested with version 6.0.1).</p></li>
-<li><p>The <a class="reference external" href="https://www.boost.org/">Boost C++ libraries</a> (transitive dependency through CGAL).</p></li>
+<li><p><a class="reference external" href="https://eigen.tuxfamily.org/index.php?title=Main_Page">Eigen C++ library</a> (tested with version 3.4.0).</p></li>
+<li><p><a class="reference external" href="https://gmplib.org/">GNU MP Library</a> (tested with version 6.3.1) and the <a class="reference external" href="https://www.mpfr.org/">GNU MPFR Library</a> (tested with version 4.2.0) for exact geometric computation.</p></li>
+<li><p><a class="reference external" href="https://www.cgal.org/">Computational Geometry Algorithms Library (CGAL)</a> library (tested with version 6.0.1).</p></li>
+<li><p><a class="reference external" href="https://www.boost.org/">Boost C++ libraries</a> (transitive dependency through CGAL).</p></li>
+<li><p><a class="reference external" href="https://www.threadingbuildingblocks.org/">Intel OneAPI Threading Building Blocks (TBB)</a> (tested with version 2022.1.0).</p></li>
 </ol>
 <p>The recommended way to obtain and manage these dependencies is using vcpkg (see the build dependencies section) . It is also recommended to use a <a class="reference external" href="https://docs.python.org/3/tutorial/venv.html">Python virtual environment</a> for the build process to avoid polluting the package namespace.</p>
 </section>
@@ -314,35 +330,35 @@ On MacOS: Clang 14 or later.</p>
 <li><p>If you have vcpkg installed on your system, make sure that the environment variable <code class="docutils literal notranslate"><span class="pre">VCPKG_ROOT</span></code> is set and points to the base directory where vcpkg is installed.</p></li>
 </ol>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="bash" for="sd-tab-item-0">
+<input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="bash" for="sd-tab-item-2">
 Bash</label><div class="sd-tab-content docutils">
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">VCPKG_ROOT</span><span class="o">=</span>/path/to/vcpkg/dir
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="powershell" for="sd-tab-item-1">
+<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="powershell" for="sd-tab-item-3">
 Powershell</label><div class="sd-tab-content docutils">
 <div class="highlight-powershell notranslate"><div class="highlight"><pre><span></span><span class="nv">$Env:VCPKG_ROOT</span> <span class="p">=</span> <span class="s1">&#39;C:\path\to\vcpkg\dir&#39;</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>If you do not have vcpkg installed, the build process will automatically download vcpkg into a temporary directory and fetch the required dependencies.</p>
+<p>If you do not have vcpkg installed, the build process will automatically download vcpkg into a temporary directory, and fetch and build the required dependencies.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If you would like to disable the use of vcpkg altogether, set the environment variable <code class="docutils literal notranslate"><span class="pre">NO_USE_VPKG</span></code>. You will have to ensure that all build requirements are met and the appropriate entries are recorded in <code class="docutils literal notranslate"><span class="pre">PATH</span></code> (see the file <a class="reference external" href="https://github.com/abhinavnatarajan/Chalc/blob/master/CMakeLists.txt">CMakeLists.txt</a> for details).</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="bash" for="sd-tab-item-2">
+<input checked="checked" id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="bash" for="sd-tab-item-4">
 Bash</label><div class="sd-tab-content docutils">
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span>NO_USE_VPKG
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="powershell" for="sd-tab-item-3">
+<input id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="powershell" for="sd-tab-item-5">
 Powershell</label><div class="sd-tab-content docutils">
 <div class="highlight-powershell notranslate"><div class="highlight"><pre><span></span><span class="nv">$Env:NO_USE_VPKG</span> <span class="p">=</span> <span class="nv">$null</span>
 </pre></div>
@@ -351,34 +367,45 @@ Powershell</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <ol class="arabic simple" start="3">
-<li><p>Build the package wheel using <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">wheel</span></code> and install the compiled binary.</p></li>
+<li><p>Build the package using your build tool of choice.</p></li>
 </ol>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>wheel<span class="w"> </span>.<span class="w"> </span>-w<span class="w"> </span>outputdir
-pip<span class="w"> </span>install<span class="w"> </span>outputdir/&lt;name_of_generated_wheel&gt;.whl
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="uv" for="sd-tab-item-6">
+uv</label><div class="sd-tab-content docutils">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># To build chalc as an editable package in a new virtual environment.</span>
+<span class="c1"># This will also install the dependencies for testing and building documentation.</span>
+uv<span class="w"> </span>sync<span class="w"> </span>--frozen<span class="w"> </span>--all-groups
 </pre></div>
+</div>
+</div>
+<input id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="pip" for="sd-tab-item-7">
+pip</label><div class="sd-tab-content docutils">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># To install chalc into the current Python environment from the package lock file.</span>
+<span class="c1"># This will also install the dependencies for testing and building documentation.</span>
+pip<span class="w"> </span>lock<span class="w"> </span>-r<span class="w"> </span>pylock.toml
+</pre></div>
+</div>
+</div>
 </div>
 </section>
 </section>
 <section id="building-the-documentation">
 <h2>Building the Documentation<a class="headerlink" href="#building-the-documentation" title="Link to this heading">¶</a></h2>
-<p>To build the documentation, the development dependencies of the project need to be installed into a virtual environment:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
-<span class="nb">source</span><span class="w"> </span>.venv/bin/activate
-pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
-</pre></div>
-</div>
-<p>Then run the following commands from the project root directory to build the documentation files.</p>
+<p>To build the documentation, the development dependencies of the project need to be installed into the current environment.
+Then run the following commands from the project root directory to build the documentation files.</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="bash" for="sd-tab-item-4">
+<input checked="checked" id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="bash" for="sd-tab-item-8">
 Bash</label><div class="sd-tab-content docutils">
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>-C<span class="w"> </span>docs<span class="w"> </span>html
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="powershell" for="sd-tab-item-5">
-Powershell</label><div class="sd-tab-content docutils">
+<input id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="powershell" for="sd-tab-item-9">
+Windows Powershell</label><div class="sd-tab-content docutils">
 <div class="highlight-powershell notranslate"><div class="highlight"><pre><span></span><span class="nb">Set-Location</span> <span class="n">docs</span>
 <span class="n">python</span> <span class="n">-m</span> <span class="n">pybind11_stubgen</span> <span class="n">chalc</span><span class="p">.</span><span class="n">chromatic</span> <span class="p">-</span><span class="n">-numpy-array-use-type-var</span> <span class="p">-</span><span class="n">-output-dir</span> <span class="p">..\</span><span class="n">src</span>
 <span class="n">python</span> <span class="n">-m</span> <span class="n">pybind11_stubgen</span> <span class="n">chalc</span><span class="p">.</span><span class="n">filtration</span> <span class="p">-</span><span class="n">-numpy-array-use-type-var</span> <span class="p">-</span><span class="n">-output-dir</span> <span class="p">..\</span><span class="n">src</span>
@@ -387,24 +414,7 @@ Powershell</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<p>This will build the documentation into the folder <code class="docutils literal notranslate"><span class="pre">docs/build</span></code> with root <code class="docutils literal notranslate"><span class="pre">index.html</span></code>.
-You can then clean up the generated virtual environment.</p>
-<div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="bash" for="sd-tab-item-6">
-Bash</label><div class="sd-tab-content docutils">
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>deactivate<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>.venv
-</pre></div>
-</div>
-</div>
-<input id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="powershell" for="sd-tab-item-7">
-Powershell</label><div class="sd-tab-content docutils">
-<div class="highlight-powershell notranslate"><div class="highlight"><pre><span></span><span class="nb">Set-Location</span> <span class="p">..</span> <span class="p">&amp;&amp;</span> <span class="n">deactivate</span> <span class="p">&amp;&amp;</span> <span class="nb">Remove-Item</span> <span class="n">-Path</span> <span class="p">.</span><span class="n">venv</span> <span class="n">-Recurse</span> <span class="n">-Force</span>
-</pre></div>
-</div>
-</div>
-</div>
+<p>This will build the documentation into the folder <code class="docutils literal notranslate"><span class="pre">docs/build</span></code> with root <code class="docutils literal notranslate"><span class="pre">index.html</span></code>.</p>
 </section>
 </section>
 
@@ -483,7 +493,7 @@ Powershell</label><div class="sd-tab-content docutils">
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=0b13d40c"></script>
+</div><script src="_static/documentation_options.js?v=335988e4"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=5fa4622c"></script>

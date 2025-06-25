@@ -9,7 +9,7 @@ Chalc Documentation
 ===================
 Chalc is a Python package for computing chromatic Delaunay filtrations of labelled point clouds in Euclidean space, and associated six-packs of persistent homology diagrams.
 Chalc is named for :underline:`ch`\ romatic :underline:`al`\ pha :underline:`c`\ omplexes, but it can also compute chromatic Delaunay--Čech and chromatic Delaunay--Rips filtrations.
-Chalc is written in C++ and relies on the `Computational Geometry Algorithms Library (CGAL) <https://www.cgal.org>`_ for fast and accurate geometric computations, and `Phimaker <https://github.com/tomchaplin/phimaker>`_ for persistent homology calculations.
+Chalc is written in C++ and relies on the `Computational Geometry Algorithms Library (CGAL) <https://www.cgal.org>`_ for fast and accurate geometric computations, `Phimaker <https://github.com/tomchaplin/phimaker>`_ for persistent homology calculations, and `Intel OneAPI Threading Building Blocks (TBB) <https://www.threadingbuildingblocks.org>`_ for parallelism.
 
 Documentation index
 -------------------

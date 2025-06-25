@@ -23,7 +23,7 @@ Functions
 Module Contents
 ---------------
 
-.. py:function:: animate_filtration(K: chalc.filtration.FilteredComplex, points: numpy.ndarray[tuple[Literal[2], int], numpy.dtype[numpy.floating]], filtration_times: collections.abc.Sequence[float], animation_length: float, plot_colours: str | numpy.ndarray | None = None) -> matplotlib.animation.FuncAnimation
+.. py:function:: animate_filtration(K: chalc.filtration.Filtration, points: numpy.ndarray[tuple[Literal[2], int], numpy.dtype[numpy.floating]], filtration_times: collections.abc.Sequence[float], animation_length: float, plot_colours: str | numpy.ndarray | None = None) -> matplotlib.animation.FuncAnimation
 
    Create animation of 2-skeleton of filtered simplicial complex.
 
@@ -36,7 +36,7 @@ Module Contents
                         If not provided, the current matplotlib colour cycle will be used.
 
 
-.. py:function:: draw_filtration(K: chalc.filtration.FilteredComplex, points: numpy.ndarray[tuple[Literal[2], int], numpy.dtype[numpy.floating]], time: float, include_colours: collections.abc.Collection[int] | None = None, ax: matplotlib.axes.Axes | None = None, plot_colours: str | numpy.ndarray | None = None) -> matplotlib.axes.Axes
+.. py:function:: draw_filtration(K: chalc.filtration.Filtration, points: numpy.ndarray[tuple[Literal[2], int], numpy.dtype[numpy.floating]], time: float, include_colours: collections.abc.Collection[int] | None = None, ax: matplotlib.axes.Axes | None = None, plot_colours: str | numpy.ndarray | None = None) -> matplotlib.axes.Axes
 
    Visualise a 2D filtration at given time, optionally including only certain colours.
 
@@ -51,7 +51,7 @@ Module Contents
                         If not provided, the current matplotlib colour cycle will be used.
 
 
-.. py:function:: plot_diagram(dgms: chalc.sixpack.DiagramEnsemble, diagram_name: chalc.sixpack.DiagramEnsemble.DiagramName, truncation: float | None = None, dimensions: collections.abc.Collection[int] | int | None = None, ax: matplotlib.axes.Axes | None = None, threshold: float = 0) -> matplotlib.axes.Axes | None
+.. py:function:: plot_diagram(dgms: chalc.sixpack.SixPack, diagram_name: chalc.sixpack.SixPack.DiagramName, truncation: float | None = None, dimensions: collections.abc.Collection[int] | int | None = None, ax: matplotlib.axes.Axes | None = None, threshold: float = 0) -> matplotlib.axes.Axes | None
 
    Plot a specific diagram from a 6-pack.
 
@@ -66,7 +66,7 @@ Module Contents
    :param threshold: Only features with persistence greater than this value will be plotted.
 
 
-.. py:function:: plot_sixpack(dgms: chalc.sixpack.DiagramEnsemble, truncations: collections.abc.Mapping[chalc.sixpack.DiagramEnsemble.DiagramName, float] | float | None = None, dimensions: collections.abc.Collection[int] | int | None = None, threshold: float = 0) -> tuple[matplotlib.figure.Figure, numpy.ndarray[tuple[Literal[2], Literal[3]], numpy.dtype[Any]]]
+.. py:function:: plot_sixpack(dgms: chalc.sixpack.SixPack, truncations: collections.abc.Mapping[chalc.sixpack.SixPack.DiagramName, float] | float | None = None, dimensions: collections.abc.Collection[int] | int | None = None, threshold: float = 0) -> tuple[matplotlib.figure.Figure, numpy.ndarray[tuple[Literal[2], Literal[3]], numpy.dtype[Any]]]
 
    Plot the 6-pack of persistence diagrams returned by :func:`compute <.sixpack.compute>`.
 

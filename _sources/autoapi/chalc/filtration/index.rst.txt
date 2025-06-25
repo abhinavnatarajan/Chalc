@@ -14,7 +14,7 @@ Classes
 
 .. autoapisummary::
 
-   chalc.filtration.FilteredComplex
+   chalc.filtration.Filtration
    chalc.filtration.Simplex
 
 
@@ -30,7 +30,7 @@ Functions
 Module Contents
 ---------------
 
-.. py:class:: FilteredComplex(n: int, k: int)
+.. py:class:: Filtration(n: int, k: int)
 
    Class representing a filtered simplicial complex.
 
@@ -47,6 +47,13 @@ Module Contents
          Faces of the added simplex that are already present
          in the simplicial complex will have their filtration values reduced if necessary.
 
+
+
+   .. py:property:: dimension
+      :type: int
+
+
+      Current maximum dimension of a maximal simplex in the complex.
 
 
    .. py:method:: get_label_from_vertex_labels(vertices: list[int]) -> int
@@ -79,6 +86,38 @@ Module Contents
 
 
 
+   .. py:property:: max_dimension
+      :type: int
+
+
+      Maximum dimension of simplex that this complex can store.
+
+      Set during initialisation.
+
+
+   .. py:property:: max_filtration_time
+      :type: float
+
+
+      Current maximum filtration value in the complex.
+
+
+   .. py:property:: num_simplices
+      :type: int
+
+
+      The total number of simplices in the complex.
+
+
+   .. py:property:: num_vertices
+      :type: int
+
+
+      Number of vertices in the simplicial complex.
+
+      Set during initialisation.
+
+
    .. py:method:: propagate_colours() -> None
 
       Ensure that simplex colours are consistent
@@ -109,52 +148,15 @@ Module Contents
       Compute the boundary matrix of the simplicial complex.
 
       :return:
-              A list `x` of simplices in the simplicial complex ordered by dimension followed by filtration time. Each simplex :math:`\sigma` is represented by a tuple containing the following items.
+              A list `x` of simplices in the simplicial complex ordered by
+              filtration time, dimension, and label (in that order).
+              Each simplex :math:`\sigma` is represented by a tuple containing the following items.
 
               1.  A list containing the indices in `x` of the facets of :math:`\sigma`, sorted in ascending order.
               2.  The lexicographic key of :math:`\sigma` in the simplicial complex.
               3.  The filtration time of :math:`\sigma`.
               4.  The set of colours of the vertices of :math:`\sigma`.
 
-
-
-   .. py:property:: dimension
-      :type: int
-
-
-      Current maximum dimension of a maximal simplex in the complex.
-
-
-   .. py:property:: max_dimension
-      :type: int
-
-
-      Maximum dimension of simplex that this complex can store.
-
-      Set during initialisation.
-
-
-   .. py:property:: max_filtration_time
-      :type: float
-
-
-      Current maximum dimension of a maximal simplex in the complex.
-
-
-   .. py:property:: num_simplices
-      :type: int
-
-
-      The total number of simplices in the complex.
-
-
-   .. py:property:: num_vertices
-      :type: int
-
-
-      Number of vertices in the simplicial complex.
-
-      Set during initialisation.
 
 
    .. py:property:: simplices
@@ -174,24 +176,11 @@ Module Contents
    Class representing a simplex in a filtered simplicial complex.
 
 
-   .. py:method:: set_colour(colour: int) -> None
-
-      Change the colour of a vertex.
-
-      :raises ValueError: If the simplex is not a vertex or if `colour >=` :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>`.
-
-      .. tip::
-
-         It is recommended to call the member function :meth:`propagate_colours() <chalc.filtration.FilteredComplex.propagate_colours>`
-         from the parent simplicial complex after changing the colour of a vertex.
-
-
-
    .. py:property:: colours
       :type: list[int]
 
 
-      List of colours of the vertices of the simplex.
+      Set of colours of the vertices of the simplex.
 
 
    .. py:property:: dimension
@@ -214,7 +203,8 @@ Module Contents
 
       Filtration value of the simplex.
 
-      If you modify this value, you should call :meth:`propagate_filt_values() <chalc.filtration.FilteredComplex.propagate_filt_values>`
+      If you modify this value, you should call
+      :meth:`propagate_filt_values() <chalc.filtration.Filtration.propagate_filt_values>`
       from the parent complex to ensure that filtration times remain monotonic.
 
 
@@ -229,6 +219,21 @@ Module Contents
       counting all possible sorted subsequences of :math:`(0, ..., N-1)` of length :math:`k`.
 
 
+   .. py:method:: set_colour(colour: int) -> None
+
+      Change the colour of a vertex.
+
+      :raises ValueError: If the simplex is not a vertex or if
+      :raises colour >=` :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>`:
+
+      .. tip::
+
+         It is recommended to call the member function
+         :meth:`propagate_colours() <chalc.filtration.Filtration.propagate_colours>`
+         from the parent simplicial complex after changing the colour of a vertex.
+
+
+
    .. py:property:: vertices
       :type: list[int]
 
@@ -236,14 +241,14 @@ Module Contents
       List of (sorted, ascending) vertex labels of the simplex.
 
 
-.. py:function:: complete_complex(n: int, k: int) -> FilteredComplex
+.. py:function:: complete_complex(n: int, k: int) -> Filtration
 
    Compute the :math:`k`-skeleton of the complete simplicial complex on :math:`n` vertices.
 
    Filtration values are initialised to zero and all vertices coloured with the colour 0.
 
 
-.. py:function:: standard_simplex(n: int) -> FilteredComplex
+.. py:function:: standard_simplex(n: int) -> Filtration
 
    Compute the filtered simplicial complex corresponding to the standard abstract :math:`n`-simplex.
 
