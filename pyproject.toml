@@ -48,7 +48,7 @@ dev = [
 	"sphinx-autoapi~=3.3",
 	"sphinx-design~=0.6",
 	"sphinx-toolbox~=3.5",
-	"sphinx~=8.0",
+	"sphinx~=8.2",
 	# Pybind11 headers for LSP
 	# Needs to be kept in sync with build-system.requires below
 	"pybind11~=2.13",

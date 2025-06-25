@@ -42,10 +42,9 @@ exclude_patterns = [
 ]
 
 extensions = [
-	"sphinx.ext.autosectionlabel",
-	"sphinx.ext.autodoc",
-	"sphinx.ext.napoleon",
 	"autoapi.extension",
+	"sphinx.ext.autosectionlabel",
+	"sphinx.ext.napoleon",
 	"sphinx.ext.intersphinx",
 	"nbsphinx",
 	"sphinx_design",
@@ -74,8 +73,8 @@ autoapi_options = [
 	"show-inheritance-diagram",
 	"imported-members",
 ]
-autoapi_member_order = "groupwise"
-autodoc_typehints = "description"
+# autoapi_member_order = "groupwise"
+autoapi_member_order = "alphabetical"
 
 # intersphinx options
 intersphinx_mapping = {

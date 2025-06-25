@@ -2,7 +2,6 @@
 
 import math
 from itertools import combinations, product
-from typing import get_args
 
 import numpy as np
 from gudhi.bottleneck import bottleneck_distance
@@ -39,13 +38,13 @@ class TestSixpack:
 					dgms_kchromatic.get_matrix(name, d),
 					dgms_kgluing.get_matrix(name, d),
 				)
-				for name in get_args(ch.sixpack.DiagramEnsemble.DiagramName.__value__)
+				for name in dgms_kchromatic
 				for d in range(dim)
 			]
 			assert math.isclose(max(dists), 0, abs_tol=1e-6)
 
 	def test_kchromatic_vs_subchromatic_inclusion(self) -> None:
-		"""Test that k-chromatic and subchromatic inclusions agree."""
+		"""Test that k-chromatic and subchromatic inclusions agree when appropriate."""
 		rng = np.random.default_rng(self.random_seed)
 		num_points = 500
 		dims = [1, 2, 3]
@@ -56,7 +55,9 @@ class TestSixpack:
 				points = rng.uniform(size=(dim, num_points))
 				colours = rng.integers(0, s - 1, size=num_points).tolist()
 				filtration, numerical_errors = ch.chromatic.delrips(
-					points, colours, max_num_threads=0,
+					points,
+					colours,
+					max_num_threads=0,
 				)
 				assert not numerical_errors
 				dgms_kchromatic = ch.sixpack.from_filtration(
@@ -72,7 +73,7 @@ class TestSixpack:
 						dgms_kchromatic.get_matrix(name, d),
 						dgms_kgluing.get_matrix(name, d),
 					)
-					for name in get_args(ch.sixpack.DiagramEnsemble.DiagramName.__value__)
+					for name in dgms_kchromatic
 					for d in range(dim)
 				]
 				assert math.isclose(max(dists), 0, abs_tol=1e-6)

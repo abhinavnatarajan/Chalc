@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Collection, Mapping, Sequence
 from itertools import product
-from typing import TYPE_CHECKING, Any, Literal, get_args
+from typing import TYPE_CHECKING, Any, Literal
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -12,7 +12,7 @@ from matplotlib import animation
 from matplotlib.legend import Legend
 from pandas import DataFrame
 
-from chalc.sixpack import DiagramName, SimplexPairings, SixPack
+from chalc.sixpack import SimplexPairings, SixPack
 
 if TYPE_CHECKING:
 	from matplotlib.artist import Artist
@@ -26,7 +26,7 @@ plt.rcParams["animation.html"] = "jshtml"
 
 def plot_sixpack(
 	dgms: SixPack,
-	truncations: Mapping[DiagramName, float] | float | None = None,
+	truncations: Mapping[SixPack.DiagramName, float] | float | None = None,
 	dimensions: Collection[int] | int | None = None,
 	threshold: float = 0,
 ) -> tuple[Figure, np.ndarray[tuple[Literal[2], Literal[3]], np.dtype[Any]]]:
@@ -45,8 +45,8 @@ def plot_sixpack(
 		threshold   : Only features with persistence greater than this value will be plotted.
 
 	"""
-	diagram_names = get_args(DiagramName.__value__)
-	dims: dict[DiagramName, list[int]]
+	diagram_names = SixPack.names()
+	dims: dict[SixPack.DiagramName, list[int]]
 	if dimensions is None:
 		if dgms:
 			dim_range = list(range(max(dgms.dimensions.tolist())))
@@ -71,7 +71,7 @@ def plot_sixpack(
 	# In general, the dimension of a feature represented by a simplex pair (a, b)
 	# is dim(a), unless the diagram is in the kernel, in which case
 	# it is dim(a) - 1.
-	dim_shift: dict[DiagramName, int] = {
+	dim_shift: dict[SixPack.DiagramName, int] = {
 		name: (1 if name == "ker" else 0) for name in diagram_names
 	}
 
@@ -80,7 +80,7 @@ def plot_sixpack(
 	if isinstance(truncations, Mapping) and all(
 		isinstance(val, float) for val in truncations.values()
 	):
-		truncs: dict[DiagramName, float] = {}
+		truncs: dict[SixPack.DiagramName, float] = {}
 		for diagram_name in diagram_names:
 			if diagram_name in truncations and isinstance(truncations[diagram_name], float):
 				truncs[diagram_name] = truncations[diagram_name]
@@ -99,11 +99,11 @@ def plot_sixpack(
 		errmsg = "Invalid truncations argument."
 		raise TypeError(errmsg)
 
-	plot_pos: dict[DiagramName, tuple[int, int]] = {
+	plot_pos: dict[SixPack.DiagramName, tuple[int, int]] = {
 		name: (val[1], val[0])
 		for name, val in zip(diagram_names, product((0, 1, 2), (0, 1)), strict=True)
 	}
-	plot_titles: dict[DiagramName, str] = {
+	plot_titles: dict[SixPack.DiagramName, str] = {
 		"ker": "Kernel",
 		"cok": "Cokernel",
 		"im": "Image",
@@ -111,7 +111,9 @@ def plot_sixpack(
 		"cod": "Codomain",
 		"rel": "Relative",
 	}
-	points_legend: dict[DiagramName, bool] = {name: (name == "rel") for name in diagram_names}
+	points_legend: dict[SixPack.DiagramName, bool] = {
+		name: (name == "rel") for name in diagram_names
+	}
 	fig, axes = plt.subplots(
 		nrows=2,
 		ncols=3,
@@ -149,7 +151,7 @@ def plot_sixpack(
 
 def plot_diagram(
 	dgms: SixPack,
-	diagram_name: DiagramName,
+	diagram_name: SixPack.DiagramName,
 	truncation: float | None = None,
 	dimensions: Collection[int] | int | None = None,
 	ax: Axes | None = None,
@@ -205,7 +207,7 @@ def plot_diagram(
 	else:
 		ax1 = ax
 
-	titles: dict[DiagramName, str] = {
+	titles: dict[SixPack.DiagramName, str] = {
 		"ker": "Kernel",
 		"cok": "Cokernel",
 		"im": "Image",
