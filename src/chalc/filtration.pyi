@@ -25,7 +25,7 @@ class Filtration:
         		This parameter is required for memory efficiency,
         		and cannot be changed after initialisation.
         """
-    def __iter__(self) -> typing.Any:
+    def __iter__(self) -> typing.Iterator[Simplex]:
         """
         Iterate over the simplices in the complex, ordered by dimension and label.
         """
@@ -115,11 +115,6 @@ class Filtration:
         Set during initialisation.
         """
     @property
-    def max_filtration_time(self) -> float:
-        """
-        Current maximum filtration value in the complex.
-        """
-    @property
     def num_vertices(self) -> int:
         """
         Number of vertices in the simplicial complex.
@@ -201,6 +196,10 @@ def complete_complex(n: int, k: int) -> Filtration:
     Compute the :math:`k`-skeleton of the complete simplicial complex on :math:`n` vertices.
     
     Filtration values are initialised to zero and all vertices coloured with the colour 0.
+    
+    Raises:
+    	RuntimeError:
+    		If ``n<= 0`` or ``k >= n`` or ``k < 0``.
     """
 def standard_simplex(n: int) -> Filtration:
     """
