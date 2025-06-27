@@ -126,12 +126,6 @@ struct Filtration {
 		return n_vertices;
 	}
 
-	// Returns the current maximum filtration value.
-	[[nodiscard]]
-	auto max_filt_value() const noexcept -> value_t {  // exported
-		return cur_max_filt_value;
-	}
-
 	// Returns a flat vectorised representation of the complex.
 	[[nodiscard]]
 	auto boundary_matrix() const -> std::vector<
@@ -157,7 +151,6 @@ struct Filtration {
 	                             // labelled by their lexicographic index
 	index_t num_simplices;       // total number of simplices
 	index_t cur_dim;             // current maximum dimension of a maximal simplex
-	value_t cur_max_filt_value;  // current maximum filtration value
 	index_t n_vertices;          // number of vertices, labelled from 0 to n-1
 	index_t max_dim;             // maximum dimension of any simplex in the complex
 

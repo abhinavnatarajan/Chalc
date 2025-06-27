@@ -119,7 +119,7 @@ template <typename T>
 auto sort_with_indices(const vector<T>& v, bool (*compare)(const T& a, const T& b))
 	-> tuple<vector<T>, vector<index_t>> {
 	vector<index_t> idx(v.size());
-	iota(idx.begin(), idx.end(), 0);
+	iota(idx.begin(), idx.end(), 0); // NOLINT - we do not have this on macOS yet.
 	sort(idx, [&v, &compare](index_t i1, index_t i2) {
 		return compare(v[i1], v[i2]);
 	});
@@ -258,7 +258,7 @@ auto delrips(const MatrixXd& points, const vector<colour_t>& colours) -> Filtrat
 	if (delX.dimension() >= 1) {
 		for (auto& [idx, edge]: delX.get_simplices()[1]) {
 			auto&& verts  = edge->get_vertex_labels();
-			edge->value() = (points.col(verts[0]) - points.col(verts[1])).norm() * 0.5;
+			edge->value() = (points.col(verts[0]) - points.col(verts[1])).norm() * 0.5; // NOLINT
 		}
 		delX.propagate_filt_values(1, true);
 	}
@@ -291,7 +291,7 @@ auto delrips_parallel(
 					for (size_t idx = r.begin(); idx < r.end(); idx++) {
 						auto&& edge   = *edges[idx];
 						auto&& verts  = edge->get_vertex_labels();
-						edge->value() = (points.col(verts[0]) - points.col(verts[1])).norm() * 0.5;
+						edge->value() = (points.col(verts[0]) - points.col(verts[1])).norm() * 0.5; // NOLINT
 					}
 				}
 			);
@@ -641,7 +641,7 @@ auto delcech(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<F
 		for (auto& [idx, edge]: delX.get_simplices()[1]) {
 			auto&& verts = edge->get_vertex_labels();
 			edge->value() =
-				static_cast<double>((points.col(verts[0]) - points.col(verts[1])).norm()) * 0.5;
+				static_cast<double>((points.col(verts[0]) - points.col(verts[1])).norm()) * 0.5; // NOLINT
 			// Tests fail if we don't do this
 			// Possibly because of floating point rounding
 			for (auto& cofacet: edge->get_cofacets()) {
@@ -723,7 +723,7 @@ auto delcech_parallel(
 						edge->value() = static_cast<double>(
 											(points.col(verts[0]) - points.col(verts[1])).norm()
 										) *
-					                    0.5;
+					                    0.5; // NOLINT
 						// Tests fail if we don't do this
 					    // Possibly because of floating point rounding
 						for (auto& cofacet: edge->get_cofacets()) {

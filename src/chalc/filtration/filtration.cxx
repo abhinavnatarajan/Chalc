@@ -190,7 +190,6 @@ Filtration::Filtration(const index_t num_vertices, const index_t max_dimension) 
 	n_vertices(num_vertices),
 	max_dim(max_dimension),
 	num_simplices(num_vertices),
-	cur_max_filt_value(0),
 	cur_dim(0) {
 	if (max_dim >= n_vertices) {
 		throw invalid_argument("Dimension must be less than number of points.");
@@ -325,7 +324,6 @@ auto Filtration::add_simplex(
 	} else {
 		_add_simplex(verts_validated, filt_value);
 		cur_dim = max(cur_dim, static_cast<index_t>(verts_validated.size() - 1));  // need verts to be valid
-		cur_max_filt_value = max(cur_max_filt_value, filt_value);
 		return true;
 	}
 }

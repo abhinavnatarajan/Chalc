@@ -1,7 +1,78 @@
 #include <chalc/filtration/filtration.h>
+#include <iterator>
+#include <memory>
 #include <pybind11/attr.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+
+namespace {
+// A robust, flattening iterator for the std::vector<std::map<...>> data structure.
+// It iterates over the Simplex smart pointers.
+class SimplexIterator {
+  private:
+	using Vec = std::vector<std::map<chalc::label_t, std::shared_ptr<chalc::Filtration::Simplex>>>;
+	using Map = std::map<chalc::label_t, std::shared_ptr<chalc::Filtration::Simplex>>;
+	using VecConstIt = Vec::const_iterator;
+	using MapConstIt = Map::const_iterator;
+
+	VecConstIt vec_it, vec_end;
+	MapConstIt map_it;
+
+	// Advances the iterator to the next valid element, skipping empty maps.
+	void advance_to_valid() {
+		while (vec_it != vec_end && map_it == vec_it->end()) {
+			++vec_it;
+			if (vec_it != vec_end) {
+				map_it = vec_it->begin();
+			}
+		}
+	}
+
+  public:
+	using iterator_category = std::input_iterator_tag;
+	using value_type        = std::shared_ptr<chalc::Filtration::Simplex>;
+	using difference_type   = std::ptrdiff_t;
+	using pointer           = const value_type*;
+	using reference         = const value_type&;
+
+	// Constructor for begin and other valid iterators.
+	explicit SimplexIterator(const VecConstIt& vec_begin, const VecConstIt& vec_end) :
+		vec_it(vec_begin),
+		vec_end(vec_end) {
+		if (vec_it != vec_end) {
+			map_it = vec_it->begin();
+		}
+		advance_to_valid();
+	}
+
+	auto operator++() -> SimplexIterator& {
+		++map_it;
+		advance_to_valid();
+		return *this;
+	}
+
+	auto operator*() const -> reference {
+		return map_it->second;
+	}
+
+	auto operator->() const -> pointer {
+		return &map_it->second;
+	}
+
+	auto operator==(const SimplexIterator& other) const -> bool {
+		// If one is past-the-end then they are equal only if both are.
+		if (vec_it == vec_end) {
+			return (other.vec_it == other.vec_end && vec_it == other.vec_it);
+		}
+		return (vec_it == other.vec_it && vec_end == other.vec_end &&
+		        map_it == other.map_it);
+	}
+
+	auto operator!=(const SimplexIterator& other) const -> bool {
+		return !(*this == other);
+	}
+};
+}  // namespace
 
 PYBIND11_MODULE(filtration, m) {  // NOLINT
 	using chalc::Filtration;
@@ -23,10 +94,8 @@ PYBIND11_MODULE(filtration, m) {  // NOLINT
 
 	// Subclass Filtration from Sized, Iterable, and Container.
 	auto Sized     = py::module_::import("collections.abc").attr("Sized");
-	auto Container = py::module_::import("collections.abc").attr("Container");
 	auto Iterable  = py::module_::import("collections.abc").attr("Iterable");
-	// We need this to chain iterators
-	auto chain_from_iterable = py::module_::import("itertools").attr("chain_from_iterable");
+	auto Container = py::module_::import("collections.abc").attr("Container");
 	Sized.attr("register")(filtered_complex);
 	Iterable.attr("register")(filtered_complex);
 	Container.attr("register")(filtered_complex);
@@ -82,10 +151,12 @@ Args:
 		// Requirements from Iterable
 		.def(
 			"__iter__",
-			[&chain_from_iterable](const Filtration& self) {
-				auto simplices_by_dim =
-					py::make_iterator(self.get_simplices().cbegin(), self.get_simplices().cend());
-				return chain_from_iterable(simplices_by_dim);
+			[](const Filtration& self) {
+				const auto& simplices = self.get_simplices();
+				return py::make_iterator(
+					SimplexIterator(simplices.begin(), simplices.end()),
+					SimplexIterator(simplices.end(), simplices.end())
+				);
 			},
 			"Iterate over the simplices in the complex, ordered by dimension and label.",
 			py::keep_alive<0, 1>()  // Keep the Filtration alive while iterating
@@ -94,11 +165,6 @@ Args:
 			"dimension",
 			&Filtration::dimension,
 			"Current maximum dimension of a maximal simplex in the complex."
-		)
-		.def_property_readonly(
-			"max_filtration_time",
-			&Filtration::max_filt_value,
-			"Current maximum filtration value in the complex."
 		)
 		.def_property_readonly(
 			"max_dimension",
@@ -295,6 +361,10 @@ Tip:
 		R"docstring(Compute the :math:`k`-skeleton of the complete simplicial complex on :math:`n` vertices.
 
 Filtration values are initialised to zero and all vertices coloured with the colour 0.
+
+Raises:
+	RuntimeError:
+		If ``n<= 0`` or ``k >= n`` or ``k < 0``.
 
 )docstring",
 		py::arg("n"),
