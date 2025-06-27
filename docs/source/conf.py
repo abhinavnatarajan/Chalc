@@ -73,8 +73,12 @@ autoapi_options = [
 	"show-inheritance-diagram",
 	"imported-members",
 ]
-# autoapi_member_order = "groupwise"
 autoapi_member_order = "alphabetical"
+autoapi_keep_files = True
+def autoapi_skip_member(app, what, name, obj, skip, options):
+	if name == "chalc.sixpack.types.DiagramName":
+		skip = True
+	return skip
 
 # intersphinx options
 intersphinx_mapping = {
@@ -105,3 +109,6 @@ html_theme_options = {
 	"source_directory": "docs/",
 	"top_of_page_button": "edit",
 }
+
+def setup(sphinx):
+	sphinx.connect("autoapi-skip-member", autoapi_skip_member)

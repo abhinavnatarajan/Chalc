@@ -78,7 +78,5 @@ venv.bak/
 .clangd
 
 # Documentation artifacts
+docs/source/autoapi
 *.h5
-
-# Other
-scratch.py
