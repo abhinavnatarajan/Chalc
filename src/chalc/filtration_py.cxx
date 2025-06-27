@@ -1,4 +1,5 @@
 #include <chalc/filtration/filtration.h>
+#include <pybind11/attr.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
@@ -16,12 +17,19 @@ PYBIND11_MODULE(filtration, m) {  // NOLINT
 	m.doc() =
 		"Module containing utilities to store and manipulate abstract filtered simplicial complexes.";
 
-	// forward declare classes
+	// Forward declare our classes.
 	py::class_<Filtration> filtered_complex(m, "Filtration");
-	py::class_<Filtration::Simplex, shared_ptr<Filtration::Simplex>> simplex(
-		m,
-		"Simplex"
-	);
+	py::class_<Filtration::Simplex, shared_ptr<Filtration::Simplex>> simplex(m, "Simplex");
+
+	// Subclass Filtration from Sized, Iterable, and Container.
+	auto Sized     = py::module_::import("collections.abc").attr("Sized");
+	auto Container = py::module_::import("collections.abc").attr("Container");
+	auto Iterable  = py::module_::import("collections.abc").attr("Iterable");
+	// We need this to chain iterators
+	auto chain_from_iterable = py::module_::import("itertools").attr("chain_from_iterable");
+	Sized.attr("register")(filtered_complex);
+	Iterable.attr("register")(filtered_complex);
+	Container.attr("register")(filtered_complex);
 
 	/* Filtration Interface */
 	filtered_complex.doc() = "Class representing a filtered simplicial complex.";
@@ -57,10 +65,30 @@ Note:
 			py::arg("vertices"),
 			py::arg("filt_value")
 		)
-		.def_property_readonly(
-			"num_simplices",
-			&Filtration::size,
-			"The total number of simplices in the complex."
+		// Requirements from Sized
+		.def("__len__", &Filtration::size, "The total number of simplices in the complex.")
+		// Requirements from Container
+		.def(
+			"__contains__",
+			static_cast<bool (Filtration::*)(vector<index_t>& v) const>(&Filtration::has_simplex),
+			R"docstring(Check for membership of a simplex in the complex.
+
+Args:
+	vertices : Vertex labels of the simplex to check for.
+
+)docstring",
+			py::arg("vertices")
+		)
+		// Requirements from Iterable
+		.def(
+			"__iter__",
+			[&chain_from_iterable](const Filtration& self) {
+				auto simplices_by_dim =
+					py::make_iterator(self.get_simplices().cbegin(), self.get_simplices().cend());
+				return chain_from_iterable(simplices_by_dim);
+			},
+			"Iterate over the simplices in the complex, ordered by dimension and label.",
+			py::keep_alive<0, 1>()  // Keep the Filtration alive while iterating
 		)
 		.def_property_readonly(
 			"dimension",
@@ -110,19 +138,6 @@ Args:
 			py::arg("start_dim"),
 			py::arg("upwards") = true
 		)
-		.def(
-			"has_simplex",
-			static_cast<bool (Filtration::*)(vector<index_t>& v) const>(
-				&Filtration::has_simplex
-			),
-			R"docstring(Check for membership of a simplex in the complex.
-
-Args:
-	vertices : Vertex labels of the simplex to check for.
-
-)docstring",
-			py::arg("vertices")
-		)
 		.def_property_readonly(
 			"simplices",
 			&Filtration::get_simplices,
@@ -163,8 +178,8 @@ You should call this whenever you change the colour of any vertices.
 )docstring"
 		)
 		.def(
-			"serialised",
-			&Filtration::serialised,
+			"boundary_matrix",
+			&Filtration::boundary_matrix,
 			R"docstring(Compute the boundary matrix of the simplicial complex.
 
 :return:
@@ -188,9 +203,9 @@ Returns true if each simplex has a filtration value at least as large as each of
 
 )docstring"
 		)
-		.def("__repr__", [](const Filtration& K) {
-			return "<" + to_string(K.dimension()) + "-dimensional simplicial complex with " +
-		           to_string(K.num_vertices()) + " vertices>";
+		.def("__repr__", [](const Filtration& self) {
+			return "<" + to_string(self.dimension()) + "-dimensional simplicial complex with " +
+		           to_string(self.num_vertices()) + " vertices>";
 		});
 
 	/* Simplex Interface */
@@ -255,7 +270,7 @@ from the parent complex to ensure that filtration times remain monotonic.
 
 Raises:
 	ValueError: If the simplex is not a vertex or if
-	`colour >=` :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>`.
+		`colour >=` :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>`.
 
 Tip:
 	It is recommended to call the member function

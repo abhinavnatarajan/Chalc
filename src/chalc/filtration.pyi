@@ -2,11 +2,19 @@
 Module containing utilities to store and manipulate abstract filtered simplicial complexes.
 """
 from __future__ import annotations
+import typing
 __all__ = ['Filtration', 'Simplex', 'complete_complex', 'standard_simplex']
 class Filtration:
     """
     Class representing a filtered simplicial complex.
     """
+    def __contains__(self, vertices: list[int]) -> bool:
+        """
+        Check for membership of a simplex in the complex.
+        
+        Args:
+        	vertices : Vertex labels of the simplex to check for.
+        """
     def __init__(self, n: int, k: int) -> None:
         """
         Construct a discrete filtered simplicial complex with default filtration time of 0.
@@ -16,6 +24,14 @@ class Filtration:
         	k : Maximum dimension of a simplex that the complex can have.
         		This parameter is required for memory efficiency,
         		and cannot be changed after initialisation.
+        """
+    def __iter__(self) -> typing.Any:
+        """
+        Iterate over the simplices in the complex, ordered by dimension and label.
+        """
+    def __len__(self) -> int:
+        """
+        The total number of simplices in the complex.
         """
     def __repr__(self) -> str:
         ...
@@ -31,6 +47,20 @@ class Filtration:
         	Faces of the added simplex that are already present
         	in the simplicial complex will have their filtration values reduced if necessary.
         """
+    def boundary_matrix(self) -> list[tuple[list[int], int, float, list[int]]]:
+        """
+        Compute the boundary matrix of the simplicial complex.
+        
+        :return:
+        	A list `x` of simplices in the simplicial complex ordered by
+        	filtration time, dimension, and label (in that order).
+        	Each simplex :math:`\\sigma` is represented by a tuple containing the following items.
+        
+        	1.  A list containing the indices in `x` of the facets of :math:`\\sigma`, sorted in ascending order.
+        	2.  The lexicographic key of :math:`\\sigma` in the simplicial complex.
+        	3.  The filtration time of :math:`\\sigma`.
+        	4.  The set of colours of the vertices of :math:`\\sigma`.
+        """
     def get_label_from_vertex_labels(self, vertices: list[int]) -> int:
         """
         Get the dictionary key of a simplex.
@@ -43,13 +73,6 @@ class Filtration:
         
         Args:
         	vertices : List of vertex labels of the simplex.
-        """
-    def has_simplex(self, vertices: list[int]) -> bool:
-        """
-        Check for membership of a simplex in the complex.
-        
-        Args:
-        	vertices : Vertex labels of the simplex to check for.
         """
     def is_filtration(self) -> bool:
         """
@@ -79,20 +102,6 @@ class Filtration:
         	start_dim : Dimension from which to start propagating (exclusive).
         	upwards : If true then values are propagated upwards, downwards otherwise. Defaults to true.
         """
-    def serialised(self) -> list[tuple[list[int], int, float, list[int]]]:
-        """
-        Compute the boundary matrix of the simplicial complex.
-        
-        :return:
-        	A list `x` of simplices in the simplicial complex ordered by
-        	filtration time, dimension, and label (in that order).
-        	Each simplex :math:`\\sigma` is represented by a tuple containing the following items.
-        
-        	1.  A list containing the indices in `x` of the facets of :math:`\\sigma`, sorted in ascending order.
-        	2.  The lexicographic key of :math:`\\sigma` in the simplicial complex.
-        	3.  The filtration time of :math:`\\sigma`.
-        	4.  The set of colours of the vertices of :math:`\\sigma`.
-        """
     @property
     def dimension(self) -> int:
         """
@@ -109,11 +118,6 @@ class Filtration:
     def max_filtration_time(self) -> float:
         """
         Current maximum filtration value in the complex.
-        """
-    @property
-    def num_simplices(self) -> int:
-        """
-        The total number of simplices in the complex.
         """
     @property
     def num_vertices(self) -> int:
@@ -144,7 +148,7 @@ class Simplex:
         
         Raises:
         	ValueError: If the simplex is not a vertex or if
-        	`colour >=` :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>`.
+        		`colour >=` :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>`.
         
         Tip:
         	It is recommended to call the member function
