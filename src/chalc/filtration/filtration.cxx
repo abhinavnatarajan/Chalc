@@ -50,7 +50,6 @@ using std::max;
 using std::min;
 using std::numeric_limits;
 using std::ranges::adjacent_find;
-using std::ranges::any_of;
 using std::ranges::fill;
 using std::ranges::prev_permutation;
 using std::ranges::sort;
@@ -204,22 +203,22 @@ Filtration::Filtration(const index_t num_vertices, const index_t max_dimension) 
 	}
 }
 
-void Filtration::validate_vertex_sequence(vector<index_t>& verts) const {
+auto Filtration::validated_vertex_sequence(const vector<index_t>& verts) const -> vector<index_t> {
 	if (verts.size() == 0) {
 		throw invalid_argument("Vertex sequence cannot be empty.");
 	}
 	if (verts.size() - 1 > max_dim) {
 		throw invalid_argument("Vertex sequence is too long.");
 	}
-	sort(verts);
-	if (!(verts.back() < n_vertices && adjacent_find(verts) == verts.cend())) {
-		throw invalid_argument("Vertex sequence cannot have repetitions.");
+	vector<index_t> verts_sorted(verts);
+	sort(verts_sorted);
+	if (verts_sorted.front() < 0 || verts_sorted.back() >= n_vertices ||
+	    adjacent_find(verts_sorted) != verts_sorted.cend()) {
+		throw invalid_argument(
+			"Vertex sequence must be a subset of {0, ..., num_verts-1} without repetitions."
+		);
 	};
-	if (any_of(verts, [this](index_t v) {
-			return v < 0 || v >= n_vertices;
-		})) {
-		throw invalid_argument("Vertex sequence must be a subsequence of (0, ..., n_vertices-1).");
-	}
+	return verts_sorted;
 }
 
 auto Filtration::_get_label_from_vertex_labels(const vector<index_t>& verts) const -> label_t {
@@ -237,9 +236,9 @@ auto Filtration::_get_label_from_vertex_labels(const vector<index_t>& verts) con
 	return label;
 }
 
-auto Filtration::get_label_from_vertex_labels(vector<index_t>& verts) const -> label_t {
-	validate_vertex_sequence(verts);
-	return _get_label_from_vertex_labels(verts);
+auto Filtration::get_label_from_vertex_labels(const vector<index_t>& verts) const -> label_t {
+	auto verts_validated = validated_vertex_sequence(verts);
+	return _get_label_from_vertex_labels(verts_validated);
 }
 
 auto Filtration::_has_simplex(const index_t dim, const label_t label) const -> bool {
@@ -274,8 +273,8 @@ auto Filtration::_has_simplex(const vector<index_t>& verts) const noexcept -> bo
 }
 
 auto Filtration::has_simplex(vector<index_t>& verts) const -> bool {
-	validate_vertex_sequence(verts);
-	return (_has_simplex(verts));
+	auto verts_validated = validated_vertex_sequence(verts);
+	return (_has_simplex(verts_validated));
 }
 
 auto Filtration::_add_simplex(const vector<index_t>& verts, const value_t filt_value)
@@ -285,8 +284,8 @@ auto Filtration::_add_simplex(const vector<index_t>& verts, const value_t filt_v
 	index_t num_verts = verts.size();  // NOLINT
 	assert(num_verts != 0);
 	shared_ptr<Simplex> new_simplex;
-	auto                dim            = num_verts - 1;
-	auto                label          = _get_label_from_vertex_labels(verts);
+	auto                dim   = num_verts - 1;  // safe because we assume we have validated verts
+	auto                label = _get_label_from_vertex_labels(verts);
 	auto                search_simplex = simplices[dim].find(label);
 	if (search_simplex != simplices[dim].end()) {
 		// the simplex already exists
@@ -317,15 +316,15 @@ auto Filtration::_add_simplex(const vector<index_t>& verts, const value_t filt_v
 }
 
 auto Filtration::add_simplex(
-	vector<index_t>& verts,
-	value_t          filt_value = Filtration::Simplex::DEFAULT_FILT_VALUE
+	const vector<index_t>& verts,
+	value_t                filt_value = Filtration::Simplex::DEFAULT_FILT_VALUE
 ) -> bool {
-	validate_vertex_sequence(verts);
-	if (_has_simplex(verts)) {
+	auto verts_validated = validated_vertex_sequence(verts);
+	if (_has_simplex(verts_validated)) {
 		return false;
 	} else {
-		_add_simplex(verts, filt_value);
-		cur_dim = max(cur_dim, static_cast<index_t>(verts.size() - 1));  // need verts to be valid
+		_add_simplex(verts_validated, filt_value);
+		cur_dim = max(cur_dim, static_cast<index_t>(verts_validated.size() - 1));  // need verts to be valid
 		cur_max_filt_value = max(cur_max_filt_value, filt_value);
 		return true;
 	}
@@ -394,7 +393,7 @@ void Filtration::propagate_filt_values(const index_t start_dim, const bool up) {
 	}
 }
 
-auto Filtration::serialised() const
+auto Filtration::boundary_matrix() const
 	-> vector<tuple<vector<index_t>, label_t, value_t, vector<colour_t>>> {
 	// Sort the simplices by their filtration value, dimension, and label.
 	vector<shared_ptr<Simplex>> sort_by_val;

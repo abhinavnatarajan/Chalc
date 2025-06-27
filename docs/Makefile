@@ -18,7 +18,7 @@ stubs:
 	@echo "Generating stubs for chalc.filtration"
 	@python -m pybind11_stubgen chalc.filtration --numpy-array-use-type-var --output-dir ../src
 
-.PHONY: help Makefile stubs clean
+.PHONY: help Makefile stubs clean all
 
 clean:
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)

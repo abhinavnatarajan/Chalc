@@ -77,7 +77,7 @@ struct Filtration {
 
 	// Get label of a simplex from the labels of its vertices.
 	[[nodiscard]]
-	auto get_label_from_vertex_labels(std::vector<index_t>& verts) const -> label_t;  // exported
+	auto get_label_from_vertex_labels(const std::vector<index_t>& verts) const -> label_t;  // exported
 
 	// Check if the complex has a specific simplex.
 	[[nodiscard]]
@@ -89,7 +89,8 @@ struct Filtration {
 
 	// Add a new simplex to the complex by its vertices.
 	// Returns true if the simplex was added, false if it already exists.
-	auto add_simplex(std::vector<index_t>& verts, const value_t filt_value) -> bool;  // exported
+	auto add_simplex(const std::vector<index_t>& verts, const value_t filt_value)
+		-> bool;  // exported
 
 	// Propagate filtration values from start_dim.
 	void propagate_filt_values(const index_t start_dim, const bool upwards);  // exported
@@ -133,7 +134,7 @@ struct Filtration {
 
 	// Returns a flat vectorised representation of the complex.
 	[[nodiscard]]
-	auto serialised() const -> std::vector<
+	auto boundary_matrix() const -> std::vector<
 		std::tuple<std::vector<index_t>, label_t, value_t, std::vector<colour_t>>>;  // exported
 
 	// Returns the k-skeleton of the complete simplicial complex on n vertices.
@@ -162,10 +163,11 @@ struct Filtration {
 
 	/* PRIVATE METHODS OF Filtration */
 
-	// Checks that verts is a non-empty subsequence of (0, ..., n_vertices-1) and
+	// Checks that verts is a non-empty subset of {0, ..., n_vertices-1} and
 	// verts.size() <= max_dim + 1.
-	// WARNING: modifies verts.
-	void validate_vertex_sequence(std::vector<index_t>& verts) const;
+	// Returns a sorted copy of verts.
+	[[nodiscard]]
+	auto validated_vertex_sequence(const std::vector<index_t>& verts) const -> std::vector<index_t>;
 
 	// Get label of a simplex (possibly not in the complex) from the labels of
 	// its vertices.
