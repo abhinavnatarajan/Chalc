@@ -16,7 +16,10 @@ def assert_standard_simplex(
 	assert len(filtration.simplices) == n + 1
 	for i in range(n + 1):
 		num_simplices = math.comb(n + 1, i + 1)
-		assert list(filtration.simplices[i].keys()) == list(range(num_simplices))
+		assert list(filtration.simplices[i].keys()) == list(range(num_simplices)), (
+			f"Dimension: {i}, Keys: {list(filtration.simplices[i].keys())}, "
+			f"Wanted: {list(range(num_simplices))}"
+		)
 		gen_vertices = combinations(range(n + 1), i + 1)
 		for k in range(num_simplices):
 			assert filtration.simplices[i][k].dimension == i
