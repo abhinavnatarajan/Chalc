@@ -15,7 +15,7 @@ using std::shared_ptr;
 class SimplexIterator {
   private:
 	using Vec = std::remove_reference_t<
-		std::result_of_t<decltype (&Filtration::get_simplices)(Filtration)>>;
+		std::invoke_result_t<decltype (&Filtration::get_simplices), Filtration>>;
 	using Map        = Vec::value_type;
 	using VecConstIt = Vec::const_iterator;
 	using MapConstIt = Map::const_iterator;

@@ -135,6 +135,10 @@ class FiltrationInclusion(FiltrationMorphism, ABC):
 		for column in filtration.boundary_matrix():
 			facet_idxs = column[0]
 			dimension = max(0, len(facet_idxs) - 1)
+			# H_m(K^n) -> H_m(K) is an iso for m < n.
+			# Similarly H_m(L^n) -> H_m(L) is iso for m < n.
+			# Therefore H_m(K^n, L^n) -> H_m(K, L) is iso by 5-lemma.
+			# If n = max_diagram_dimension + 1,
 			if dimension > max_diagram_dimension + 1:
 				continue
 			entrance_time = column[2]
@@ -162,7 +166,6 @@ class FiltrationInclusion(FiltrationMorphism, ABC):
 			entrance_times,
 			dimensions,
 		).threshold(0.0)
-
 
 
 class SubChromaticInclusion(FiltrationInclusion, Sized):
@@ -387,6 +390,11 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 		for cod_idx, column in enumerate(filtration.boundary_matrix()):
 			facet_idxs = column[0]
 			dimension = max(0, len(facet_idxs) - 1)
+			# H_m(K^n) -> H_m(K) is an iso for m < n.
+			# Similarly H_m(L^n) -> H_m(L) is iso for m < n.
+			# Therefore H_m(K^n, L^n) -> H_m(K, L) is iso by 5-lemma.
+			# If n = max_diagram_dimension + 1, the only need simplices
+			# with dimension <= n.
 			if dimension > max_diagram_dimension + 1:
 				continue
 			entrance_time = column[2]
