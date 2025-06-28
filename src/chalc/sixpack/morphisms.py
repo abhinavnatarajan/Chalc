@@ -454,6 +454,9 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 
 		d, meta = compute_ensemble_cylinder(domain_matrix, codomain_matrix, mapping)
 
+		# meta.<domain|codomain|domain_shifted> is a vector
+		# mapping from the index of a column in the <domain|codomain>
+		# matrix to its index in the mapping cylinder matrix.
 		n_cells_cyl = len(meta.domain) + len(meta.domain_shift) + len(meta.codomain)
 		entrance_times = [0.0] * n_cells_cyl
 		dimensions = [0] * n_cells_cyl
