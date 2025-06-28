@@ -27,7 +27,9 @@ class Filtration:
         """
     def __iter__(self) -> typing.Iterator[Simplex]:
         """
-        Iterate over the simplices in the complex, ordered by dimension and label.
+        Iterate over the simplices in the complex, ordered by dimension.
+        
+        There are no guarantees on the relative order of simplices with the same dimension.
         """
     def __len__(self) -> int:
         """
