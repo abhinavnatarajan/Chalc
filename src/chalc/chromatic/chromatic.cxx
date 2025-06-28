@@ -346,13 +346,13 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Fil
 						verts_by_colour_all_cofaces.at(colours[v]).push_back(v);
 					}
 				}
-				for (auto&& verts_j: verts_by_colour_all_cofaces) {
-					// Remove duplicates
-					if (verts_j.empty()) {
-						continue;
-					}
-					// remove_duplicates_inplace(verts_j);
-				}
+				// for (auto&& verts_j: verts_by_colour_all_cofaces) {
+				// 	// Remove duplicates
+				// 	if (verts_j.empty()) {
+				// 		continue;
+				// 	}
+				// 	remove_duplicates_inplace(verts_j);
+				// }
 
 				/*
 				For each colour j in the simplex, find the affine subspace
@@ -515,13 +515,13 @@ auto alpha_parallel(
 									verts_by_colour_all_cofaces.at(colours[v]).push_back(v);
 								}
 							}
-							for (auto&& verts_j: verts_by_colour_all_cofaces) {
-								if (verts_j.empty()) {
-									continue;
-								}
-								// Remove duplicates
-							    // remove_duplicates_inplace(verts_j);
-							}
+							// for (auto&& verts_j: verts_by_colour_all_cofaces) {
+							// 	if (verts_j.empty()) {
+							// 		continue;
+							// 	}
+							// // Remove duplicates
+							//     remove_duplicates_inplace(verts_j);
+							// }
 
 							/*
 						    For each colour j in the simplex, find the affine subspace
