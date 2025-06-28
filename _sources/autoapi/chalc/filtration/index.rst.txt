@@ -35,6 +35,28 @@ Module Contents
    Class representing a filtered simplicial complex.
 
 
+   .. py:method:: __contains__(vertices: list[int]) -> bool
+
+      Check for membership of a simplex in the complex.
+
+      :param vertices: Vertex labels of the simplex to check for.
+
+
+
+   .. py:method:: __iter__() -> Iterator[Simplex]
+
+      Iterate over the simplices in the complex, ordered by dimension.
+
+      There are no guarantees on the relative order of simplices with the same dimension.
+
+
+
+   .. py:method:: __len__() -> int
+
+      The total number of simplices in the complex.
+
+
+
    .. py:method:: add_simplex(vertices: list[int], filt_value: float) -> bool
 
       Add a simplex to a filtered simplicial complex.
@@ -46,6 +68,22 @@ Module Contents
 
          Faces of the added simplex that are already present
          in the simplicial complex will have their filtration values reduced if necessary.
+
+
+
+   .. py:method:: boundary_matrix() -> list[tuple[list[int], int, float, list[int]]]
+
+      Compute the boundary matrix of the simplicial complex.
+
+      :return:
+              A list `x` of simplices in the simplicial complex ordered by
+              filtration time, dimension, and label (in that order).
+              Each simplex :math:`\sigma` is represented by a tuple containing the following items.
+
+              1.  A list containing the indices in `x` of the facets of :math:`\sigma`, sorted in ascending order.
+              2.  The lexicographic key of :math:`\sigma` in the simplicial complex.
+              3.  The filtration time of :math:`\sigma`.
+              4.  The set of colours of the vertices of :math:`\sigma`.
 
 
 
@@ -70,14 +108,6 @@ Module Contents
 
 
 
-   .. py:method:: has_simplex(vertices: list[int]) -> bool
-
-      Check for membership of a simplex in the complex.
-
-      :param vertices: Vertex labels of the simplex to check for.
-
-
-
    .. py:method:: is_filtration() -> bool
 
       Check if the filtration property is satisfied.
@@ -93,20 +123,6 @@ Module Contents
       Maximum dimension of simplex that this complex can store.
 
       Set during initialisation.
-
-
-   .. py:property:: max_filtration_time
-      :type: float
-
-
-      Current maximum filtration value in the complex.
-
-
-   .. py:property:: num_simplices
-      :type: int
-
-
-      The total number of simplices in the complex.
 
 
    .. py:property:: num_vertices
@@ -140,22 +156,6 @@ Module Contents
 
       :param start_dim: Dimension from which to start propagating (exclusive).
       :param upwards: If true then values are propagated upwards, downwards otherwise. Defaults to true.
-
-
-
-   .. py:method:: serialised() -> list[tuple[list[int], int, float, list[int]]]
-
-      Compute the boundary matrix of the simplicial complex.
-
-      :return:
-              A list `x` of simplices in the simplicial complex ordered by
-              filtration time, dimension, and label (in that order).
-              Each simplex :math:`\sigma` is represented by a tuple containing the following items.
-
-              1.  A list containing the indices in `x` of the facets of :math:`\sigma`, sorted in ascending order.
-              2.  The lexicographic key of :math:`\sigma` in the simplicial complex.
-              3.  The filtration time of :math:`\sigma`.
-              4.  The set of colours of the vertices of :math:`\sigma`.
 
 
 
@@ -224,7 +224,7 @@ Module Contents
       Change the colour of a vertex.
 
       :raises ValueError: If the simplex is not a vertex or if
-      :raises colour >=` :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>`:
+          `colour >=` :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>`.
 
       .. tip::
 
@@ -246,6 +246,8 @@ Module Contents
    Compute the :math:`k`-skeleton of the complete simplicial complex on :math:`n` vertices.
 
    Filtration values are initialised to zero and all vertices coloured with the colour 0.
+
+   :raises RuntimeError: If ``n<= 0`` or ``k >= n`` or ``k < 0``.
 
 
 .. py:function:: standard_simplex(n: int) -> Filtration

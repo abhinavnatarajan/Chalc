@@ -1,0 +1,943 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../../../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" /><link rel="next" title="chalc.sixpack.types" href="../types/index.html" /><link rel="prev" title="chalc.sixpack" href="../index.html" />
+
+    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
+        <title>chalc.sixpack.morphisms - chalc 11.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=02efb1e5" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../../index.html"><div class="brand">chalc 11.0.0 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../../index.html">
+  
+  
+  <span class="sidebar-brand-text">chalc 11.0.0 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../example.html">Example Usage</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../../../../API.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current has-children"><a class="reference internal" href="../../index.html">chalc</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of chalc</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../chromatic/index.html">chalc.chromatic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../filtration/index.html">chalc.filtration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../plotting/index.html">chalc.plotting</a></li>
+<li class="toctree-l3 current has-children"><a class="reference internal" href="../index.html">chalc.sixpack</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of chalc.sixpack</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">chalc.sixpack.morphisms</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../types/index.html">chalc.sixpack.types</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../license.html">License</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/abhinavnatarajan/chalc">GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/chalc">PyPI</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/abhinavnatarajan/chalc/blob/master/docs/autoapi/chalc/sixpack/morphisms/index.rst?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/abhinavnatarajan/chalc/edit/master/docs/autoapi/chalc/sixpack/morphisms/index.rst" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="module-chalc.sixpack.morphisms">
+<span id="chalc-sixpack-morphisms"></span><h1>chalc.sixpack.morphisms<a class="headerlink" href="#module-chalc.sixpack.morphisms" title="Link to this heading">¶</a></h1>
+<p>Helper classes representing morphisms between filtered simplicial complexes.</p>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#chalc.sixpack.morphisms.FiltrationInclusion" title="chalc.sixpack.morphisms.FiltrationInclusion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FiltrationInclusion</span></code></a></p></td>
+<td><p>Abstract inclusion of a filtered subcomplex.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#chalc.sixpack.morphisms.FiltrationMorphism" title="chalc.sixpack.morphisms.FiltrationMorphism"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FiltrationMorphism</span></code></a></p></td>
+<td><p>Abstract map between filtered simplicial complexes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#chalc.sixpack.morphisms.FiltrationQuotient" title="chalc.sixpack.morphisms.FiltrationQuotient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FiltrationQuotient</span></code></a></p></td>
+<td><p>Represents the gluing map of a disjoint union of subfiltrations.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#chalc.sixpack.morphisms.KChromaticInclusion" title="chalc.sixpack.morphisms.KChromaticInclusion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">KChromaticInclusion</span></code></a></p></td>
+<td><p>Inclusion of the simplices having at most <span class="math notranslate nohighlight">\(k\)</span> colours.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#chalc.sixpack.morphisms.KChromaticQuotient" title="chalc.sixpack.morphisms.KChromaticQuotient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">KChromaticQuotient</span></code></a></p></td>
+<td><p>Corresponds to gluing all subfiltrations spanned by <span class="math notranslate nohighlight">\(k\)</span> colours.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#chalc.sixpack.morphisms.SubChromaticInclusion" title="chalc.sixpack.morphisms.SubChromaticInclusion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SubChromaticInclusion</span></code></a></p></td>
+<td><p>Inclusion of a subfiltration spanned by any combination(s) of colours.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#chalc.sixpack.morphisms.SubChromaticQuotient" title="chalc.sixpack.morphisms.SubChromaticQuotient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SubChromaticQuotient</span></code></a></p></td>
+<td><p>Represents a gluing map in a chromatic filtration.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="chalc.sixpack.morphisms.FiltrationInclusion">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FiltrationInclusion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filtration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../filtration/index.html#chalc.filtration.Filtration" title="chalc.filtration.Filtration"><span class="pre">chalc.filtration.Filtration</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.sixpack.morphisms.FiltrationInclusion" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#chalc.sixpack.morphisms.FiltrationMorphism" title="chalc.sixpack.morphisms.FiltrationMorphism"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FiltrationMorphism</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">abc.ABC</span></code></a></p>
+digraph inheritance0abae83a1b {
+bgcolor=transparent;
+rankdir=LR;
+size=&quot;8.0, 12.0&quot;;
+  &quot;ABC&quot; [URL=&quot;https://docs.python.org/3/library/abc.html#abc.ABC&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;Helper class that provides a standard way to create an ABC using&quot;];
+  &quot;FiltrationInclusion&quot; [URL=&quot;#chalc.sixpack.morphisms.FiltrationInclusion&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;Abstract inclusion of a filtered subcomplex.&quot;];
+  &quot;FiltrationMorphism&quot; -&gt; &quot;FiltrationInclusion&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;ABC&quot; -&gt; &quot;FiltrationInclusion&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;FiltrationMorphism&quot; [URL=&quot;#chalc.sixpack.morphisms.FiltrationMorphism&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;Abstract map between filtered simplicial complexes.&quot;];
+  &quot;ABC&quot; -&gt; &quot;FiltrationMorphism&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+}
+<p>Abstract inclusion of a filtered subcomplex.</p>
+<p>This class constructs the inclusion of an arbitrary subfiltration
+of a chromatic filtration.</p>
+<p>This is an abstract class. To specify an inclusion map,
+use one of its concrete subclasses or create your own.
+To implement your own inclusion map, you need to implement
+the membership test <code class="docutils literal notranslate"><span class="pre">simplex_in_domain</span></code> which checks if a simplex
+is in the domain of the inclusion map.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#chalc.sixpack.morphisms.SubChromaticInclusion" title="chalc.sixpack.morphisms.SubChromaticInclusion"><code class="xref py py-class docutils literal notranslate"><span class="pre">SubChromaticInclusion</span></code></a>, <a class="reference internal" href="#chalc.sixpack.morphisms.KChromaticInclusion" title="chalc.sixpack.morphisms.KChromaticInclusion"><code class="xref py py-class docutils literal notranslate"><span class="pre">KChromaticInclusion</span></code></a>.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="chalc.sixpack.morphisms.FiltrationInclusion.simplex_in_domain">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">simplex_in_domain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#chalc.sixpack.morphisms.FiltrationInclusion.simplex_in_domain" title="Link to this definition">¶</a></dt>
+<dd><p>Check if a simplex is in the domain of the inclusion map.</p>
+<p>A simplex is identified by its column in the boundary matrix of the filtration.
+This column has the same format as the columns returned by
+<a class="reference internal" href="../../filtration/index.html#chalc.filtration.Filtration.boundary_matrix" title="chalc.filtration.Filtration.boundary_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">chalc.filtration.Filtration.boundary_matrix()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chalc.sixpack.morphisms.FiltrationInclusion.sixpack">
+<span class="sig-name descname"><span class="pre">sixpack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_diagram_dimension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../types/index.html#chalc.sixpack.types.SixPack" title="chalc.sixpack.types.SixPack"><span class="pre">chalc.sixpack.types.SixPack</span></a></span></span><a class="headerlink" href="#chalc.sixpack.morphisms.FiltrationInclusion.sixpack" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the 6-pack of persistence diagrams of a coloured point-cloud.</p>
+<p>This function constructs a filtered simplicial complex <span class="math notranslate nohighlight">\(K\)</span>
+from the point cloud, and computes the 6-pack of persistence diagrams
+associated with a map of <span class="math notranslate nohighlight">\(f : L \to K\)</span> of filtrations,
+where <span class="math notranslate nohighlight">\(L\)</span> is some filtration constructed from <span class="math notranslate nohighlight">\(K\)</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>max_diagram_dimension</strong> – Maximum homological dimension for which the persistence diagrams are computed.
+By default diagrams of all dimensions are computed.</p>
+</dd>
+</dl>
+<dl>
+<dt>Returns :</dt><dd><p>Diagrams corresponding to the following persistence modules
+(where <span class="math notranslate nohighlight">\(H_*\)</span> is the persistent homology functor and
+<span class="math notranslate nohighlight">\(f_*\)</span> is the induced map on persistent homology):</p>
+<ol class="arabic simple">
+<li><p><span class="math notranslate nohighlight">\(H_*(L)\)</span> (domain)</p></li>
+<li><p><span class="math notranslate nohighlight">\(H_*(K)\)</span> (codomain)</p></li>
+<li><p><span class="math notranslate nohighlight">\(\ker(f_*)\)</span> (kernel)</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathrm{coker}(f_*)\)</span> (cokernel)</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathrm{im}(f_*)\)</span> (image)</p></li>
+<li><p><span class="math notranslate nohighlight">\(H_*(\mathrm{cyl}(f), L)\)</span> (relative homology)</p></li>
+</ol>
+<p>Each diagram is represented by sets of paired and unpaired simplices,
+and contains simplices of all dimensions. <code class="docutils literal notranslate"><span class="pre">dgms</span></code> also contains the
+entrance times of the simplices and their dimensions.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="chalc.sixpack.morphisms.FiltrationMorphism">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FiltrationMorphism</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filtration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../filtration/index.html#chalc.filtration.Filtration" title="chalc.filtration.Filtration"><span class="pre">chalc.filtration.Filtration</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.sixpack.morphisms.FiltrationMorphism" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">abc.ABC</span></code></a></p>
+digraph inheritance0e18d8d56c {
+bgcolor=transparent;
+rankdir=LR;
+size=&quot;8.0, 12.0&quot;;
+  &quot;ABC&quot; [URL=&quot;https://docs.python.org/3/library/abc.html#abc.ABC&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;Helper class that provides a standard way to create an ABC using&quot;];
+  &quot;FiltrationMorphism&quot; [URL=&quot;#chalc.sixpack.morphisms.FiltrationMorphism&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;Abstract map between filtered simplicial complexes.&quot;];
+  &quot;ABC&quot; -&gt; &quot;FiltrationMorphism&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+}
+<p>Abstract map between filtered simplicial complexes.</p>
+<p>The map is a combinatorial proxy for the spatial relationships between
+points in the filtration of different colours.
+This is an abstract class. To specify a morphism, instantiate
+one of its concrete subclasses.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#chalc.sixpack.morphisms.SubChromaticInclusion" title="chalc.sixpack.morphisms.SubChromaticInclusion"><code class="xref py py-class docutils literal notranslate"><span class="pre">SubChromaticInclusion</span></code></a>,
+<a class="reference internal" href="#chalc.sixpack.morphisms.KChromaticInclusion" title="chalc.sixpack.morphisms.KChromaticInclusion"><code class="xref py py-class docutils literal notranslate"><span class="pre">KChromaticInclusion</span></code></a>,
+<a class="reference internal" href="#chalc.sixpack.morphisms.SubChromaticQuotient" title="chalc.sixpack.morphisms.SubChromaticQuotient"><code class="xref py py-class docutils literal notranslate"><span class="pre">SubChromaticQuotient</span></code></a>,
+<a class="reference internal" href="#chalc.sixpack.morphisms.KChromaticQuotient" title="chalc.sixpack.morphisms.KChromaticQuotient"><code class="xref py py-class docutils literal notranslate"><span class="pre">KChromaticQuotient</span></code></a>.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="chalc.sixpack.morphisms.FiltrationMorphism.sixpack">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sixpack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_diagram_dimension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../types/index.html#chalc.sixpack.types.SixPack" title="chalc.sixpack.types.SixPack"><span class="pre">chalc.sixpack.types.SixPack</span></a></span></span><a class="headerlink" href="#chalc.sixpack.morphisms.FiltrationMorphism.sixpack" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the 6-pack of persistence diagrams of a coloured point-cloud.</p>
+<p>This function constructs a filtered simplicial complex <span class="math notranslate nohighlight">\(K\)</span>
+from the point cloud, and computes the 6-pack of persistence diagrams
+associated with a map of <span class="math notranslate nohighlight">\(f : L \to K\)</span> of filtrations,
+where <span class="math notranslate nohighlight">\(L\)</span> is some filtration constructed from <span class="math notranslate nohighlight">\(K\)</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>max_diagram_dimension</strong> – Maximum homological dimension for which the persistence diagrams are computed.
+By default diagrams of all dimensions are computed.</p>
+</dd>
+</dl>
+<dl>
+<dt>Returns :</dt><dd><p>Diagrams corresponding to the following persistence modules
+(where <span class="math notranslate nohighlight">\(H_*\)</span> is the persistent homology functor and
+<span class="math notranslate nohighlight">\(f_*\)</span> is the induced map on persistent homology):</p>
+<ol class="arabic simple">
+<li><p><span class="math notranslate nohighlight">\(H_*(L)\)</span> (domain)</p></li>
+<li><p><span class="math notranslate nohighlight">\(H_*(K)\)</span> (codomain)</p></li>
+<li><p><span class="math notranslate nohighlight">\(\ker(f_*)\)</span> (kernel)</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathrm{coker}(f_*)\)</span> (cokernel)</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathrm{im}(f_*)\)</span> (image)</p></li>
+<li><p><span class="math notranslate nohighlight">\(H_*(\mathrm{cyl}(f), L)\)</span> (relative homology)</p></li>
+</ol>
+<p>Each diagram is represented by sets of paired and unpaired simplices,
+and contains simplices of all dimensions. <code class="docutils literal notranslate"><span class="pre">dgms</span></code> also contains the
+entrance times of the simplices and their dimensions.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="chalc.sixpack.morphisms.FiltrationQuotient">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FiltrationQuotient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filtration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../filtration/index.html#chalc.filtration.Filtration" title="chalc.filtration.Filtration"><span class="pre">chalc.filtration.Filtration</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_subfiltrations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.sixpack.morphisms.FiltrationQuotient" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#chalc.sixpack.morphisms.FiltrationMorphism" title="chalc.sixpack.morphisms.FiltrationMorphism"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FiltrationMorphism</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">abc.ABC</span></code></a></p>
+digraph inheritancec2f0653ac3 {
+bgcolor=transparent;
+rankdir=LR;
+size=&quot;8.0, 12.0&quot;;
+  &quot;ABC&quot; [URL=&quot;https://docs.python.org/3/library/abc.html#abc.ABC&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;Helper class that provides a standard way to create an ABC using&quot;];
+  &quot;FiltrationMorphism&quot; [URL=&quot;#chalc.sixpack.morphisms.FiltrationMorphism&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;Abstract map between filtered simplicial complexes.&quot;];
+  &quot;ABC&quot; -&gt; &quot;FiltrationMorphism&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;FiltrationQuotient&quot; [URL=&quot;#chalc.sixpack.morphisms.FiltrationQuotient&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;Represents the gluing map of a disjoint union of subfiltrations.&quot;];
+  &quot;FiltrationMorphism&quot; -&gt; &quot;FiltrationQuotient&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;ABC&quot; -&gt; &quot;FiltrationQuotient&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+}
+<p>Represents the gluing map of a disjoint union of subfiltrations.</p>
+<p>This is an abstract class. To specify a quotient map, use one
+of its concrete subclasses or create your own. To implement
+a quotient map, you need to implement the <code class="docutils literal notranslate"><span class="pre">simplex_in_filtration</span></code>
+method, and make sure that <code class="docutils literal notranslate"><span class="pre">self.num_subfiltrations</span></code> is initialized
+before <code class="docutils literal notranslate"><span class="pre">sixpack()</span></code> is called.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#chalc.sixpack.morphisms.SubChromaticQuotient" title="chalc.sixpack.morphisms.SubChromaticQuotient"><code class="xref py py-class docutils literal notranslate"><span class="pre">SubChromaticQuotient</span></code></a>, <a class="reference internal" href="#chalc.sixpack.morphisms.KChromaticQuotient" title="chalc.sixpack.morphisms.KChromaticQuotient"><code class="xref py py-class docutils literal notranslate"><span class="pre">KChromaticQuotient</span></code></a>.</p>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chalc.sixpack.morphisms.FiltrationQuotient.num_subfiltrations">
+<span class="sig-name descname"><span class="pre">num_subfiltrations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#chalc.sixpack.morphisms.FiltrationQuotient.num_subfiltrations" title="Link to this definition">¶</a></dt>
+<dd><p>The number of subfiltrations in the quotient map.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chalc.sixpack.morphisms.FiltrationQuotient.simplex_in_filtration">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">simplex_in_filtration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#chalc.sixpack.morphisms.FiltrationQuotient.simplex_in_filtration" title="Link to this definition">¶</a></dt>
+<dd><p>Check if a simplex is in the i<sup>th</sup> subfiltration.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chalc.sixpack.morphisms.FiltrationQuotient.sixpack">
+<span class="sig-name descname"><span class="pre">sixpack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_diagram_dimension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../types/index.html#chalc.sixpack.types.SixPack" title="chalc.sixpack.types.SixPack"><span class="pre">chalc.sixpack.types.SixPack</span></a></span></span><a class="headerlink" href="#chalc.sixpack.morphisms.FiltrationQuotient.sixpack" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the 6-pack of persistence diagrams of a coloured point-cloud.</p>
+<p>This function constructs a filtered simplicial complex <span class="math notranslate nohighlight">\(K\)</span>
+from the point cloud, and computes the 6-pack of persistence diagrams
+associated with a map of <span class="math notranslate nohighlight">\(f : L \to K\)</span> of filtrations,
+where <span class="math notranslate nohighlight">\(L\)</span> is some filtration constructed from <span class="math notranslate nohighlight">\(K\)</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>max_diagram_dimension</strong> – Maximum homological dimension for which the persistence diagrams are computed.
+By default diagrams of all dimensions are computed.</p>
+</dd>
+</dl>
+<dl>
+<dt>Returns :</dt><dd><p>Diagrams corresponding to the following persistence modules
+(where <span class="math notranslate nohighlight">\(H_*\)</span> is the persistent homology functor and
+<span class="math notranslate nohighlight">\(f_*\)</span> is the induced map on persistent homology):</p>
+<ol class="arabic simple">
+<li><p><span class="math notranslate nohighlight">\(H_*(L)\)</span> (domain)</p></li>
+<li><p><span class="math notranslate nohighlight">\(H_*(K)\)</span> (codomain)</p></li>
+<li><p><span class="math notranslate nohighlight">\(\ker(f_*)\)</span> (kernel)</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathrm{coker}(f_*)\)</span> (cokernel)</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathrm{im}(f_*)\)</span> (image)</p></li>
+<li><p><span class="math notranslate nohighlight">\(H_*(\mathrm{cyl}(f), L)\)</span> (relative homology)</p></li>
+</ol>
+<p>Each diagram is represented by sets of paired and unpaired simplices,
+and contains simplices of all dimensions. <code class="docutils literal notranslate"><span class="pre">dgms</span></code> also contains the
+entrance times of the simplices and their dimensions.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="chalc.sixpack.morphisms.KChromaticInclusion">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">KChromaticInclusion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filtration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../filtration/index.html#chalc.filtration.Filtration" title="chalc.filtration.Filtration"><span class="pre">chalc.filtration.Filtration</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.sixpack.morphisms.KChromaticInclusion" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#chalc.sixpack.morphisms.FiltrationInclusion" title="chalc.sixpack.morphisms.FiltrationInclusion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FiltrationInclusion</span></code></a></p>
+digraph inheritance26b4a12fc1 {
+bgcolor=transparent;
+rankdir=LR;
+size=&quot;8.0, 12.0&quot;;
+  &quot;ABC&quot; [URL=&quot;https://docs.python.org/3/library/abc.html#abc.ABC&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;Helper class that provides a standard way to create an ABC using&quot;];
+  &quot;FiltrationInclusion&quot; [URL=&quot;#chalc.sixpack.morphisms.FiltrationInclusion&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;Abstract inclusion of a filtered subcomplex.&quot;];
+  &quot;FiltrationMorphism&quot; -&gt; &quot;FiltrationInclusion&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;ABC&quot; -&gt; &quot;FiltrationInclusion&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;FiltrationMorphism&quot; [URL=&quot;#chalc.sixpack.morphisms.FiltrationMorphism&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;Abstract map between filtered simplicial complexes.&quot;];
+  &quot;ABC&quot; -&gt; &quot;FiltrationMorphism&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;KChromaticInclusion&quot; [URL=&quot;#chalc.sixpack.morphisms.KChromaticInclusion&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;Inclusion of the simplices having at most :math:`k` colours.&quot;];
+  &quot;FiltrationInclusion&quot; -&gt; &quot;KChromaticInclusion&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+}
+<p>Inclusion of the simplices having at most <span class="math notranslate nohighlight">\(k\)</span> colours.</p>
+<p>The <span class="math notranslate nohighlight">\(k\)</span>-chromatic subfiltration is spanned by
+simplices having at most <span class="math notranslate nohighlight">\(k\)</span> colours. This represents
+a special case of <a class="reference internal" href="#chalc.sixpack.morphisms.SubChromaticInclusion" title="chalc.sixpack.morphisms.SubChromaticInclusion"><code class="xref py py-class docutils literal notranslate"><span class="pre">SubChromaticInclusion</span></code></a>.
+Using the notation from <a class="reference internal" href="#chalc.sixpack.morphisms.SubChromaticInclusion" title="chalc.sixpack.morphisms.SubChromaticInclusion"><code class="xref py py-class docutils literal notranslate"><span class="pre">SubChromaticInclusion</span></code></a>,
+this class corresponds to setting <span class="math notranslate nohighlight">\(\tau\)</span> to be the
+<span class="math notranslate nohighlight">\(k\)</span>-skeleton of <span class="math notranslate nohighlight">\(\Delta^s\)</span>, where
+<span class="math notranslate nohighlight">\(\{0, \ldots, s\}\)</span> is the set of colours.</p>
+<p>In practical terms, the following code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">KChromaticInclusion</span><span class="p">(</span><span class="n">filtration</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">sixpack</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>should give the same 6-pack of persistence diagrams as this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SubChromaticInclusion</span><span class="p">(</span>
+        <span class="n">filtration</span><span class="p">,</span>
+        <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_colours</span><span class="p">),</span> <span class="n">k</span><span class="p">)</span>
+<span class="p">)</span><span class="o">.</span><span class="n">sixpack</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>There is, however, a slight performance benefit to using <a class="reference internal" href="#chalc.sixpack.morphisms.KChromaticInclusion" title="chalc.sixpack.morphisms.KChromaticInclusion"><code class="xref py py-class docutils literal notranslate"><span class="pre">KChromaticInclusion</span></code></a>
+over <a class="reference internal" href="#chalc.sixpack.morphisms.SubChromaticInclusion" title="chalc.sixpack.morphisms.SubChromaticInclusion"><code class="xref py py-class docutils literal notranslate"><span class="pre">SubChromaticInclusion</span></code></a> in this situation.</p>
+<p class="rubric">Examples</p>
+<p>To consider the inclusion of all monochromatic simplices:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">KChromaticInclusion</span><span class="p">(</span><span class="n">filtration</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sixpack</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>To consider the inclusion of all simplices spanned by at most two colours:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">KChromaticInclusion</span><span class="p">(</span><span class="n">filtration</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sixpack</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#chalc.sixpack.morphisms.SubChromaticInclusion" title="chalc.sixpack.morphisms.SubChromaticInclusion"><code class="xref py py-class docutils literal notranslate"><span class="pre">SubChromaticInclusion</span></code></a>, <a class="reference internal" href="#chalc.sixpack.morphisms.KChromaticQuotient" title="chalc.sixpack.morphisms.KChromaticQuotient"><code class="xref py py-class docutils literal notranslate"><span class="pre">KChromaticQuotient</span></code></a>, <a class="reference internal" href="#chalc.sixpack.morphisms.SubChromaticQuotient" title="chalc.sixpack.morphisms.SubChromaticQuotient"><code class="xref py py-class docutils literal notranslate"><span class="pre">SubChromaticQuotient</span></code></a>.</p>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chalc.sixpack.morphisms.KChromaticInclusion.k">
+<span class="sig-name descname"><span class="pre">k</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#chalc.sixpack.morphisms.KChromaticInclusion.k" title="Link to this definition">¶</a></dt>
+<dd><p>The value k.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chalc.sixpack.morphisms.KChromaticInclusion.simplex_in_domain">
+<span class="sig-name descname"><span class="pre">simplex_in_domain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#chalc.sixpack.morphisms.KChromaticInclusion.simplex_in_domain" title="Link to this definition">¶</a></dt>
+<dd><p>Check if a simplex is in the domain of the inclusion map.</p>
+<p>A simplex is identified by its column in the boundary matrix of the filtration.
+This column has the same format as the columns returned by
+<a class="reference internal" href="../../filtration/index.html#chalc.filtration.Filtration.boundary_matrix" title="chalc.filtration.Filtration.boundary_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">chalc.filtration.Filtration.boundary_matrix()</span></code></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="chalc.sixpack.morphisms.KChromaticQuotient">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">KChromaticQuotient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filtration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../filtration/index.html#chalc.filtration.Filtration" title="chalc.filtration.Filtration"><span class="pre">chalc.filtration.Filtration</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.sixpack.morphisms.KChromaticQuotient" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#chalc.sixpack.morphisms.FiltrationQuotient" title="chalc.sixpack.morphisms.FiltrationQuotient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FiltrationQuotient</span></code></a></p>
+digraph inheritancea06ef1a856 {
+bgcolor=transparent;
+rankdir=LR;
+size=&quot;8.0, 12.0&quot;;
+  &quot;ABC&quot; [URL=&quot;https://docs.python.org/3/library/abc.html#abc.ABC&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;Helper class that provides a standard way to create an ABC using&quot;];
+  &quot;FiltrationMorphism&quot; [URL=&quot;#chalc.sixpack.morphisms.FiltrationMorphism&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;Abstract map between filtered simplicial complexes.&quot;];
+  &quot;ABC&quot; -&gt; &quot;FiltrationMorphism&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;FiltrationQuotient&quot; [URL=&quot;#chalc.sixpack.morphisms.FiltrationQuotient&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;Represents the gluing map of a disjoint union of subfiltrations.&quot;];
+  &quot;FiltrationMorphism&quot; -&gt; &quot;FiltrationQuotient&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;ABC&quot; -&gt; &quot;FiltrationQuotient&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;KChromaticQuotient&quot; [URL=&quot;#chalc.sixpack.morphisms.KChromaticQuotient&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;Corresponds to gluing all subfiltrations spanned by :math:`k` colours.&quot;];
+  &quot;FiltrationQuotient&quot; -&gt; &quot;KChromaticQuotient&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+}
+<p>Corresponds to gluing all subfiltrations spanned by <span class="math notranslate nohighlight">\(k\)</span> colours.</p>
+<p>This represents a special case of <a class="reference internal" href="#chalc.sixpack.morphisms.SubChromaticQuotient" title="chalc.sixpack.morphisms.SubChromaticQuotient"><code class="xref py py-class docutils literal notranslate"><span class="pre">SubChromaticQuotient</span></code></a>.
+Using the notation from <a class="reference internal" href="#chalc.sixpack.morphisms.SubChromaticQuotient" title="chalc.sixpack.morphisms.SubChromaticQuotient"><code class="xref py py-class docutils literal notranslate"><span class="pre">SubChromaticQuotient</span></code></a>, this class
+corresponds to having the <span class="math notranslate nohighlight">\(\tau_i\)</span> range over all combinations of
+<span class="math notranslate nohighlight">\(k\)</span> colours from the set of colours <span class="math notranslate nohighlight">\(\{0, \ldots, s\}\)</span>.</p>
+<p>In practical terms, the following code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">KChromaticInclusion</span><span class="p">(</span><span class="n">filtration</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">sixpack</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>should give the same 6-pack of persistence diagrams as this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">n_colours</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">colours</span><span class="p">))</span>
+<span class="n">SubChromaticQuotient</span><span class="p">(</span>
+        <span class="n">filtration</span><span class="p">,</span>
+        <span class="nb">tuple</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">combination</span><span class="p">,)</span>
+                <span class="k">for</span> <span class="n">combination</span> <span class="ow">in</span> <span class="n">combinations</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_colours</span><span class="p">),</span> <span class="n">k</span><span class="p">))</span>
+        <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">KChromaticQuotient(1)</span></code> is essentially the same as
+<code class="docutils literal notranslate"><span class="pre">KChromaticInclusion(1)</span></code> since both represent the inclusion of all
+monochromatic simplices. You should prefer to use <code class="docutils literal notranslate"><span class="pre">KChromaticInclusion(1)</span></code>
+for performance reasons, since <code class="docutils literal notranslate"><span class="pre">KChromaticQuotient(1)</span></code> will compute
+the mapping cylinder of the inclusion map, which is unnecessary.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#chalc.sixpack.morphisms.KChromaticInclusion" title="chalc.sixpack.morphisms.KChromaticInclusion"><code class="xref py py-class docutils literal notranslate"><span class="pre">KChromaticInclusion</span></code></a>, <a class="reference internal" href="#chalc.sixpack.morphisms.SubChromaticInclusion" title="chalc.sixpack.morphisms.SubChromaticInclusion"><code class="xref py py-class docutils literal notranslate"><span class="pre">SubChromaticInclusion</span></code></a>, <a class="reference internal" href="#chalc.sixpack.morphisms.SubChromaticQuotient" title="chalc.sixpack.morphisms.SubChromaticQuotient"><code class="xref py py-class docutils literal notranslate"><span class="pre">SubChromaticQuotient</span></code></a>.</p>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chalc.sixpack.morphisms.KChromaticQuotient.k">
+<span class="sig-name descname"><span class="pre">k</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#chalc.sixpack.morphisms.KChromaticQuotient.k" title="Link to this definition">¶</a></dt>
+<dd><p>The value k.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chalc.sixpack.morphisms.KChromaticQuotient.simplex_in_filtration">
+<span class="sig-name descname"><span class="pre">simplex_in_filtration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#chalc.sixpack.morphisms.KChromaticQuotient.simplex_in_filtration" title="Link to this definition">¶</a></dt>
+<dd><p>Check if a simplex is in the i<sup>th</sup> subfiltration.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="chalc.sixpack.morphisms.SubChromaticInclusion">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SubChromaticInclusion</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">filtration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../filtration/index.html#chalc.filtration.Filtration" title="chalc.filtration.Filtration"><span class="pre">chalc.filtration.Filtration</span></a></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">tau</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection" title="(in Python v3.13)"><span class="pre">collections.abc.Collection</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection" title="(in Python v3.13)"><span class="pre">collections.abc.Collection</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection" title="(in Python v3.13)"><span class="pre">collections.abc.Collection</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#chalc.sixpack.morphisms.SubChromaticInclusion" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#chalc.sixpack.morphisms.FiltrationInclusion" title="chalc.sixpack.morphisms.FiltrationInclusion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FiltrationInclusion</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sized" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">collections.abc.Sized</span></code></a></p>
+digraph inheritance69a03633f5 {
+bgcolor=transparent;
+rankdir=LR;
+size=&quot;8.0, 12.0&quot;;
+  &quot;ABC&quot; [URL=&quot;https://docs.python.org/3/library/abc.html#abc.ABC&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;Helper class that provides a standard way to create an ABC using&quot;];
+  &quot;FiltrationInclusion&quot; [URL=&quot;#chalc.sixpack.morphisms.FiltrationInclusion&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;Abstract inclusion of a filtered subcomplex.&quot;];
+  &quot;FiltrationMorphism&quot; -&gt; &quot;FiltrationInclusion&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;ABC&quot; -&gt; &quot;FiltrationInclusion&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;FiltrationMorphism&quot; [URL=&quot;#chalc.sixpack.morphisms.FiltrationMorphism&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;Abstract map between filtered simplicial complexes.&quot;];
+  &quot;ABC&quot; -&gt; &quot;FiltrationMorphism&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;Sized&quot; [fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;];
+  &quot;SubChromaticInclusion&quot; [URL=&quot;#chalc.sixpack.morphisms.SubChromaticInclusion&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;Inclusion of a subfiltration spanned by any combination(s) of colours.&quot;];
+  &quot;FiltrationInclusion&quot; -&gt; &quot;SubChromaticInclusion&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;Sized&quot; -&gt; &quot;SubChromaticInclusion&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+}
+<p>Inclusion of a subfiltration spanned by any combination(s) of colours.</p>
+<p>Let <span class="math notranslate nohighlight">\(\{0, \ldots, s\}\)</span> be a set of colours, let <span class="math notranslate nohighlight">\(\Delta^s\)</span> be the
+<a class="reference external" href="https://en.wikipedia.org/wikie/Abstract_simplicial_complex">abstract simplicial complex</a>
+whose vertices represent individual colours, and let
+<span class="math notranslate nohighlight">\(\tau\)</span> be any subcomplex of <span class="math notranslate nohighlight">\(\Delta^s\)</span>.
+For a filtered simplicial complex <span class="math notranslate nohighlight">\(K\)</span> on a vertex set <span class="math notranslate nohighlight">\(V\)</span>,
+and a colouring <span class="math notranslate nohighlight">\(\mu:V \to \{0, \ldots, s\}\)</span> of <span class="math notranslate nohighlight">\(V\)</span>,
+let <span class="math notranslate nohighlight">\(K/\tau\)</span> denote the subfiltration of <span class="math notranslate nohighlight">\(K\)</span>
+comprising simplices <span class="math notranslate nohighlight">\(\sigma \in K\)</span> satisfying <span class="math notranslate nohighlight">\(\mu(\sigma) \in \tau\)</span>.
+This class represents the inclusion map <span class="math notranslate nohighlight">\(K/\tau \hookrightarrow K\)</span>.</p>
+<p>The complex <span class="math notranslate nohighlight">\(\tau\)</span> is specified by its maximal faces, or by its maximal face if there
+is only one.</p>
+<p class="rubric">Examples</p>
+<p>The inclusion of all monochromatic simplices of colours 0 and 1:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SubChromaticInclusion</span><span class="p">(</span><span class="n">filtration</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">]])</span><span class="o">.</span><span class="n">sixpack</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The inclusion of any simplex with colours in <span class="math notranslate nohighlight">\(\{0, 1\}\)</span>,
+(which includes all monochromatic simplices of colours 0 and 1),
+i.e., <span class="math notranslate nohighlight">\(\tau = \{\{0, 1\}, \{0\}, \{1\}\}\)</span>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SubChromaticInclusion</span><span class="p">(</span><span class="n">filtration</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span><span class="o">.</span><span class="n">sixpack</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>In this case since <span class="math notranslate nohighlight">\(\tau\)</span> has a single maximal face, you can also write the following.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SubChromaticInclusion</span><span class="p">(</span><span class="n">filtration</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">sixpack</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>You can also specify more general subsets of colours, for example
+<span class="math notranslate nohighlight">\(\tau = \{\{0, 1\}, \{1, 2\}, \{0\}, \{1\}, \{2\}\}\)</span>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SubChromaticInclusion</span><span class="p">(</span><span class="n">filtration</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]])</span><span class="o">.</span><span class="n">sixpack</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#chalc.sixpack.morphisms.KChromaticInclusion" title="chalc.sixpack.morphisms.KChromaticInclusion"><code class="xref py py-class docutils literal notranslate"><span class="pre">KChromaticInclusion</span></code></a>, <a class="reference internal" href="#chalc.sixpack.morphisms.KChromaticQuotient" title="chalc.sixpack.morphisms.KChromaticQuotient"><code class="xref py py-class docutils literal notranslate"><span class="pre">KChromaticQuotient</span></code></a>, <a class="reference internal" href="#chalc.sixpack.morphisms.SubChromaticQuotient" title="chalc.sixpack.morphisms.SubChromaticQuotient"><code class="xref py py-class docutils literal notranslate"><span class="pre">SubChromaticQuotient</span></code></a>.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="chalc.sixpack.morphisms.SubChromaticInclusion.simplex_in_domain">
+<span class="sig-name descname"><span class="pre">simplex_in_domain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#chalc.sixpack.morphisms.SubChromaticInclusion.simplex_in_domain" title="Link to this definition">¶</a></dt>
+<dd><p>Check if a simplex is in the domain of the inclusion map.</p>
+<p>A simplex is identified by its column in the boundary matrix of the filtration.
+This column has the same format as the columns returned by
+<a class="reference internal" href="../../filtration/index.html#chalc.filtration.Filtration.boundary_matrix" title="chalc.filtration.Filtration.boundary_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">chalc.filtration.Filtration.boundary_matrix()</span></code></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="chalc.sixpack.morphisms.SubChromaticQuotient">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SubChromaticQuotient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filtration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../filtration/index.html#chalc.filtration.Filtration" title="chalc.filtration.Filtration"><span class="pre">chalc.filtration.Filtration</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection" title="(in Python v3.13)"><span class="pre">collections.abc.Collection</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection" title="(in Python v3.13)"><span class="pre">collections.abc.Collection</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection" title="(in Python v3.13)"><span class="pre">collections.abc.Collection</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chalc.sixpack.morphisms.SubChromaticQuotient" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#chalc.sixpack.morphisms.FiltrationQuotient" title="chalc.sixpack.morphisms.FiltrationQuotient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FiltrationQuotient</span></code></a></p>
+digraph inheritance3cf1c688bd {
+bgcolor=transparent;
+rankdir=LR;
+size=&quot;8.0, 12.0&quot;;
+  &quot;ABC&quot; [URL=&quot;https://docs.python.org/3/library/abc.html#abc.ABC&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;Helper class that provides a standard way to create an ABC using&quot;];
+  &quot;FiltrationMorphism&quot; [URL=&quot;#chalc.sixpack.morphisms.FiltrationMorphism&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;Abstract map between filtered simplicial complexes.&quot;];
+  &quot;ABC&quot; -&gt; &quot;FiltrationMorphism&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;FiltrationQuotient&quot; [URL=&quot;#chalc.sixpack.morphisms.FiltrationQuotient&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;Represents the gluing map of a disjoint union of subfiltrations.&quot;];
+  &quot;FiltrationMorphism&quot; -&gt; &quot;FiltrationQuotient&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;ABC&quot; -&gt; &quot;FiltrationQuotient&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;SubChromaticQuotient&quot; [URL=&quot;#chalc.sixpack.morphisms.SubChromaticQuotient&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;Represents a gluing map in a chromatic filtration.&quot;];
+  &quot;FiltrationQuotient&quot; -&gt; &quot;SubChromaticQuotient&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+}
+<p>Represents a gluing map in a chromatic filtration.</p>
+<p>Let <span class="math notranslate nohighlight">\(\{0, \ldots, s\}\)</span> be a set of colours, let <span class="math notranslate nohighlight">\(\Delta^s\)</span> be the
+<a class="reference external" href="https://en.wikipedia.org/wikie/Abstract_simplicial_complex">abstract simplicial complex</a>
+whose vertices represent individual colours, and let
+<span class="math notranslate nohighlight">\(\tau_0, \ldots, \tau_m\)</span> be any subcomplexes of <span class="math notranslate nohighlight">\(\Delta^s\)</span>.
+For a filtered simplicial complex <span class="math notranslate nohighlight">\(K\)</span> on a vertex set <span class="math notranslate nohighlight">\(V\)</span>,
+and a colouring <span class="math notranslate nohighlight">\(\mu:V \to \{0, \ldots, s\}\)</span> of <span class="math notranslate nohighlight">\(V\)</span>,
+let <span class="math notranslate nohighlight">\(K/\tau_i\)</span>  denote the subfiltration of <span class="math notranslate nohighlight">\(K\)</span>
+comprising simplices <span class="math notranslate nohighlight">\(\sigma \in K\)</span> satisfying <span class="math notranslate nohighlight">\(\mu(\sigma) \in \tau_i\)</span>
+(<span class="math notranslate nohighlight">\(1 \leq i \leq m\)</span>). This class represents the quotient map</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\bigsqcup_{i=0}^m K/\tau_i \twoheadrightarrow K,\]</div>
+</div>
+<p>Each complex <span class="math notranslate nohighlight">\(\tau_i\)</span> is specified by its maximal faces, or by its maximal face if there
+is only one.</p>
+<p class="rubric">Examples</p>
+<p>If there is only one <span class="math notranslate nohighlight">\(\tau_i\)</span>, then this is the same as the
+<a class="reference internal" href="#chalc.sixpack.morphisms.SubChromaticInclusion" title="chalc.sixpack.morphisms.SubChromaticInclusion"><code class="xref py py-class docutils literal notranslate"><span class="pre">SubChromaticInclusion</span></code></a> of <span class="math notranslate nohighlight">\(\tau_i\)</span>.
+For example, both of the following computations produce the same
+6-pack of persistence diagrams, corresponding to
+the inclusion of all monochromatic simplices of colours 0 and 1:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Using SubChromaticQuotient</span>
+<span class="n">SubChromaticQuotient</span><span class="p">(</span>
+        <span class="n">filtration</span><span class="p">,</span>
+        <span class="p">[</span>
+                <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]],</span>  <span class="c1"># tau_0 = {{0,1}, {0}, {1}}</span>
+        <span class="p">],</span>
+<span class="p">)</span><span class="o">.</span><span class="n">sixpack</span><span class="p">()</span>
+
+<span class="c1"># Using SubChromaticInclusion</span>
+<span class="n">SubChromaticInclusion</span><span class="p">(</span>
+        <span class="n">filtration</span><span class="p">,</span>
+        <span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]],</span>
+<span class="p">)</span><span class="o">.</span><span class="n">sixpack</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>If the <span class="math notranslate nohighlight">\(\tau_i\)</span> are disjoint, then this class produces the
+same result as <a class="reference internal" href="#chalc.sixpack.morphisms.SubChromaticInclusion" title="chalc.sixpack.morphisms.SubChromaticInclusion"><code class="xref py py-class docutils literal notranslate"><span class="pre">SubChromaticInclusion</span></code></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Using SubChromaticQuotient</span>
+<span class="n">SubChromaticQuotient</span><span class="p">(</span>
+        <span class="n">filtration</span><span class="p">,</span>
+        <span class="p">[</span>
+                <span class="p">[</span>
+                        <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                <span class="p">],</span>  <span class="c1"># tau_0 = {{0,1}, {0}, {1}}</span>
+                <span class="p">[</span>
+                        <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+                <span class="p">],</span>  <span class="c1"># tau_1 = {{2,3}, {2}, {3}}</span>
+        <span class="p">]</span>
+<span class="p">)</span><span class="o">.</span><span class="n">sixpack</span><span class="p">()</span>
+
+<span class="c1"># Using SubChromaticInclusion</span>
+<span class="n">SubChromaticInclusion</span><span class="p">(</span>
+        <span class="n">filtration</span><span class="p">,</span>
+        <span class="p">[</span>
+                <span class="c1"># tau = {{0, 1}, {2, 3}, {0}, {1}, {2}, {3}}</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+        <span class="p">]</span>
+<span class="p">)</span><span class="o">.</span><span class="n">sixpack</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>In general this is not necessarily the case:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Using SubChromaticQuotient - gluing two subfiltrations</span>
+<span class="n">SubChromaticQuotient</span><span class="p">(</span>
+        <span class="n">filtration</span><span class="p">,</span>
+        <span class="p">[</span>
+                <span class="p">[</span>
+                        <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                <span class="p">],</span>  <span class="c1"># tau_0 = {{0,1}, {0}, {1}}</span>
+                <span class="p">[</span>
+                        <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+                <span class="p">],</span>  <span class="c1"># tau_1 = {{1,2}, {1}, {2}}</span>
+        <span class="p">],</span>
+<span class="p">)</span><span class="o">.</span><span class="n">sixpack</span><span class="p">()</span>
+
+<span class="c1"># Using SubChromaticInclusion - inclusion of a union of two subfiltrations</span>
+<span class="n">SubChromaticInclusion</span><span class="p">(</span>
+        <span class="n">filtration</span><span class="p">,</span>
+        <span class="p">[</span>
+                <span class="c1"># tau = {{0, 1}, {1, 2}, {0}, {1}, {2}}</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+        <span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#chalc.sixpack.morphisms.SubChromaticInclusion" title="chalc.sixpack.morphisms.SubChromaticInclusion"><code class="xref py py-class docutils literal notranslate"><span class="pre">SubChromaticInclusion</span></code></a>, <a class="reference internal" href="#chalc.sixpack.morphisms.KChromaticInclusion" title="chalc.sixpack.morphisms.KChromaticInclusion"><code class="xref py py-class docutils literal notranslate"><span class="pre">KChromaticInclusion</span></code></a>, <a class="reference internal" href="#chalc.sixpack.morphisms.KChromaticQuotient" title="chalc.sixpack.morphisms.KChromaticQuotient"><code class="xref py py-class docutils literal notranslate"><span class="pre">KChromaticQuotient</span></code></a>.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="chalc.sixpack.morphisms.SubChromaticQuotient.simplex_in_filtration">
+<span class="sig-name descname"><span class="pre">simplex_in_filtration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#chalc.sixpack.morphisms.SubChromaticQuotient.simplex_in_filtration" title="Link to this definition">¶</a></dt>
+<dd><p>Check if a simplex is in the i<sup>th</sup> subfiltration.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../types/index.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">chalc.sixpack.types</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../index.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">chalc.sixpack</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023, Abhinav Natarajan
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">chalc.sixpack.morphisms</a><ul>
+<li><a class="reference internal" href="#classes">Classes</a></li>
+<li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
+<li><a class="reference internal" href="#chalc.sixpack.morphisms.FiltrationInclusion"><code class="docutils literal notranslate"><span class="pre">FiltrationInclusion</span></code></a><ul>
+<li><a class="reference internal" href="#chalc.sixpack.morphisms.FiltrationInclusion.simplex_in_domain"><code class="docutils literal notranslate"><span class="pre">simplex_in_domain()</span></code></a></li>
+<li><a class="reference internal" href="#chalc.sixpack.morphisms.FiltrationInclusion.sixpack"><code class="docutils literal notranslate"><span class="pre">sixpack()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#chalc.sixpack.morphisms.FiltrationMorphism"><code class="docutils literal notranslate"><span class="pre">FiltrationMorphism</span></code></a><ul>
+<li><a class="reference internal" href="#chalc.sixpack.morphisms.FiltrationMorphism.sixpack"><code class="docutils literal notranslate"><span class="pre">sixpack()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#chalc.sixpack.morphisms.FiltrationQuotient"><code class="docutils literal notranslate"><span class="pre">FiltrationQuotient</span></code></a><ul>
+<li><a class="reference internal" href="#chalc.sixpack.morphisms.FiltrationQuotient.num_subfiltrations"><code class="docutils literal notranslate"><span class="pre">num_subfiltrations</span></code></a></li>
+<li><a class="reference internal" href="#chalc.sixpack.morphisms.FiltrationQuotient.simplex_in_filtration"><code class="docutils literal notranslate"><span class="pre">simplex_in_filtration()</span></code></a></li>
+<li><a class="reference internal" href="#chalc.sixpack.morphisms.FiltrationQuotient.sixpack"><code class="docutils literal notranslate"><span class="pre">sixpack()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#chalc.sixpack.morphisms.KChromaticInclusion"><code class="docutils literal notranslate"><span class="pre">KChromaticInclusion</span></code></a><ul>
+<li><a class="reference internal" href="#chalc.sixpack.morphisms.KChromaticInclusion.k"><code class="docutils literal notranslate"><span class="pre">k</span></code></a></li>
+<li><a class="reference internal" href="#chalc.sixpack.morphisms.KChromaticInclusion.simplex_in_domain"><code class="docutils literal notranslate"><span class="pre">simplex_in_domain()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#chalc.sixpack.morphisms.KChromaticQuotient"><code class="docutils literal notranslate"><span class="pre">KChromaticQuotient</span></code></a><ul>
+<li><a class="reference internal" href="#chalc.sixpack.morphisms.KChromaticQuotient.k"><code class="docutils literal notranslate"><span class="pre">k</span></code></a></li>
+<li><a class="reference internal" href="#chalc.sixpack.morphisms.KChromaticQuotient.simplex_in_filtration"><code class="docutils literal notranslate"><span class="pre">simplex_in_filtration()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#chalc.sixpack.morphisms.SubChromaticInclusion"><code class="docutils literal notranslate"><span class="pre">SubChromaticInclusion</span></code></a><ul>
+<li><a class="reference internal" href="#chalc.sixpack.morphisms.SubChromaticInclusion.simplex_in_domain"><code class="docutils literal notranslate"><span class="pre">simplex_in_domain()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#chalc.sixpack.morphisms.SubChromaticQuotient"><code class="docutils literal notranslate"><span class="pre">SubChromaticQuotient</span></code></a><ul>
+<li><a class="reference internal" href="#chalc.sixpack.morphisms.SubChromaticQuotient.simplex_in_filtration"><code class="docutils literal notranslate"><span class="pre">simplex_in_filtration()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../../../../_static/documentation_options.js?v=ce29b7a2"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

@@ -1,0 +1,499 @@
+chalc.sixpack.morphisms
+=======================
+
+.. py:module:: chalc.sixpack.morphisms
+
+.. autoapi-nested-parse::
+
+   Helper classes representing morphisms between filtered simplicial complexes.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   chalc.sixpack.morphisms.FiltrationInclusion
+   chalc.sixpack.morphisms.FiltrationMorphism
+   chalc.sixpack.morphisms.FiltrationQuotient
+   chalc.sixpack.morphisms.KChromaticInclusion
+   chalc.sixpack.morphisms.KChromaticQuotient
+   chalc.sixpack.morphisms.SubChromaticInclusion
+   chalc.sixpack.morphisms.SubChromaticQuotient
+
+
+Module Contents
+---------------
+
+.. py:class:: FiltrationInclusion(filtration: chalc.filtration.Filtration)
+
+   Bases: :py:obj:`FiltrationMorphism`, :py:obj:`abc.ABC`
+
+   .. autoapi-inheritance-diagram:: chalc.sixpack.morphisms.FiltrationInclusion
+      :parts: 1
+
+
+   Abstract inclusion of a filtered subcomplex.
+
+   This class constructs the inclusion of an arbitrary subfiltration
+   of a chromatic filtration.
+
+   This is an abstract class. To specify an inclusion map,
+   use one of its concrete subclasses or create your own.
+   To implement your own inclusion map, you need to implement
+   the membership test ``simplex_in_domain`` which checks if a simplex
+   is in the domain of the inclusion map.
+
+   .. seealso:: :class:`SubChromaticInclusion`, :class:`KChromaticInclusion`.
+
+
+   .. py:method:: simplex_in_domain(column: tuple[list[int], int, float, list[int]]) -> bool
+      :abstractmethod:
+
+
+      Check if a simplex is in the domain of the inclusion map.
+
+      A simplex is identified by its column in the boundary matrix of the filtration.
+      This column has the same format as the columns returned by
+      :func:`chalc.filtration.Filtration.boundary_matrix`.
+
+
+
+   .. py:method:: sixpack(max_diagram_dimension: int | None = None) -> chalc.sixpack.types.SixPack
+
+      Compute the 6-pack of persistence diagrams of a coloured point-cloud.
+
+      This function constructs a filtered simplicial complex :math:`K`
+      from the point cloud, and computes the 6-pack of persistence diagrams
+      associated with a map of :math:`f : L \to K` of filtrations,
+      where :math:`L` is some filtration constructed from :math:`K`.
+
+      :param max_diagram_dimension: Maximum homological dimension for which the persistence diagrams are computed.
+                                    By default diagrams of all dimensions are computed.
+
+      Returns :
+              Diagrams corresponding to the following persistence modules
+              (where :math:`H_*` is the persistent homology functor and
+              :math:`f_*` is the induced map on persistent homology):
+
+              #. :math:`H_*(L)` (domain)
+              #. :math:`H_*(K)` (codomain)
+              #. :math:`\ker(f_*)` (kernel)
+              #. :math:`\mathrm{coker}(f_*)` (cokernel)
+              #. :math:`\mathrm{im}(f_*)` (image)
+              #. :math:`H_*(\mathrm{cyl}(f), L)` (relative homology)
+
+              Each diagram is represented by sets of paired and unpaired simplices,
+              and contains simplices of all dimensions. ``dgms`` also contains the
+              entrance times of the simplices and their dimensions.
+
+
+
+
+.. py:class:: FiltrationMorphism(filtration: chalc.filtration.Filtration)
+
+   Bases: :py:obj:`abc.ABC`
+
+   .. autoapi-inheritance-diagram:: chalc.sixpack.morphisms.FiltrationMorphism
+      :parts: 1
+
+
+   Abstract map between filtered simplicial complexes.
+
+   The map is a combinatorial proxy for the spatial relationships between
+   points in the filtration of different colours.
+   This is an abstract class. To specify a morphism, instantiate
+   one of its concrete subclasses.
+
+   .. seealso::
+
+      :class:`SubChromaticInclusion`,
+      :class:`KChromaticInclusion`,
+      :class:`SubChromaticQuotient`,
+      :class:`KChromaticQuotient`.
+
+
+   .. py:method:: sixpack(max_diagram_dimension: int | None = None) -> chalc.sixpack.types.SixPack
+      :abstractmethod:
+
+
+      Compute the 6-pack of persistence diagrams of a coloured point-cloud.
+
+      This function constructs a filtered simplicial complex :math:`K`
+      from the point cloud, and computes the 6-pack of persistence diagrams
+      associated with a map of :math:`f : L \to K` of filtrations,
+      where :math:`L` is some filtration constructed from :math:`K`.
+
+      :param max_diagram_dimension: Maximum homological dimension for which the persistence diagrams are computed.
+                                    By default diagrams of all dimensions are computed.
+
+      Returns :
+              Diagrams corresponding to the following persistence modules
+              (where :math:`H_*` is the persistent homology functor and
+              :math:`f_*` is the induced map on persistent homology):
+
+              #. :math:`H_*(L)` (domain)
+              #. :math:`H_*(K)` (codomain)
+              #. :math:`\ker(f_*)` (kernel)
+              #. :math:`\mathrm{coker}(f_*)` (cokernel)
+              #. :math:`\mathrm{im}(f_*)` (image)
+              #. :math:`H_*(\mathrm{cyl}(f), L)` (relative homology)
+
+              Each diagram is represented by sets of paired and unpaired simplices,
+              and contains simplices of all dimensions. ``dgms`` also contains the
+              entrance times of the simplices and their dimensions.
+
+
+
+
+.. py:class:: FiltrationQuotient(filtration: chalc.filtration.Filtration, num_subfiltrations: int)
+
+   Bases: :py:obj:`FiltrationMorphism`, :py:obj:`abc.ABC`
+
+   .. autoapi-inheritance-diagram:: chalc.sixpack.morphisms.FiltrationQuotient
+      :parts: 1
+
+
+   Represents the gluing map of a disjoint union of subfiltrations.
+
+   This is an abstract class. To specify a quotient map, use one
+   of its concrete subclasses or create your own. To implement
+   a quotient map, you need to implement the ``simplex_in_filtration``
+   method, and make sure that ``self.num_subfiltrations`` is initialized
+   before ``sixpack()`` is called.
+
+   .. seealso:: :class:`SubChromaticQuotient`, :class:`KChromaticQuotient`.
+
+
+   .. py:attribute:: num_subfiltrations
+      :type:  int
+
+      The number of subfiltrations in the quotient map.
+
+
+   .. py:method:: simplex_in_filtration(column: tuple[list[int], int, float, list[int]], i: int) -> bool
+      :abstractmethod:
+
+
+      Check if a simplex is in the |ith| subfiltration.
+
+      .. |ith| replace:: i\ :sup:`th`\
+
+
+
+   .. py:method:: sixpack(max_diagram_dimension: int | None = None) -> chalc.sixpack.types.SixPack
+
+      Compute the 6-pack of persistence diagrams of a coloured point-cloud.
+
+      This function constructs a filtered simplicial complex :math:`K`
+      from the point cloud, and computes the 6-pack of persistence diagrams
+      associated with a map of :math:`f : L \to K` of filtrations,
+      where :math:`L` is some filtration constructed from :math:`K`.
+
+      :param max_diagram_dimension: Maximum homological dimension for which the persistence diagrams are computed.
+                                    By default diagrams of all dimensions are computed.
+
+      Returns :
+              Diagrams corresponding to the following persistence modules
+              (where :math:`H_*` is the persistent homology functor and
+              :math:`f_*` is the induced map on persistent homology):
+
+              #. :math:`H_*(L)` (domain)
+              #. :math:`H_*(K)` (codomain)
+              #. :math:`\ker(f_*)` (kernel)
+              #. :math:`\mathrm{coker}(f_*)` (cokernel)
+              #. :math:`\mathrm{im}(f_*)` (image)
+              #. :math:`H_*(\mathrm{cyl}(f), L)` (relative homology)
+
+              Each diagram is represented by sets of paired and unpaired simplices,
+              and contains simplices of all dimensions. ``dgms`` also contains the
+              entrance times of the simplices and their dimensions.
+
+
+
+
+.. py:class:: KChromaticInclusion(filtration: chalc.filtration.Filtration, k: int)
+
+   Bases: :py:obj:`FiltrationInclusion`
+
+   .. autoapi-inheritance-diagram:: chalc.sixpack.morphisms.KChromaticInclusion
+      :parts: 1
+
+
+   Inclusion of the simplices having at most :math:`k` colours.
+
+   The :math:`k`-chromatic subfiltration is spanned by
+   simplices having at most :math:`k` colours. This represents
+   a special case of :class:`SubChromaticInclusion`.
+   Using the notation from :class:`SubChromaticInclusion`,
+   this class corresponds to setting :math:`\tau` to be the
+   :math:`k`-skeleton of :math:`\Delta^s`, where
+   :math:`\{0, \ldots, s\}` is the set of colours.
+
+   In practical terms, the following code::
+
+           KChromaticInclusion(filtration, k).sixpack()
+
+   should give the same 6-pack of persistence diagrams as this::
+
+           SubChromaticInclusion(
+                   filtration,
+                   itertools.combinations(range(n_colours), k)
+           ).sixpack()
+
+   There is, however, a slight performance benefit to using :class:`KChromaticInclusion`
+   over :class:`SubChromaticInclusion` in this situation.
+
+   .. rubric:: Examples
+
+   To consider the inclusion of all monochromatic simplices::
+
+           KChromaticInclusion(filtration, 1).sixpack()
+
+   To consider the inclusion of all simplices spanned by at most two colours::
+
+           KChromaticInclusion(filtration, 2).sixpack()
+
+   .. seealso:: :class:`SubChromaticInclusion`, :class:`KChromaticQuotient`, :class:`SubChromaticQuotient`.
+
+
+   .. py:attribute:: k
+      :type:  int
+
+      The value k.
+
+
+   .. py:method:: simplex_in_domain(column: tuple[list[int], int, float, list[int]]) -> bool
+
+      Check if a simplex is in the domain of the inclusion map.
+
+      A simplex is identified by its column in the boundary matrix of the filtration.
+      This column has the same format as the columns returned by
+      :func:`chalc.filtration.Filtration.boundary_matrix`.
+
+
+
+.. py:class:: KChromaticQuotient(filtration: chalc.filtration.Filtration, k: int)
+
+   Bases: :py:obj:`FiltrationQuotient`
+
+   .. autoapi-inheritance-diagram:: chalc.sixpack.morphisms.KChromaticQuotient
+      :parts: 1
+
+
+   Corresponds to gluing all subfiltrations spanned by :math:`k` colours.
+
+   This represents a special case of :class:`SubChromaticQuotient`.
+   Using the notation from :class:`SubChromaticQuotient`, this class
+   corresponds to having the :math:`\tau_i` range over all combinations of
+   :math:`k` colours from the set of colours :math:`\{0, \ldots, s\}`.
+
+   In practical terms, the following code::
+
+           KChromaticInclusion(filtration, k).sixpack()
+
+   should give the same 6-pack of persistence diagrams as this::
+
+           n_colours = len(set(colours))
+           SubChromaticQuotient(
+                   filtration,
+                   tuple(
+                           (combination,)
+                           for combination in combinations(range(n_colours), k))
+                   )
+           )
+
+   .. note::
+
+      ``KChromaticQuotient(1)`` is essentially the same as
+      ``KChromaticInclusion(1)`` since both represent the inclusion of all
+      monochromatic simplices. You should prefer to use ``KChromaticInclusion(1)``
+      for performance reasons, since ``KChromaticQuotient(1)`` will compute
+      the mapping cylinder of the inclusion map, which is unnecessary.
+
+   .. seealso:: :class:`KChromaticInclusion`, :class:`SubChromaticInclusion`, :class:`SubChromaticQuotient`.
+
+
+   .. py:attribute:: k
+      :type:  int
+
+      The value k.
+
+
+   .. py:method:: simplex_in_filtration(column: tuple[list[int], int, float, list[int]], i: int) -> bool
+
+      Check if a simplex is in the |ith| subfiltration.
+
+      .. |ith| replace:: i\ :sup:`th`\
+
+
+
+.. py:class:: SubChromaticInclusion(filtration: chalc.filtration.Filtration, tau: collections.abc.Collection[collections.abc.Collection[int]] | collections.abc.Collection[int])
+
+   Bases: :py:obj:`FiltrationInclusion`, :py:obj:`collections.abc.Sized`
+
+   .. autoapi-inheritance-diagram:: chalc.sixpack.morphisms.SubChromaticInclusion
+      :parts: 1
+
+
+   Inclusion of a subfiltration spanned by any combination(s) of colours.
+
+   Let :math:`\{0, \ldots, s\}` be a set of colours, let :math:`\Delta^s` be the
+   `abstract simplicial complex <https://en.wikipedia.org/wikie/Abstract_simplicial_complex>`_
+   whose vertices represent individual colours, and let
+   :math:`\tau` be any subcomplex of :math:`\Delta^s`.
+   For a filtered simplicial complex :math:`K` on a vertex set :math:`V`,
+   and a colouring :math:`\mu:V \to \{0, \ldots, s\}` of :math:`V`,
+   let :math:`K/\tau` denote the subfiltration of :math:`K`
+   comprising simplices :math:`\sigma \in K` satisfying :math:`\mu(\sigma) \in \tau`.
+   This class represents the inclusion map :math:`K/\tau \hookrightarrow K`.
+
+   The complex :math:`\tau` is specified by its maximal faces, or by its maximal face if there
+   is only one.
+
+   .. rubric:: Examples
+
+   The inclusion of all monochromatic simplices of colours 0 and 1::
+
+           SubChromaticInclusion(filtration, [[0], [1]]).sixpack()
+
+   The inclusion of any simplex with colours in :math:`\{0, 1\}`,
+   (which includes all monochromatic simplices of colours 0 and 1),
+   i.e., :math:`\tau = \{\{0, 1\}, \{0\}, \{1\}\}`::
+
+           SubChromaticInclusion(filtration, [[0, 1]]).sixpack()
+
+   In this case since :math:`\tau` has a single maximal face, you can also write the following.
+   ::
+
+           SubChromaticInclusion(filtration, [0, 1]).sixpack()
+
+   You can also specify more general subsets of colours, for example
+   :math:`\tau = \{\{0, 1\}, \{1, 2\}, \{0\}, \{1\}, \{2\}\}`. ::
+
+           SubChromaticInclusion(filtration, [[0, 1], [1, 2]]).sixpack()
+
+   .. seealso:: :class:`KChromaticInclusion`, :class:`KChromaticQuotient`, :class:`SubChromaticQuotient`.
+
+
+   .. py:method:: simplex_in_domain(column: tuple[list[int], int, float, list[int]]) -> bool
+
+      Check if a simplex is in the domain of the inclusion map.
+
+      A simplex is identified by its column in the boundary matrix of the filtration.
+      This column has the same format as the columns returned by
+      :func:`chalc.filtration.Filtration.boundary_matrix`.
+
+
+
+.. py:class:: SubChromaticQuotient(filtration: chalc.filtration.Filtration, tau: collections.abc.Collection[collections.abc.Collection[collections.abc.Collection[int]]])
+
+   Bases: :py:obj:`FiltrationQuotient`
+
+   .. autoapi-inheritance-diagram:: chalc.sixpack.morphisms.SubChromaticQuotient
+      :parts: 1
+
+
+   Represents a gluing map in a chromatic filtration.
+
+   Let :math:`\{0, \ldots, s\}` be a set of colours, let :math:`\Delta^s` be the
+   `abstract simplicial complex <https://en.wikipedia.org/wikie/Abstract_simplicial_complex>`_
+   whose vertices represent individual colours, and let
+   :math:`\tau_0, \ldots, \tau_m` be any subcomplexes of :math:`\Delta^s`.
+   For a filtered simplicial complex :math:`K` on a vertex set :math:`V`,
+   and a colouring :math:`\mu:V \to \{0, \ldots, s\}` of :math:`V`,
+   let :math:`K/\tau_i`  denote the subfiltration of :math:`K`
+   comprising simplices :math:`\sigma \in K` satisfying :math:`\mu(\sigma) \in \tau_i`
+   (:math:`1 \leq i \leq m`). This class represents the quotient map
+
+   .. math::
+
+           \bigsqcup_{i=0}^m K/\tau_i \twoheadrightarrow K,
+
+   Each complex :math:`\tau_i` is specified by its maximal faces, or by its maximal face if there
+   is only one.
+
+
+   .. rubric:: Examples
+
+   If there is only one :math:`\tau_i`, then this is the same as the
+   :class:`SubChromaticInclusion` of :math:`\tau_i`.
+   For example, both of the following computations produce the same
+   6-pack of persistence diagrams, corresponding to
+   the inclusion of all monochromatic simplices of colours 0 and 1::
+
+           # Using SubChromaticQuotient
+           SubChromaticQuotient(
+                   filtration,
+                   [
+                           [[0, 1]],  # tau_0 = {{0,1}, {0}, {1}}
+                   ],
+           ).sixpack()
+
+           # Using SubChromaticInclusion
+           SubChromaticInclusion(
+                   filtration,
+                   [[0,1]],
+           ).sixpack()
+
+   If the :math:`\tau_i` are disjoint, then this class produces the
+   same result as :class:`SubChromaticInclusion`::
+
+           # Using SubChromaticQuotient
+           SubChromaticQuotient(
+                   filtration,
+                   [
+                           [
+                                   [0, 1],
+                           ],  # tau_0 = {{0,1}, {0}, {1}}
+                           [
+                                   [2, 3],
+                           ],  # tau_1 = {{2,3}, {2}, {3}}
+                   ]
+           ).sixpack()
+
+           # Using SubChromaticInclusion
+           SubChromaticInclusion(
+                   filtration,
+                   [
+                           # tau = {{0, 1}, {2, 3}, {0}, {1}, {2}, {3}}
+                           [0, 1], [2, 3],
+                   ]
+           ).sixpack()
+
+   In general this is not necessarily the case::
+
+           # Using SubChromaticQuotient - gluing two subfiltrations
+           SubChromaticQuotient(
+                   filtration,
+                   [
+                           [
+                                   [0, 1],
+                           ],  # tau_0 = {{0,1}, {0}, {1}}
+                           [
+                                   [1, 2],
+                           ],  # tau_1 = {{1,2}, {1}, {2}}
+                   ],
+           ).sixpack()
+
+           # Using SubChromaticInclusion - inclusion of a union of two subfiltrations
+           SubChromaticInclusion(
+                   filtration,
+                   [
+                           # tau = {{0, 1}, {1, 2}, {0}, {1}, {2}}
+                           [0, 1], [1, 2],
+                   ]
+           )
+
+   .. seealso:: :class:`SubChromaticInclusion`, :class:`KChromaticInclusion`, :class:`KChromaticQuotient`.
+
+
+   .. py:method:: simplex_in_filtration(column: tuple[list[int], int, float, list[int]], i: int) -> bool
+
+      Check if a simplex is in the |ith| subfiltration.
+
+      .. |ith| replace:: i\ :sup:`th`\
+
+
+

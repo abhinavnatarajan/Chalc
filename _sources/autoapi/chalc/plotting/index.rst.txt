@@ -51,7 +51,7 @@ Module Contents
                         If not provided, the current matplotlib colour cycle will be used.
 
 
-.. py:function:: plot_diagram(dgms: chalc.sixpack.SixPack, diagram_name: chalc.sixpack.SixPack.DiagramName, truncation: float | None = None, dimensions: collections.abc.Collection[int] | int | None = None, ax: matplotlib.axes.Axes | None = None, threshold: float = 0) -> matplotlib.axes.Axes | None
+.. py:function:: plot_diagram(dgms: chalc.sixpack.SixPack, diagram_name: chalc.sixpack.DiagramName, truncation: float | None = None, dimensions: collections.abc.Collection[int] | int | None = None, ax: matplotlib.axes.Axes | None = None, threshold: float = 0) -> matplotlib.axes.Axes | None
 
    Plot a specific diagram from a 6-pack.
 
@@ -66,7 +66,7 @@ Module Contents
    :param threshold: Only features with persistence greater than this value will be plotted.
 
 
-.. py:function:: plot_sixpack(dgms: chalc.sixpack.SixPack, truncations: collections.abc.Mapping[chalc.sixpack.SixPack.DiagramName, float] | float | None = None, dimensions: collections.abc.Collection[int] | int | None = None, threshold: float = 0) -> tuple[matplotlib.figure.Figure, numpy.ndarray[tuple[Literal[2], Literal[3]], numpy.dtype[Any]]]
+.. py:function:: plot_sixpack(dgms: chalc.sixpack.SixPack, truncations: collections.abc.Mapping[chalc.sixpack.DiagramName, float] | float | None = None, dimensions: collections.abc.Collection[int] | int | None = None, threshold: float = 0) -> tuple[matplotlib.figure.Figure, numpy.ndarray[tuple[Literal[2], Literal[3]], numpy.dtype[Any]]]
 
    Plot the 6-pack of persistence diagrams returned by :func:`compute <.sixpack.compute>`.
 
