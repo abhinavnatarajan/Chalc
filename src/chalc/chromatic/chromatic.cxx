@@ -144,7 +144,7 @@ template <typename T> auto compare(const void* a, const void* b) -> int {
 // make a vector contiguous and start at zero
 // returns new vector and number of distinct elements
 auto canonicalise(const vector<colour_t>& vec) -> tuple<vector<colour_t>, index_t> {
-	vector<colour_t>       new_vec(vec.size());
+	vector<colour_t>        new_vec(vec.size());
 	map<colour_t, colour_t> m;
 	for (auto&& [c, i] = tuple{vec.begin(), static_cast<colour_t>(0)}; c != vec.end(); c++) {
 		if (!m.contains(*c)) {
@@ -319,7 +319,7 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Fil
 	for (auto&& [i, colour] = tuple{static_cast<index_t>(0), colours.begin()};
 	     colour != colours.end();
 	     colour++, i++) {
-		verts_by_colour.at(*colour).push_back(i);
+		verts_by_colour[*colour].push_back(i);
 	}
 	bool numerical_instability = false;
 	if (delX.dimension() >= 1) {
@@ -336,14 +336,14 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Fil
 				// Partition the vertices of this simplex by colour
 				array<vector<index_t>, MAX_NUM_COLOURS> verts_by_colour_in_simplex;
 				for (auto&& v: verts) {
-					verts_by_colour_in_simplex.at(colours[v]).push_back(v);
+					verts_by_colour_in_simplex[colours[v]].push_back(v);
 				}
 
 				// Partition the vertices of all cofaces of the simplex by colour
 				array<vector<index_t>, MAX_NUM_COLOURS> verts_by_colour_all_cofaces;
 				for (auto& cofacet: simplex->get_cofacets()) {
 					for (auto& v: shared_ptr<Filtration::Simplex>(cofacet)->get_vertex_labels()) {
-						verts_by_colour_all_cofaces.at(colours[v]).push_back(v);
+						verts_by_colour_all_cofaces[colours[v]].push_back(v);
 					}
 				}
 				for (auto&& verts_j: verts_by_colour_all_cofaces) {
@@ -351,7 +351,7 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Fil
 					if (verts_j.empty()) {
 						continue;
 					}
-					remove_duplicates_inplace(verts_j);
+					// remove_duplicates_inplace(verts_j);
 				}
 
 				/*
@@ -412,7 +412,7 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Fil
 						// Get the distance of the nearest point of colour j to the centre,
 						// among all vertices in cofaces of this simplex
 						Quotient<Gmpzf>&& squared_dist_to_nearest_pt_of_colour_j =
-							(points_exact_q(all, verts_by_colour_all_cofaces.at(j)).colwise() -
+							(points_exact_q(all, verts_by_colour_all_cofaces[j]).colwise() -
 						     centre)
 								.colwise()
 								.squaredNorm()
@@ -473,7 +473,7 @@ auto alpha_parallel(
 	for (auto&& [i, colour] = tuple{static_cast<index_t>(0), colours.begin()};
 	     colour != colours.end();
 	     colour++, i++) {
-		verts_by_colour.at(*colour).push_back(i);
+		verts_by_colour[*colour].push_back(i);
 	}
 	bool numerical_instability = false;
 	if (delX.dimension() >= 1) {
@@ -504,15 +504,15 @@ auto alpha_parallel(
 							// Partition the vertices of this simplex by colour
 							array<vector<index_t>, MAX_NUM_COLOURS> verts_by_colour_in_simplex;
 							for (auto& v: verts) {
-								verts_by_colour_in_simplex.at(colours[v]).push_back(v);
+								verts_by_colour_in_simplex[colours[v]].push_back(v);
 							}
 
 							// Partition the vertices of all cofaces of the simplex by colour
 							array<vector<index_t>, MAX_NUM_COLOURS> verts_by_colour_all_cofaces;
 							for (auto& cofacet: simplex->get_cofacets()) {
-								for (auto& v: shared_ptr<Filtration::Simplex>(cofacet)
+								for (auto&& v: shared_ptr<Filtration::Simplex>(cofacet)
 							                      ->get_vertex_labels()) {
-									verts_by_colour_all_cofaces.at(colours[v]).push_back(v);
+									verts_by_colour_all_cofaces[colours[v]].push_back(v);
 								}
 							}
 							for (auto&& verts_j: verts_by_colour_all_cofaces) {
@@ -520,7 +520,7 @@ auto alpha_parallel(
 									continue;
 								}
 								// Remove duplicates
-								remove_duplicates_inplace(verts_j);
+							    // remove_duplicates_inplace(verts_j);
 							}
 
 							/*
@@ -585,7 +585,7 @@ auto alpha_parallel(
 									// Get the distance of the nearest point of colour j to the
 								    // centre, among all vertices in cofaces of this simplex
 									Quotient<Gmpzf>&& squared_dist_to_nearest_pt_of_colour_j =
-										(points_exact_q(all, verts_by_colour_all_cofaces.at(j))
+										(points_exact_q(all, verts_by_colour_all_cofaces[j])
 								             .colwise() -
 								         centre)
 											.colwise()

@@ -102,7 +102,7 @@ class BinomialCoeffTable {
 	}
 
 	auto operator()(index_t n, index_t k) const -> label_t {
-		return B.at(n).at(min(k, n - k));
+		return B[n][min(k, n - k)];
 	}
 };
 
