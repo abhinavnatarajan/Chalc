@@ -6,12 +6,16 @@
 #include <pybind11/stl.h>
 
 namespace {
-// A robust, flattening iterator for the std::vector<std::map<...>> data structure.
+using chalc::Filtration;
+using std::shared_ptr;
+
+// A robust, flattening iterator for the std::vector<std::unordered_map<...>> data structure.
 // It iterates over the Simplex smart pointers.
 class SimplexIterator {
   private:
-	using Vec = std::vector<std::map<chalc::label_t, std::shared_ptr<chalc::Filtration::Simplex>>>;
-	using Map = std::map<chalc::label_t, std::shared_ptr<chalc::Filtration::Simplex>>;
+	using Vec = std::remove_reference_t<
+		std::result_of_t<decltype (&Filtration::get_simplices)(Filtration)>>;
+	using Map        = Vec::value_type;
 	using VecConstIt = Vec::const_iterator;
 	using MapConstIt = Map::const_iterator;
 
@@ -30,7 +34,7 @@ class SimplexIterator {
 
   public:
 	using iterator_category = std::input_iterator_tag;
-	using value_type        = std::shared_ptr<chalc::Filtration::Simplex>;
+	using value_type        = shared_ptr<chalc::Filtration::Simplex>;
 	using difference_type   = std::ptrdiff_t;
 	using pointer           = const value_type*;
 	using reference         = const value_type&;
@@ -64,8 +68,7 @@ class SimplexIterator {
 		if (vec_it == vec_end) {
 			return (other.vec_it == other.vec_end && vec_it == other.vec_it);
 		}
-		return (vec_it == other.vec_it && vec_end == other.vec_end &&
-		        map_it == other.map_it);
+		return (vec_it == other.vec_it && vec_end == other.vec_end && map_it == other.map_it);
 	}
 
 	auto operator!=(const SimplexIterator& other) const -> bool {
@@ -75,12 +78,10 @@ class SimplexIterator {
 }  // namespace
 
 PYBIND11_MODULE(filtration, m) {  // NOLINT
-	using chalc::Filtration;
 	using chalc::index_t;
 	using chalc::MAX_NUM_COLOURS;
 	using chalc::standard_simplex;
 	using std::domain_error;
-	using std::shared_ptr;
 	using std::to_string;
 	using std::vector;
 	namespace py = pybind11;
@@ -158,7 +159,10 @@ Args:
 					SimplexIterator(simplices.end(), simplices.end())
 				);
 			},
-			"Iterate over the simplices in the complex, ordered by dimension and label.",
+			R"docstring(Iterate over the simplices in the complex, ordered by dimension.
+
+There are no guarantees on the relative order of simplices with the same dimension.
+)docstring",
 			py::keep_alive<0, 1>()  // Keep the Filtration alive while iterating
 		)
 		.def_property_readonly(

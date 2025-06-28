@@ -39,8 +39,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 	#include <bitset>
 	#include <cstdint>
-	#include <map>
 	#include <memory>
+	#include <unordered_map>
 	#include <vector>
 
 namespace chalc {
@@ -51,7 +51,7 @@ using label_t = uint64_t;
 // The maximum number of colours that can be represented.
 // 16 colours means that we can represent a colour label
 // in a uint16_t.
-constexpr int MAX_NUM_COLOURS = 16;
+constexpr uint8_t MAX_NUM_COLOURS = 16;
 // The type for colour bitmasks.
 using colours_t = std::bitset<MAX_NUM_COLOURS>;
 // The type for colour labels.
@@ -77,7 +77,8 @@ struct Filtration {
 
 	// Get label of a simplex from the labels of its vertices.
 	[[nodiscard]]
-	auto get_label_from_vertex_labels(const std::vector<index_t>& verts) const -> label_t;  // exported
+	auto get_label_from_vertex_labels(const std::vector<index_t>& verts) const
+		-> label_t;  // exported
 
 	// Check if the complex has a specific simplex.
 	[[nodiscard]]
@@ -98,7 +99,7 @@ struct Filtration {
 	// Returns a handle to the simplices.
 	[[nodiscard]]
 	auto get_simplices() const noexcept  // exported
-		-> const std::vector<std::map<label_t, std::shared_ptr<Simplex>>>& {
+		-> const std::vector<std::unordered_map<label_t, std::shared_ptr<Simplex>>>& {
 		return simplices;
 	}
 
@@ -146,13 +147,13 @@ struct Filtration {
 	/* PRIVATE MEMBERS OF Filtration */
 
 	std::shared_ptr<const BinomialCoeffTable> binomial;  // binomial coefficients
-	std::vector<std::map<label_t, std::shared_ptr<Simplex>>>
-		simplices;               // std::vector whose kth element is a table of k-simplices,
-	                             // labelled by their lexicographic index
-	index_t num_simplices;       // total number of simplices
-	index_t cur_dim;             // current maximum dimension of a maximal simplex
-	index_t n_vertices;          // number of vertices, labelled from 0 to n-1
-	index_t max_dim;             // maximum dimension of any simplex in the complex
+	std::vector<std::unordered_map<label_t, std::shared_ptr<Simplex>>>
+		simplices;          // std::vector whose kth element is a table of k-simplices,
+	                        // labelled by their lexicographic index
+	index_t num_simplices;  // total number of simplices
+	index_t cur_dim;        // current maximum dimension of a maximal simplex
+	index_t n_vertices;     // number of vertices, labelled from 0 to n-1
+	index_t max_dim;        // maximum dimension of any simplex in the complex
 
 	/* PRIVATE METHODS OF Filtration */
 

@@ -45,7 +45,6 @@ namespace {
 using std::bad_weak_ptr;
 using std::invalid_argument;
 using std::make_shared;
-using std::map;
 using std::max;
 using std::min;
 using std::numeric_limits;
@@ -57,6 +56,7 @@ using std::ranges::stable_sort;
 using std::runtime_error;
 using std::shared_ptr;
 using std::tuple;
+using std::unordered_map;
 using std::vector;
 }  // namespace
 
@@ -220,6 +220,7 @@ auto Filtration::validated_vertex_sequence(const vector<index_t>& verts) const -
 	return verts_sorted;
 }
 
+// Needs verts to be validated.
 auto Filtration::_get_label_from_vertex_labels(const vector<index_t>& verts) const -> label_t {
 	auto num_verts = static_cast<index_t>(verts.size());
 	assert(num_verts != 0);  // DEBUG
@@ -323,7 +324,9 @@ auto Filtration::add_simplex(
 		return false;
 	} else {
 		_add_simplex(verts_validated, filt_value);
-		cur_dim = max(cur_dim, static_cast<index_t>(verts_validated.size() - 1));  // need verts to be valid
+		cur_dim =
+			max(cur_dim,
+		        static_cast<index_t>(verts_validated.size() - 1));  // need verts to be valid
 		return true;
 	}
 }
@@ -411,7 +414,7 @@ auto Filtration::boundary_matrix() const
 	});
 	// Create mapping from labels to sorted index.
 	vector<tuple<vector<index_t>, label_t, value_t, vector<colour_t>>> result(num_simplices);
-	vector<map<label_t, index_t>>                                      indices(cur_dim + 1);
+	vector<unordered_map<label_t, index_t>>                            indices(cur_dim + 1);
 	for (auto&& [i, s] = tuple{0L, sort_by_val.begin()}; s != sort_by_val.end(); s++, i++) {
 		auto simplex = *s;
 		auto dim     = simplex->m_dim;

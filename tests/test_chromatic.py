@@ -6,7 +6,7 @@ import numpy as np
 
 import chalc as ch
 
-from .utils import assert_standard_simplex
+from .utils import assert_clique_complex
 
 # equilateral triangle centred at origin
 # plus a point at the origin
@@ -21,16 +21,18 @@ points = np.array(
 colours = (1, 0, 0, 0)
 random_seed = 44
 
+
 def test_delaunay_triangulation_deterministic() -> None:
 	"""Test chromatic delaunay on a simple example."""
 	filtration = ch.chromatic.delaunay(points, list(colours))
-	assert_standard_simplex(3, filtration, is_filtered=False, is_chromatic=True)
+	assert_clique_complex(filtration, n=3, k=3, is_filtered=False, is_chromatic=True)
 	assert filtration.simplices[0][0].colours == [1]
 	assert all(filtration.simplices[0][i].colours == [0] for i in range(1, 4))
-	assert all(filtration.simplices[1][i].colours == [0, 1] for i in range(3))
-	assert all(filtration.simplices[1][i].colours == [0] for i in range(3, 6))
-	assert all(filtration.simplices[2][i].colours == [0, 1] for i in range(3))
-	assert filtration.simplices[3][0].colours == [0, 1]
+	assert all(sorted(filtration.simplices[1][i].colours) == [0, 1] for i in range(3))
+	assert all(sorted(filtration.simplices[1][i].colours) == [0] for i in range(3, 6))
+	assert all(sorted(filtration.simplices[2][i].colours) == [0, 1] for i in range(3))
+	assert sorted(filtration.simplices[3][0].colours) == [0, 1]
+
 
 def test_delaunay_triangulation_degenerate() -> None:
 	"""Test the Delaunay construction on degenerate examples."""
@@ -47,6 +49,7 @@ def test_delaunay_triangulation_degenerate() -> None:
 	assert len(delaunay.simplices[1]) == 5
 	assert len(delaunay.simplices[2]) == 2
 
+
 def test_chromatic_alpha_deterministic() -> None:
 	"""Test chromatic alpha on a simple example."""
 	filtration, numerical_errors = ch.chromatic.alpha(points, list(colours))
@@ -59,11 +62,11 @@ def test_chromatic_alpha_deterministic() -> None:
 		for i in range(3, 6)
 	)
 	assert all(
-		math.isclose(filtration.simplices[2][i].filtration_value, np.sqrt(3) / 2)
-		for i in range(3)
+		math.isclose(filtration.simplices[2][i].filtration_value, np.sqrt(3) / 2) for i in range(3)
 	)
 	assert math.isclose(filtration.simplices[2][3].filtration_value, 1)
 	assert math.isclose(filtration.simplices[3][0].filtration_value, 1)
+
 
 def test_chromatic_delcech_deterministic() -> None:
 	"""Test chromatic Delaunay--Cech on a simple example."""
@@ -77,11 +80,11 @@ def test_chromatic_delcech_deterministic() -> None:
 		for i in range(3, 6)
 	)
 	assert all(
-		math.isclose(filtration.simplices[2][i].filtration_value, np.sqrt(3) / 2)
-		for i in range(3)
+		math.isclose(filtration.simplices[2][i].filtration_value, np.sqrt(3) / 2) for i in range(3)
 	)
 	assert math.isclose(filtration.simplices[2][3].filtration_value, 1)
 	assert math.isclose(filtration.simplices[3][0].filtration_value, 1)
+
 
 def test_chromatic_delrips_deterministic() -> None:
 	"""Test chromatic delrips on a simple example."""
@@ -95,10 +98,10 @@ def test_chromatic_delrips_deterministic() -> None:
 		for i in range(3, 6)
 	)
 	assert all(
-		math.isclose(filtration.simplices[2][i].filtration_value, np.sqrt(3) / 2)
-		for i in range(4)
+		math.isclose(filtration.simplices[2][i].filtration_value, np.sqrt(3) / 2) for i in range(4)
 	)
 	assert math.isclose(filtration.simplices[3][0].filtration_value, np.sqrt(3) / 2)
+
 
 def test_chromatic_delcech_random() -> None:
 	"""Test the chromatic Delaunay--Cech filtration on random data.
@@ -132,6 +135,7 @@ def test_chromatic_delcech_random() -> None:
 			assert filtration_mt.is_filtration()
 			assert filtration.boundary_matrix() == filtration_mt.boundary_matrix()
 
+
 def test_chromatic_alpha_random() -> None:
 	"""Test the chromatic alpha filtration on random data.
 
@@ -163,6 +167,7 @@ def test_chromatic_alpha_random() -> None:
 			assert not numerical_errors
 			assert filtration.is_filtration()
 			assert filtration.boundary_matrix() == filtration_mt.boundary_matrix()
+
 
 def test_delrips_random() -> None:
 	"""Test the chromatic Delaunay--Rips filtration on random data.
