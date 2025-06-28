@@ -56,7 +56,6 @@
 
 namespace {
 using std::array;
-using std::bad_weak_ptr;
 using std::bsearch;
 using std::domain_error;
 using std::iota;
@@ -357,8 +356,8 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Fil
 
 				// Partition the vertices of all cofaces of the simplex by colour
 				array<vector<index_t>, MAX_NUM_COLOURS> verts_by_colour_all_cofaces;
-				for (auto& cofacet: simplex->get_cofacets()) {
-					for (auto& v: shared_ptr<Filtration::Simplex>(cofacet)->get_vertex_labels()) {
+				for (auto&& cofacet: simplex->get_cofacets()) {
+					for (auto&& v: cofacet->get_vertex_labels()) {
 						verts_by_colour_all_cofaces.at(colours[v]).push_back(v);
 					}
 				}
@@ -453,13 +452,9 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Fil
 						if (cofacets.size() == 0) {
 							continue;
 						}
-						try {
-							simplex->value() = cofacets[0].lock()->value();
-							for (auto&& cofacet: cofacets) {
-								simplex->value() = min(simplex->value(), cofacet.lock()->value());
-							}
-						} catch (const bad_weak_ptr& e) {
-							throw runtime_error("Tried to dereference expired cofacet handle.");
+						simplex->value() = cofacets[0]->value();
+						for (auto&& cofacet: cofacets) {
+							simplex->value() = min(simplex->value(), cofacet->value());
 						}
 					}
 				}
@@ -519,15 +514,14 @@ auto alpha_parallel(
 
 							// Partition the vertices of this simplex by colour
 							array<vector<index_t>, MAX_NUM_COLOURS> verts_by_colour_in_simplex;
-							for (auto& v: verts) {
+							for (auto&& v: verts) {
 								verts_by_colour_in_simplex.at(colours[v]).push_back(v);
 							}
 
 							// Partition the vertices of all cofaces of the simplex by colour
 							array<vector<index_t>, MAX_NUM_COLOURS> verts_by_colour_all_cofaces;
-							for (auto& cofacet: simplex->get_cofacets()) {
-								for (auto&& v: shared_ptr<Filtration::Simplex>(cofacet)
-							                       ->get_vertex_labels()) {
+							for (auto&& cofacet: simplex->get_cofacets()) {
+								for (auto&& v: cofacet->get_vertex_labels()) {
 									verts_by_colour_all_cofaces.at(colours[v]).push_back(v);
 								}
 							}
@@ -629,16 +623,9 @@ auto alpha_parallel(
 									if (cofacets.size() == 0) {
 										continue;
 									}
-									try {
-										simplex->value() = cofacets[0].lock()->value();
-										for (auto&& cofacet: cofacets) {
-											simplex->value() =
-												min(simplex->value(), cofacet.lock()->value());
-										}
-									} catch (const bad_weak_ptr& e) {
-										throw runtime_error(
-											"Tried to dereference expired cofacet handle."
-										);
+									simplex->value() = cofacets[0]->value();
+									for (auto&& cofacet: cofacets) {
+										simplex->value() = min(simplex->value(), cofacet->value());
 									}
 								}
 							}
@@ -695,7 +682,7 @@ auto delcech(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<F
 			// Possibly because of floating point rounding
 			for (auto&& cofacet: edge->get_cofacets()) {
 				edge->value() =
-					min(edge->value(), shared_ptr<Filtration::Simplex>(cofacet)->value());
+					min(edge->value(), cofacet->value());
 			}
 		}
 	}
@@ -778,7 +765,7 @@ auto delcech_parallel(
 						for (auto& cofacet: edge->get_cofacets()) {
 							edge->value() =
 								min(edge->value(),
-						            shared_ptr<Filtration::Simplex>(cofacet)->value());
+						            cofacet->value());
 						}
 					}
 				}

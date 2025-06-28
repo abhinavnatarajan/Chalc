@@ -44,7 +44,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 namespace {
 using std::bad_weak_ptr;
 using std::invalid_argument;
-using std::make_shared;
 using std::max;
 using std::min;
 using std::numeric_limits;
@@ -62,69 +61,60 @@ using std::vector;
 
 namespace chalc {
 
-class BinomialCoeffTable {
-	vector<vector<label_t>> B;
-
-  public:
-	// Constructs a binomial coefficient table that will hold all values of
-	// i_C_j for i = 0, ..., n and j = 0, ..., min(k, floor(i/2)) for i <= n.
-	BinomialCoeffTable(index_t n, index_t k) :
-		B(n + 1) {
-		if (n < k || n < 0 || k < 0) {
-			throw invalid_argument(
-				"Binomial coefficient table cannot be constructed with n < k or n < 0 or k < 0."
-			);
+// Constructs a binomial coefficient table that will hold all values of
+// i_C_j for i = 0, ..., n and j = 0, ..., min(k, floor(i/2)) for i <= n.
+detail::BinomialCoeffTable::BinomialCoeffTable(index_t n, index_t k) :
+	B(n + 1) {
+	if (n < k || n < 0 || k < 0) {
+		throw invalid_argument(
+			"Binomial coefficient table cannot be constructed with n < k or n < 0 or k < 0."
+		);
+	}
+	B[0].resize(1, 0);
+	index_t j_max = 0;
+	for (index_t i = 1; i <= n; ++i) {
+		j_max = min(i / 2, k);
+		B[i].resize(j_max + 1, 0);
+		B[i][0] = 1;
+		for (index_t j = 1; j <= j_max; ++j) {
+			// Use recurrence relation to fill the entries
+			// SAFETY:
+			// If i == 1 then j_max == 0 and hence
+			// this inner loop is not executed.
+			// Therefore we can assume that inside this loop
+			// 2 <= i <= n and i - 1 >= i/2.
+			// Therefore 1 <= j <= j_max <= min(k, i/2), so that
+			// i - 1 - j >= i/2 - j_max >= 0.
+			B[i][j] = B[i - 1][min(j - 1, i - j)] + B[i - 1][min(j, i - 1 - j)];
 		}
-		B[0].resize(1, 0);
-		index_t j_max = 0;
-		for (index_t i = 1; i <= n; ++i) {
-			j_max = min(i / 2, k);
-			B[i].resize(j_max + 1, 0);
-			B[i][0] = 1;
-			for (index_t j = 1; j <= j_max; ++j) {
-				// Use recurrence relation to fill the entries
-				// SAFETY:
-				// If i == 1 then j_max == 0 and hence
-				// this inner loop is not executed.
-				// Therefore we can assume that inside this loop
-				// 2 <= i <= n and i - 1 >= i/2.
-				// Therefore 1 <= j <= j_max <= min(k, i/2), so that
-				// i - 1 - j >= i/2 - j_max >= 0.
-				B[i][j] = B[i - 1][min(j - 1, i - j)] + B[i - 1][min(j, i - 1 - j)];
-			}
-			// Bounds checking: only check at the largest entry i_C_floor(i/2)
-			// We check by using the recurrence relation and the datatype max.
-			if (B[i - 1][min(j_max - 1, i - j_max)] >
-			    numeric_limits<label_t>::max() - B[i - 1][min(j_max, i - 1 - j_max)]) {
-				throw runtime_error("Simplex index is too large.");
-			}
+		// Bounds checking: only check at the largest entry i_C_floor(i/2)
+		// We check by using the recurrence relation and the datatype max.
+		if (B[i - 1][min(j_max - 1, i - j_max)] >
+		    numeric_limits<label_t>::max() - B[i - 1][min(j_max, i - 1 - j_max)]) {
+			throw runtime_error("Simplex index is too large.");
 		}
 	}
-
-	auto operator()(index_t n, index_t k) const -> label_t {
-		return B[n][min(k, n - k)];
-	}
-};
+}
 
 auto Filtration::Simplex::_make_simplex(
-	label_t                            label,
-	index_t                            max_vertex,
-	value_t                            value,
-	const vector<shared_ptr<Simplex>>& facets
+	label_t                 label,
+	index_t                 max_vertex,
+	value_t                 value,
+	const vector<Simplex*>& facets
 ) -> shared_ptr<Filtration::Simplex> {
-	auto self = shared_ptr<Simplex>(new Simplex{label, max_vertex, value, facets});
-	for (auto& f: self->facets) {
-		f->cofacets.push_back(self->get_handle());
-		self->_add_colours(f->colours);
+	auto simplex = shared_ptr<Simplex>(new Simplex{label, max_vertex, value, facets});
+	for (auto&& f: simplex->facets) {
+		f->cofacets.push_back(simplex.get());
+		simplex->_add_colours(f->colours);
 	}
-	return self;
+	return simplex;
 }
 
 Filtration::Simplex::Simplex(
-	label_t                            label,
-	index_t                            max_vertex,
-	value_t                            value,
-	const vector<shared_ptr<Simplex>>& facets
+	label_t                 label,
+	index_t                 max_vertex,
+	value_t                 value,
+	const vector<Simplex*>& facets
 ) :
 	m_label(label),
 	m_max_vertex(max_vertex),
@@ -180,10 +170,8 @@ auto Filtration::Simplex::get_colours_as_vec() const -> vector<colour_t> {
 
 Filtration::Filtration(const index_t num_vertices, const index_t max_dimension) :
 	binomial(
-		make_shared<BinomialCoeffTable>(
-			num_vertices,
-			max_dimension + 1
-		)
+		num_vertices,
+		max_dimension + 1
 	),  // we want nCk for all 0 <= n <= num_vertices and 0 <= k <=
         // max_num_verts_in_a_simplex = max_dim + 1
 	simplices(max_dimension + 1),
@@ -230,7 +218,7 @@ auto Filtration::_get_label_from_vertex_labels(const vector<index_t>& verts) con
 	label_t label = 0;
 	for (index_t i = 0, v = 0; i < num_verts; v = verts[i++] + 1) {
 		for (index_t j = v; j < verts[i]; j++) {
-			label += (*binomial)(n_vertices - (j + 1), num_verts - (i + 1));
+			label += binomial(n_vertices - (j + 1), num_verts - (i + 1));
 		}
 	}
 	return label;
@@ -253,7 +241,7 @@ auto Filtration::has_simplex(const index_t dim, const label_t label) const -> bo
 	if (dim > max_dim || dim < 0) {
 		throw invalid_argument("Invalid dimension.");
 	}
-	if (label >= (*binomial)(n_vertices, dim)) {
+	if (label >= binomial(n_vertices, dim)) {
 		// The check above is valid because we have
 		// binomial coefficients for all 0 <= n <=
 		// n_vertices and 0 <= k <= max_dim + 1.
@@ -294,8 +282,8 @@ auto Filtration::_add_simplex(const vector<index_t>& verts, const value_t filt_v
 	} else {
 		// simplex does not exist so we need to add it
 		// first we recursively add faces of the simplex
-		vector<shared_ptr<Simplex>> facets(dim + 1);
-		vector<index_t>             facet_verts;
+		vector<Simplex*> facets(dim + 1);
+		vector<index_t>  facet_verts;
 		facet_verts.reserve(dim);
 		for (auto i = 0; i <= dim; i++) {
 			facet_verts.insert(facet_verts.cend(), verts.cbegin(), verts.cbegin() + i);
@@ -304,7 +292,7 @@ auto Filtration::_add_simplex(const vector<index_t>& verts, const value_t filt_v
 				verts.cbegin() + i + 1,
 				verts.cend()
 			);  // copy all except the i-th vertex
-			facets[i] = _add_simplex(facet_verts, filt_value);
+			facets[i] = _add_simplex(facet_verts, filt_value).get();
 			facet_verts.clear();
 		}
 		auto max_vertex       = verts.back();
@@ -363,10 +351,9 @@ void Filtration::propagate_filt_values_down(const index_t start_dim) {
 				continue;
 			}
 			try {
-				simplex->m_filt_value = cofacets[0].lock()->m_filt_value;
+				simplex->m_filt_value = cofacets[0]->m_filt_value;
 				for (auto&& cofacet: cofacets) {
-					simplex->m_filt_value =
-						min(simplex->m_filt_value, cofacet.lock()->m_filt_value);
+					simplex->m_filt_value = min(simplex->m_filt_value, cofacet->m_filt_value);
 				}
 			} catch (const bad_weak_ptr& e) {
 				throw runtime_error("Tried to dereference expired cofacet handle.");

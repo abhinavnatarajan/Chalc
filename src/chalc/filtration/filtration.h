@@ -60,7 +60,20 @@ using colour_t = uint16_t;
 // and most other counts that should not become too big.
 using index_t = int64_t;
 
-class BinomialCoeffTable;
+namespace detail {
+class BinomialCoeffTable {
+	std::vector<std::vector<label_t>> B;
+
+  public:
+	// Constructs a binomial coefficient table that will hold all values of
+	// i_C_j for i = 0, ..., n and j = 0, ..., min(k, floor(i/2)) for i <= n.
+	BinomialCoeffTable(index_t n, index_t k);
+
+	auto operator()(index_t n, index_t k) const -> label_t {
+		return B[n][std::min(k, n - k)];
+	}
+};
+}  // namespace detail
 
 struct Filtration {
 	/* PUBLIC CLASSES OF Filtration */
@@ -146,14 +159,14 @@ struct Filtration {
   private:
 	/* PRIVATE MEMBERS OF Filtration */
 
-	std::shared_ptr<const BinomialCoeffTable> binomial;  // binomial coefficients
+	detail::BinomialCoeffTable binomial;  // binomial coefficients
 	std::vector<std::unordered_map<label_t, std::shared_ptr<Simplex>>>
-		simplices;          // std::vector whose kth element is a table of k-simplices,
-	                        // labelled by their lexicographic index
-	index_t num_simplices;  // total number of simplices
-	index_t cur_dim;        // current maximum dimension of a maximal simplex
-	index_t n_vertices;     // number of vertices, labelled from 0 to n-1
-	index_t max_dim;        // maximum dimension of any simplex in the complex
+		simplices;                // std::vector whose kth element is a table of k-simplices,
+	                              // labelled by their lexicographic index
+	index_t num_simplices;        // total number of simplices
+	index_t cur_dim;              // current maximum dimension of a maximal simplex
+	index_t n_vertices;           // number of vertices, labelled from 0 to n-1
+	index_t max_dim;              // maximum dimension of any simplex in the complex
 
 	/* PRIVATE METHODS OF Filtration */
 
@@ -205,9 +218,8 @@ struct Filtration::Simplex : public std::enable_shared_from_this<Filtration::Sim
 	static auto _make_simplex(
 		label_t label,
 		index_t max_vertex,
-		value_t value = DEFAULT_FILT_VALUE,
-		const std::vector<std::shared_ptr<Simplex>>& facets =
-			std::vector<std::shared_ptr<Simplex>>{}
+		value_t value                       = DEFAULT_FILT_VALUE,
+		const std::vector<Simplex*>& facets = std::vector<Simplex*>{}
 	) -> std::shared_ptr<Simplex>;
 
 	// Get a handle to this simplex
@@ -226,13 +238,13 @@ struct Filtration::Simplex : public std::enable_shared_from_this<Filtration::Sim
 
 	// Return a const reference to the facets.
 	[[nodiscard]]
-	auto get_facets() const noexcept -> const std::vector<std::shared_ptr<Simplex>>& {  // exported
+	auto get_facets() const noexcept -> const std::vector<Simplex*>& {  // exported
 		return facets;
 	}
 
 	// Return a const reference to the cofacets.
 	[[nodiscard]]
-	auto get_cofacets() const noexcept -> const std::vector<std::weak_ptr<Simplex>>& {
+	auto get_cofacets() const noexcept -> const std::vector<Simplex*>& {
 		return cofacets;
 	}
 
@@ -302,20 +314,15 @@ struct Filtration::Simplex : public std::enable_shared_from_this<Filtration::Sim
 
 	/* PRIVATE MEMBERS OF Simplex */
   private:
-	label_t                               m_label;       // label for the simplex
-	index_t                               m_max_vertex;  // largest vertex label
-	index_t                               m_dim;         // number of vertices minus 1
-	value_t                               m_filt_value;  // filtration value
-	std::vector<std::shared_ptr<Simplex>> facets;    // pointers to the [i]th facets of the simplex
-	std::vector<std::weak_ptr<Simplex>>   cofacets;  // pointers to the cofacets of the simplex
-	colours_t colours;  // bitmask representing the colours of its vertices
+	label_t               m_label;       // label for the simplex
+	index_t               m_max_vertex;  // largest vertex label
+	index_t               m_dim;         // number of vertices minus 1
+	value_t               m_filt_value;  // filtration value
+	std::vector<Simplex*> facets;        // pointers to the [i]th facets of the simplex
+	std::vector<Simplex*> cofacets;      // pointers to the cofacets of the simplex
+	colours_t             colours;       // bitmask representing the colours of its vertices
 	// Constructor
-	Simplex(
-		label_t                                      label,
-		index_t                                      max_vertex,
-		value_t                                      value,
-		const std::vector<std::shared_ptr<Simplex>>& facets
-	);
+	Simplex(label_t label, index_t max_vertex, value_t value, const std::vector<Simplex*>& facets);
 
 	// Writes the sorted vertex labels of the simplex into a buffer
 	// Assumes that the simplex has valid faces

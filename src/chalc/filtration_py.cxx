@@ -353,7 +353,15 @@ Tip:
 		)
 		.def_property_readonly(
 			"facets",
-			&Filtration::Simplex::get_facets,
+			[](const shared_ptr<Filtration::Simplex>& self) {
+				auto facets = self->get_facets();
+				std::vector<shared_ptr<Filtration::Simplex>> result;
+				result.reserve(facets.size());
+				for (const auto& f : facets) {
+					result.push_back(f->get_handle());
+				}
+				return result;
+			},
 			"Read-only list of handles to the facets of the simplex."
 		)
 		.def("__repr__", [](const shared_ptr<Filtration::Simplex>& s_ptr) {
