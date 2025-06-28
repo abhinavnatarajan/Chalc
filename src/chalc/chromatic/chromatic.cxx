@@ -212,7 +212,7 @@ auto delaunay(const MatrixXd& X, const vector<colour_t>& colours) -> Filtration 
 		sort_with_indices<Point_d>(points, [](const Point_d& a, const Point_d& b) -> bool {
 			return a < b;
 		});
-	// Construct the Delauany triangulation
+	// Construct the Delauany triangulation.
 	auto delY = DelaunayTriangulation(max_dim);
 	delY.insert(points.begin(), points.end());
 
@@ -234,6 +234,13 @@ auto delaunay(const MatrixXd& X, const vector<colour_t>& colours) -> Filtration 
 	// Initialise the filtration with the actual dimension of the triangulation.
 	// This way we have the correct dimension even if there are degenerate cases.
 	auto            dim = delY.current_dimension();
+	// dim = -2 -> empty triangulation, not possible in our case
+	// dim = -1 -> only one point, corner case
+	// dim = 0 -> only two points but no 1-simplex, impossible in our case
+	// dim > 0 -> at least one edge
+	if (dim < 0) {
+		dim = 0;
+	}
 	Filtration result(Y.cols(), dim);
 	vector<index_t> max_cell_vertex_labels(dim + 1);
 	for (auto cell_it = delY.finite_full_cells_begin(); cell_it != delY.finite_full_cells_end();
@@ -250,7 +257,7 @@ auto delaunay(const MatrixXd& X, const vector<colour_t>& colours) -> Filtration 
 		}
 		result.add_simplex(max_cell_vertex_labels, 0.0);
 	}
-	// modify the colours of the vertices
+	// Modify the colours of the vertices.
 	for (auto& [idx, vert]: result.get_simplices()[0]) {
 		vert->set_colour(colours[idx]);
 	}
@@ -258,7 +265,7 @@ auto delaunay(const MatrixXd& X, const vector<colour_t>& colours) -> Filtration 
 	return result;
 }
 
-// Create the chromatic Del-VR complex
+// Create the chromatic Del-VR complex.
 auto delrips(const MatrixXd& points, const vector<colour_t>& colours) -> Filtration {
 	// Get the delaunay triangulation
 	Filtration delX(delaunay(points, colours));
@@ -274,16 +281,16 @@ auto delrips(const MatrixXd& points, const vector<colour_t>& colours) -> Filtrat
 	return delX;
 }
 
-// Create the chromatic Del-VR complex with parallelisation
+// Create the chromatic Del-VR complex with parallelisation.
 auto delrips_parallel(
 	const MatrixXd&         points,
 	const vector<colour_t>& colours,
 	const int               max_num_threads
 ) -> Filtration {
-	// Get the delaunay triangulation
+	// Get the delaunay triangulation.
 	Filtration delX(delaunay(points, colours));
 
-	// Modify the filtration values
+	// Modify the filtration values.
 	if (delX.dimension() >= 1) {
 		task_arena arena(max_num_threads == 0 ? task_arena::automatic : max_num_threads);  // NOLINT
 		// Store all the simplex pointers in a vector,
