@@ -1,5 +1,6 @@
 """Helper classes representing morphisms between filtered simplicial complexes."""
 
+import logging
 from abc import ABC, abstractmethod
 from collections.abc import Collection, Iterator, Sized
 from itertools import combinations
@@ -140,7 +141,8 @@ class FiltrationInclusion(FiltrationMorphism, ABC):
 		# since we may skip higher dimensional simplices if max_diagram_dimension is set.
 		# We initialize with -1 to avoid silent bugs.
 		codomain_idx: np.ndarray[tuple[int], np.dtype[np.int64]] = np.array(
-			[-1] * len(filtration), dtype=int,
+			[-1] * len(filtration),
+			dtype=int,
 		)
 
 		# Build the codomain boundary matrix
@@ -328,6 +330,14 @@ class KChromaticInclusion(FiltrationInclusion):
 			raise ValueError(errmsg)
 		self.k = k
 		super().__init__(filtration)
+		# Check that the colours in tau are valid.
+		all_colours = frozenset(
+			colour for vertex in filtration.simplices[0].values() for colour in vertex.colours
+		)
+		if k > len(all_colours):
+			errmsg = f"Filtration has {len(all_colours)} colours but k={k} was specified."
+			logging.getLogger().warning(errmsg)
+		super().__init__(filtration)
 
 	def simplex_in_domain(  # noqa: D102
 		self,
@@ -404,7 +414,8 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 		# since we may skip higher dimensional simplices if max_diagram_dimension is set.
 		# We initialize with -1 to avoid silent bugs.
 		codomain_idx: np.ndarray[tuple[int], np.dtype[np.int64]] = np.array(
-			[-1] * len(filtration), dtype=int,
+			[-1] * len(filtration),
+			dtype=int,
 		)
 
 		# For a column with index i in the codomain matrix,
@@ -591,7 +602,8 @@ class SubChromaticQuotient(FiltrationQuotient):
 	) -> None:
 		"""Initialise this method."""
 		self._tau = tuple(
-			tuple(frozenset(frozenset(maximal_face) for maximal_face in tau_i)) for tau_i in tau
+			tuple(frozenset(frozenset(maximal_face) for maximal_face in tau_i))
+			for tau_i in tau
 		)
 		# Check if all the colours are valid
 		all_colours = frozenset(
@@ -662,10 +674,18 @@ class KChromaticQuotient(FiltrationQuotient):
 			errmsg = "KChromaticQuotient must be initialised with a positive integer."
 			raise ValueError(errmsg)
 		self.k = k
-		num_colours = len(
-			{colour for vertex in filtration.simplices[0].values() for colour in vertex.colours},
+
+		# Warning if k is too large.
+		all_colours = frozenset(
+			colour for vertex in filtration.simplices[0].values() for colour in vertex.colours
 		)
-		self._tau = tuple(combinations(range(num_colours), k))
+		if k > len(all_colours):
+			errmsg = f"Filtration has {len(all_colours)} colours but k={k} was specified."
+			logging.getLogger().warning(errmsg)
+
+		# Initialise tau with combinations from all colours.
+		# We cannot assume that the colours are consecutive or start at zero.
+		self._tau = tuple(combinations(all_colours, k))
 		num_subfiltrations = len(self._tau)
 		super().__init__(filtration, num_subfiltrations)
 
