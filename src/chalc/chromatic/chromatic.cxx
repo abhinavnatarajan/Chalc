@@ -97,8 +97,8 @@ concept MatrixXpr = requires { typename Eigen::MatrixBase<Derived>; };
 template <class Derived, class Real_t>
 concept RealMatrixXpr = MatrixXpr<Derived> && same_as<typename Derived::Scalar, Real_t>;
 
-// Convert a collection of coordinate vectors to a vector of CGAL points
-auto coordvecs_to_points(const MatrixXd& x_arr) -> vector<Point_d> {
+// Convert a matrix of coordinate column vectors to a vector of CGAL points.
+auto matrix_columns_to_points_vec(const MatrixXd& x_arr) -> vector<Point_d> {
 	vector<Point_d> points(x_arr.cols());
 	auto            cols_begin = x_arr.colwise().cbegin();
 	auto            cols_end   = x_arr.colwise().cend();
@@ -162,7 +162,7 @@ Stratify a coloured point set.
 Points are provided as columns of a matrix or matrix expression.
 Colours are provided as a vector.
 */
-auto stratify(const MatrixXd& points, const vector<colour_t>& colours) -> MatrixXd {
+auto chromatic_lift(const MatrixXd& points, const vector<colour_t>& colours) -> MatrixXd {
 	// input checks
 	if (any_of(colours, [](const index_t& colour) {
 			return (colour >= MAX_NUM_COLOURS);
@@ -197,52 +197,58 @@ auto delaunay(const MatrixXd& X, const vector<colour_t>& colours) -> Filtration 
 	if (X.cols() > numeric_limits<index_t>::max()) {
 		throw runtime_error("Number of points is too large.");
 	}
-	MatrixXd Y(stratify(X, colours));
+	if (X.cols() == 0) {
+		return Filtration{0, 0};
+	}
+
+	// Chromatic lift of the point cloud.
+	MatrixXd Y(chromatic_lift(X, colours));
 	if (Y.rows() > numeric_limits<int>::max()) {
 		throw runtime_error("Dimension of stratified points is too large.");
 	}
-	int        max_dim = Y.rows();  // NOLINT
-	Filtration result(Y.cols(), max_dim);
-	if (Y.cols() != 0) {
-		auto points = coordvecs_to_points(Y);
-		auto&& [sorted_points, sorted_indices] =
-			sort_with_indices<Point_d>(points, [](const Point_d& a, const Point_d& b) -> bool {
-				return a < b;
-			});
-		auto delY = DelaunayTriangulation(max_dim);
-		delY.insert(points.begin(), points.end());
-		// iterate over all finite vertices and associate them with their
-		// original label
-		for (auto vert_it = delY.finite_vertices_begin(); vert_it != delY.finite_vertices_end();
-		     vert_it++) {
-			// find the index of its associated point
-			auto           point = vert_it->point();
-			const Point_d* p     = static_cast<Point_d*>(bsearch(
-                &point,
-                sorted_points.data(),
-                sorted_points.size(),
-                sizeof(Point_d),
-                compare<Point_d>
-            ));
-			vert_it->data()      = sorted_indices[p - sorted_points.data()];
+	int        max_dim = Y.rows();         // NOLINT
+	auto       points = matrix_columns_to_points_vec(Y);
+	auto&& [sorted_points, sorted_indices] =
+		sort_with_indices<Point_d>(points, [](const Point_d& a, const Point_d& b) -> bool {
+			return a < b;
+		});
+	// Construct the Delauany triangulation
+	auto delY = DelaunayTriangulation(max_dim);
+	delY.insert(points.begin(), points.end());
+
+	// Iterate over all finite vertices and associate them with their
+	// original label.
+	for (auto vert_it = delY.finite_vertices_begin(); vert_it != delY.finite_vertices_end();
+	     vert_it++) {
+		// find the index of its associated point
+		auto           point = vert_it->point();
+		const Point_d* p     = static_cast<Point_d*>(bsearch(
+            &point,
+            sorted_points.data(),
+            sorted_points.size(),
+            sizeof(Point_d),
+            compare<Point_d>
+        ));
+		vert_it->data()      = sorted_indices[p - sorted_points.data()];
+	}
+	// Initialise the filtration with the actual dimension of the triangulation.
+	// This way we have the correct dimension even if there are degenerate cases.
+	auto            dim = delY.current_dimension();
+	Filtration result(Y.cols(), dim);
+	vector<index_t> max_cell_vertex_labels(dim + 1);
+	for (auto cell_it = delY.finite_full_cells_begin(); cell_it != delY.finite_full_cells_end();
+	     cell_it++) {
+		// Iterate over the vertices of the cell and get their labels.
+		for (auto&& [label_it, vert_it] =
+		         tuple{max_cell_vertex_labels.begin(), cell_it->vertices_begin()};
+		     // vert_it != cell_it->vertices_end();
+		     // vert_it++) { // BUG IN CGAL: vertices_end segfaults for cells with less vertices
+		     // than maximal_dimension
+		     vert_it != cell_it->vertices_end() && label_it != max_cell_vertex_labels.end();
+		     label_it++, vert_it++) {
+			*label_it = (*vert_it)->data();
 		}
-		// iterate over the top dimensional cells and add them to the filtration
-		auto            dim = delY.current_dimension();
-		vector<index_t> max_cell_vertex_labels(dim + 1);
-		for (auto cell_it = delY.finite_full_cells_begin(); cell_it != delY.finite_full_cells_end();
-		     cell_it++) {
-			// iterate over the vertices of the cell and get their labels
-			for (auto&& [label_it, vert_it] =
-			         tuple{max_cell_vertex_labels.begin(), cell_it->vertices_begin()};
-			     // vert_it != cell_it->vertices_end();
-			     // vert_it++) { // BUG IN CGAL: vertices_end segfaults for cells with less vertices
-			     // than maximal_dimension
-			     vert_it != cell_it->vertices_end() && label_it != max_cell_vertex_labels.end();
-			     label_it++, vert_it++) {
-				*label_it = (*vert_it)->data();
-			}
-			result.add_simplex(max_cell_vertex_labels, 0.0);
-		}
+		result.add_simplex(max_cell_vertex_labels, 0.0);
 	}
 	// modify the colours of the vertices
 	for (auto& [idx, vert]: result.get_simplices()[0]) {
@@ -511,17 +517,17 @@ auto alpha_parallel(
 							array<vector<index_t>, MAX_NUM_COLOURS> verts_by_colour_all_cofaces;
 							for (auto& cofacet: simplex->get_cofacets()) {
 								for (auto&& v: shared_ptr<Filtration::Simplex>(cofacet)
-							                      ->get_vertex_labels()) {
+							                       ->get_vertex_labels()) {
 									verts_by_colour_all_cofaces.at(colours[v]).push_back(v);
 								}
 							}
 							// for (auto&& verts_j: verts_by_colour_all_cofaces) {
-							// 	if (verts_j.empty()) {
-							// 		continue;
-							// 	}
-							// // Remove duplicates
-							//     remove_duplicates_inplace(verts_j);
-							// }
+						    // 	if (verts_j.empty()) {
+						    // 		continue;
+						    // 	}
+						    // // Remove duplicates
+						    //     remove_duplicates_inplace(verts_j);
+						    // }
 
 							/*
 						    For each colour j in the simplex, find the affine subspace
