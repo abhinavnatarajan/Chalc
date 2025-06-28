@@ -1,10 +1,9 @@
 """Helper classes representing morphisms between filtered simplicial complexes."""
 
-import logging
 from abc import ABC, abstractmethod
 from collections.abc import Collection, Iterator, Sized
 from itertools import combinations
-from typing import Any, NewType, TypeIs, reveal_type
+from typing import Any, TypeIs
 
 import numpy as np
 from phimaker import compute_ensemble, compute_ensemble_cylinder
@@ -118,31 +117,51 @@ class FiltrationInclusion(FiltrationMorphism, ABC):
 		self,
 		max_diagram_dimension: int | None = None,
 	) -> SixPack:
+		filtration = self.filtration
+
 		# If f: L \to K is an inclusion map of simplicial complexes where dim(L) <= dim(K) = d
 		# then all of the sixpack diagrams for this map are zero in dimensions greater than d
 		# except for possibly the relative diagram.
 		# The relative homology is trivial in dimensions greater than d+1.
-		filtration = self.filtration
 		if max_diagram_dimension is None:
 			max_diagram_dimension = filtration.dimension + 1
 		else:
 			max_diagram_dimension = min(max_diagram_dimension, filtration.dimension + 1)
 
-		# Build up the matrix
-		matrix: list[tuple[bool, int, list[int]]] = []  # [(in_domain, dimension, facet_idxs)]
+		codomain_boundary_matrix: list[
+			tuple[bool, int, list[int]]
+		] = []  # [(in_domain, dimension, facet_idxs)]
 		entrance_times: list[float] = []
 		dimensions: list[int] = []
-		for column in filtration.boundary_matrix():
-			facet_idxs = column[0]
+
+		# Mapping from index of a column in the boundary matrix of the filtration
+		# to the index of that column in the boundary matrix of the codomain.
+		# Not every column in the former ends up in the latter,
+		# since we may skip higher dimensional simplices if max_diagram_dimension is set.
+		# We initialize with -1 to avoid silent bugs.
+		codomain_idx: np.ndarray[tuple[int], np.dtype[np.int64]] = np.array(
+			[-1] * len(filtration), dtype=int,
+		)
+
+		# Build the codomain boundary matrix
+		codomain_idx_counter = 0
+		for column_idx, column in enumerate(filtration.boundary_matrix()):
+			# Check if we need to skip this column.
+			facet_idxs = [codomain_idx[idx] for idx in column[0]]
 			dimension = max(0, len(facet_idxs) - 1)
-			# H_m(K^n) -> H_m(K) is an iso for m < n.
-			# Similarly H_m(L^n) -> H_m(L) is iso for m < n.
-			# Therefore H_m(K^n, L^n) -> H_m(K, L) is iso by 5-lemma.
-			# If n = max_diagram_dimension + 1,
+			# H_m(K^n) -> H_m(K) is an isomorphism for m < n.
+			# Similarly H_m(L^n) -> H_m(L) is an isomorphism for m < n.
+			# Therefore H_m(K^n, L^n) -> H_m(K, L) is an isomorphism by the 5-lemma.
+			# If n = max_diagram_dimension + 1, we recover H_m(K), H_m(L), and H_m(K, L)
+			# correctly for all m <= max_diagram_dimensions.
+			# Consequently we also get the correct kernel, cokernel, and image.
 			if dimension > max_diagram_dimension + 1:
 				continue
+			# If we don't skip this column it gets a codomain index.
+			codomain_idx[column_idx] = codomain_idx_counter
+
 			entrance_time = column[2]
-			matrix.append(
+			codomain_boundary_matrix.append(
 				(
 					self.simplex_in_domain(column),
 					dimension,
@@ -152,10 +171,9 @@ class FiltrationInclusion(FiltrationMorphism, ABC):
 			dimensions.append(dimension)
 			entrance_times.append(entrance_time)
 
-		logger = logging.getLogger(__name__)
-		logger.debug("Boundary matrix: \n%s", matrix)
+			codomain_idx_counter += 1
 
-		d = compute_ensemble(matrix)
+		d = compute_ensemble(codomain_boundary_matrix)
 		return SixPack(
 			SimplexPairings(d.ker.paired, d.ker.unpaired),
 			SimplexPairings(d.cok.paired, d.cok.unpaired),
@@ -351,11 +369,15 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 		.. |ith| replace:: i\ :sup:`th`\
 		"""
 
+	type BoundaryColumn = tuple[float, int, list[int]]
+	type BoundaryMatrix = list[BoundaryColumn]
+
 	def sixpack(  # noqa: D102
 		self,
 		max_diagram_dimension: int | None = None,
 	) -> SixPack:
 		filtration = self.filtration
+
 		if max_diagram_dimension is None:
 			# If f: L \to K is any map of cell complexes then
 			# then the domain, codomain, kernel, cokernel, and image
@@ -370,25 +392,35 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 			max_diagram_dimension = filtration.dimension + 2
 		else:
 			max_diagram_dimension = min(max_diagram_dimension, filtration.dimension + 2)
-		BoundaryColumn = NewType("BoundaryColumn", tuple[float, int, list[int]])
-		BoundaryMatrix = NewType("BoundaryMatrix", list[BoundaryColumn])
 
-		# List of columns in the boundary matrix of the domain and codomain.
-		codomain_matrix: BoundaryMatrix = BoundaryMatrix([])
-		domain_matrix: BoundaryMatrix = BoundaryMatrix([])
+		codomain_matrix: FiltrationQuotient.BoundaryMatrix = []
+		domain_matrix: FiltrationQuotient.BoundaryMatrix = []
 		# List of mappings from domain columns to codomain indices.
 		mapping: list[list[int]] = []
 
-		# Offsets[i][j] is the index of the column in the domain matrix
-		# corresponding to the copy of the ith simplex belonging to the
-		# jth subfiltration.
+		# Mapping from index of a column in the boundary matrix of the filtration
+		# to the index of that column in the boundary matrix of the codomain.
+		# Not every column in the former ends up in the latter,
+		# since we may skip higher dimensional simplices if max_diagram_dimension is set.
+		# We initialize with -1 to avoid silent bugs.
+		codomain_idx: np.ndarray[tuple[int], np.dtype[np.int64]] = np.array(
+			[-1] * len(filtration), dtype=int,
+		)
+
+		# For a column with index i in the codomain matrix,
+		# offsets[i, j] is its index in the domain matrix
+		# corresponding to the copy of the associated simplex
+		# belonging to the jth subfiltration.
 		# Caution: only some values end up being initialized.
-		offsets = np.empty(shape=(len(filtration), self.num_subfiltrations), dtype=int)
+		# We initialize with -1 to avoid silent bugs.
+		offsets = np.ones(shape=(len(filtration), self.num_subfiltrations), dtype=int) * -1
 
 		# Build the matrices
-		counter = 0
-		for cod_idx, column in enumerate(filtration.boundary_matrix()):
-			facet_idxs = column[0]
+		codomain_idx_counter = 0
+		domain_idx_counter = 0
+		for column_idx, column in enumerate(filtration.boundary_matrix()):
+			# Check if we need to skip this column.
+			facet_idxs = [codomain_idx[idx] for idx in column[0]]
 			dimension = max(0, len(facet_idxs) - 1)
 			# H_m(K^n) -> H_m(K) is an iso for m < n.
 			# Similarly H_m(L^n) -> H_m(L) is iso for m < n.
@@ -397,8 +429,11 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 			# with dimension <= n.
 			if dimension > max_diagram_dimension + 1:
 				continue
+
+			# If we don't skip this column it gets a codomain index.
+			codomain_idx[column_idx] = codomain_idx_counter
 			entrance_time = column[2]
-			codomain_matrix.append(BoundaryColumn((entrance_time, dimension, facet_idxs)))
+			codomain_matrix.append((entrance_time, dimension, facet_idxs))
 
 			# Construct the domain matrix
 			for j in range(self.num_subfiltrations):
@@ -407,18 +442,15 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 					# we add it to the domain matrix
 					# while remembering that for the jth copy of this simplex i,
 					# the index in the domain matrix is 'counter'.
-					shifted_facet_idxs = [offsets[facet_idx][j] for facet_idx in facet_idxs]
+					shifted_facet_idxs = [offsets[facet_idx, j] for facet_idx in facet_idxs]
 					domain_matrix.append(
-						BoundaryColumn((entrance_time, dimension, shifted_facet_idxs)),
+						(entrance_time, dimension, shifted_facet_idxs),
 					)
-					mapping.append([cod_idx])
-					offsets[cod_idx][j] = counter
-					counter += 1
+					mapping.append([codomain_idx_counter])
+					offsets[codomain_idx_counter, j] = domain_idx_counter
+					domain_idx_counter += 1
 
-		logger = logging.getLogger(__name__)
-		logger.debug("Domain boundary matrix: \n%s", domain_matrix)
-		logger.debug("Codomain boundary matrix: \n%s", codomain_matrix)
-		logger.debug("Mappings: \n%s", mapping)
+			codomain_idx_counter += 1
 
 		d, meta = compute_ensemble_cylinder(domain_matrix, codomain_matrix, mapping)
 
