@@ -33,6 +33,7 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 #include "chromatic.h"
+#include "chalc/filtration/filtration.h"
 
 #include <ConstrainedMiniball/cmb.hpp>
 
@@ -47,12 +48,14 @@
 #include <Eigen/src/Core/Matrix.h>
 
 #include <algorithm>
+#include <array>
 #include <numeric>
 #include <ranges>
 #include <stdexcept>
 #include <string>
 
 namespace {
+using std::array;
 using std::bad_weak_ptr;
 using std::bsearch;
 using std::domain_error;
@@ -119,7 +122,7 @@ template <typename T>
 auto sort_with_indices(const vector<T>& v, bool (*compare)(const T& a, const T& b))
 	-> tuple<vector<T>, vector<index_t>> {
 	vector<index_t> idx(v.size());
-	iota(idx.begin(), idx.end(), 0); // NOLINT - we do not have this on macOS yet.
+	iota(idx.begin(), idx.end(), 0);  // NOLINT - we do not have this on macOS yet.
 	sort(idx, [&v, &compare](index_t i1, index_t i2) {
 		return compare(v[i1], v[i2]);
 	});
@@ -142,7 +145,7 @@ template <typename T> auto compare(const void* a, const void* b) -> int {
 // returns new vector and number of distinct elements
 auto canonicalise(const vector<colour_t>& vec) -> tuple<vector<colour_t>, index_t> {
 	vector<colour_t>       new_vec(vec.size());
-	map<index_t, colour_t> m;
+	map<colour_t, colour_t> m;
 	for (auto&& [c, i] = tuple{vec.begin(), static_cast<colour_t>(0)}; c != vec.end(); c++) {
 		if (!m.contains(*c)) {
 			m[*c] = i++;
@@ -258,7 +261,7 @@ auto delrips(const MatrixXd& points, const vector<colour_t>& colours) -> Filtrat
 	if (delX.dimension() >= 1) {
 		for (auto& [idx, edge]: delX.get_simplices()[1]) {
 			auto&& verts  = edge->get_vertex_labels();
-			edge->value() = (points.col(verts[0]) - points.col(verts[1])).norm() * 0.5; // NOLINT
+			edge->value() = (points.col(verts[0]) - points.col(verts[1])).norm() * 0.5;  // NOLINT
 		}
 		delX.propagate_filt_values(1, true);
 	}
@@ -289,9 +292,10 @@ auto delrips_parallel(
 				blocked_range<size_t>(0, edges.size()),
 				[&](const blocked_range<size_t>& r) {
 					for (size_t idx = r.begin(); idx < r.end(); idx++) {
-						auto&& edge   = *edges[idx];
-						auto&& verts  = edge->get_vertex_labels();
-						edge->value() = (points.col(verts[0]) - points.col(verts[1])).norm() * 0.5; // NOLINT
+						auto&& edge  = *edges[idx];
+						auto&& verts = edge->get_vertex_labels();
+						edge->value() =
+							(points.col(verts[0]) - points.col(verts[1])).norm() * 0.5;  // NOLINT
 					}
 				}
 			);
@@ -311,9 +315,11 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Fil
 
 	// Partition the vertices by colour
 	// We will need this later to check if stacks are empty
-	map<index_t, vector<index_t>> verts_by_colour;
-	for (auto&& [i, colour] = tuple{0, colours.begin()}; colour != colours.end(); colour++, i++) {
-		verts_by_colour[*colour].push_back(i);
+	array<vector<index_t>, MAX_NUM_COLOURS> verts_by_colour;
+	for (auto&& [i, colour] = tuple{static_cast<index_t>(0), colours.begin()};
+	     colour != colours.end();
+	     colour++, i++) {
+		verts_by_colour.at(*colour).push_back(i);
 	}
 	bool numerical_instability = false;
 	if (delX.dimension() >= 1) {
@@ -328,20 +334,23 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Fil
 				auto&& verts = simplex->get_vertex_labels();
 
 				// Partition the vertices of this simplex by colour
-				map<colour_t, vector<index_t>> verts_by_colour_in_simplex;
-				for (auto& v: verts) {
-					verts_by_colour_in_simplex[colours[v]].push_back(v);
+				array<vector<index_t>, MAX_NUM_COLOURS> verts_by_colour_in_simplex;
+				for (auto&& v: verts) {
+					verts_by_colour_in_simplex.at(colours[v]).push_back(v);
 				}
 
 				// Partition the vertices of all cofaces of the simplex by colour
-				map<index_t, vector<index_t>> verts_by_colour_all_cofaces;
+				array<vector<index_t>, MAX_NUM_COLOURS> verts_by_colour_all_cofaces;
 				for (auto& cofacet: simplex->get_cofacets()) {
 					for (auto& v: shared_ptr<Filtration::Simplex>(cofacet)->get_vertex_labels()) {
-						verts_by_colour_all_cofaces[colours[v]].push_back(v);
+						verts_by_colour_all_cofaces.at(colours[v]).push_back(v);
 					}
 				}
-				for (auto& [j, verts_j]: verts_by_colour_all_cofaces) {
+				for (auto&& verts_j: verts_by_colour_all_cofaces) {
 					// Remove duplicates
+					if (verts_j.empty()) {
+						continue;
+					}
 					remove_duplicates_inplace(verts_j);
 				}
 
@@ -357,7 +366,10 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Fil
 				*/
 				MatrixX<Gmpzf> E(0, points.rows());
 				VectorX<Gmpzf> b;
-				for (auto& [j, verts_j]: verts_by_colour_in_simplex) {
+				for (auto&& verts_j: verts_by_colour_in_simplex) {
+					if (verts_j.empty()) {
+						continue;
+					}
 					// each of these has size at least 1, so the -1 in the following is safe
 					// The narrowing cast is safe because verts_j.size() is always at most
 					// the number of points, which is less than Eigen::Index::max().
@@ -388,14 +400,20 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Fil
 					simplex->value() = sqrt(CGAL::to_double(sqRadius));
 				} else {
 					// If the simplex is not maximal, check if the stack is empty
-					for (auto& [j, verts_j]: verts_by_colour_in_simplex) {
+					for (auto&& [j, verts_j] = tuple{0, verts_by_colour_in_simplex.begin()};
+					     verts_j != verts_by_colour_in_simplex.end();
+					     verts_j++, j++) {
+						if (verts_j->empty()) {
+							continue;
+						}
 						// Get the radius of the j-coloured sphere in the stack
 						Quotient<Gmpzf>&& rj_squared =
 							(points_exact_q(all, verts_j[0]) - centre).squaredNorm();
 						// Get the distance of the nearest point of colour j to the centre,
 						// among all vertices in cofaces of this simplex
 						Quotient<Gmpzf>&& squared_dist_to_nearest_pt_of_colour_j =
-							(points_exact_q(all, verts_by_colour_all_cofaces[j]).colwise() - centre)
+							(points_exact_q(all, verts_by_colour_all_cofaces.at(j)).colwise() -
+						     centre)
 								.colwise()
 								.squaredNorm()
 								.minCoeff();
@@ -451,9 +469,11 @@ auto alpha_parallel(
 
 	// Partition the vertices by colour
 	// We will need this later to check if stacks are empty
-	map<index_t, vector<index_t>> verts_by_colour;
-	for (auto&& [i, colour] = tuple{0, colours.begin()}; colour != colours.end(); colour++, i++) {
-		verts_by_colour[*colour].push_back(i);
+	array<vector<index_t>, MAX_NUM_COLOURS> verts_by_colour{};
+	for (auto&& [i, colour] = tuple{static_cast<index_t>(0), colours.begin()};
+	     colour != colours.end();
+	     colour++, i++) {
+		verts_by_colour.at(*colour).push_back(i);
 	}
 	bool numerical_instability = false;
 	if (delX.dimension() >= 1) {
@@ -482,20 +502,23 @@ auto alpha_parallel(
 							auto&& verts   = simplex->get_vertex_labels();
 
 							// Partition the vertices of this simplex by colour
-							map<index_t, vector<index_t>> verts_by_colour_in_simplex;
+							array<vector<index_t>, MAX_NUM_COLOURS> verts_by_colour_in_simplex;
 							for (auto& v: verts) {
-								verts_by_colour_in_simplex[colours[v]].push_back(v);
+								verts_by_colour_in_simplex.at(colours[v]).push_back(v);
 							}
 
 							// Partition the vertices of all cofaces of the simplex by colour
-							map<index_t, vector<index_t>> verts_by_colour_all_cofaces;
+							array<vector<index_t>, MAX_NUM_COLOURS> verts_by_colour_all_cofaces;
 							for (auto& cofacet: simplex->get_cofacets()) {
 								for (auto& v: shared_ptr<Filtration::Simplex>(cofacet)
 							                      ->get_vertex_labels()) {
-									verts_by_colour_all_cofaces[colours[v]].push_back(v);
+									verts_by_colour_all_cofaces.at(colours[v]).push_back(v);
 								}
 							}
-							for (auto& [j, verts_j]: verts_by_colour_all_cofaces) {
+							for (auto&& verts_j: verts_by_colour_all_cofaces) {
+								if (verts_j.empty()) {
+									continue;
+								}
 								// Remove duplicates
 								remove_duplicates_inplace(verts_j);
 							}
@@ -512,7 +535,10 @@ auto alpha_parallel(
 						    */
 							MatrixX<Gmpzf> E(0, points.rows());
 							VectorX<Gmpzf> b;
-							for (auto& [j, verts_j]: verts_by_colour_in_simplex) {
+							for (auto&& verts_j: verts_by_colour_in_simplex) {
+								if (verts_j.empty()) {
+									continue;
+								}
 								// each of these has size at least 1, so the -1 in the following is
 							    // safe The narrowing cast is safe because verts_j.size() is always
 							    // at most the number of points, which is less than
@@ -546,14 +572,20 @@ auto alpha_parallel(
 								simplex->value() = sqrt(CGAL::to_double(sqRadius));
 							} else {
 								// If the simplex is not maximal, check if the stack is empty
-								for (auto& [j, verts_j]: verts_by_colour_in_simplex) {
+								for (auto&& [j, verts_j] =
+							             tuple{0, verts_by_colour_in_simplex.begin()};
+							         verts_j != verts_by_colour_in_simplex.end();
+							         j++, verts_j++) {
+									if (verts_j->empty()) {
+										continue;
+									}
 									// Get the radius of the j-coloured sphere in the stack
 									Quotient<Gmpzf>&& rj_squared =
 										(points_exact_q(all, verts_j[0]) - centre).squaredNorm();
 									// Get the distance of the nearest point of colour j to the
 								    // centre, among all vertices in cofaces of this simplex
 									Quotient<Gmpzf>&& squared_dist_to_nearest_pt_of_colour_j =
-										(points_exact_q(all, verts_by_colour_all_cofaces[j])
+										(points_exact_q(all, verts_by_colour_all_cofaces.at(j))
 								             .colwise() -
 								         centre)
 											.colwise()
@@ -638,13 +670,14 @@ auto delcech(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<F
 			}
 		}
 		// fast version for dimension 1
-		for (auto& [idx, edge]: delX.get_simplices()[1]) {
+		for (auto&& [idx, edge]: delX.get_simplices()[1]) {
 			auto&& verts = edge->get_vertex_labels();
 			edge->value() =
-				static_cast<double>((points.col(verts[0]) - points.col(verts[1])).norm()) * 0.5; // NOLINT
+				static_cast<double>((points.col(verts[0]) - points.col(verts[1])).norm()) *
+				0.5;  // NOLINT
 			// Tests fail if we don't do this
 			// Possibly because of floating point rounding
-			for (auto& cofacet: edge->get_cofacets()) {
+			for (auto&& cofacet: edge->get_cofacets()) {
 				edge->value() =
 					min(edge->value(), shared_ptr<Filtration::Simplex>(cofacet)->value());
 			}
@@ -723,7 +756,7 @@ auto delcech_parallel(
 						edge->value() = static_cast<double>(
 											(points.col(verts[0]) - points.col(verts[1])).norm()
 										) *
-					                    0.5; // NOLINT
+					                    0.5;  // NOLINT
 						// Tests fail if we don't do this
 					    // Possibly because of floating point rounding
 						for (auto& cofacet: edge->get_cofacets()) {

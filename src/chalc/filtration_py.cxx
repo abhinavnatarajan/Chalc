@@ -9,7 +9,7 @@ namespace {
 using chalc::Filtration;
 using std::shared_ptr;
 
-// A robust, flattening iterator for the std::vector<std::unordered_map<...>> data structure.
+// A robust, flattening iterator for the vector of maps of simplices.
 // It iterates over the Simplex smart pointers.
 class SimplexIterator {
   private:
