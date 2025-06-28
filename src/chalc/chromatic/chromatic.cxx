@@ -141,8 +141,8 @@ template <typename T> auto compare(const void* a, const void* b) -> int {
 	return arg1 < arg2 ? -1 : arg1 > arg2 ? +1 : 0;
 }
 
-// make a vector contiguous and start at zero
-// returns new vector and number of distinct elements
+// Make a vector contiguous and start at zero.
+// Returns new vector and number of distinct elements.
 auto canonicalise(const vector<colour_t>& vec) -> tuple<vector<colour_t>, index_t> {
 	vector<colour_t>        new_vec(vec.size());
 	map<colour_t, colour_t> m;
@@ -163,18 +163,18 @@ Points are provided as columns of a matrix or matrix expression.
 Colours are provided as a vector.
 */
 auto chromatic_lift(const MatrixXd& points, const vector<colour_t>& colours) -> MatrixXd {
-	// input checks
-	if (any_of(colours, [](const index_t& colour) {
-			return (colour >= MAX_NUM_COLOURS);
-		})) {
-		throw domain_error("All colours must be between 0 and " + to_string(MAX_NUM_COLOURS - 1));
-	}
-	if (colours.size() != points.cols()) {
-		throw domain_error("len(colours) must equal number of points.");
-	}
-	auto dim = points.rows();
 	// Make sure colours are contiguous and start at zero
 	auto&& [new_colours, num_colours] = canonicalise(colours);
+	// Check that the number of colours is valid.
+	if (any_of(new_colours, [](const index_t& colour) {
+			return (colour >= MAX_NUM_COLOURS);
+		})) {
+		throw domain_error(
+			"Too many colours; at most " + to_string(MAX_NUM_COLOURS - 1) +
+			" colours are supported."
+		);
+	}
+	auto     dim = points.rows();
 	MatrixXd result(dim + num_colours - 1, points.cols());
 	result.topRows(dim) = points;
 	if (num_colours != 1) {
@@ -197,6 +197,9 @@ auto delaunay(const MatrixXd& X, const vector<colour_t>& colours) -> Filtration 
 	if (X.cols() > numeric_limits<index_t>::max()) {
 		throw runtime_error("Number of points is too large.");
 	}
+	if (colours.size() != X.cols()) {
+		throw domain_error("len(colours) must equal number of points.");
+	}
 	if (X.cols() == 0) {
 		return Filtration{0, 0};
 	}
@@ -206,8 +209,8 @@ auto delaunay(const MatrixXd& X, const vector<colour_t>& colours) -> Filtration 
 	if (Y.rows() > numeric_limits<int>::max()) {
 		throw runtime_error("Dimension of stratified points is too large.");
 	}
-	int        max_dim = Y.rows();         // NOLINT
-	auto       points = matrix_columns_to_points_vec(Y);
+	int  max_dim = Y.rows();  // NOLINT
+	auto points  = matrix_columns_to_points_vec(Y);
 	auto&& [sorted_points, sorted_indices] =
 		sort_with_indices<Point_d>(points, [](const Point_d& a, const Point_d& b) -> bool {
 			return a < b;
@@ -233,7 +236,7 @@ auto delaunay(const MatrixXd& X, const vector<colour_t>& colours) -> Filtration 
 	}
 	// Initialise the filtration with the actual dimension of the triangulation.
 	// This way we have the correct dimension even if there are degenerate cases.
-	auto            dim = delY.current_dimension();
+	auto dim = delY.current_dimension();
 	// dim = -2 -> empty triangulation, not possible in our case
 	// dim = -1 -> only one point, corner case
 	// dim = 0 -> only two points but no 1-simplex, impossible in our case
@@ -241,7 +244,7 @@ auto delaunay(const MatrixXd& X, const vector<colour_t>& colours) -> Filtration 
 	if (dim < 0) {
 		dim = 0;
 	}
-	Filtration result(Y.cols(), dim);
+	Filtration      result(Y.cols(), dim);
 	vector<index_t> max_cell_vertex_labels(dim + 1);
 	for (auto cell_it = delY.finite_full_cells_begin(); cell_it != delY.finite_full_cells_end();
 	     cell_it++) {
@@ -268,7 +271,7 @@ auto delaunay(const MatrixXd& X, const vector<colour_t>& colours) -> Filtration 
 // Create the chromatic Del-VR complex.
 auto delrips(const MatrixXd& points, const vector<colour_t>& colours) -> Filtration {
 	// Get the delaunay triangulation
-	Filtration delX(delaunay(points, colours));
+	Filtration delX = delaunay(points, colours);
 
 	// Modify the filtration values
 	if (delX.dimension() >= 1) {
@@ -288,7 +291,7 @@ auto delrips_parallel(
 	const int               max_num_threads
 ) -> Filtration {
 	// Get the delaunay triangulation.
-	Filtration delX(delaunay(points, colours));
+	Filtration delX = delaunay(points, colours);
 
 	// Modify the filtration values.
 	if (delX.dimension() >= 1) {

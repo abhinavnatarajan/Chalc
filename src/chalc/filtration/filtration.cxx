@@ -112,7 +112,7 @@ auto Filtration::Simplex::_make_simplex(
 	value_t                            value,
 	const vector<shared_ptr<Simplex>>& facets
 ) -> shared_ptr<Filtration::Simplex> {
-	auto self = shared_ptr<Simplex>(new Simplex(label, max_vertex, value, facets));
+	auto self = shared_ptr<Simplex>(new Simplex{label, max_vertex, value, facets});
 	for (auto& f: self->facets) {
 		f->cofacets.push_back(self->get_handle());
 		self->_add_colours(f->colours);
