@@ -95,11 +95,16 @@ def plot_sixpack(
 				):
 					births.append(dgms.entrance_times[pair[0]].item())
 					deaths.append(dgms.entrance_times[pair[1]].item())
-			for unpaired in dgms[diagram_name].unpaired:
-				if dgms.dimensions[unpaired] - dim_shift[diagram_name] in dims[diagram_name]:
-					births.append(dgms.entrance_times[unpaired].item())
-					deaths.append(dgms.entrance_times[unpaired].item())
-			truncs[diagram_name] = _get_truncation(births, deaths) if births else 1.0
+			births.extend(
+				dgms.entrance_times[unpaired].item()
+				for unpaired in dgms[diagram_name].unpaired
+				if dgms.dimensions[unpaired] - dim_shift[diagram_name] in dims[diagram_name]
+			)
+			if not births or not deaths:
+				# The diagram is either (no births) or has only infinite features (no deaths).
+				truncs[diagram_name] = 1.0
+			else:
+				truncs[diagram_name] = _get_truncation(births, deaths)
 	elif isinstance(truncations, Real):
 		truncs = dict.fromkeys(diagram_names, float(truncations))
 	else:
@@ -207,11 +212,13 @@ def plot_diagram(
 			):
 				births.append(dgms.entrance_times[pair[0]].item())
 				deaths.append(dgms.entrance_times[pair[1]].item())
-		for unpaired in dgms[diagram_name].unpaired:
-			if dgms.dimensions[unpaired] - dim_shift in dimensions:
-				births.append(dgms.entrance_times[unpaired].item())
-				deaths.append(dgms.entrance_times[unpaired].item())
-		truncation = _get_truncation(births, deaths) if births else 1.0
+
+		births.extend(
+			dgms.entrance_times[unpaired].item()
+			for unpaired in dgms[diagram_name].unpaired
+			if dgms.dimensions[unpaired] - dim_shift in dimensions
+		)
+		truncation = 1.0 if not births or not deaths else _get_truncation(births, deaths)
 
 	if ax is None:
 		ax1: Axes
