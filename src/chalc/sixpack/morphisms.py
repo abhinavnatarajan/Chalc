@@ -121,23 +121,21 @@ class FiltrationInclusion(FiltrationMorphism, ABC):
 		filtration = self.filtration
 
 		# We do not need all the simplices.
-		# H_m(K^n) -> H_m(K) is an isomorphism for m < n.
-		# Similarly H_m(L^n) -> H_m(L) is an isomorphism for m < n.
-		# Therefore H_m(K^n, L^n) -> H_m(K, L) is an isomorphism by the 5-lemma.
-		# If n = max_diagram_dimension + 1, we recover H_m(K), H_m(L), and H_m(K, L)
-		# correctly for all m <= max_diagram_dimensions.
+		# Let n = max_diagram_dimension.
+		# H_n(K^{n+2}) -> H_n(K) and H_{n+1}(K^{n+2}) -> H_{n+1}(K) are isomorphisms.
+		# Similarly H_n(L^{n+2}) -> H_n(L) and H_{n+1}(L^{n+2}) - H_{n+1}(L) are isomorphisms.
+		# Therefore H_n(K^{n+2}, L^{n+2}) -> H_n(K, L) is an isomorphism by the 5-lemma.
 		# Consequently we also get the correct kernel, cokernel, and image.
 		# Therefore we only need the boundary matrix of simplices whose
-		# dimension is less than max_diagram_dimension.
-		if max_diagram_dimension is None or max_diagram_dimension >= filtration.dimension:
-			# If f: L \to K is an inclusion map of simplicial complexes where dim(L) <= dim(K) = d
-			# then all of the sixpack diagrams for this map are zero in dimensions greater than d.
-			max_simplex_dimension = -1
+		# dimension is at most max_diagram_dimension + 2.
+		if max_diagram_dimension is None or max_diagram_dimension + 2 >= filtration.dimension:
+			max_diagram_dimension = filtration.dimension
+			max_simplex_dimension = -1  # fast path
 		elif max_diagram_dimension < 0:
 			err = f"max_diagram_dimension must be non-negative, but got {max_diagram_dimension}."
 			raise ValueError(err)
 		else:
-			max_simplex_dimension = max_diagram_dimension + 1
+			max_simplex_dimension = max_diagram_dimension + 2
 
 		codomain_boundary_matrix: list[
 			tuple[bool, int, list[int]]
@@ -170,7 +168,7 @@ class FiltrationInclusion(FiltrationMorphism, ABC):
 			SimplexPairings(d.rel.paired, d.rel.unpaired),
 			entrance_times,
 			dimensions,
-		).threshold(0.0)
+		).threshold(0.0).threshold_dimension(max_diagram_dimension)
 
 
 class SubChromaticInclusion(FiltrationInclusion, Sized):
@@ -372,24 +370,23 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 	) -> SixPack:
 		filtration = self.filtration
 
-		if max_diagram_dimension is None or max_diagram_dimension >= filtration.dimension:
-			# If f: L \to K is a cellular map of cell complexes then
-			# then the domain, codomain, kernel, cokernel, and image
-			# are zero in dimensions greater than max(dim(L), dim(K)).
-			# The "relative" homology here is really the relative homology
-			# of (cyl(f), L), but by the 5-lemma the homology of cyl(f) is
-			# isomorphic to the homology of K.
-			# The long exact sequence of homology groups associated to
-			# the inclusion L -> cyl(f) shows that the relative homology
-			# disappears in dimensions greater than max(dim(L), dim(K)).
-			# In our case we know that L and K have the same dimension,
-			# since they are derived from the same filtration.
-			max_simplex_dimension = -1
+		# We do not need all the simplices.
+        # Let n = max_diagram_dimension, and f: L -> K be a cellular map.
+        # First notice that K is homotopy equivalent to cyl(f)
+		# H_n(K^{n+2}) -> H_n(K) and H_{n+1}(K^{n+2}) -> H_{n+1}(K) are isomorphisms.
+		# Similarly H_n(L^{n+2}) -> H_n(L) and H_{n+1}(L^{n+2}) - H_{n+1}(L) are isomorphisms.
+		# Therefore H_n(K^{n+2}, L^{n+2}) -> H_n(K, L) is an isomorphism by the 5-lemma.
+		# Consequently we also get the correct kernel, cokernel, and image.
+		# Therefore we only need the boundary matrix of simplices whose
+		# dimension is at most max_diagram_dimension + 2.
+		if max_diagram_dimension is None or max_diagram_dimension + 2 >= filtration.dimension:
+			max_diagram_dimension = filtration.dimension
+			max_simplex_dimension = -1  # fast path
 		elif max_diagram_dimension < 0:
 			err = f"max_diagram_dimension must be non-negative, but got {max_diagram_dimension}."
 			raise ValueError(err)
 		else:
-			max_simplex_dimension = max_diagram_dimension + 1
+			max_simplex_dimension = max_diagram_dimension + 2
 
 		codomain_matrix: FiltrationQuotient.BoundaryMatrix = []
 		domain_matrix: FiltrationQuotient.BoundaryMatrix = []
@@ -458,7 +455,7 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 			SimplexPairings(d.rel.paired, d.rel.unpaired),
 			entrance_times,
 			dimensions,
-		).threshold(0.0)
+		).threshold(0.0).threshold_dimension(max_diagram_dimension)
 
 
 class SubChromaticQuotient(FiltrationQuotient):

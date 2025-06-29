@@ -141,6 +141,25 @@ class SixPack(Mapping):
 			self._simplex_pairings[diagram_name]._paired = pairings  # noqa: SLF001
 		return self
 
+	def threshold_dimension(self, dimension: int) -> SixPack:
+		"""Discard all features with dimension greater than the provided value."""
+		for diagram_name in self:
+			pairings = frozenset(
+				(b, d)
+				for b, d in self[diagram_name].paired
+				if self._dimensions[b] <= dimension
+				or (self._dimensions[b] == dimension + 1 and diagram_name == "ker")
+			)
+			unpaired = frozenset(
+				s
+				for s in self[diagram_name].unpaired
+				if self._dimensions[s] <= dimension
+				or (self._dimensions[s] == dimension + 1 and diagram_name == "ker")
+			)
+			self._simplex_pairings[diagram_name]._paired = pairings  # noqa: SLF001
+			self._simplex_pairings[diagram_name]._unpaired = unpaired  # noqa: SLF001
+		return self
+
 	@overload
 	def get_matrix(
 		self,
