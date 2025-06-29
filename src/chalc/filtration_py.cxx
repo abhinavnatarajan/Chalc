@@ -120,6 +120,17 @@ Args:
 			py::arg("k")
 		)
 		.def(
+			"skeleton",
+			&Filtration::skeleton,
+			R"docstring(Get a copy of the k-skeleton of the filtration.
+
+Args:
+	k: Dimension of the skeleton to return.
+
+)docstring",
+			py::arg("k")
+)
+		.def(
 			"add_simplex",
 			&Filtration::add_simplex,
 			R"docstring(Add a simplex to a filtered simplicial complex.
@@ -251,19 +262,24 @@ You should call this whenever you change the colour of any vertices.
 		.def(
 			"boundary_matrix",
 			&Filtration::boundary_matrix,
-			R"docstring(Compute the boundary matrix of the simplicial complex.
+			R"docstring(Compute the boundary matrix of the filtration.
 
-:return:
+Args:
+	max_dimension: The maximum dimension of simplices to be considered.
+
+Returns:
 	A list `x` of simplices in the simplicial complex ordered by
 	filtration time, dimension, and label (in that order).
-	Each simplex :math:`\sigma` is represented by a tuple containing the following items.
+	Each simplex :math:`\sigma` has dimension at most ``max_dimension`` and is
+	represented by a tuple containing the following items.
 
 	1.  A list containing the indices in `x` of the facets of :math:`\sigma`, sorted in ascending order.
 	2.  The lexicographic key of :math:`\sigma` in the simplicial complex.
 	3.  The filtration time of :math:`\sigma`.
 	4.  The set of colours of the vertices of :math:`\sigma`.
 
-)docstring"
+)docstring",
+			py::arg("max_dimension") = -1
 		)
 		.def(
 			"is_filtration",

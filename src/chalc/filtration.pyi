@@ -49,14 +49,18 @@ class Filtration:
         	Faces of the added simplex that are already present
         	in the simplicial complex will have their filtration values reduced if necessary.
         """
-    def boundary_matrix(self) -> list[tuple[list[int], int, float, list[int]]]:
+    def boundary_matrix(self, max_dimension: int = -1) -> list[tuple[list[int], int, float, list[int]]]:
         """
-        Compute the boundary matrix of the simplicial complex.
+        Compute the boundary matrix of the filtration.
         
-        :return:
+        Args:
+        	max_dimension: The maximum dimension of simplices to be considered.
+        
+        Returns:
         	A list `x` of simplices in the simplicial complex ordered by
         	filtration time, dimension, and label (in that order).
-        	Each simplex :math:`\\sigma` is represented by a tuple containing the following items.
+        	Each simplex :math:`\\sigma` has dimension at most ``max_dimension`` and is
+        	represented by a tuple containing the following items.
         
         	1.  A list containing the indices in `x` of the facets of :math:`\\sigma`, sorted in ascending order.
         	2.  The lexicographic key of :math:`\\sigma` in the simplicial complex.
@@ -103,6 +107,13 @@ class Filtration:
         Args:
         	start_dim : Dimension from which to start propagating (exclusive).
         	upwards : If true then values are propagated upwards, downwards otherwise. Defaults to true.
+        """
+    def skeleton(self, k: int) -> Filtration:
+        """
+        Get a copy of the k-skeleton of the filtration.
+        
+        Args:
+        	k: Dimension of the skeleton to return.
         """
     @property
     def dimension(self) -> int:

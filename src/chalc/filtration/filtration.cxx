@@ -39,10 +39,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <limits>
 #include <ranges>
 #include <stdexcept>
+#include <string>
 #include <utility>
 
 namespace {
 using std::bad_weak_ptr;
+using std::domain_error;
 using std::invalid_argument;
 using std::max;
 using std::min;
@@ -54,6 +56,7 @@ using std::ranges::sort;
 using std::ranges::stable_sort;
 using std::runtime_error;
 using std::shared_ptr;
+using std::to_string;
 using std::tuple;
 using std::unordered_map;
 using std::vector;
@@ -96,7 +99,7 @@ detail::BinomialCoeffTable::BinomialCoeffTable(index_t n, index_t k) :
 	}
 }
 
-auto Filtration::Simplex::_make_simplex(
+auto Filtration::Simplex::make_simplex(
 	label_t                 label,
 	index_t                 max_vertex,
 	value_t                 value,
@@ -105,7 +108,7 @@ auto Filtration::Simplex::_make_simplex(
 	auto simplex = shared_ptr<Simplex>(new Simplex{label, max_vertex, value, facets});
 	for (auto&& f: simplex->facets) {
 		f->cofacets.push_back(simplex.get());
-		simplex->_add_colours(f->colours);
+		simplex->add_colours_bitmask(f->colours);
 	}
 	return simplex;
 }
@@ -183,11 +186,28 @@ Filtration::Filtration(const index_t num_vertices, const index_t max_dimension) 
 		throw invalid_argument("Dimension must be less than number of points.");
 	}
 	for (index_t i = 0; i < n_vertices; i++) {
-		simplices[0][i] = Simplex::_make_simplex(i, i, 0.0);
+		simplices[0][i] = Simplex::make_simplex(i, i, 0.0);
 		// simplices are initialised with colours unset
 		// so we set them here
 		simplices[0][i]->set_colour(0);
 	}
+}
+
+// Factory method - get k-skeleton
+[[nodiscard]]
+auto Filtration::skeleton(const index_t k) const -> Filtration {
+	if (k < 0) {
+		throw invalid_argument("k must be non-negative.");
+	}
+	Filtration ret(n_vertices, k);
+	for (index_t i = min(cur_dim, k); i >= 1; i--) {
+		for (auto&& [key, simplex]: simplices[i]) {
+			if (simplex->get_cofacets().empty()) {
+				ret.add_simplex_unchecked(simplex->get_vertex_labels(), simplex->get_value());
+			}
+		}
+	}
+	return ret;
 }
 
 auto Filtration::validated_vertex_sequence(const vector<index_t>& verts) const -> vector<index_t> {
@@ -209,7 +229,7 @@ auto Filtration::validated_vertex_sequence(const vector<index_t>& verts) const -
 }
 
 // Needs verts to be validated.
-auto Filtration::_get_label_from_vertex_labels(const vector<index_t>& verts) const -> label_t {
+auto Filtration::lex_label(const vector<index_t>& verts) const -> label_t {
 	auto num_verts = static_cast<index_t>(verts.size());
 	assert(num_verts != 0);  // DEBUG
 	if (num_verts == 1) {
@@ -226,10 +246,10 @@ auto Filtration::_get_label_from_vertex_labels(const vector<index_t>& verts) con
 
 auto Filtration::get_label_from_vertex_labels(const vector<index_t>& verts) const -> label_t {
 	auto verts_validated = validated_vertex_sequence(verts);
-	return _get_label_from_vertex_labels(verts_validated);
+	return lex_label(verts_validated);
 }
 
-auto Filtration::_has_simplex(const index_t dim, const label_t label) const -> bool {
+auto Filtration::has_simplex_unchecked(const index_t dim, const label_t label) const -> bool {
 	if (simplices[dim].find(label) == simplices[dim].end()) {
 		return false;
 	} else {
@@ -247,25 +267,25 @@ auto Filtration::has_simplex(const index_t dim, const label_t label) const -> bo
 		// n_vertices and 0 <= k <= max_dim + 1.
 		throw invalid_argument("Invalid label.");
 	}
-	return _has_simplex(dim, label);
+	return has_simplex_unchecked(dim, label);
 }
 
-auto Filtration::_has_simplex(const vector<index_t>& verts) const noexcept -> bool {
+auto Filtration::has_simplex_unchecked(const vector<index_t>& verts) const noexcept -> bool {
 	// Narrowing cast here is not a problem since this is
 	// called only from has_simplex, which performs validation.
 	index_t num_verts = verts.size();  // NOLINT
 	assert(num_verts != 0);
 	auto dim   = num_verts - 1;        // we assume that verts is valid
-	auto label = _get_label_from_vertex_labels(verts);
-	return (_has_simplex(dim, label));
+	auto label = lex_label(verts);
+	return (has_simplex_unchecked(dim, label));
 }
 
 auto Filtration::has_simplex(vector<index_t>& verts) const -> bool {
 	auto verts_validated = validated_vertex_sequence(verts);
-	return (_has_simplex(verts_validated));
+	return (has_simplex_unchecked(verts_validated));
 }
 
-auto Filtration::_add_simplex(const vector<index_t>& verts, const value_t filt_value)
+auto Filtration::add_simplex_unchecked(const vector<index_t>& verts, const value_t filt_value)
 	-> shared_ptr<Filtration::Simplex> {
 	// Narrowing cast here is not a problem since this is
 	// called only from add_simplex, which performs validation.
@@ -273,7 +293,7 @@ auto Filtration::_add_simplex(const vector<index_t>& verts, const value_t filt_v
 	assert(num_verts != 0);
 	shared_ptr<Simplex> new_simplex;
 	auto                dim   = num_verts - 1;  // safe because we assume we have validated verts
-	auto                label = _get_label_from_vertex_labels(verts);
+	auto                label = lex_label(verts);
 	auto                search_simplex = simplices[dim].find(label);
 	if (search_simplex != simplices[dim].end()) {
 		// the simplex already exists
@@ -292,13 +312,15 @@ auto Filtration::_add_simplex(const vector<index_t>& verts, const value_t filt_v
 				verts.cbegin() + i + 1,
 				verts.cend()
 			);  // copy all except the i-th vertex
-			facets[i] = _add_simplex(facet_verts, filt_value).get();
+			facets[i] = add_simplex_unchecked(facet_verts, filt_value).get();
 			facet_verts.clear();
 		}
 		auto max_vertex       = verts.back();
-		new_simplex           = Simplex::_make_simplex(label, max_vertex, filt_value, facets);
+		new_simplex           = Simplex::make_simplex(label, max_vertex, filt_value, facets);
 		simplices[dim][label] = new_simplex;
 		num_simplices++;
+		cur_dim = max(cur_dim,
+		              static_cast<index_t>(verts.size() - 1));  // need verts to be valid
 	}
 	return new_simplex;
 }
@@ -308,13 +330,10 @@ auto Filtration::add_simplex(
 	value_t                filt_value = Filtration::Simplex::DEFAULT_FILT_VALUE
 ) -> bool {
 	auto verts_validated = validated_vertex_sequence(verts);
-	if (_has_simplex(verts_validated)) {
+	if (has_simplex_unchecked(verts_validated)) {
 		return false;
 	} else {
-		_add_simplex(verts_validated, filt_value);
-		cur_dim =
-			max(cur_dim,
-		        static_cast<index_t>(verts_validated.size() - 1));  // need verts to be valid
+		add_simplex_unchecked(verts_validated, filt_value);
 		return true;
 	}
 }
@@ -367,7 +386,7 @@ void Filtration::propagate_colours() noexcept {
 		for (auto& [idx, s]: simplices[d]) {
 			s->make_colourless();
 			for (auto& f: s->get_facets()) {
-				s->_add_colours(f->_get_colours());
+				s->add_colours_bitmask(f->get_colours_bitmask());
 			}
 		}
 	}
@@ -381,13 +400,32 @@ void Filtration::propagate_filt_values(const index_t start_dim, const bool up) {
 	}
 }
 
-auto Filtration::boundary_matrix() const
+auto Filtration::boundary_matrix(index_t max_dimension) const
 	-> vector<tuple<vector<index_t>, label_t, value_t, vector<colour_t>>> {
+	if (max_dimension < -1) {
+		throw domain_error("max_dimension must be >= -1, received " + to_string(max_dimension));
+	}
+
 	// Sort the simplices by their filtration value, dimension, and label.
+	size_t length_return = 0;
+	switch (max_dimension) {
+		case -1:
+			max_dimension = cur_dim;
+			length_return = num_simplices;
+			break;
+		case 0:
+			length_return = n_vertices;
+			break;
+		default:
+			max_dimension = min(max_dimension, cur_dim);
+			for (index_t p = 0; p <= max_dimension; p++) {
+				length_return += simplices[p].size();
+			}
+	}
 	vector<shared_ptr<Simplex>> sort_by_val;
-	sort_by_val.reserve(num_simplices);
-	for (auto&& simplices_d: simplices) {
-		for (auto&& s: simplices_d) {
+	sort_by_val.reserve(length_return);
+	for (index_t p = 0; p <= max_dimension; p++) {
+		for (auto&& s: simplices[p]) {
 			sort_by_val.push_back(s.second);
 		}
 	}
@@ -399,9 +437,10 @@ auto Filtration::boundary_matrix() const
 		     s1->m_label < s2->m_label)
 		);
 	});
+
 	// Create mapping from labels to sorted index.
-	vector<tuple<vector<index_t>, label_t, value_t, vector<colour_t>>> result(num_simplices);
-	vector<unordered_map<label_t, index_t>>                            indices(cur_dim + 1);
+	vector<tuple<vector<index_t>, label_t, value_t, vector<colour_t>>> result(length_return);
+	vector<unordered_map<label_t, index_t>>                            indices(max_dimension + 1);
 	for (auto&& [i, s] = tuple{0L, sort_by_val.begin()}; s != sort_by_val.end(); s++, i++) {
 		auto simplex = *s;
 		auto dim     = simplex->m_dim;
@@ -447,10 +486,9 @@ auto Filtration::complete_complex(const index_t n, const index_t k) -> Filtratio
 				verts_it++;
 			}
 		}
-		result._add_simplex(verts, 0.0);
+		result.add_simplex_unchecked(verts, 0.0);
 		perm_found = prev_permutation(verts_mask).found;
 	}
-	result.cur_dim = k;
 	return result;
 }
 

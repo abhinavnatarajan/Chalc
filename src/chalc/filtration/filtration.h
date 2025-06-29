@@ -76,32 +76,29 @@ class BinomialCoeffTable {
 }  // namespace detail
 
 struct Filtration {
-	/* PUBLIC CLASSES OF Filtration */
-
 	struct Simplex;
 
-	/* PUBLIC MEMBERS OF Filtration */
-
-	/* PUBLIC METHODS OF Filtration */
-
-	// Constructors
-	// Create a vertex set.
+	// Constructor - create a vertex set.
 	Filtration(const index_t num_vertices, const index_t max_dimension);
+
+	// Factory method - get k-skeleton
+	[[nodiscard]]
+	auto skeleton(const index_t k) const -> Filtration;  // exported
 
 	// Get label of a simplex from the labels of its vertices.
 	[[nodiscard]]
 	auto get_label_from_vertex_labels(const std::vector<index_t>& verts) const
 		-> label_t;  // exported
 
-	// Check if the complex has a specific simplex.
+	// Check if the filtration has a specific simplex.
 	[[nodiscard]]
 	auto has_simplex(const index_t dim, const label_t label) const -> bool;
 
-	// Check if the complex has a specific simplex.
+	// Check if the filtration has a specific simplex.
 	[[nodiscard]]
 	auto has_simplex(std::vector<index_t>& verts) const -> bool;  // exported
 
-	// Add a new simplex to the complex by its vertices.
+	// Add a new simplex to the filtration by its vertices.
 	// Returns true if the simplex was added, false if it already exists.
 	auto add_simplex(const std::vector<index_t>& verts, const value_t filt_value)
 		-> bool;  // exported
@@ -116,9 +113,9 @@ struct Filtration {
 		return simplices;
 	}
 
-	// Returns the number of simplices in the complex.
+	// Returns the number of simplices in the filtration.
 	[[nodiscard]]
-	auto size() const noexcept -> index_t {  // exported
+	auto size() const noexcept -> size_t {  // exported
 		return num_simplices;
 	}
 
@@ -134,17 +131,18 @@ struct Filtration {
 		return max_dim;
 	}
 
-	// Returns the number of vertices of the complex.
+	// Returns the number of vertices of the filtration.
 	[[nodiscard]]
 	auto num_vertices() const noexcept -> index_t {  // exported
 		return n_vertices;
 	}
 
-	// Returns a flat vectorised representation of the complex.
+	// Returns the boundary matrix of the filtration.
 	[[nodiscard]]
-	auto boundary_matrix() const -> std::vector<
+	auto boundary_matrix(index_t max_dimension = -1) const -> std::vector<
 		std::tuple<std::vector<index_t>, label_t, value_t, std::vector<colour_t>>>;  // exported
 
+	// Returns the k-skeleton of this filtration.
 	// Returns the k-skeleton of the complete simplicial complex on n vertices.
 	[[nodiscard]]
 	static auto complete_complex(const index_t n, const index_t k) -> Filtration;  // exported
@@ -161,12 +159,12 @@ struct Filtration {
 
 	detail::BinomialCoeffTable binomial;  // binomial coefficients
 	std::vector<std::unordered_map<label_t, std::shared_ptr<Simplex>>>
-		simplices;                // std::vector whose kth element is a table of k-simplices,
-	                              // labelled by their lexicographic index
-	index_t num_simplices;        // total number of simplices
-	index_t cur_dim;              // current maximum dimension of a maximal simplex
-	index_t n_vertices;           // number of vertices, labelled from 0 to n-1
-	index_t max_dim;              // maximum dimension of any simplex in the complex
+		simplices;          // std::vector whose kth element is a table of k-simplices,
+	                        // labelled by their lexicographic index
+	size_t num_simplices;  // total number of simplices
+	index_t cur_dim;        // current maximum dimension of a maximal simplex
+	index_t n_vertices;     // number of vertices, labelled from 0 to n-1
+	index_t max_dim;        // maximum dimension of any simplex in the filtration
 
 	/* PRIVATE METHODS OF Filtration */
 
@@ -176,24 +174,24 @@ struct Filtration {
 	[[nodiscard]]
 	auto validated_vertex_sequence(const std::vector<index_t>& verts) const -> std::vector<index_t>;
 
-	// Get label of a simplex (possibly not in the complex) from the labels of
+	// Get label of a simplex (possibly not in the filtration) from the labels of
 	// its vertices.
 	// Assumes that verts is valid.
 	[[nodiscard]]
-	auto _get_label_from_vertex_labels(const std::vector<index_t>& verts) const -> label_t;
+	auto lex_label(const std::vector<index_t>& verts) const -> label_t;
 
-	// Check if the complex has a specific simplex.
+	// Check if the filtration has a specific simplex.
 	// Assumes that dim is valid.
 	[[nodiscard]]
-	auto _has_simplex(const index_t dim, const label_t label) const -> bool;
+	auto has_simplex_unchecked(const index_t dim, const label_t label) const -> bool;
 
-	// Check if the complex has a specific simplex.
+	// Check if the filtration has a specific simplex.
 	// Assumes that verts is valid.
 	[[nodiscard]]
-	auto _has_simplex(const std::vector<index_t>& verts) const noexcept -> bool;
+	auto has_simplex_unchecked(const std::vector<index_t>& verts) const noexcept -> bool;
 
-	// Add a simplex to the complex with the specified vertices and filtration value.
-	auto _add_simplex(const std::vector<index_t>& verts, const value_t filt_value)
+	// Add a simplex to the filtration with the specified vertices and filtration value.
+	auto add_simplex_unchecked(const std::vector<index_t>& verts, const value_t filt_value)
 		-> std::shared_ptr<Simplex>;
 
 	// Min-fold filtration values downwards from start_dim.
@@ -214,14 +212,6 @@ struct Filtration::Simplex : public std::enable_shared_from_this<Filtration::Sim
 	/* PUBLIC METHODS OF Simplex */
 	// Delete the default constructor
 	Simplex() = delete;
-	// Factory method - only way to create new simplex
-	static auto _make_simplex(
-		label_t label,
-		index_t max_vertex,
-		value_t value                       = DEFAULT_FILT_VALUE,
-		const std::vector<Simplex*>& facets = std::vector<Simplex*>{}
-	) -> std::shared_ptr<Simplex>;
-
 	// Get a handle to this simplex
 	[[nodiscard]]
 	auto get_handle() -> std::shared_ptr<Simplex>;
@@ -286,26 +276,10 @@ struct Filtration::Simplex : public std::enable_shared_from_this<Filtration::Sim
 		m_filt_value = v;
 	}
 
-	// Set the colours of the simplex from a bitmask.
-	void _set_colours(colours_t c) noexcept {
-		colours.reset();
-		_add_colours(c);
-	}
-
 	// Add a colour to the simplex from a colour label.
 	void add_colour(colour_t c) {
 		colours.set(c);
 	}
-
-	// Add multiple colours to the simplex from a bitmask.
-	void _add_colours(colours_t c) noexcept {
-		colours |= c;
-	}
-
-	// Get the colours of the simplex as a bitmask.
-	auto _get_colours() const noexcept -> const colours_t& {
-		return colours;
-	};
 
 	// Remove all colours from the simplex.
 	void make_colourless() noexcept {
@@ -321,12 +295,37 @@ struct Filtration::Simplex : public std::enable_shared_from_this<Filtration::Sim
 	std::vector<Simplex*> facets;        // pointers to the [i]th facets of the simplex
 	std::vector<Simplex*> cofacets;      // pointers to the cofacets of the simplex
 	colours_t             colours;       // bitmask representing the colours of its vertices
-	// Constructor
+
+	// Constructor for internal use only.
 	Simplex(label_t label, index_t max_vertex, value_t value, const std::vector<Simplex*>& facets);
+
+	// Factory method for internal use.
+	static auto make_simplex(
+		label_t label,
+		index_t max_vertex,
+		value_t value                       = DEFAULT_FILT_VALUE,
+		const std::vector<Simplex*>& facets = std::vector<Simplex*>{}
+	) -> std::shared_ptr<Simplex>;
 
 	// Writes the sorted vertex labels of the simplex into a buffer
 	// Assumes that the simplex has valid faces
 	template <typename OutputIterator> void _get_vertex_labels(OutputIterator&& buf) const;
+
+	// Set the colours of the simplex from a bitmask.
+	void set_colours_bitmask(colours_t c) noexcept {
+		colours.reset();
+		add_colours_bitmask(c);
+	}
+
+	// Add multiple colours to the simplex from a bitmask.
+	void add_colours_bitmask(colours_t c) noexcept {
+		colours |= c;
+	}
+
+	// Get the colours of the simplex as a bitmask.
+	auto get_colours_bitmask() const noexcept -> const colours_t& {
+		return colours;
+	};
 };
 
 // The simplicial complex associated to the standard n-simplex.

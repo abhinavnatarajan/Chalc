@@ -120,14 +120,24 @@ class FiltrationInclusion(FiltrationMorphism, ABC):
 	) -> SixPack:
 		filtration = self.filtration
 
-		# If f: L \to K is an inclusion map of simplicial complexes where dim(L) <= dim(K) = d
-		# then all of the sixpack diagrams for this map are zero in dimensions greater than d
-		# except for possibly the relative diagram.
-		# The relative homology is trivial in dimensions greater than d+1.
-		if max_diagram_dimension is None:
-			max_diagram_dimension = filtration.dimension + 1
+		# We do not need all the simplices.
+		# H_m(K^n) -> H_m(K) is an isomorphism for m < n.
+		# Similarly H_m(L^n) -> H_m(L) is an isomorphism for m < n.
+		# Therefore H_m(K^n, L^n) -> H_m(K, L) is an isomorphism by the 5-lemma.
+		# If n = max_diagram_dimension + 1, we recover H_m(K), H_m(L), and H_m(K, L)
+		# correctly for all m <= max_diagram_dimensions.
+		# Consequently we also get the correct kernel, cokernel, and image.
+		# Therefore we only need the boundary matrix of simplices whose
+		# dimension is less than max_diagram_dimension.
+		if max_diagram_dimension is None or max_diagram_dimension >= filtration.dimension:
+			# If f: L \to K is an inclusion map of simplicial complexes where dim(L) <= dim(K) = d
+			# then all of the sixpack diagrams for this map are zero in dimensions greater than d.
+			max_simplex_dimension = -1
+		elif max_diagram_dimension < 0:
+			err = f"max_diagram_dimension must be non-negative, but got {max_diagram_dimension}."
+			raise ValueError(err)
 		else:
-			max_diagram_dimension = min(max_diagram_dimension, filtration.dimension + 1)
+			max_simplex_dimension = max_diagram_dimension + 1
 
 		codomain_boundary_matrix: list[
 			tuple[bool, int, list[int]]
@@ -135,34 +145,11 @@ class FiltrationInclusion(FiltrationMorphism, ABC):
 		entrance_times: list[float] = []
 		dimensions: list[int] = []
 
-		# Mapping from index of a column in the boundary matrix of the filtration
-		# to the index of that column in the boundary matrix of the codomain.
-		# Not every column in the former ends up in the latter,
-		# since we may skip higher dimensional simplices if max_diagram_dimension is set.
-		# We initialize with -1 to avoid silent bugs.
-		codomain_idx: np.ndarray[tuple[int], np.dtype[np.int64]] = np.array(
-			[-1] * len(filtration),
-			dtype=int,
-		)
-
-		# Build the codomain boundary matrix
-		codomain_idx_counter = 0
-		for column_idx, column in enumerate(filtration.boundary_matrix()):
-			# Check if we need to skip this column.
-			facet_idxs = [codomain_idx[idx] for idx in column[0]]
-			dimension = max(0, len(facet_idxs) - 1)
-			# H_m(K^n) -> H_m(K) is an isomorphism for m < n.
-			# Similarly H_m(L^n) -> H_m(L) is an isomorphism for m < n.
-			# Therefore H_m(K^n, L^n) -> H_m(K, L) is an isomorphism by the 5-lemma.
-			# If n = max_diagram_dimension + 1, we recover H_m(K), H_m(L), and H_m(K, L)
-			# correctly for all m <= max_diagram_dimensions.
-			# Consequently we also get the correct kernel, cokernel, and image.
-			if dimension > max_diagram_dimension + 1:
-				continue
-			# If we don't skip this column it gets a codomain index.
-			codomain_idx[column_idx] = codomain_idx_counter
-
+		# Build the codomain boundary matrix.
+		for column in filtration.boundary_matrix(max_simplex_dimension):
+			facet_idxs = column[0]
 			entrance_time = column[2]
+			dimension = max(0, len(facet_idxs) - 1)
 			codomain_boundary_matrix.append(
 				(
 					self.simplex_in_domain(column),
@@ -172,8 +159,6 @@ class FiltrationInclusion(FiltrationMorphism, ABC):
 			)
 			dimensions.append(dimension)
 			entrance_times.append(entrance_time)
-
-			codomain_idx_counter += 1
 
 		d = compute_ensemble(codomain_boundary_matrix)
 		return SixPack(
@@ -379,8 +364,7 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 		.. |ith| replace:: i\ :sup:`th`\
 		"""
 
-	type BoundaryColumn = tuple[float, int, list[int]]
-	type BoundaryMatrix = list[BoundaryColumn]
+	type BoundaryMatrix = list[tuple[float, int, list[int]]]
 
 	def sixpack(  # noqa: D102
 		self,
@@ -388,35 +372,29 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 	) -> SixPack:
 		filtration = self.filtration
 
-		if max_diagram_dimension is None:
-			# If f: L \to K is any map of cell complexes then
+		if max_diagram_dimension is None or max_diagram_dimension >= filtration.dimension:
+			# If f: L \to K is a cellular map of cell complexes then
 			# then the domain, codomain, kernel, cokernel, and image
 			# are zero in dimensions greater than max(dim(L), dim(K)).
 			# The "relative" homology here is really the relative homology
-			# of (cyl(f), L), where cyl(f) is the mapping cylinder of f.
-			# This has dimension max(dim(L) + 1, dim(K)).
-			# If L is a subcomplex or a disjoint union of subcomplexes of K,
-			# then this becomes dim(K) + 1.
-			# The relative homology is therefore trivial in dimensions
-			# greater than dim(K) + 2.
-			max_diagram_dimension = filtration.dimension + 2
+			# of (cyl(f), L), but by the 5-lemma the homology of cyl(f) is
+			# isomorphic to the homology of K.
+			# The long exact sequence of homology groups associated to
+			# the inclusion L -> cyl(f) shows that the relative homology
+			# disappears in dimensions greater than max(dim(L), dim(K)).
+			# In our case we know that L and K have the same dimension,
+			# since they are derived from the same filtration.
+			max_simplex_dimension = -1
+		elif max_diagram_dimension < 0:
+			err = f"max_diagram_dimension must be non-negative, but got {max_diagram_dimension}."
+			raise ValueError(err)
 		else:
-			max_diagram_dimension = min(max_diagram_dimension, filtration.dimension + 2)
+			max_simplex_dimension = max_diagram_dimension + 1
 
 		codomain_matrix: FiltrationQuotient.BoundaryMatrix = []
 		domain_matrix: FiltrationQuotient.BoundaryMatrix = []
 		# List of mappings from domain columns to codomain indices.
 		mapping: list[list[int]] = []
-
-		# Mapping from index of a column in the boundary matrix of the filtration
-		# to the index of that column in the boundary matrix of the codomain.
-		# Not every column in the former ends up in the latter,
-		# since we may skip higher dimensional simplices if max_diagram_dimension is set.
-		# We initialize with -1 to avoid silent bugs.
-		codomain_idx: np.ndarray[tuple[int], np.dtype[np.int64]] = np.array(
-			[-1] * len(filtration),
-			dtype=int,
-		)
 
 		# For a column with index i in the codomain matrix,
 		# offsets[i, j] is its index in the domain matrix
@@ -427,23 +405,11 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 		offsets = np.ones(shape=(len(filtration), self.num_subfiltrations), dtype=int) * -1
 
 		# Build the matrices
-		codomain_idx_counter = 0
 		domain_idx_counter = 0
-		for column_idx, column in enumerate(filtration.boundary_matrix()):
-			# Check if we need to skip this column.
-			facet_idxs = [codomain_idx[idx] for idx in column[0]]
-			dimension = max(0, len(facet_idxs) - 1)
-			# H_m(K^n) -> H_m(K) is an iso for m < n.
-			# Similarly H_m(L^n) -> H_m(L) is iso for m < n.
-			# Therefore H_m(K^n, L^n) -> H_m(K, L) is iso by 5-lemma.
-			# If n = max_diagram_dimension + 1, the only need simplices
-			# with dimension <= n.
-			if dimension > max_diagram_dimension + 1:
-				continue
-
-			# If we don't skip this column it gets a codomain index.
-			codomain_idx[column_idx] = codomain_idx_counter
+		for codomain_idx, column in enumerate(filtration.boundary_matrix(max_simplex_dimension)):
+			facet_idxs = column[0]
 			entrance_time = column[2]
+			dimension = max(0, len(facet_idxs) - 1)
 			codomain_matrix.append((entrance_time, dimension, facet_idxs))
 
 			# Construct the domain matrix
@@ -457,11 +423,10 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 					domain_matrix.append(
 						(entrance_time, dimension, shifted_facet_idxs),
 					)
-					mapping.append([codomain_idx_counter])
-					offsets[codomain_idx_counter, j] = domain_idx_counter
+					mapping.append([codomain_idx])
+					offsets[codomain_idx, j] = domain_idx_counter
 					domain_idx_counter += 1
 
-			codomain_idx_counter += 1
 
 		d, meta = compute_ensemble_cylinder(domain_matrix, codomain_matrix, mapping)
 
@@ -602,8 +567,7 @@ class SubChromaticQuotient(FiltrationQuotient):
 	) -> None:
 		"""Initialise this method."""
 		self._tau = tuple(
-			tuple(frozenset(frozenset(maximal_face) for maximal_face in tau_i))
-			for tau_i in tau
+			tuple(frozenset(frozenset(maximal_face) for maximal_face in tau_i)) for tau_i in tau
 		)
 		# Check if all the colours are valid
 		all_colours = frozenset(
