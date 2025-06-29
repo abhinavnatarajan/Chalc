@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Collection, Mapping, Sequence
 from itertools import product
+from numbers import Real
 from typing import TYPE_CHECKING, Any, Literal
 
 import matplotlib.pyplot as plt
@@ -78,23 +79,29 @@ def plot_sixpack(
 	if truncations is None:
 		truncations = {}
 	if isinstance(truncations, Mapping) and all(
-		isinstance(val, float) for val in truncations.values()
+		isinstance(val, Real) for val in truncations.values()
 	):
 		truncs: dict[DiagramName, float] = {}
 		for diagram_name in diagram_names:
-			if diagram_name in truncations and isinstance(truncations[diagram_name], float):
+			if diagram_name in truncations:
 				truncs[diagram_name] = truncations[diagram_name]
 				continue
-			ycoords = [
-				dgms.entrance_times[death_simplex].item()
-				for birth_simplex, death_simplex in dgms[diagram_name].paired
-				if dgms.dimensions[birth_simplex] - dim_shift[diagram_name] in dims[diagram_name]
-				and dgms.entrance_times[death_simplex] - dgms.entrance_times[birth_simplex]
-				> threshold
-			]
-			truncs[diagram_name] = _get_truncation(ycoords) if ycoords else 1.0
-	elif isinstance(truncations, float):
-		truncs = dict.fromkeys(diagram_names, truncations)
+			births = []
+			deaths = []
+			for pair in dgms[diagram_name].paired:
+				if (
+					dgms.dimensions[pair[0]] - dim_shift[diagram_name] in dims[diagram_name]
+					and dgms.entrance_times[pair[1]] - dgms.entrance_times[pair[0]] > threshold
+				):
+					births.append(dgms.entrance_times[pair[0]].item())
+					deaths.append(dgms.entrance_times[pair[1]].item())
+			for unpaired in dgms[diagram_name].unpaired:
+				if dgms.dimensions[unpaired] - dim_shift[diagram_name] in dims[diagram_name]:
+					births.append(dgms.entrance_times[unpaired].item())
+					deaths.append(dgms.entrance_times[unpaired].item())
+			truncs[diagram_name] = _get_truncation(births, deaths) if births else 1.0
+	elif isinstance(truncations, Real):
+		truncs = dict.fromkeys(diagram_names, float(truncations))
 	else:
 		errmsg = "Invalid truncations argument."
 		raise TypeError(errmsg)
@@ -111,9 +118,7 @@ def plot_sixpack(
 		"cod": "Codomain",
 		"rel": "Relative",
 	}
-	points_legend: dict[DiagramName, bool] = {
-		name: (name == "rel") for name in diagram_names
-	}
+	points_legend: dict[DiagramName, bool] = {name: (name == "rel") for name in diagram_names}
 	fig, axes = plt.subplots(
 		nrows=2,
 		ncols=3,
@@ -193,13 +198,20 @@ def plot_diagram(
 		raise ValueError(errmsg)
 
 	if truncation is None:
-		ycoord = [
-			dgms.entrance_times[death_simplex].item()
-			for birth_simplex, death_simplex in dgms[diagram_name].paired
-			if dgms.dimensions[birth_simplex] - dim_shift in dimensions
-			and dgms.entrance_times[death_simplex] - dgms.entrance_times[birth_simplex] > threshold
-		]
-		truncation = _get_truncation(ycoord) if ycoord else 1.0
+		births = []
+		deaths = []
+		for pair in dgms[diagram_name].paired:
+			if (
+				dgms.dimensions[pair[0]] - dim_shift in dimensions
+				and dgms.entrance_times[pair[1]] - dgms.entrance_times[pair[0]] > threshold
+			):
+				births.append(dgms.entrance_times[pair[0]].item())
+				deaths.append(dgms.entrance_times[pair[1]].item())
+		for unpaired in dgms[diagram_name].unpaired:
+			if dgms.dimensions[unpaired] - dim_shift in dimensions:
+				births.append(dgms.entrance_times[unpaired].item())
+				deaths.append(dgms.entrance_times[unpaired].item())
+		truncation = _get_truncation(births, deaths) if births else 1.0
 
 	if ax is None:
 		ax1: Axes
@@ -478,18 +490,8 @@ def animate_filtration(
 	)  # pyright : ignore
 
 
-def _get_truncation(entrance_times: list[float]) -> float:
-	return (
-		ub * 2
-		if (m := max(entrance_times))
-		> 2
-		* (
-			ub := np.percentile(
-				entrance_times,
-				[
-					95,
-				],
-			)[0]
-		)
-		else m
-	)
+def _get_truncation(births: list[float], deaths: list[float]) -> float:
+	perc95_death = np.percentile(deaths, [95])[0]
+	max_death = max(deaths)
+	death_sensible_trunc = perc95_death * 2 if max_death > 2 * perc95_death else max_death
+	return max(max(births) * 1.05, death_sensible_trunc)
