@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="chalc.sixpack.morphisms" href="morphisms/index.html" /><link rel="prev" title="chalc.plotting" href="../plotting/index.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>chalc.sixpack - chalc 11.0.1 documentation</title>
+        <title>chalc.sixpack - chalc 12.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
@@ -169,7 +169,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">chalc 11.0.1 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">chalc 12.0.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
   
-  <span class="sidebar-brand-text">chalc 11.0.1 documentation</span>
+  <span class="sidebar-brand-text">chalc 12.0.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -766,6 +766,15 @@ size=&quot;8.0, 12.0&quot;;
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="chalc.sixpack.SixPack.filter">
+<span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.13)"><span class="pre">collections.abc.Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#chalc.sixpack.SixPack" title="chalc.sixpack.SixPack"><span class="pre">SixPack</span></a></span></span><a class="headerlink" href="#chalc.sixpack.SixPack.filter" title="Link to this definition">¶</a></dt>
+<dd><p>Filter out features in the diagram.</p>
+<p><code class="docutils literal notranslate"><span class="pre">func</span></code> should take four arguments: the name of the diagram to which a feature
+belongs, the dimension of the feature, and its birth and death times, and should return
+a boolean indicating whether the feature should be kept.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="chalc.sixpack.SixPack.from_file">
 <em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.h5py.org/en/stable/high/group.html#h5py.Group" title="(in h5py v3.14)"><span class="pre">h5py.Group</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#chalc.sixpack.SixPack" title="chalc.sixpack.SixPack"><span class="pre">SixPack</span></a></span></span><a class="headerlink" href="#chalc.sixpack.SixPack.from_file" title="Link to this definition">¶</a></dt>
 <dd><p>Load a 6-pack of persistence diagrams from a HDF5 file or group.</p>
@@ -835,12 +844,6 @@ a pair of birth and death times, or a list of such matrices.</p>
 <dd class="field-odd"><p><strong>file</strong> – A h5py file or group.</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="chalc.sixpack.SixPack.threshold">
-<span class="sig-name descname"><span class="pre">threshold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#chalc.sixpack.SixPack" title="chalc.sixpack.SixPack"><span class="pre">SixPack</span></a></span></span><a class="headerlink" href="#chalc.sixpack.SixPack.threshold" title="Link to this definition">¶</a></dt>
-<dd><p>Discard all features with persistence <code class="docutils literal notranslate"><span class="pre">&lt;=tolerance</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1145,6 +1148,7 @@ same result as <a class="reference internal" href="#chalc.sixpack.SubChromaticIn
 <li><a class="reference internal" href="#chalc.sixpack.SixPack.__len__"><code class="docutils literal notranslate"><span class="pre">__len__()</span></code></a></li>
 <li><a class="reference internal" href="#chalc.sixpack.SixPack.dimensions"><code class="docutils literal notranslate"><span class="pre">dimensions</span></code></a></li>
 <li><a class="reference internal" href="#chalc.sixpack.SixPack.entrance_times"><code class="docutils literal notranslate"><span class="pre">entrance_times</span></code></a></li>
+<li><a class="reference internal" href="#chalc.sixpack.SixPack.filter"><code class="docutils literal notranslate"><span class="pre">filter()</span></code></a></li>
 <li><a class="reference internal" href="#chalc.sixpack.SixPack.from_file"><code class="docutils literal notranslate"><span class="pre">from_file()</span></code></a></li>
 <li><a class="reference internal" href="#chalc.sixpack.SixPack.get_matrix"><code class="docutils literal notranslate"><span class="pre">get_matrix()</span></code></a></li>
 <li><a class="reference internal" href="#chalc.sixpack.SixPack.items"><code class="docutils literal notranslate"><span class="pre">items()</span></code></a></li>
@@ -1152,7 +1156,6 @@ same result as <a class="reference internal" href="#chalc.sixpack.SubChromaticIn
 <li><a class="reference internal" href="#chalc.sixpack.SixPack.names"><code class="docutils literal notranslate"><span class="pre">names()</span></code></a></li>
 <li><a class="reference internal" href="#chalc.sixpack.SixPack.num_features"><code class="docutils literal notranslate"><span class="pre">num_features()</span></code></a></li>
 <li><a class="reference internal" href="#chalc.sixpack.SixPack.save"><code class="docutils literal notranslate"><span class="pre">save()</span></code></a></li>
-<li><a class="reference internal" href="#chalc.sixpack.SixPack.threshold"><code class="docutils literal notranslate"><span class="pre">threshold()</span></code></a></li>
 <li><a class="reference internal" href="#chalc.sixpack.SixPack.values"><code class="docutils literal notranslate"><span class="pre">values()</span></code></a></li>
 </ul>
 </li>
@@ -1177,7 +1180,7 @@ same result as <a class="reference internal" href="#chalc.sixpack.SubChromaticIn
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=6a5133bb"></script>
+</div><script src="../../../_static/documentation_options.js?v=12c8f029"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>

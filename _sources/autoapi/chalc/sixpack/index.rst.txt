@@ -431,6 +431,16 @@ Package Contents
       Entrance times of the simplices.
 
 
+   .. py:method:: filter(func: collections.abc.Callable[[str, int, float, float], bool]) -> SixPack
+
+      Filter out features in the diagram.
+
+      ``func`` should take four arguments: the name of the diagram to which a feature
+      belongs, the dimension of the feature, and its birth and death times, and should return
+      a boolean indicating whether the feature should be kept.
+
+
+
    .. py:method:: from_file(file: h5py.Group) -> SixPack
       :classmethod:
 
@@ -491,12 +501,6 @@ Package Contents
       Save a 6-pack of persistence diagrams to a HDF5 file or group.
 
       :param file: A h5py file or group.
-
-
-
-   .. py:method:: threshold(tolerance: float) -> SixPack
-
-      Discard all features with persistence ``<=tolerance``.
 
 
 

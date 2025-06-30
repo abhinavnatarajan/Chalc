@@ -71,19 +71,21 @@ Module Contents
 
 
 
-   .. py:method:: boundary_matrix() -> list[tuple[list[int], int, float, list[int]]]
+   .. py:method:: boundary_matrix(max_dimension: int = -1) -> list[tuple[list[int], int, float, list[int]]]
 
-      Compute the boundary matrix of the simplicial complex.
+      Compute the boundary matrix of the filtration.
 
-      :return:
-              A list `x` of simplices in the simplicial complex ordered by
-              filtration time, dimension, and label (in that order).
-              Each simplex :math:`\sigma` is represented by a tuple containing the following items.
+      :param max_dimension: The maximum dimension of simplices to be considered.
 
-              1.  A list containing the indices in `x` of the facets of :math:`\sigma`, sorted in ascending order.
-              2.  The lexicographic key of :math:`\sigma` in the simplicial complex.
-              3.  The filtration time of :math:`\sigma`.
-              4.  The set of colours of the vertices of :math:`\sigma`.
+      :returns: A list `x` of simplices in the simplicial complex ordered by
+                filtration time, dimension, and label (in that order).
+                Each simplex :math:`\sigma` has dimension at most ``max_dimension`` and is
+                represented by a tuple containing the following items.
+
+                1.  A list containing the indices in `x` of the facets of :math:`\sigma`, sorted in ascending order.
+                2.  The lexicographic key of :math:`\sigma` in the simplicial complex.
+                3.  The filtration time of :math:`\sigma`.
+                4.  The set of colours of the vertices of :math:`\sigma`.
 
 
 
@@ -169,6 +171,14 @@ Module Contents
       The key of a :math:`k`-simplex in ``simplices[k]`` is the lexicographic index
       of that simplex with respect to its vertex labels sorted in ascending order,
       counting all possible sorted subsequences of :math:`(0, ..., N-1)` of length :math:`k`.
+
+
+   .. py:method:: skeleton(k: int) -> Filtration
+
+      Get a copy of the k-skeleton of the filtration.
+
+      :param k: Dimension of the skeleton to return.
+
 
 
 .. py:class:: Simplex

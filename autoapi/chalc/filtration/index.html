@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="chalc.plotting" href="../plotting/index.html" /><link rel="prev" title="chalc.chromatic" href="../chromatic/index.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>chalc.filtration - chalc 11.0.1 documentation</title>
+        <title>chalc.filtration - chalc 12.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
@@ -169,7 +169,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">chalc 11.0.1 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">chalc 12.0.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
   
-  <span class="sidebar-brand-text">chalc 11.0.1 documentation</span>
+  <span class="sidebar-brand-text">chalc 12.0.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -352,13 +352,17 @@ in the simplicial complex will have their filtration values reduced if necessary
 
 <dl class="py method">
 <dt class="sig sig-object py" id="chalc.filtration.Filtration.boundary_matrix">
-<span class="sig-name descname"><span class="pre">boundary_matrix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#chalc.filtration.Filtration.boundary_matrix" title="Link to this definition">¶</a></dt>
-<dd><p>Compute the boundary matrix of the simplicial complex.</p>
+<span class="sig-name descname"><span class="pre">boundary_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_dimension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#chalc.filtration.Filtration.boundary_matrix" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the boundary matrix of the filtration.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><p>A list <cite>x</cite> of simplices in the simplicial complex ordered by
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>max_dimension</strong> – The maximum dimension of simplices to be considered.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>A list <cite>x</cite> of simplices in the simplicial complex ordered by
 filtration time, dimension, and label (in that order).
-Each simplex <span class="math notranslate nohighlight">\(\sigma\)</span> is represented by a tuple containing the following items.</p>
+Each simplex <span class="math notranslate nohighlight">\(\sigma\)</span> has dimension at most <code class="docutils literal notranslate"><span class="pre">max_dimension</span></code> and is
+represented by a tuple containing the following items.</p>
 <ol class="arabic simple">
 <li><p>A list containing the indices in <cite>x</cite> of the facets of <span class="math notranslate nohighlight">\(\sigma\)</span>, sorted in ascending order.</p></li>
 <li><p>The lexicographic key of <span class="math notranslate nohighlight">\(\sigma\)</span> in the simplicial complex.</p></li>
@@ -449,6 +453,17 @@ to the <span class="math notranslate nohighlight">\(k\)</span>-simplices in the 
 <p>The key of a <span class="math notranslate nohighlight">\(k\)</span>-simplex in <code class="docutils literal notranslate"><span class="pre">simplices[k]</span></code> is the lexicographic index
 of that simplex with respect to its vertex labels sorted in ascending order,
 counting all possible sorted subsequences of <span class="math notranslate nohighlight">\((0, ..., N-1)\)</span> of length <span class="math notranslate nohighlight">\(k\)</span>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chalc.filtration.Filtration.skeleton">
+<span class="sig-name descname"><span class="pre">skeleton</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#chalc.filtration.Filtration" title="chalc.filtration.Filtration"><span class="pre">Filtration</span></a></span></span><a class="headerlink" href="#chalc.filtration.Filtration.skeleton" title="Link to this definition">¶</a></dt>
+<dd><p>Get a copy of the k-skeleton of the filtration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>k</strong> – Dimension of the skeleton to return.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -614,6 +629,7 @@ from the parent simplicial complex after changing the colour of a vertex.</p>
 <li><a class="reference internal" href="#chalc.filtration.Filtration.propagate_colours"><code class="docutils literal notranslate"><span class="pre">propagate_colours()</span></code></a></li>
 <li><a class="reference internal" href="#chalc.filtration.Filtration.propagate_filt_values"><code class="docutils literal notranslate"><span class="pre">propagate_filt_values()</span></code></a></li>
 <li><a class="reference internal" href="#chalc.filtration.Filtration.simplices"><code class="docutils literal notranslate"><span class="pre">simplices</span></code></a></li>
+<li><a class="reference internal" href="#chalc.filtration.Filtration.skeleton"><code class="docutils literal notranslate"><span class="pre">skeleton()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#chalc.filtration.Simplex"><code class="docutils literal notranslate"><span class="pre">Simplex</span></code></a><ul>
@@ -641,7 +657,7 @@ from the parent simplicial complex after changing the colour of a vertex.</p>
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=6a5133bb"></script>
+</div><script src="../../../_static/documentation_options.js?v=12c8f029"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>
