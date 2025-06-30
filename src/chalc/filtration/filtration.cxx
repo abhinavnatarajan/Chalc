@@ -409,14 +409,14 @@ auto Filtration::boundary_matrix(index_t max_dimension) const
 	// Sort the simplices by their filtration value, dimension, and label.
 	size_t length_return = 0;
 	switch (max_dimension) {
-		case -1:
+		case -1 :
 			max_dimension = cur_dim;
 			length_return = num_simplices;
 			break;
-		case 0:
+		case 0 :
 			length_return = n_vertices;
 			break;
-		default:
+		default :
 			max_dimension = min(max_dimension, cur_dim);
 			for (index_t p = 0; p <= max_dimension; p++) {
 				length_return += simplices[p].size();
@@ -444,19 +444,18 @@ auto Filtration::boundary_matrix(index_t max_dimension) const
 	for (auto&& [i, s] = tuple{0L, sort_by_val.begin()}; s != sort_by_val.end(); s++, i++) {
 		auto simplex = *s;
 		auto dim     = simplex->m_dim;
+		auto label   = simplex->m_label;
 		// Add the label to the indices map for this dimension
-		indices[simplex->m_dim][simplex->m_label] = i;
+		indices[dim][label] = i;
 		// Add this simplex to the result
 		auto            value        = simplex->m_filt_value;
-		auto            label        = simplex->m_label;
-		auto            dimension    = simplex->m_dim;
 		auto            colours      = simplex->get_colours_as_vec();
 		auto            facet_labels = simplex->get_facet_labels();
 		vector<index_t> facet_idx(facet_labels.size());
 		for (auto&& [idx_it, label_it] = tuple{facet_idx.begin(), facet_labels.cbegin()};
 		     idx_it != facet_idx.cend();
 		     idx_it++, label_it++) {
-			*idx_it = indices[dimension - 1][*label_it];
+			*idx_it = indices[dim - 1][*label_it];
 		}
 		sort(facet_idx.begin(), facet_idx.end());
 		result[i] = tuple{facet_idx, label, value, colours};
