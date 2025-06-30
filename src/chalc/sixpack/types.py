@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import (
+	Callable,
 	Collection,
 	ItemsView,
 	Iterator,
@@ -130,34 +131,69 @@ class SixPack(Mapping):
 		"""Count the total number of features across all diagrams in the 6-pack."""
 		return sum(len(dgm) for dgm in self.values())
 
-	def threshold(self, tolerance: float) -> SixPack:
-		"""Discard all features with persistence ``<=tolerance``."""
-		for diagram_name in self:
-			pairings = frozenset(
-				(b, d)
-				for b, d in self[diagram_name].paired
-				if self._entrance_times[d] - self._entrance_times[b] > tolerance
-			)
-			self._simplex_pairings[diagram_name]._paired = pairings  # noqa: SLF001
-		return self
+	def filter(self, func: Callable[[str, int, float, float], bool]) -> SixPack:
+		"""Filter out features in the diagram.
 
-	def threshold_dimension(self, dimension: int) -> SixPack:
-		"""Discard all features with dimension greater than the provided value."""
-		for diagram_name in self:
-			pairings = frozenset(
-				(b, d)
-				for b, d in self[diagram_name].paired
-				if self._dimensions[b] <= dimension
-				or (self._dimensions[b] == dimension + 1 and diagram_name == "ker")
+		``func`` should take four arguments: the name of the diagram to which a feature
+		belongs, the dimension of the feature, and its birth and death times, and should return
+		a boolean indicating whether the feature should be kept.
+		"""
+		for name, diagram in self.items():
+			paired = frozenset(
+				(birth_simplex, death_simplex)
+				for birth_simplex, death_simplex in diagram.paired
+				if func(
+					name,
+					self._dimensions[birth_simplex] - (1 if name == "ker" else 0),
+					self._entrance_times[birth_simplex],
+					self._entrance_times[death_simplex],
+				)
 			)
 			unpaired = frozenset(
-				s
-				for s in self[diagram_name].unpaired
-				if self._dimensions[s] <= dimension
-				or (self._dimensions[s] == dimension + 1 and diagram_name == "ker")
+				simplex
+				for simplex in diagram.unpaired
+				if func(
+					name,
+					self._dimensions[simplex] - (1 if name == "ker" else 0),
+					self._entrance_times[simplex],
+					np.inf,
+				)
 			)
-			self._simplex_pairings[diagram_name]._paired = pairings  # noqa: SLF001
-			self._simplex_pairings[diagram_name]._unpaired = unpaired  # noqa: SLF001
+			diagram._paired = paired  # noqa: SLF001
+			diagram._unpaired = unpaired  # noqa: SLF001
+		self._cleanup()
+		return self
+
+	def _cleanup(self) -> SixPack:
+		"""Remove all simplices not associated with a feature."""
+		# Find all simplices that are part of some feature
+		active_simplices: set[int] = set()
+		for pairings in self.values():
+			for simplex_1, simplex_2 in pairings.paired:
+				active_simplices.add(simplex_1)
+				active_simplices.add(simplex_2)
+			for simplex in pairings.unpaired:
+				active_simplices.add(simplex)
+
+		# Create a map from old indices to new indices
+		sorted_active_simplices = sorted(active_simplices)
+		index_map = {old: new for new, old in enumerate(sorted_active_simplices)}
+
+		# Filter dimensions and entrance times
+		if active_simplices:
+			self._dimensions = self._dimensions[sorted_active_simplices]
+			self._entrance_times = self._entrance_times[sorted_active_simplices]
+		else:
+			self._dimensions = np.array([], dtype=np.int64)
+			self._entrance_times = np.array([], dtype=np.float64)
+
+		# Re-index the simplex pairings
+		for name in self._simplex_pairings:
+			pairings = self._simplex_pairings[name]
+			new_paired = frozenset((index_map[s1], index_map[s2]) for s1, s2 in pairings.paired)
+			new_unpaired = frozenset(index_map[s] for s in pairings.unpaired)
+			self._simplex_pairings[name] = SimplexPairings(new_paired, new_unpaired)
+
 		return self
 
 	@overload

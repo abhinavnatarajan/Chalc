@@ -168,7 +168,10 @@ class FiltrationInclusion(FiltrationMorphism, ABC):
 			SimplexPairings(d.rel.paired, d.rel.unpaired),
 			entrance_times,
 			dimensions,
-		).threshold(0.0).threshold_dimension(max_diagram_dimension)
+		).filter(
+			lambda _, dim, birth_time, death_time: death_time - birth_time > 0.0
+			and dim <= max_diagram_dimension,
+		)
 
 
 class SubChromaticInclusion(FiltrationInclusion, Sized):
@@ -371,8 +374,8 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 		filtration = self.filtration
 
 		# We do not need all the simplices.
-        # Let n = max_diagram_dimension, and f: L -> K be a cellular map.
-        # First notice that K is homotopy equivalent to cyl(f)
+		# Let n = max_diagram_dimension, and f: L -> K be a cellular map.
+		# First notice that K is homotopy equivalent to cyl(f)
 		# H_n(K^{n+2}) -> H_n(K) and H_{n+1}(K^{n+2}) -> H_{n+1}(K) are isomorphisms.
 		# Similarly H_n(L^{n+2}) -> H_n(L) and H_{n+1}(L^{n+2}) - H_{n+1}(L) are isomorphisms.
 		# Therefore H_n(K^{n+2}, L^{n+2}) -> H_n(K, L) is an isomorphism by the 5-lemma.
@@ -424,7 +427,6 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 					offsets[codomain_idx, j] = domain_idx_counter
 					domain_idx_counter += 1
 
-
 		d, meta = compute_ensemble_cylinder(domain_matrix, codomain_matrix, mapping)
 
 		# meta.<domain|codomain|domain_shifted> is a vector
@@ -455,7 +457,10 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 			SimplexPairings(d.rel.paired, d.rel.unpaired),
 			entrance_times,
 			dimensions,
-		).threshold(0.0).threshold_dimension(max_diagram_dimension)
+		).filter(
+			lambda _, dim, birth_time, death_time: death_time - birth_time > 0.0
+			and dim <= max_diagram_dimension,
+		)
 
 
 class SubChromaticQuotient(FiltrationQuotient):
