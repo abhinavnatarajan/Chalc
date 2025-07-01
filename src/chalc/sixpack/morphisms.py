@@ -244,9 +244,7 @@ class SubChromaticInclusion(FiltrationInclusion, Sized):
 			raise TypeError(errmsg)
 
 		# Check that the colours in tau are valid.
-		all_colours = frozenset(
-			colour for vertex in filtration.simplices[0].values() for colour in vertex.colours
-		)
+		all_colours = frozenset(vertex.colours[0] for vertex in filtration.simplices[0].values())
 		if not all(face.issubset(all_colours) for face in self._tau):
 			err = "Specified colours in tau are not valid."
 			raise ValueError(err)
@@ -317,9 +315,7 @@ class KChromaticInclusion(FiltrationInclusion):
 		self.k = k
 		super().__init__(filtration)
 		# Check that the colours in tau are valid.
-		all_colours = frozenset(
-			colour for vertex in filtration.simplices[0].values() for colour in vertex.colours
-		)
+		all_colours = frozenset(vertex.colours[0] for vertex in filtration.simplices[0].values())
 		if k > len(all_colours):
 			errmsg = f"Filtration has {len(all_colours)} colours but k={k} was specified."
 			logging.getLogger().warning(errmsg)
@@ -572,9 +568,7 @@ class SubChromaticQuotient(FiltrationQuotient):
 			tuple(frozenset(frozenset(maximal_face) for maximal_face in tau_i)) for tau_i in tau
 		)
 		# Check if all the colours are valid
-		all_colours = frozenset(
-			colour for vertex in filtration.simplices[0].values() for colour in vertex.colours
-		)
+		all_colours = frozenset(vertex.colours[0] for vertex in filtration.simplices[0].values())
 		if not all(face.issubset(all_colours) for tau_i in self._tau for face in tau_i):
 			err = "Specified colours in tau are not valid."
 			raise ValueError(err)
@@ -642,9 +636,7 @@ class KChromaticQuotient(FiltrationQuotient):
 		self.k = k
 
 		# Warning if k is too large.
-		all_colours = frozenset(
-			colour for vertex in filtration.simplices[0].values() for colour in vertex.colours
-		)
+		all_colours = frozenset(vertex.colours[0] for vertex in filtration.simplices[0].values())
 		if k > len(all_colours):
 			errmsg = f"Filtration has {len(all_colours)} colours but k={k} was specified."
 			logging.getLogger().warning(errmsg)

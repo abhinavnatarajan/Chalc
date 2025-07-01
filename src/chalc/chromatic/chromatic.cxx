@@ -63,9 +63,9 @@ using chalc::MAX_NUM_COLOURS;
 using CGAL::Gmpzf;
 using CGAL::Quotient;
 
-using cmb::SolutionPrecision;
-using cmb::miniball;
 using cmb::constrained_miniball;
+using cmb::miniball;
+using cmb::SolutionPrecision;
 using cmb::utility::equidistant_subspace;
 using cmb::utility::ToDouble;
 
@@ -137,7 +137,7 @@ template <typename T>
 auto sort_with_indices(const vector<T>& v, bool (*compare)(const T& a, const T& b))
 	-> tuple<vector<T>, vector<index_t>> {
 	vector<index_t> idx(v.size());
-	iota(idx.begin(), idx.end(), 0);  // NOLINT - we do not have this on macOS yet.
+	iota(idx.begin(), idx.end(), 0);  // NOLINT - we do not have this on Apple Clang yet.
 	sort(idx, [&v, &compare](index_t i1, index_t i2) {
 		return compare(v[i1], v[i2]);
 	});
@@ -221,7 +221,7 @@ auto delaunay(const MatrixXd& X, const vector<colour_t>& colours) -> Filtration 
 
 	// Chromatic lift of the point cloud.
 	MatrixXd Y(chromatic_lift(X, colours));
-	if (Y.rows() > numeric_limits<int>::max()) {
+	if (Y.rows() > static_cast<Eigen::Index>(numeric_limits<int>::max())) {
 		throw runtime_error("Dimension of stratified points is too large.");
 	}
 	int  max_dim = Y.rows();  // NOLINT
@@ -238,7 +238,7 @@ auto delaunay(const MatrixXd& X, const vector<colour_t>& colours) -> Filtration 
 	// original label.
 	for (auto vert_it = delY.finite_vertices_begin(); vert_it != delY.finite_vertices_end();
 	     vert_it++) {
-		// find the index of its associated point
+		// Find the index of its associated point.
 		auto           point = vert_it->point();
 		const Point_d* p     = static_cast<Point_d*>(bsearch(
             &point,
@@ -283,23 +283,23 @@ auto delaunay(const MatrixXd& X, const vector<colour_t>& colours) -> Filtration 
 	return result;
 }
 
-// Create the chromatic Del-VR complex.
+// Create the chromatic Delaunay--Rips filtration.
 auto delrips(const MatrixXd& points, const vector<colour_t>& colours) -> Filtration {
 	// Get the delaunay triangulation
 	Filtration delX = delaunay(points, colours);
 
-	// Modify the filtration values
+	// Modify the filtration values.
 	if (delX.dimension() >= 1) {
 		for (auto& [idx, edge]: delX.get_simplices()[1]) {
 			auto&& verts  = edge->get_vertex_labels();
-			edge->value() = (points.col(verts[0]) - points.col(verts[1])).norm() * 0.5;  // NOLINT
+			edge->value() = (points.col(verts[0]) - points.col(verts[1])).norm() * 0.5;
 		}
 		delX.propagate_filt_values(1, true);
 	}
 	return delX;
 }
 
-// Create the chromatic Del-VR complex with parallelisation.
+// Create the chromatic Delaunay--Rips filtration with parallelisation.
 auto delrips_parallel(
 	const MatrixXd&         points,
 	const vector<colour_t>& colours,
@@ -310,7 +310,7 @@ auto delrips_parallel(
 
 	// Modify the filtration values.
 	if (delX.dimension() >= 1) {
-		task_arena arena(max_num_threads == 0 ? task_arena::automatic : max_num_threads);  // NOLINT
+		task_arena arena(max_num_threads == 0 ? task_arena::automatic : max_num_threads);
 		// Store all the simplex pointers in a vector,
 		// which is convenient to iterate over using the TBB API.
 		vector<const shared_ptr<Filtration::Simplex>*> edges;
@@ -323,10 +323,9 @@ auto delrips_parallel(
 				blocked_range<size_t>(0, edges.size()),
 				[&](const blocked_range<size_t>& r) {
 					for (size_t idx = r.begin(); idx < r.end(); idx++) {
-						auto&& edge  = *edges[idx];
-						auto&& verts = edge->get_vertex_labels();
-						edge->value() =
-							(points.col(verts[0]) - points.col(verts[1])).norm() * 0.5;  // NOLINT
+						auto&& edge   = *edges[idx];
+						auto&& verts  = edge->get_vertex_labels();
+						edge->value() = (points.col(verts[0]) - points.col(verts[1])).norm() * 0.5;
 					}
 				}
 			);
@@ -338,12 +337,11 @@ auto delrips_parallel(
 
 // Compute the chromatic alpha complex
 auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Filtration, bool> {
-	// Start
-	// Get the delaunay triangulation
+	// Get the delaunay triangulation.
 	Filtration delX(delaunay(points, colours));
 
-	// Partition the vertices by colour
-	// We will need this later to check if stacks are empty
+	// Partition the vertices by colour.
+	// We will need this later to check if stacks are empty.
 	array<vector<index_t>, MAX_NUM_COLOURS> verts_by_colour;
 	for (auto&& [i, colour] = tuple{static_cast<index_t>(0), colours.begin()};
 	     colour != colours.end();
@@ -354,56 +352,50 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Fil
 	if (delX.dimension() >= 1) {
 		auto to_double = ToDouble();
 
-		// Modify the filtration values
+		// Modify the filtration values.
 		auto&& points_exact   = points.template cast<Gmpzf>();
 		auto&& points_exact_q = points.template cast<Quotient<Gmpzf>>();
 
-		// Start at the current dimension
+		// Start at the current dimension.
 		for (auto&& p = delX.dimension(); p >= 1; p--) {
 			// Iterate over p-simplices
 			for (auto&& [_, simplex]: delX.get_simplices()[p]) {
 				auto&& verts = simplex->get_vertex_labels();
 
-				// Partition the vertices of this simplex by colour
+				// Partition the vertices of this simplex by colour.
 				array<vector<index_t>, MAX_NUM_COLOURS> verts_by_colour_in_simplex;
 				for (auto&& v: verts) {
 					verts_by_colour_in_simplex.at(colours[v]).push_back(v);
 				}
 
-				// Partition the vertices of all cofaces of the simplex by colour
+				// Partition the vertices of all cofaces of the simplex by colour.
+				// verts_by_colour_all_cofaces[j] will have duplicates but this
+				// does not affect correctness.
 				array<vector<index_t>, MAX_NUM_COLOURS> verts_by_colour_all_cofaces;
 				for (auto&& cofacet: simplex->get_cofacets()) {
 					for (auto&& v: cofacet->get_vertex_labels()) {
 						verts_by_colour_all_cofaces.at(colours[v]).push_back(v);
 					}
 				}
-				// for (auto&& verts_j: verts_by_colour_all_cofaces) {
-				// 	// Remove duplicates
-				// 	if (verts_j.empty()) {
-				// 		continue;
-				// 	}
-				// 	remove_duplicates_inplace(verts_j);
-				// }
 
-				/*
-				For each colour j in the simplex, find the affine subspace
-				of points equidistant to the vertices of colour j in the simplex.
-				Suppose this subspace is E_j and is defined by a matrix equation:
-				E_j * x = b_j
-				We append E_j and b_j to the bottom of a matrix E and a vector b.
-				Then the solution set E of the matrix equation
-				E * x = b
-				is the intersection over all j of the affine subspaces E_j
-				*/
+				// For each colour j in the simplex, find the affine subspace
+				// of points equidistant to the vertices of colour j in the simplex.
+				// Suppose this subspace is E_j and is defined by a matrix equation:
+				// E_j * x = b_j.
+				// We append E_j and b_j to the bottom of a matrix E and a vector b.
+				// Then the solution set E of the matrix equation
+				// E * x = b
+				// is the intersection over all j of the affine subspaces E_j.
 				MatrixX<Gmpzf> E(0, points.rows());
 				VectorX<Gmpzf> b;
 				for (auto&& verts_j: verts_by_colour_in_simplex) {
 					if (verts_j.empty()) {
 						continue;
 					}
-					// each of these has size at least 1, so the -1 in the following is safe
-					// The narrowing cast is safe because verts_j.size() is always at most
-					// the number of points, which is less than Eigen::Index::max().
+					// Each of these has size at least 1, so the -1 in the following is
+					// safe. The narrowing cast is safe because verts_j.size() is always
+					// at most the number of points, which is less than
+					// Eigen::Index::max().
 					auto num_new_rows = static_cast<Eigen::Index>(verts_j.size() - 1);
 					E.conservativeResize(E.rows() + num_new_rows, Eigen::NoChange);
 					b.conservativeResize(b.rows() + num_new_rows);
@@ -412,13 +404,10 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Fil
 					tie(E_new_rows, b_new_rows) = equidistant_subspace(points_exact(all, verts_j));
 				}
 
-				/*
-				Get the smallest bounding ball of the points
-				in the simplex, with the added constraint that
-				the centre x of the ball must satisfy the equation
-				E * x = b
-				i.e., it lies in the affine subspace E
-				*/
+				// Get the smallest bounding ball of the points
+				// in the simplex, with the added constraint that
+				// the centre x of the ball must satisfy the equation
+				// E * x = b i.e., it lies in the affine subspace E.
 				auto&& [centre, sqRadius, success] =
 					cmb::constrained_miniball<SolutionPrecision::EXACT>(
 						points_exact(all, verts),
@@ -427,31 +416,30 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Fil
 					);
 				bool stack_is_empty = true;
 				if (p == delX.dimension()) {
-					// For maximal simplices there is nothing more to do
+					// For maximal simplices there is nothing more to do.
 					simplex->value() = sqrt(to_double(sqRadius));
 				} else {
-					// If the simplex is not maximal, check if the stack is empty
+					// If the simplex is not maximal, check if the stack is empty.
 					for (auto&& [j, verts_j] = tuple{0, verts_by_colour_in_simplex.begin()};
 					     verts_j != verts_by_colour_in_simplex.end();
 					     verts_j++, j++) {
 						if (verts_j->empty()) {
 							continue;
 						}
-						// Get the radius of the j-coloured sphere in the stack
-						auto rj_squared =
-							(points_exact_q(all, verts_j[0]) - centre).squaredNorm();
+						// Get the radius of the j-coloured sphere in the stack.
+						auto rj_squared = (points_exact_q(all, verts_j[0]) - centre).squaredNorm();
 						// Get the distance of the nearest point of colour j to the centre,
-						// among all vertices in cofaces of this simplex
+						// among all vertices in cofaces of this simplex.
 						auto squared_dist_to_nearest_pt_of_colour_j =
 							(points_exact_q(all, verts_by_colour_all_cofaces.at(j)).colwise() -
 						     centre)
 								.colwise()
 								.squaredNorm()
 								.minCoeff();
-						// Check if the nearest point is not in the interior of the sphere
+						// Check if the nearest point is not in the interior of the sphere.
 						stack_is_empty &= (squared_dist_to_nearest_pt_of_colour_j >= rj_squared);
 					}
-					// If the stack is empty, assign the filtration value
+					// If the stack is empty, assign the filtration value.
 					if (stack_is_empty) {
 						simplex->value() = sqrt(to_double(sqRadius));
 					} else {
@@ -465,26 +453,25 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Fil
 						}
 					}
 				}
-				// Check if there were any numerical issues
+				// Check if there were any numerical issues.
 				numerical_instability |= !success;
 			}
 		}
 	}
-
 	return tuple{delX, static_cast<bool>(numerical_instability)};
 }
 
+// Construct the chromatic alpha filtration with parallelisation.
 auto alpha_parallel(
 	const MatrixXd&         points,
 	const vector<colour_t>& colours,
 	const int               max_num_threads
 ) -> tuple<Filtration, bool> {
-	// Start
-	// Get the delaunay triangulation
+	// Get the delaunay triangulation.
 	Filtration delX(delaunay(points, colours));
 
-	// Partition the vertices by colour
-	// We will need this later to check if stacks are empty
+	// Partition the vertices by colour.
+	// We will need this later to check if stacks are empty.
 	array<vector<index_t>, MAX_NUM_COLOURS> verts_by_colour{};
 	for (auto&& [i, colour] = tuple{static_cast<index_t>(0), colours.begin()};
 	     colour != colours.end();
@@ -498,9 +485,9 @@ auto alpha_parallel(
 		auto&& points_exact   = points.template cast<Gmpzf>();
 		auto&& points_exact_q = points.template cast<Quotient<Gmpzf>>();
 
-		// Start at the current dimension
+		// Start at the current dimension.
 		for (auto&& p = delX.dimension(); p >= 1; p--) {
-			// Reserve space for all the numerical issue return values
+			// Reserve space for all the numerical issue return values.
 			vector<bool> issues(delX.get_simplices()[p].size(), false);
 			// Store all the simplex pointers in a vector,
 			// which is convenient to iterate over using the TBB API.
@@ -520,45 +507,38 @@ auto alpha_parallel(
 							auto   simplex = *simplices[idx];
 							auto&& verts   = simplex->get_vertex_labels();
 
-							// Partition the vertices of this simplex by colour
+							// Partition the vertices of this simplex by colour.
 							array<vector<index_t>, MAX_NUM_COLOURS> verts_by_colour_in_simplex;
 							for (auto&& v: verts) {
 								verts_by_colour_in_simplex.at(colours[v]).push_back(v);
 							}
 
-							// Partition the vertices of all cofaces of the simplex by colour
+							// Partition the vertices of all cofaces of the simplex by colour.
+						    // verts_by_colour_all_cofaces[j] will have duplicates but this
+						    // does not affect correctness.
 							array<vector<index_t>, MAX_NUM_COLOURS> verts_by_colour_all_cofaces;
 							for (auto&& cofacet: simplex->get_cofacets()) {
 								for (auto&& v: cofacet->get_vertex_labels()) {
 									verts_by_colour_all_cofaces.at(colours[v]).push_back(v);
 								}
 							}
-							// for (auto&& verts_j: verts_by_colour_all_cofaces) {
-						    // 	if (verts_j.empty()) {
-						    // 		continue;
-						    // 	}
-						    // // Remove duplicates
-						    //     remove_duplicates_inplace(verts_j);
-						    // }
 
-							/*
-						    For each colour j in the simplex, find the affine subspace
-						    of points equidistant to the vertices of colour j in the simplex.
-						    Suppose this subspace is E_j and is defined by a matrix equation:
-						    E_j * x = b_j
-						    We append E_j and b_j to the bottom of a matrix E and a vector b.
-						    Then the solution set E of the matrix equation
-						    E * x = b
-						    is the intersection over all j of the affine subspaces E_j
-						    */
+							// For each colour j in the simplex, find the affine subspace
+						    // of points equidistant to the vertices of colour j in the simplex.
+						    // Suppose this subspace is E_j and is defined by a matrix equation:
+						    // E_j * x = b_j.
+						    // We append E_j and b_j to the bottom of a matrix E and a vector b.
+						    // Then the solution set E of the matrix equation
+						    // E * x = b
+						    // is the intersection over all j of the affine subspaces E_j.
 							MatrixX<Gmpzf> E(0, points.rows());
 							VectorX<Gmpzf> b;
 							for (auto&& verts_j: verts_by_colour_in_simplex) {
 								if (verts_j.empty()) {
 									continue;
 								}
-								// each of these has size at least 1, so the -1 in the following is
-							    // safe The narrowing cast is safe because verts_j.size() is always
+								// Each of these has size at least 1, so the -1 in the following is
+							    // safe. The narrowing cast is safe because verts_j.size() is always
 							    // at most the number of points, which is less than
 							    // Eigen::Index::max().
 								auto num_new_rows = static_cast<Eigen::Index>(verts_j.size() - 1);
@@ -571,13 +551,10 @@ auto alpha_parallel(
 									equidistant_subspace(points_exact(all, verts_j));
 							}
 
-							/*
-						    Get the smallest bounding ball of the points
-						    in the simplex, with the added constraint that
-						    the centre x of the ball must satisfy the equation
-						    E * x = b
-						    i.e., it lies in the affine subspace E
-						    */
+							// Get the smallest bounding ball of the points
+						    // in the simplex, with the added constraint that
+						    // the centre x of the ball must satisfy the equation
+						    // E * x = b i.e., it lies in the affine subspace E.
 							auto&& [centre, sqRadius, success] =
 								constrained_miniball<SolutionPrecision::EXACT>(
 									points_exact(all, verts),
@@ -597,11 +574,11 @@ auto alpha_parallel(
 									if (verts_j->empty()) {
 										continue;
 									}
-									// Get the radius of the j-coloured sphere in the stack
+									// Get the radius of the j-coloured sphere in the stack.
 									auto rj_squared =
 										(points_exact_q(all, verts_j[0]) - centre).squaredNorm();
 									// Get the distance of the nearest point of colour j to the
-								    // centre, among all vertices in cofaces of this simplex
+								    // centre, among all vertices in cofaces of this simplex.
 									auto squared_dist_to_nearest_pt_of_colour_j =
 										(points_exact_q(all, verts_by_colour_all_cofaces.at(j))
 								             .colwise() -
@@ -614,7 +591,7 @@ auto alpha_parallel(
 									stack_is_empty &=
 										(squared_dist_to_nearest_pt_of_colour_j >= rj_squared);
 								}
-								// If the stack is empty, assign the filtration value
+								// If the stack is empty, assign the filtration value.
 								if (stack_is_empty) {
 									simplex->value() = sqrt(to_double(sqRadius));
 								} else {
@@ -628,7 +605,7 @@ auto alpha_parallel(
 									}
 								}
 							}
-							// Check if there were any numerical issues
+							// Check if there were any numerical issues.
 							issues[idx] = !success;
 						}
 					}
@@ -643,12 +620,11 @@ auto alpha_parallel(
 	return tuple{delX, static_cast<bool>(numerical_instability)};
 }
 
-// Create the chromatic Del-Cech complex
+// Create the chromatic Delaunay-Cech complex.
 auto delcech(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Filtration, bool> {
-	// Start
-	// Get the delaunay triangulation
+	// Get the delaunay triangulation.
 	Filtration delX(delaunay(points, colours));
-	// modify the filtration values
+	// Modify the filtration values.
 	bool numerical_instability = false;
 	auto to_double             = ToDouble();
 	if (delX.dimension() >= 1) {
@@ -665,20 +641,17 @@ auto delcech(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<F
 		for (auto&& [idx, edge]: delX.get_simplices()[1]) {
 			auto&& verts = edge->get_vertex_labels();
 			edge->value() =
-				static_cast<double>((points.col(verts[0]) - points.col(verts[1])).norm()) *
-				0.5;  // NOLINT
-			// Tests fail if we don't do this
-			// Possibly because of floating point rounding
+				static_cast<double>((points.col(verts[0]) - points.col(verts[1])).norm()) * 0.5;
+			// Account for floating point rounding errors.
 			for (auto&& cofacet: edge->get_cofacets()) {
 				edge->value() = min(edge->value(), cofacet->value());
 			}
 		}
 	}
-	// return tuple{delX, static_cast<bool>(numerical_instability.load())};
 	return tuple{delX, numerical_instability};
 }
 
-// Create the chromatic Del-Cech complex
+// Create the chromatic Delaunay--Cech complex.
 auto delcech_parallel(
 	const MatrixXd&         points,
 	const vector<colour_t>& colours,
@@ -741,8 +714,7 @@ auto delcech_parallel(
 											(points.col(verts[0]) - points.col(verts[1])).norm()
 										) *
 					                    0.5;
-						// Tests fail if we don't do this
-					    // Possibly because of floating point rounding
+						// Account for floating point rounding errors.
 						for (auto& cofacet: edge->get_cofacets()) {
 							edge->value() = min(edge->value(), cofacet->value());
 						}

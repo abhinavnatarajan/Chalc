@@ -354,11 +354,10 @@ def draw_filtration(
 	if len(points.shape) != 2:  # noqa: PLR2004
 		raise NotImplementedError
 
-	include_colours = (
-		{vertex.colours[0] for vertex in K.simplices[0].values()}
-		if include_colours is None
-		else include_colours
-	)
+	all_colours = {vertex.colours[0] for vertex in K.simplices[0].values()}
+	colours_map = {old: new for new, old in enumerate(sorted(all_colours))}
+
+	include_colours = all_colours if include_colours is None else include_colours
 
 	ax1 = plt.subplots()[1] if ax is None else ax
 
@@ -370,42 +369,50 @@ def draw_filtration(
 		plot_colours = np.array(plt.rcParams["axes.prop_cycle"].by_key()["color"])
 
 	# Plot the vertices
-	vertex_colours = []
+	vertex_plot_colours = []
 	vertices_to_plot = []
-	for idx, vertex in K.simplices[0].items():
+	for idx in range(K.num_vertices):
+		vertex = K.simplices[0][idx]
 		if (set(vertex.colours).issubset(include_colours)) and vertex.filtration_value <= time:
-			vertex_colours += vertex.colours
+			vertex_plot_colours.append(plot_colours[colours_map[vertex.colours[0]]])
 			vertices_to_plot.append(idx)
 
-	vertex_colours = np.array(vertex_colours)
 	ax1.scatter(
 		points[0, vertices_to_plot],
 		points[1, vertices_to_plot],
-		c=list(plot_colours[vertex_colours]),
+		c=list(vertex_plot_colours),
 		s=10,
 	)
 
 	# Plot the edges
-	for simplex in K.simplices[1].values():
-		if set(simplex.colours).issubset(include_colours) and simplex.filtration_value <= time:
-			if len(simplex.colours) == 1:
-				colour = plot_colours[simplex.colours[0]]
-				alpha = 0.5
-			else:
-				colour = "black"
-				alpha = 0.2
+	for edge in K.simplices[1].values():
+		if set(edge.colours).issubset(include_colours) and edge.filtration_value <= time:
+			colour, alpha = (
+				(plot_colours[colours_map[edge.colours[0]]], 0.5)
+				if len(edge.colours) == 1
+				else ("black", 0.2)
+			)
 			ax1.plot(
-				points[0, simplex.vertices],
-				points[1, simplex.vertices],
+				points[0, edge.vertices],
+				points[1, edge.vertices],
 				c=colour,
 				alpha=alpha,
 				linewidth=1,
 			)
 
-	for simplex in K.simplices[2].values():
-		if set(simplex.colours).issubset(include_colours) and simplex.filtration_value <= time:
-			colour = plot_colours[simplex.colours[0]] if len(simplex.colours) == 1 else "grey"
-			ax1.fill(points[0, simplex.vertices], points[1, simplex.vertices], c=colour, alpha=0.2)
+	for triangle in K.simplices[2].values():
+		if set(triangle.colours).issubset(include_colours) and triangle.filtration_value <= time:
+			colour = (
+				plot_colours[colours_map[triangle.colours[0]]]
+				if len(triangle.colours) == 1
+				else "grey"
+			)
+			ax1.fill(
+				points[0, triangle.vertices],
+				points[1, triangle.vertices],
+				c=colour,
+				alpha=0.2,
+			)
 
 	ax1.set_aspect("equal")
 
@@ -441,6 +448,9 @@ def animate_filtration(
 	ax: Axes
 	fig, ax = plt.subplots()
 
+	all_colours = {vertex.colours[0] for vertex in K.simplices[0].values()}
+	colours_map = {old: new for new, old in enumerate(sorted(all_colours))}
+
 	if isinstance(plot_colours, str):
 		num_colours = K.dimension - 1
 		colour_indices = np.arange(num_colours)
@@ -448,25 +458,26 @@ def animate_filtration(
 	elif plot_colours is None:
 		plot_colours = np.array(plt.rcParams["axes.prop_cycle"].by_key()["color"])
 
-	vertex_colours = []
-	for simplex in K.simplices[0].values():
-		vertex_colours += simplex.colours
+	vertex_plot_colours = [
+		plot_colours[colours_map[K.simplices[0][i].colours[0]]] for i in range(K.num_vertices)
+	]
 
-	ax.scatter(points[0, :], points[1, :], c=list(plot_colours[vertex_colours]), s=10)
+	ax.scatter(points[0, :], points[1, :], c=vertex_plot_colours, s=10)
 
 	lines = {}
 	patches = {}
-	for idx, simplex in K.simplices[1].items():
-		if len(simplex.colours) == 1:
-			colour = plot_colours[simplex.colours[0]]
-			alpha = 0.5
-		else:
-			colour = "black"
-			alpha = 0.2
+	for idx, edge in K.simplices[1].items():
+		colour, alpha = (
+			(plot_colours[colours_map[edge.colours[0]]], 0.5)
+			if len(edge.colours) == 1
+			else ("black", 0.2)
+		)
 		lines[idx] = ax.plot([], [], c=colour, alpha=alpha, linewidth=1)[0]
 
-	for idx, simplex in K.simplices[2].items():
-		colour = plot_colours[simplex.colours[0]] if len(simplex.colours) == 1 else "grey"
+	for idx, triangle in K.simplices[2].items():
+		colour = (
+			plot_colours[colours_map[triangle.colours[0]]] if len(triangle.colours) == 1 else "grey"
+		)
 		patches[idx] = ax.fill([], [], c=colour, alpha=0.2)[0]
 
 	ax.set_aspect("equal")
@@ -474,15 +485,15 @@ def animate_filtration(
 
 	def update(time: float) -> list[Artist]:
 		modified_artists = []
-		for idx, simplex in K.simplices[1].items():
-			if simplex.filtration_value <= time:
-				lines[idx].set_xdata(points[0, simplex.vertices])
-				lines[idx].set_ydata(points[1, simplex.vertices])
+		for idx, edge in K.simplices[1].items():
+			if edge.filtration_value <= time:
+				lines[idx].set_xdata(points[0, edge.vertices])
+				lines[idx].set_ydata(points[1, edge.vertices])
 				modified_artists.append(lines[idx])
 
-		for idx, simplex in K.simplices[2].items():
-			if simplex.filtration_value <= time:
-				patches[idx].set_xy(points[:, simplex.vertices].T)
+		for idx, triangle in K.simplices[2].items():
+			if triangle.filtration_value <= time:
+				patches[idx].set_xy(points[:, triangle.vertices].T)
 				modified_artists.append(patches[idx])
 
 		ax.set_xlabel(f"Time = {time:.4f}")
@@ -494,7 +505,7 @@ def animate_filtration(
 		func=update,
 		frames=filtration_times,
 		interval=interval,
-	)  # pyright : ignore
+	)
 
 
 def _get_truncation(births: list[float], deaths: list[float]) -> float:
