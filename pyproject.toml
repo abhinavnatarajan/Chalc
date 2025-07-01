@@ -1,6 +1,6 @@
 [project]
 name = "chalc"
-version = "12.0.0"
+version = "12.0.1"
 authors = [{ name = "Abhinav Natarajan", email = "natarajan@maths.ox.ac.uk" }]
 description = "Persistent homology of chromatic Delaunay filtrations"
 readme = { file = "README.md", content-type = "text/markdown" }
