@@ -55,6 +55,31 @@
 #include <string>
 
 namespace {
+using chalc::colour_t;
+using chalc::Filtration;
+using chalc::index_t;
+using chalc::MAX_NUM_COLOURS;
+
+using CGAL::Gmpzf;
+using CGAL::Quotient;
+
+using cmb::SolutionPrecision;
+using cmb::miniball;
+using cmb::constrained_miniball;
+using cmb::utility::equidistant_subspace;
+using cmb::utility::ToDouble;
+
+using Eigen::all;
+using Eigen::lastN;
+using Eigen::MatrixX;
+using Eigen::MatrixXd;
+using Eigen::VectorX;
+
+using oneapi::tbb::blocked_range;
+using oneapi::tbb::enumerable_thread_specific;
+using oneapi::tbb::parallel_for;
+using oneapi::tbb::task_arena;
+
 using std::array;
 using std::bsearch;
 using std::domain_error;
@@ -73,13 +98,6 @@ using std::to_string;
 using std::tuple;
 using std::vector;
 
-using chalc::colour_t;
-using chalc::Filtration;
-using chalc::index_t;
-using chalc::MAX_NUM_COLOURS;
-using Eigen::all;
-using Eigen::lastN;
-
 using Kernel_d                     = CGAL::Epick_d<CGAL::Dynamic_dimension_tag>;
 using Triangulation_data_structure = CGAL::Triangulation_data_structure<
 	Kernel_d::Dimension,
@@ -87,8 +105,6 @@ using Triangulation_data_structure = CGAL::Triangulation_data_structure<
 	CGAL::Triangulation_full_cell<Kernel_d>>;
 using DelaunayTriangulation = CGAL::Delaunay_triangulation<Kernel_d, Triangulation_data_structure>;
 using Point_d               = Kernel_d::Point_d;
-using Eigen::MatrixXd, Eigen::MatrixX, Eigen::VectorX;
-using oneapi::tbb::task_arena, oneapi::tbb::parallel_for, oneapi::tbb::blocked_range;
 
 template <class Derived>
 concept MatrixXpr = requires { typename Eigen::MatrixBase<Derived>; };
@@ -322,8 +338,6 @@ auto delrips_parallel(
 
 // Compute the chromatic alpha complex
 auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Filtration, bool> {
-	using CGAL::Gmpzf, CGAL::Quotient;
-	using cmb::equidistant_subspace, cmb::SolutionPrecision;
 	// Start
 	// Get the delaunay triangulation
 	Filtration delX(delaunay(points, colours));
@@ -338,6 +352,8 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Fil
 	}
 	bool numerical_instability = false;
 	if (delX.dimension() >= 1) {
+		auto to_double = ToDouble();
+
 		// Modify the filtration values
 		auto&& points_exact   = points.template cast<Gmpzf>();
 		auto&& points_exact_q = points.template cast<Quotient<Gmpzf>>();
@@ -412,7 +428,7 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Fil
 				bool stack_is_empty = true;
 				if (p == delX.dimension()) {
 					// For maximal simplices there is nothing more to do
-					simplex->value() = sqrt(CGAL::to_double(sqRadius));
+					simplex->value() = sqrt(to_double(sqRadius));
 				} else {
 					// If the simplex is not maximal, check if the stack is empty
 					for (auto&& [j, verts_j] = tuple{0, verts_by_colour_in_simplex.begin()};
@@ -422,11 +438,11 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Fil
 							continue;
 						}
 						// Get the radius of the j-coloured sphere in the stack
-						Quotient<Gmpzf>&& rj_squared =
+						auto rj_squared =
 							(points_exact_q(all, verts_j[0]) - centre).squaredNorm();
 						// Get the distance of the nearest point of colour j to the centre,
 						// among all vertices in cofaces of this simplex
-						Quotient<Gmpzf>&& squared_dist_to_nearest_pt_of_colour_j =
+						auto squared_dist_to_nearest_pt_of_colour_j =
 							(points_exact_q(all, verts_by_colour_all_cofaces.at(j)).colwise() -
 						     centre)
 								.colwise()
@@ -437,18 +453,9 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Fil
 					}
 					// If the stack is empty, assign the filtration value
 					if (stack_is_empty) {
-						simplex->value() = sqrt(CGAL::to_double(sqRadius));
-						// The following block is only needed if
-						// CGAL::to_double is not monotonic.
-						// On all IEEE-754 compliant architectures,
-						// this is not needed.
-						//
-						// for (auto& cofacet: simplex->get_cofacets()) {
-						// simplex->value = min(simplex->value,
-						// shared_ptr<Filtration::Simplex>(cofacet)->value);
-						// }
+						simplex->value() = sqrt(to_double(sqRadius));
 					} else {
-						auto& cofacets = simplex->get_cofacets();
+						auto&& cofacets = simplex->get_cofacets();
 						if (cofacets.size() == 0) {
 							continue;
 						}
@@ -472,8 +479,6 @@ auto alpha_parallel(
 	const vector<colour_t>& colours,
 	const int               max_num_threads
 ) -> tuple<Filtration, bool> {
-	using CGAL::Gmpzf, CGAL::Quotient;
-	using cmb::equidistant_subspace, cmb::SolutionPrecision;
 	// Start
 	// Get the delaunay triangulation
 	Filtration delX(delaunay(points, colours));
@@ -504,10 +509,13 @@ auto alpha_parallel(
 			for (auto&& [_, simplex]: delX.get_simplices()[p]) {
 				simplices.push_back(&simplex);
 			}
+			// Each worker thread will get its own copy of the quotient-to-double approximator.
+			enumerable_thread_specific<ToDouble> thread_local_to_double;
 			arena.execute([&] {
 				parallel_for(
 					blocked_range<size_t>(0, simplices.size()),
 					[&](const blocked_range<size_t>& r) {
+						auto&& to_double = thread_local_to_double.local();
 						for (size_t idx = r.begin(); idx < r.end(); idx++) {
 							auto   simplex = *simplices[idx];
 							auto&& verts   = simplex->get_vertex_labels();
@@ -571,7 +579,7 @@ auto alpha_parallel(
 						    i.e., it lies in the affine subspace E
 						    */
 							auto&& [centre, sqRadius, success] =
-								cmb::constrained_miniball<SolutionPrecision::EXACT>(
+								constrained_miniball<SolutionPrecision::EXACT>(
 									points_exact(all, verts),
 									E,
 									b
@@ -579,7 +587,7 @@ auto alpha_parallel(
 							bool stack_is_empty = true;
 							if (p == delX.dimension()) {
 								// For maximal simplices there is nothing more to do
-								simplex->value() = sqrt(CGAL::to_double(sqRadius));
+								simplex->value() = sqrt(to_double(sqRadius));
 							} else {
 								// If the simplex is not maximal, check if the stack is empty
 								for (auto&& [j, verts_j] =
@@ -590,11 +598,11 @@ auto alpha_parallel(
 										continue;
 									}
 									// Get the radius of the j-coloured sphere in the stack
-									Quotient<Gmpzf>&& rj_squared =
+									auto rj_squared =
 										(points_exact_q(all, verts_j[0]) - centre).squaredNorm();
 									// Get the distance of the nearest point of colour j to the
 								    // centre, among all vertices in cofaces of this simplex
-									Quotient<Gmpzf>&& squared_dist_to_nearest_pt_of_colour_j =
+									auto squared_dist_to_nearest_pt_of_colour_j =
 										(points_exact_q(all, verts_by_colour_all_cofaces.at(j))
 								             .colwise() -
 								         centre)
@@ -602,24 +610,15 @@ auto alpha_parallel(
 											.squaredNorm()
 											.minCoeff();
 									// Check if the nearest point is not in the interior of the
-								    // sphere
+								    // sphere.
 									stack_is_empty &=
 										(squared_dist_to_nearest_pt_of_colour_j >= rj_squared);
 								}
 								// If the stack is empty, assign the filtration value
 								if (stack_is_empty) {
-									simplex->value() = sqrt(CGAL::to_double(sqRadius));
-									// The following block is only needed if
-								    // CGAL::to_double is not monotonic.
-								    // On all IEEE-754 compliant architectures,
-								    // this is not needed.
-								    //
-								    // for (auto& cofacet: simplex->get_cofacets()) {
-								    // simplex->value = min(simplex->value,
-								    // shared_ptr<Filtration::Simplex>(cofacet)->value);
-								    // }
+									simplex->value() = sqrt(to_double(sqRadius));
 								} else {
-									auto& cofacets = simplex->get_cofacets();
+									auto&& cofacets = simplex->get_cofacets();
 									if (cofacets.size() == 0) {
 										continue;
 									}
@@ -646,30 +645,20 @@ auto alpha_parallel(
 
 // Create the chromatic Del-Cech complex
 auto delcech(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Filtration, bool> {
-	using CGAL::Gmpzf, CGAL::Quotient;
-	using cmb::SolutionPrecision;
 	// Start
 	// Get the delaunay triangulation
 	Filtration delX(delaunay(points, colours));
 	// modify the filtration values
 	bool numerical_instability = false;
+	auto to_double             = ToDouble();
 	if (delX.dimension() >= 1) {
 		for (auto&& p = delX.dimension(); p > 1; p--) {
 			for (auto&& [_, simplex]: delX.get_simplices()[p]) {
 				auto&& verts = simplex->get_vertex_labels();
 				auto&& [centre, sqRadius, success] =
 					cmb::miniball<SolutionPrecision::DOUBLE>(points(all, verts));
-				simplex->value()       = sqrt(CGAL::to_double(sqRadius));
+				simplex->value()       = sqrt(to_double(sqRadius));
 				numerical_instability |= !success;
-				// The following block is only needed if
-				// CGAL::to_double is not monotonic.
-				// On all IEEE-754 compliant architectures,
-				// this is not needed.
-				//
-				// for (auto& cofacet: simplex->get_cofacets()) {
-				// simplex->value = min(simplex->value,
-				// shared_ptr<Filtration::Simplex>(cofacet)->value);
-				// }
 			}
 		}
 		// fast version for dimension 1
@@ -681,8 +670,7 @@ auto delcech(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<F
 			// Tests fail if we don't do this
 			// Possibly because of floating point rounding
 			for (auto&& cofacet: edge->get_cofacets()) {
-				edge->value() =
-					min(edge->value(), cofacet->value());
+				edge->value() = min(edge->value(), cofacet->value());
 			}
 		}
 	}
@@ -696,8 +684,6 @@ auto delcech_parallel(
 	const vector<colour_t>& colours,
 	const int               max_num_threads
 ) -> tuple<Filtration, bool> {
-	using CGAL::Gmpzf, CGAL::Quotient;
-	using cmb::SolutionPrecision;
 	// Start
 	// Get the delaunay triangulation
 	Filtration delX(delaunay(points, colours));
@@ -715,26 +701,21 @@ auto delcech_parallel(
 			for (auto&& [_, simplex]: delX.get_simplices()[p]) {
 				simplices.push_back(&simplex);
 			}
+			// Each worker thread will get its own copy of the quotient-to-double approximator.
+			enumerable_thread_specific<ToDouble> thread_local_to_double;
 			arena.execute([&] {
 				parallel_for(
 					blocked_range<size_t>(0, simplices.size()),
 					[&](const blocked_range<size_t>& r) {
+						// Get the thread-local copy of the expensive object
+						auto&& to_double = thread_local_to_double.local();
 						for (size_t idx = r.begin(); idx < r.end(); idx++) {
 							auto   simplex = *simplices[idx];
 							auto&& verts   = simplex->get_vertex_labels();
 							auto&& [centre, sqRadius, success] =
-								cmb::miniball<SolutionPrecision::DOUBLE>(points(all, verts));
-							simplex->value() = sqrt(CGAL::to_double(sqRadius));
+								miniball<SolutionPrecision::DOUBLE>(points(all, verts));
+							simplex->value() = sqrt(to_double(sqRadius));
 							issues[idx]      = !success;
-							// The following block is only needed if
-						    // CGAL::to_double is not monotonic.
-						    // On all IEEE-754 compliant architectures,
-						    // this is not needed.
-						    //
-						    // for (auto& cofacet: simplex->get_cofacets()) {
-						    // simplex->value = min(simplex->value,
-						    // shared_ptr<Filtration::Simplex>(cofacet)->value);
-						    // }
 						}
 					}
 				);
@@ -759,13 +740,11 @@ auto delcech_parallel(
 						edge->value() = static_cast<double>(
 											(points.col(verts[0]) - points.col(verts[1])).norm()
 										) *
-					                    0.5;  // NOLINT
+					                    0.5;
 						// Tests fail if we don't do this
 					    // Possibly because of floating point rounding
 						for (auto& cofacet: edge->get_cofacets()) {
-							edge->value() =
-								min(edge->value(),
-						            cofacet->value());
+							edge->value() = min(edge->value(), cofacet->value());
 						}
 					}
 				}

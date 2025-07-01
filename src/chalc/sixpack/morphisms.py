@@ -413,18 +413,18 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 			codomain_matrix.append((entrance_time, dimension, facet_idxs))
 
 			# Construct the domain matrix
-			for j in range(self.num_subfiltrations):
-				if self.simplex_in_filtration(column, j):
+			for i in range(self.num_subfiltrations):
+				if self.simplex_in_filtration(column, i):
 					# If this simplex is in the jth subfiltration,
 					# we add it to the domain matrix
 					# while remembering that for the jth copy of this simplex i,
 					# the index in the domain matrix is 'counter'.
-					shifted_facet_idxs = [offsets[facet_idx, j] for facet_idx in facet_idxs]
+					shifted_facet_idxs = [offsets[facet_idx, i] for facet_idx in facet_idxs]
 					domain_matrix.append(
 						(entrance_time, dimension, shifted_facet_idxs),
 					)
 					mapping.append([codomain_idx])
-					offsets[codomain_idx, j] = domain_idx_counter
+					offsets[codomain_idx, i] = domain_idx_counter
 					domain_idx_counter += 1
 
 		d, meta = compute_ensemble_cylinder(domain_matrix, codomain_matrix, mapping)

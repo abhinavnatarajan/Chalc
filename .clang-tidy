@@ -6,6 +6,7 @@ Checks:
     performance*,
     portability*,
     cppcoreguidelines*,
+    -cppcoreguidelines-avoid-magic-numbers,
     clang-analyzer*,
     concurrency*,
     misc*,
