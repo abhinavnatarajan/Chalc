@@ -9,21 +9,21 @@ __all__ = ['MaxColoursChromatic', 'alpha', 'delaunay', 'delcech', 'delrips']
 M = typing.TypeVar("M", bound=int)
 N = typing.TypeVar("N", bound=int)
 @typing.overload
-def alpha(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, typing.Literal[1]], numpy.dtype[numpy.uint16]], max_num_threads: int = 1) -> tuple[chalc.filtration.Filtration, bool]:
+def alpha(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, typing.Literal[1]], numpy.dtype[numpy.uint16]], max_num_threads: int = 0) -> tuple[chalc.filtration.Filtration, bool]:
     ...
 @typing.overload
-def alpha(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 1) -> tuple[chalc.filtration.Filtration, bool]:
+def alpha(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 0) -> tuple[chalc.filtration.Filtration, bool]:
     """
     Compute the chromatic alpha filtration of a coloured point cloud.
     
     Args:
     	points : Numpy matrix whose columns are points in the point cloud.
     	colours : List or numpy array of integers describing the colours of the points.
-    	max_num_threads: Maximum number of parallel threads to use.
+    	max_num_threads: Hint for maximum number of parallel threads to use.
     		If non-positive, the number of threads to use is automatically determined
     		by the threading library (Intel OneAPI TBB). Note that this may be less
     		than the number of available CPU cores depending on the number of points
-    		and the system load. The default is 1, which means no parallelism.
+    		and the system load.
     
     Returns:
     	The chromatic alpha filtration and a boolean flag to
@@ -48,16 +48,17 @@ def alpha(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colour
     	:func:`delrips`, :func:`delcech`
     """
 @typing.overload
-def delaunay(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, typing.Literal[1]], numpy.dtype[numpy.uint16]]) -> chalc.filtration.Filtration:
+def delaunay(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, typing.Literal[1]], numpy.dtype[numpy.uint16]], parallel: bool = True) -> chalc.filtration.Filtration:
     ...
 @typing.overload
-def delaunay(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int]) -> chalc.filtration.Filtration:
+def delaunay(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], parallel: bool = True) -> chalc.filtration.Filtration:
     """
     Compute the chromatic Delaunay triangulation of a coloured point cloud in Euclidean space.
     
     Args:
     	points : Numpy matrix whose columns are points in the point cloud.
     	colours : List or numpy array of integers describing the colours of the points.
+    	parallel: If true, use parallel computation during the spatial sorting phase of the triangulation.
     
     Raises:
     	ValueError:
@@ -72,21 +73,21 @@ def delaunay(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], col
     	The Delaunay triangulation.
     """
 @typing.overload
-def delcech(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, typing.Literal[1]], numpy.dtype[numpy.uint16]], max_num_threads: int = 1) -> tuple[chalc.filtration.Filtration, bool]:
+def delcech(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, typing.Literal[1]], numpy.dtype[numpy.uint16]], max_num_threads: int = 0) -> tuple[chalc.filtration.Filtration, bool]:
     ...
 @typing.overload
-def delcech(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 1) -> tuple[chalc.filtration.Filtration, bool]:
+def delcech(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 0) -> tuple[chalc.filtration.Filtration, bool]:
     """
     Compute the chromatic Delaunay--Čech filtration of a coloured point cloud.
     
     Args:
     	points : Numpy matrix whose columns are points in the point cloud.
     	colours : List or numpy array of integers describing the colours of the points.
-    	max_num_threads: Maximum number of parallel threads to use.
+    	max_num_threads: Hint for maximum number of parallel threads to use.
     		If non-positive, the number of threads to use is automatically determined
     		by the threading library (Intel OneAPI TBB). Note that this may be less
     		than the number of available CPU cores depending on the number of points
-    		and the system load. The default is 1, which means no parallelism.
+    		and the system load.
     
     Returns:
     	The chromatic Delaunay--Čech filtration and a boolean flag to indicate
@@ -111,21 +112,21 @@ def delcech(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colo
     	:func:`alpha`, :func:`delrips`
     """
 @typing.overload
-def delrips(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, typing.Literal[1]], numpy.dtype[numpy.uint16]], max_num_threads: int = 1) -> tuple[chalc.filtration.Filtration, bool]:
+def delrips(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, typing.Literal[1]], numpy.dtype[numpy.uint16]], max_num_threads: int = 0) -> tuple[chalc.filtration.Filtration, bool]:
     ...
 @typing.overload
-def delrips(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 1) -> tuple[chalc.filtration.Filtration, bool]:
+def delrips(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 0) -> tuple[chalc.filtration.Filtration, bool]:
     """
     Compute the chromatic Delaunay--Rips filtration of a coloured point cloud.
     
     Args:
     	points : Numpy matrix whose columns are points in the point cloud.
     	colours : List or numpy array of integers describing the colours of the points.
-    	max_num_threads: Maximum number of parallel threads to use.
+    	max_num_threads: Hint for maximum number of parallel threads to use.
     		If non-positive, the number of threads to use is automatically determined
     		by the threading library (Intel OneAPI TBB). Note that this may be less
     		than the number of available CPU cores depending on the number of points
-    		and the system load. The default is 1, which means no parallelism.
+    		and the system load.
     
     Returns:
     	The chromatic Delaunay--Rips filtration and a boolean flag to indicate

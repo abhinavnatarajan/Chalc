@@ -90,6 +90,7 @@ intersphinx_mapping = {
 
 # nbsphinx options
 nbsphinx_execute = "always"
+nbsphinx_output_prompt = "[%s]:"
 os.environ["PYDEVD_DISABLE_FILE_VALIDATION"] = "1"
 
 # toolbox.github options
