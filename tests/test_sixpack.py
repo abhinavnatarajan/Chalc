@@ -112,6 +112,7 @@ def test_kchromatic_vs_subchromatic_quotient() -> None:
 			]
 			assert math.isclose(max(dists), 0, abs_tol=1e-6)
 
+
 def test_subchromatic_inclusion_vs_quotient() -> None:
 	"""Test that the subchromatic inclusion and quotient agree for a single subfiltration."""
 	rng = np.random.default_rng(random_seed)

@@ -86,7 +86,7 @@ Returns:
 			},
 			py::arg("points"),
 			py::arg("colours"),
-			py::arg("max_num_threads") = 1
+			py::arg("max_num_threads") = 0
 		)
 		.def(
 			"delrips",
@@ -108,7 +108,7 @@ Args:
 		If non-positive, the number of threads to use is automatically determined
 		by the threading library (Intel OneAPI TBB). Note that this may be less
 		than the number of available CPU cores depending on the number of points
-		and the system load. The default is 1, which means no parallelism.
+		and the system load.
 
 Returns:
 	The chromatic Delaunay--Rips filtration and a boolean flag to indicate
@@ -140,7 +140,7 @@ See Also:
 )docstring",
 			py::arg("points"),
 			py::arg("colours"),
-			py::arg("max_num_threads") = 1
+			py::arg("max_num_threads") = 0
 		)
 		.def(
 			"alpha",
@@ -156,7 +156,7 @@ See Also:
 			},
 			py::arg("points"),
 			py::arg("colours"),
-			py::arg("max_num_threads") = 1
+			py::arg("max_num_threads") = 0
 		)
 		.def(
 			"alpha",
@@ -178,7 +178,7 @@ Args:
 		If non-positive, the number of threads to use is automatically determined
 		by the threading library (Intel OneAPI TBB). Note that this may be less
 		than the number of available CPU cores depending on the number of points
-		and the system load. The default is 1, which means no parallelism.
+		and the system load.
 
 Returns:
 	The chromatic alpha filtration and a boolean flag to
@@ -205,7 +205,7 @@ See Also:
 )docstring",
 			py::arg("points"),
 			py::arg("colours"),
-			py::arg("max_num_threads") = 1
+			py::arg("max_num_threads") = 0
 		)
 		.def(
 			"delcech",
@@ -221,7 +221,7 @@ See Also:
 			},
 			py::arg("points"),
 			py::arg("colours"),
-			py::arg("max_num_threads") = 1
+			py::arg("max_num_threads") = 0
 		)
 		.def(
 			"delcech",
@@ -242,7 +242,7 @@ Args:
 		If non-positive, the number of threads to use is automatically determined
 		by the threading library (Intel OneAPI TBB). Note that this may be less
 		than the number of available CPU cores depending on the number of points
-		and the system load. The default is 1, which means no parallelism.
+		and the system load.
 
 Returns:
 	The chromatic Delaunay--Čech filtration and a boolean flag to indicate
@@ -269,6 +269,6 @@ See Also:
 )docstring",
 			py::arg("points"),
 			py::arg("colours"),
-			py::arg("max_num_threads") = 1
+			py::arg("max_num_threads") = 0
 		);
 }

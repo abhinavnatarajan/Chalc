@@ -1,10 +1,10 @@
 #include <chalc/filtration/filtration.h>
 #include <iterator>
-#include <type_traits>
 #include <memory>
 #include <pybind11/attr.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <type_traits>
 
 namespace {
 using chalc::Filtration;
@@ -15,7 +15,7 @@ using std::shared_ptr;
 class SimplexIterator {
   private:
 	using Vec = std::remove_reference_t<
-		std::invoke_result_t<decltype (&Filtration::get_simplices), Filtration>>;
+		std::invoke_result_t<decltype(&Filtration::get_simplices), Filtration>>;
 	using Map        = Vec::value_type;
 	using VecConstIt = Vec::const_iterator;
 	using MapConstIt = Map::const_iterator;
@@ -129,7 +129,7 @@ Args:
 
 )docstring",
 			py::arg("k")
-)
+		)
 		.def(
 			"add_simplex",
 			&Filtration::add_simplex,
@@ -370,10 +370,10 @@ Tip:
 		.def_property_readonly(
 			"facets",
 			[](const shared_ptr<Filtration::Simplex>& self) {
-				auto facets = self->get_facets();
+				auto                                         facets = self->get_facets();
 				std::vector<shared_ptr<Filtration::Simplex>> result;
 				result.reserve(facets.size());
-				for (const auto& f : facets) {
+				for (const auto& f: facets) {
 					result.push_back(f->get_handle());
 				}
 				return result;
