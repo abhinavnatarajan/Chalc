@@ -396,11 +396,7 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Fil
 				// the centre x of the ball must satisfy the equation
 				// E * x = b i.e., it lies in the affine subspace E.
 				auto&& [centre, sqRadius, success] =
-					cmb::constrained_miniball<SolutionPrecision::EXACT>(
-						points_exact(all, verts),
-						E,
-						b
-					);
+					constrained_miniball<SolutionPrecision::EXACT>(points_exact(all, verts), E, b);
 				bool stack_is_empty = true;
 				if (p == delX.dimension()) {
 					// For maximal simplices there is nothing more to do.
@@ -619,12 +615,12 @@ auto delcech(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<F
 			for (auto&& [_, simplex]: delX.get_simplices()[p]) {
 				auto&& verts = simplex->get_vertex_labels();
 				auto&& [centre, sqRadius, success] =
-					cmb::miniball<SolutionPrecision::DOUBLE>(points(all, verts));
+					miniball<SolutionPrecision::EXACT>(points(all, verts));
 				simplex->value()       = sqrt(to_double(sqRadius));
 				numerical_instability |= !success;
 			}
 		}
-		// fast version for dimension 1
+		// Fast version for dimension 1.
 		for (auto&& [idx, edge]: delX.get_simplices()[1]) {
 			auto&& verts = edge->get_vertex_labels();
 			edge->value() =
@@ -645,9 +641,9 @@ auto delcech_parallel(
 	const int               max_num_threads
 ) -> tuple<Filtration, bool> {
 	// Start
-	// Get the delaunay triangulation
+	// Get the delaunay triangulation.
 	Filtration delX(delaunay<CGAL::Parallel_tag>(points, colours));
-	// modify the filtration values
+	// Modify the filtration values.
 	bool numerical_instability = false;
 	if (delX.dimension() >= 1) {
 		task_arena arena(max_num_threads == 0 ? task_arena::automatic : max_num_threads);
@@ -673,7 +669,7 @@ auto delcech_parallel(
 							auto   simplex = *simplices[idx];
 							auto&& verts   = simplex->get_vertex_labels();
 							auto&& [centre, sqRadius, success] =
-								miniball<SolutionPrecision::DOUBLE>(points(all, verts));
+								miniball<SolutionPrecision::EXACT>(points(all, verts));
 							simplex->value() = sqrt(to_double(sqRadius));
 							issues[idx]      = !success;
 						}
