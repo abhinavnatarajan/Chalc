@@ -30,13 +30,14 @@ def test_kchromatic_inclusion_vs_quotient() -> None:
 			filtration,
 			1,
 		).sixpack()
+		assert dgms_inclusion.max_nonempty_dimension() == dgms_quotient.max_nonempty_dimension()
 		dists = [
 			bottleneck_distance(
 				dgms_inclusion.get_matrix(name, d),
 				dgms_quotient.get_matrix(name, d),
 			)
 			for name in dgms_inclusion
-			for d in range(dim)
+			for d in range(dgms_inclusion.max_nonempty_dimension() + 1)
 		]
 		assert math.isclose(max(dists), 0, abs_tol=1e-6)
 
@@ -66,13 +67,17 @@ def test_kchromatic_vs_subchromatic_inclusion() -> None:
 				filtration,
 				colour_combos,
 			).sixpack()
+			assert (
+				dgms_kchromatic.max_nonempty_dimension()
+				== dgms_subchromatic.max_nonempty_dimension()
+			)
 			dists = [
 				bottleneck_distance(
 					dgms_kchromatic.get_matrix(name, d),
 					dgms_subchromatic.get_matrix(name, d),
 				)
 				for name in dgms_kchromatic
-				for d in range(dim)
+				for d in range(dgms_kchromatic.max_nonempty_dimension() + 1)
 			]
 			assert math.isclose(max(dists), 0, abs_tol=1e-6)
 
@@ -102,13 +107,17 @@ def test_kchromatic_vs_subchromatic_quotient() -> None:
 				filtration,
 				colour_combos,
 			).sixpack()
+			assert (
+				dgms_kchromatic.max_nonempty_dimension()
+				== dgms_subchromatic.max_nonempty_dimension()
+			)
 			dists = [
 				bottleneck_distance(
 					dgms_kchromatic.get_matrix(name, d),
 					dgms_subchromatic.get_matrix(name, d),
 				)
 				for name in dgms_kchromatic
-				for d in range(dim)
+				for d in range(dgms_kchromatic.max_nonempty_dimension() + 1)
 			]
 			assert math.isclose(max(dists), 0, abs_tol=1e-6)
 
@@ -141,12 +150,14 @@ def test_subchromatic_inclusion_vs_quotient() -> None:
 			filtration,
 			[tau],
 		).sixpack()
+		assert dgms_inclusion.max_nonempty_dimension() == dgms_quotient.max_nonempty_dimension()
 		dists = [
 			bottleneck_distance(
 				dgms_inclusion.get_matrix(name, d),
 				dgms_quotient.get_matrix(name, d),
 			)
 			for name in dgms_inclusion
-			for d in range(dim)
+			for d in range(dgms_inclusion.max_nonempty_dimension() + 1)
 		]
 		assert math.isclose(max(dists), 0, abs_tol=1e-6)
+

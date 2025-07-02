@@ -48,6 +48,29 @@ class SixPack(Mapping):
 		temp.setflags(write=False)
 		return temp
 
+	def max_nonempty_dimension(self) -> int:
+		"""Get the maximum dimension of features across all diagrams.
+
+		Returns -1 if there are no features in the 6-pack.
+		"""
+		max_dim = -1
+		for name, dgm in self.items():
+			if not dgm:
+				continue
+			if name != "ker":
+				max_dim = max(
+					max_dim,
+					*(self._dimensions[simplex] for simplex in dgm.unpaired),
+					*(self._dimensions[s1] for s1, _ in dgm.paired),
+				)
+			else:
+				max_dim = max(
+					max_dim,
+					*(self._dimensions[simplex] - 1 for simplex in dgm.unpaired),
+					*(self._dimensions[s1] - 1 for s1, _ in dgm.paired),
+				)
+		return max_dim
+
 	def __init__(
 		self,
 		kernel: SimplexPairings | None = None,
