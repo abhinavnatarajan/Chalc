@@ -468,6 +468,8 @@ auto alpha_parallel(
 		auto&& points_exact   = points.template cast<Gmpzf>();
 		auto&& points_exact_q = points.template cast<Quotient<Gmpzf>>();
 
+		// Each worker thread will get its own copy of the quotient-to-double approximator.
+		enumerable_thread_specific<ToDouble> thread_local_to_double;
 		// Start at the current dimension.
 		for (auto&& p = delX.dimension(); p >= 1; p--) {
 			// Reserve space for all the numerical issue return values.
@@ -479,8 +481,6 @@ auto alpha_parallel(
 			for (auto&& [_, simplex]: delX.get_simplices()[p]) {
 				simplices.push_back(&simplex);
 			}
-			// Each worker thread will get its own copy of the quotient-to-double approximator.
-			enumerable_thread_specific<ToDouble> thread_local_to_double;
 			arena.execute([&] {
 				parallel_for(
 					blocked_range<size_t>(0, simplices.size()),
@@ -608,8 +608,11 @@ auto delcech(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<F
 	// Get the delaunay triangulation.
 	Filtration delX(delaunay(points, colours));
 	// Modify the filtration values.
-	bool numerical_instability = false;
-	auto to_double             = ToDouble();
+	bool       numerical_instability = false;
+	auto       points_exact_q        = points.template cast<Quotient<Gmpzf>>();
+	const auto one_by_four =
+		Quotient<Gmpzf>(Gmpzf(0.25), Gmpzf(1.0));  // Used for the edge lengths.
+	auto to_double = ToDouble();
 	if (delX.dimension() >= 1) {
 		for (auto&& p = delX.dimension(); p > 1; p--) {
 			for (auto&& [_, simplex]: delX.get_simplices()[p]) {
@@ -623,12 +626,12 @@ auto delcech(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<F
 		// Fast version for dimension 1.
 		for (auto&& [idx, edge]: delX.get_simplices()[1]) {
 			auto&& verts = edge->get_vertex_labels();
-			edge->value() =
-				static_cast<double>((points.col(verts[0]) - points.col(verts[1])).norm()) * 0.5;
-			// Account for floating point rounding errors.
-			for (auto&& cofacet: edge->get_cofacets()) {
-				edge->value() = min(edge->value(), cofacet->value());
-			}
+			// We use exact types here for consistency with the calculations in higher
+			// dimensions.
+			edge->value() = sqrt(to_double(
+				(points_exact_q.col(verts[0]) - points_exact_q.col(verts[1])).squaredNorm() *
+				one_by_four
+			));
 		}
 	}
 	return tuple{delX, numerical_instability};
@@ -644,9 +647,14 @@ auto delcech_parallel(
 	// Get the delaunay triangulation.
 	Filtration delX(delaunay<CGAL::Parallel_tag>(points, colours));
 	// Modify the filtration values.
-	bool numerical_instability = false;
+	bool       numerical_instability = false;
+	auto       points_exact_q        = points.template cast<Quotient<Gmpzf>>();
+	const auto one_by_four =
+		Quotient<Gmpzf>(Gmpzf(0.25), Gmpzf(1.0));  // Used for the edge lengths.
 	if (delX.dimension() >= 1) {
 		task_arena arena(max_num_threads == 0 ? task_arena::automatic : max_num_threads);
+		// Each worker thread will get its own copy of the quotient-to-double approximator.
+		enumerable_thread_specific<ToDouble> thread_local_to_double;
 		for (auto&& p = delX.dimension(); p > 1; p--) {
 			// Reserve space for all the numerical issue return values
 			vector<bool> issues(delX.get_simplices()[p].size(), false);
@@ -657,13 +665,10 @@ auto delcech_parallel(
 			for (auto&& [_, simplex]: delX.get_simplices()[p]) {
 				simplices.push_back(&simplex);
 			}
-			// Each worker thread will get its own copy of the quotient-to-double approximator.
-			enumerable_thread_specific<ToDouble> thread_local_to_double;
 			arena.execute([&] {
 				parallel_for(
 					blocked_range<size_t>(0, simplices.size()),
 					[&](const blocked_range<size_t>& r) {
-						// Get the thread-local copy of the expensive object
 						auto&& to_double = thread_local_to_double.local();
 						for (size_t idx = r.begin(); idx < r.end(); idx++) {
 							auto   simplex = *simplices[idx];
@@ -690,17 +695,17 @@ auto delcech_parallel(
 			parallel_for(
 				blocked_range<size_t>(0, edges.size()),
 				[&](const blocked_range<size_t>& r) {
+					auto&& to_double = thread_local_to_double.local();
 					for (size_t idx = r.begin(); idx < r.end(); idx++) {
-						auto&& edge   = *edges[idx];
-						auto&& verts  = edge->get_vertex_labels();
-						edge->value() = static_cast<double>(
-											(points.col(verts[0]) - points.col(verts[1])).norm()
-										) *
-					                    0.5;
-						// Account for floating point rounding errors.
-						for (auto& cofacet: edge->get_cofacets()) {
-							edge->value() = min(edge->value(), cofacet->value());
-						}
+						auto&& edge  = *edges[idx];
+						auto&& verts = edge->get_vertex_labels();
+						// We use exact types here for consistency with the calculations in higher
+					    // dimensions.
+						edge->value() = sqrt(to_double(
+							(points_exact_q.col(verts[0]) - points_exact_q.col(verts[1]))
+								.squaredNorm() *
+							one_by_four
+						));
 					}
 				}
 			);
