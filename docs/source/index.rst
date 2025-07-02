@@ -9,7 +9,17 @@ Chalc Documentation
 ===================
 Chalc is a Python package for computing chromatic Delaunay filtrations of labelled point clouds in Euclidean space, and associated six-packs of persistent homology diagrams.
 Chalc is named for :underline:`ch`\ romatic :underline:`al`\ pha :underline:`c`\ omplexes, but it can also compute chromatic Delaunay--Čech and chromatic Delaunay--Rips filtrations.
-Chalc is written in C++ and relies on the `Computational Geometry Algorithms Library (CGAL) <https://www.cgal.org>`_ for fast and accurate geometric computations, `Phimaker <https://github.com/tomchaplin/phimaker>`_ for persistent homology calculations, and `Intel OneAPI Threading Building Blocks (TBB) <https://www.threadingbuildingblocks.org>`_ for parallelism.
+Chalc is written in C++ and relies on the `Computational Geometry Algorithms Library (CGAL) <https://www.cgal.org>`_ for geometric computations, `Phimaker <https://github.com/tomchaplin/phimaker>`_ for persistent homology calculations, and `Intel OneAPI Threading Building Blocks (TBB) <https://www.threadingbuildingblocks.org>`_ for parallelism.
+
+Chalc uses exact arithmetic internally to compute filtration values and will produce reasonable results even for point clouds with degeneracies.
+Chalc also uses parallelism wherever possible to speed up computations unless parallelism is explicitly disabled.
+
+Contributing
+------------
+Chalc is a work in progress.
+Writing a mathematical library that is performant, bug-free, composable, and well-documented is a considerable task, and we welcome contributions from users of this package.
+If you find a bug, or an error in the documentation, or have a feature request, or would like to contribute, please open an `issue on the GitHub repository <https://github.com/abhinavnatarajan/Chalc/issues>`_.
+If you have a question about how to use the package, please open a `discussion on the GitHub repository <https://github.com/abhinavnatarajan/Chalc/discussions>`_.
 
 Documentation index
 -------------------
@@ -28,7 +38,7 @@ Documentation index
 
 Citing this Software
 --------------------
-If you want to use chalc in your work, please use the following citation:
+If you find chalc useful, please consider citing it as below:
 
 .. tab-set::
 
@@ -50,6 +60,7 @@ If you want to use chalc in your work, please use the following citation:
             archivePrefix={arXiv},
             primaryClass={math.AT}
             }
+
 
 See Also
 --------
