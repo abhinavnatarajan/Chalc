@@ -124,7 +124,8 @@ class FiltrationInclusion(FiltrationMorphism, ABC):
 		# Let n = max_diagram_dimension.
 		# H_n(K^{n+2}) -> H_n(K) and H_{n+1}(K^{n+2}) -> H_{n+1}(K) are isomorphisms.
 		# Similarly H_n(L^{n+2}) -> H_n(L) and H_{n+1}(L^{n+2}) - H_{n+1}(L) are isomorphisms.
-		# Therefore H_n(K^{n+2}, L^{n+2}) -> H_n(K, L) is an isomorphism by the 5-lemma.
+		# Therefore H_{n+1}(K^{n+2}, L^{n+2}) -> H_{n+1}(K, L) is an isomorphism by the 5-lemma
+		# applied to the long exact sequence of homology of pairs.
 		# Consequently we also get the correct kernel, cokernel, and image.
 		# Therefore we only need the boundary matrix of simplices whose
 		# dimension is at most max_diagram_dimension + 2.
@@ -374,7 +375,7 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 		# First notice that K is homotopy equivalent to cyl(f)
 		# H_n(K^{n+2}) -> H_n(K) and H_{n+1}(K^{n+2}) -> H_{n+1}(K) are isomorphisms.
 		# Similarly H_n(L^{n+2}) -> H_n(L) and H_{n+1}(L^{n+2}) - H_{n+1}(L) are isomorphisms.
-		# Therefore H_n(K^{n+2}, L^{n+2}) -> H_n(K, L) is an isomorphism by the 5-lemma.
+		# Therefore H_{n+1}(K^{n+2}, L^{n+2}) -> H_{n+1}(K, L) is an isomorphism by the 5-lemma.
 		# Consequently we also get the correct kernel, cokernel, and image.
 		# Therefore we only need the boundary matrix of simplices whose
 		# dimension is at most max_diagram_dimension + 2.
