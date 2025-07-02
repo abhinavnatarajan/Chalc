@@ -75,13 +75,18 @@ find_package(Eigen3 CONFIG REQUIRED)
 if(Eigen3_FOUND)
     message(STATUS "Found Eigen3 headers in: ${EIGEN3_INCLUDE_DIR}")
 endif()
+
+find_package(TBB REQUIRED)
+
 find_package(CGAL CONFIG REQUIRED)
 if(DEFINED CGAL_MODULES_DIR AND Eigen3_FOUND)
     include(${CGAL_MODULES_DIR}/CGAL_Eigen3_support.cmake)
     message(STATUS "CGAL has Eigen3 support.")
 endif()
-
-find_package(TBB REQUIRED)
+if(DEFINED CGAL_MODULES_DIR AND TBB_FOUND)
+    include(${CGAL_MODULES_DIR}/CGAL_TBB_support.cmake)
+    message(STATUS "CGAL has TBB support.")
+endif()
 
 set(PYBIND11_FINDPYTHON ON)
 find_package(pybind11 CONFIG REQUIRED)
@@ -93,7 +98,7 @@ target_include_directories(_filtration PUBLIC src)
 add_library(_chromatic STATIC src/chalc/chromatic/chromatic.cxx)
 target_link_libraries(
     _chromatic
-    PUBLIC _filtration Eigen3::Eigen CGAL::CGAL CGAL::Eigen3_support TBB::tbb
+	PUBLIC _filtration Eigen3::Eigen TBB::tbb CGAL::CGAL CGAL::Eigen3_support CGAL::TBB_support
 )
 set_target_properties(
     _filtration

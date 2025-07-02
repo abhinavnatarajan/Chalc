@@ -41,6 +41,7 @@
 #include <CGAL/Spatial_sort_traits_adapter_d.h>
 #include <CGAL/Triangulation.h>
 #include <CGAL/spatial_sort.h>
+#include <CGAL/tags.h>
 #include <ConstrainedMiniball/cmb.hpp>
 #include <Eigen/src/Core/Matrix.h>
 #include <algorithm>
@@ -196,6 +197,7 @@ auto chromatic_lift(const MatrixXd& points, const vector<colour_t>& colours) -> 
 namespace chalc {
 
 // Create a Delaunay triangulation from a collection of coordinate vectors.
+template <typename Concurrency_tag>
 auto delaunay(const MatrixXd& X, const vector<colour_t>& colours) -> Filtration {
 	if (X.cols() > numeric_limits<index_t>::max()) {
 		throw runtime_error("Number of points is too large.");
@@ -217,7 +219,7 @@ auto delaunay(const MatrixXd& X, const vector<colour_t>& colours) -> Filtration 
 	// This makes the insertion O(nlogn) instead of O(n^{ceil(d/2) + 1}).
 	vector<index_t> indices(Y.cols());
 	iota(indices.begin(), indices.end(), 0);
-	spatial_sort(
+	spatial_sort<Concurrency_tag>(
 		indices.begin(),
 		indices.end(),
 		SpatialSortingTraits_d(PointVectorPropertyMap(points.cbegin()))
@@ -291,7 +293,7 @@ auto delrips_parallel(
 	const int               max_num_threads
 ) -> Filtration {
 	// Get the delaunay triangulation.
-	Filtration delX = delaunay(points, colours);
+	Filtration delX = delaunay<CGAL::Parallel_tag>(points, colours);
 
 	// Modify the filtration values.
 	if (delX.dimension() >= 1) {
@@ -453,7 +455,7 @@ auto alpha_parallel(
 	const int               max_num_threads
 ) -> tuple<Filtration, bool> {
 	// Get the delaunay triangulation.
-	Filtration delX(delaunay(points, colours));
+	Filtration delX(delaunay<CGAL::Parallel_tag>(points, colours));
 
 	// Partition the vertices by colour.
 	// We will need this later to check if stacks are empty.
@@ -644,7 +646,7 @@ auto delcech_parallel(
 ) -> tuple<Filtration, bool> {
 	// Start
 	// Get the delaunay triangulation
-	Filtration delX(delaunay(points, colours));
+	Filtration delX(delaunay<CGAL::Parallel_tag>(points, colours));
 	// modify the filtration values
 	bool numerical_instability = false;
 	if (delX.dimension() >= 1) {

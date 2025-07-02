@@ -25,21 +25,35 @@ PYBIND11_MODULE(chromatic, m) {  // NOLINT
 	m.attr("MaxColoursChromatic") = py::int_(MAX_NUM_COLOURS);
 	m.def(
 		 "delaunay",
-		 [](const Eigen::MatrixXd& points, const Eigen::VectorX<colour_t>& colours) {
-			 const vector<colour_t> colours_vec(colours.cbegin(), colours.cend());
-			 return delaunay(points, colours_vec);
+		 [](const Eigen::MatrixXd&          points,
+	        const Eigen::VectorX<colour_t>& colours_ndarray,
+	        bool                            parallel) {
+			 const vector<colour_t> colours(colours_ndarray.cbegin(), colours_ndarray.cend());
+			 if (parallel) {
+				 return delaunay<CGAL::Parallel_tag>(points, colours);
+			 } else {
+				 return delaunay<CGAL::Sequential_tag>(points, colours);
+			 }
 		 },
 		 py::arg("points"),
-		 py::arg("colours")
+		 py::arg("colours"),
+		 py::arg("parallel") = true
 	)
 		.def(
 			"delaunay",
-			&delaunay,
+			[](const Eigen::MatrixXd& points, const vector<colour_t>& colours, bool parallel) {
+				if (parallel) {
+					return delaunay<CGAL::Parallel_tag>(points, colours);
+				} else {
+					return delaunay<CGAL::Sequential_tag>(points, colours);
+				}
+			},
 			R"docstring(Compute the chromatic Delaunay triangulation of a coloured point cloud in Euclidean space.
 
 Args:
 	points : Numpy matrix whose columns are points in the point cloud.
 	colours : List or numpy array of integers describing the colours of the points.
+	parallel: If true, use parallel computation during the spatial sorting phase of the triangulation.
 
 Raises:
 	ValueError:
@@ -55,13 +69,14 @@ Returns:
 
 )docstring",
 			py::arg("points"),
-			py::arg("colours")
+			py::arg("colours"),
+			py::arg("parallel") = true
 		)
 		.def(
 			"delrips",
-			[](const Eigen::MatrixXd&          points,
+			[](const Eigen::MatrixXd& points,
 	           const Eigen::VectorX<colour_t>& colours_ndarray,
-	           const int                       max_num_threads) {
+	           const int max_num_threads) {
 				const vector<colour_t> colours(colours_ndarray.cbegin(), colours_ndarray.cend());
 				if (max_num_threads != 1) {
 					return tuple{delrips_parallel(points, colours, max_num_threads), false};
@@ -89,7 +104,7 @@ Returns:
 Args:
 	points : Numpy matrix whose columns are points in the point cloud.
 	colours : List or numpy array of integers describing the colours of the points.
-	max_num_threads: Maximum number of parallel threads to use.
+	max_num_threads: Hint for maximum number of parallel threads to use.
 		If non-positive, the number of threads to use is automatically determined
 		by the threading library (Intel OneAPI TBB). Note that this may be less
 		than the number of available CPU cores depending on the number of points
@@ -159,7 +174,7 @@ See Also:
 Args:
 	points : Numpy matrix whose columns are points in the point cloud.
 	colours : List or numpy array of integers describing the colours of the points.
-	max_num_threads: Maximum number of parallel threads to use.
+	max_num_threads: Hint for maximum number of parallel threads to use.
 		If non-positive, the number of threads to use is automatically determined
 		by the threading library (Intel OneAPI TBB). Note that this may be less
 		than the number of available CPU cores depending on the number of points
@@ -223,7 +238,7 @@ See Also:
 Args:
 	points : Numpy matrix whose columns are points in the point cloud.
 	colours : List or numpy array of integers describing the colours of the points.
-	max_num_threads: Maximum number of parallel threads to use.
+	max_num_threads: Hint for maximum number of parallel threads to use.
 		If non-positive, the number of threads to use is automatically determined
 		by the threading library (Intel OneAPI TBB). Note that this may be less
 		than the number of available CPU cores depending on the number of points
