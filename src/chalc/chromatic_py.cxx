@@ -195,9 +195,9 @@ Raises:
 		for computations to run without overflowing.
 
 Notes:
-	This function is included for pedantic reasons.
-	For most purposes you should instead consider using :func:`chalc.chromatic.delcech`,
-	which is faster to compute, more numerically stable, and has the same persistent homology.
+	:func:`chalc.chromatic.delcech` has the same 6-pack of persistent homology, and often
+	has slightly better performance. We recommend benchmarking your application
+	to find what works best for you.
 
 See Also:
 	:func:`delrips`, :func:`delcech`
