@@ -34,22 +34,20 @@
 */
 #include "chromatic.h"
 #include "chalc/filtration/filtration.h"
-
-#include <ConstrainedMiniball/cmb.hpp>
-
 #include <CGAL/Delaunay_triangulation.h>
 #include <CGAL/Dimension.h>
 #include <CGAL/Epick_d.h>
 #include <CGAL/Gmpzf.h>
+#include <CGAL/Spatial_sort_traits_adapter_d.h>
 #include <CGAL/Triangulation.h>
-
-#include <oneapi/tbb.h>
-
+#include <CGAL/spatial_sort.h>
+#include <ConstrainedMiniball/cmb.hpp>
 #include <Eigen/src/Core/Matrix.h>
-
 #include <algorithm>
 #include <array>
+#include <boost/property_map/property_map.hpp>
 #include <numeric>
+#include <oneapi/tbb.h>
 #include <ranges>
 #include <stdexcept>
 #include <string>
@@ -62,6 +60,7 @@ using chalc::MAX_NUM_COLOURS;
 
 using CGAL::Gmpzf;
 using CGAL::Quotient;
+using CGAL::spatial_sort;
 
 using cmb::constrained_miniball;
 using cmb::miniball;
@@ -81,7 +80,6 @@ using oneapi::tbb::parallel_for;
 using oneapi::tbb::task_arena;
 
 using std::array;
-using std::bsearch;
 using std::domain_error;
 using std::iota;
 using std::map;
@@ -91,13 +89,13 @@ using std::ranges::any_of;
 using std::ranges::sort;
 using std::ranges::unique;
 using std::runtime_error;
-using std::same_as;
 using std::shared_ptr;
 using std::tie;
 using std::to_string;
 using std::tuple;
 using std::vector;
 
+// Typedefs for the CGAL Delaunay triangulation.
 using Kernel_d                     = CGAL::Epick_d<CGAL::Dynamic_dimension_tag>;
 using Triangulation_data_structure = CGAL::Triangulation_data_structure<
 	Kernel_d::Dimension,
@@ -106,11 +104,14 @@ using Triangulation_data_structure = CGAL::Triangulation_data_structure<
 using DelaunayTriangulation = CGAL::Delaunay_triangulation<Kernel_d, Triangulation_data_structure>;
 using Point_d               = Kernel_d::Point_d;
 
-template <class Derived>
-concept MatrixXpr = requires { typename Eigen::MatrixBase<Derived>; };
-
-template <class Derived, class Real_t>
-concept RealMatrixXpr = MatrixXpr<Derived> && same_as<typename Derived::Scalar, Real_t>;
+// Typedefs for spatial sorting the points before the triangulation.
+using PointVectorPropertyMap = boost::iterator_property_map<
+	vector<Point_d>::const_iterator,
+	boost::typed_identity_property_map<index_t>,
+	const Point_d,
+	const Point_d&>;
+using SpatialSortingTraits_d =
+	CGAL::Spatial_sort_traits_adapter_d<Kernel_d, PointVectorPropertyMap>;
 
 // Convert a matrix of coordinate column vectors to a vector of CGAL points.
 auto matrix_columns_to_points_vec(const MatrixXd& x_arr) -> vector<Point_d> {
@@ -131,17 +132,6 @@ template <typename T> auto reorder(const vector<T>& v, const vector<index_t>& id
 		result[i] = v[idx[i]];
 	}
 	return result;
-}
-
-template <typename T>
-auto sort_with_indices(const vector<T>& v, bool (*compare)(const T& a, const T& b))
-	-> tuple<vector<T>, vector<index_t>> {
-	vector<index_t> idx(v.size());
-	iota(idx.begin(), idx.end(), 0);  // NOLINT - we do not have this on Apple Clang yet.
-	sort(idx, [&v, &compare](index_t i1, index_t i2) {
-		return compare(v[i1], v[i2]);
-	});
-	return tuple{reorder(v, idx), idx};
 }
 
 template <typename T> void remove_duplicates_inplace(vector<T>& vec) {
@@ -172,11 +162,9 @@ auto canonicalise(const vector<colour_t>& vec) -> tuple<vector<colour_t>, index_
 	return tuple{new_vec, m.size()};
 }
 
-/*
-Stratify a coloured point set.
-Points are provided as columns of a matrix or matrix expression.
-Colours are provided as a vector.
-*/
+// Stratify a coloured point set.
+// Points are provided as columns of a matrix or matrix expression.
+// Colours are provided as a vector.
 auto chromatic_lift(const MatrixXd& points, const vector<colour_t>& colours) -> MatrixXd {
 	// Make sure colours are contiguous and start at zero
 	auto&& [new_colours, num_colours] = canonicalise(colours);
@@ -207,7 +195,7 @@ auto chromatic_lift(const MatrixXd& points, const vector<colour_t>& colours) -> 
 
 namespace chalc {
 
-// Create a Delaunay triangulation from a collection of coordinate vectors
+// Create a Delaunay triangulation from a collection of coordinate vectors.
 auto delaunay(const MatrixXd& X, const vector<colour_t>& colours) -> Filtration {
 	if (X.cols() > numeric_limits<index_t>::max()) {
 		throw runtime_error("Number of points is too large.");
@@ -224,31 +212,28 @@ auto delaunay(const MatrixXd& X, const vector<colour_t>& colours) -> Filtration 
 	if (Y.rows() > static_cast<Eigen::Index>(numeric_limits<int>::max())) {
 		throw runtime_error("Dimension of stratified points is too large.");
 	}
-	int  max_dim = Y.rows();  // NOLINT
-	auto points  = matrix_columns_to_points_vec(Y);
-	auto&& [sorted_points, sorted_indices] =
-		sort_with_indices<Point_d>(points, [](const Point_d& a, const Point_d& b) -> bool {
-			return a < b;
-		});
-	// Construct the Delauany triangulation.
-	auto delY = DelaunayTriangulation(max_dim);
-	delY.insert(points.begin(), points.end());
-
-	// Iterate over all finite vertices and associate them with their
-	// original label.
-	for (auto vert_it = delY.finite_vertices_begin(); vert_it != delY.finite_vertices_end();
-	     vert_it++) {
-		// Find the index of its associated point.
-		auto           point = vert_it->point();
-		const Point_d* p     = static_cast<Point_d*>(bsearch(
-            &point,
-            sorted_points.data(),
-            sorted_points.size(),
-            sizeof(Point_d),
-            compare<Point_d>
-        ));
-		vert_it->data()      = sorted_indices[p - sorted_points.data()];
+	auto points = matrix_columns_to_points_vec(Y);
+	// Spatial sorting for the points.
+	// This makes the insertion O(nlogn) instead of O(n^{ceil(d/2) + 1}).
+	vector<index_t> indices(Y.cols());
+	iota(indices.begin(), indices.end(), 0);
+	spatial_sort(
+		indices.begin(),
+		indices.end(),
+		SpatialSortingTraits_d(PointVectorPropertyMap(points.cbegin()))
+	);
+	// Insert the points into the Delaunay triangulation one by one
+	// and add their indexing data.
+	int                                     max_dim = Y.rows();  // NOLINT
+	auto                                    delY    = DelaunayTriangulation(max_dim);
+	DelaunayTriangulation::Full_cell_handle hint;
+	DelaunayTriangulation::Vertex_handle    v;
+	for (auto&& idx: indices) {
+		v         = delY.insert(points[idx], hint);
+		v->data() = idx;
+		hint      = v->full_cell();
 	}
+
 	// Initialise the filtration with the actual dimension of the triangulation.
 	// This way we have the correct dimension even if there are degenerate cases.
 	auto dim = delY.current_dimension();
@@ -335,7 +320,7 @@ auto delrips_parallel(
 	return delX;
 }
 
-// Compute the chromatic alpha complex
+// Compute the chromatic alpha complex.
 auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Filtration, bool> {
 	// Get the delaunay triangulation.
 	Filtration delX(delaunay(points, colours));
@@ -723,7 +708,6 @@ auto delcech_parallel(
 			);
 		});
 	}
-	// return tuple{delX, static_cast<bool>(numerical_instability.load())};
 	return tuple{delX, numerical_instability};
 }
 

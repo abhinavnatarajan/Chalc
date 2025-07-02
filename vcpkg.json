@@ -12,6 +12,10 @@
 			"version>=": "3.4.0#2"
 		},
 		{
+			"name": "boost-property-map",
+			"version>=": "1.88.0"
+		},
+		{
 			"name": "gmp",
 			"platform": "windows",
 			"version>=": "6.2.1#21"
