@@ -230,7 +230,7 @@ class SixPack(Mapping):
 	def get_matrix(
 		self,
 		diagram_name: DiagramName,
-		dimension: list[int] | None = None,
+		dimension: Sequence[int] | None = None,
 	) -> list[np.ndarray[tuple[int, Literal[2]], np.dtype[np.float64]]]: ...
 
 	def get_matrix(self, diagram_name, dimension=None):
@@ -289,7 +289,7 @@ class SixPack(Mapping):
 			unpaired_matrix = np.concatenate((unpaired_matrix, inf_array), axis=1)
 			return np.concatenate((paired_matrix, unpaired_matrix), axis=0)
 
-		if isinstance(dimension, list):
+		if isinstance(dimension, Sequence):
 			return [self.get_matrix(diagram_name, d) for d in dimension]
 
 		errmsg = "dim must be an integer or a list of integers"
@@ -308,7 +308,7 @@ class SixPack(Mapping):
 		for dgm_name in self:
 			grp = file.require_group(dgm_name)
 			grp["unpaired"] = np.array(list(self[dgm_name].unpaired), dtype=np.int64)
-			grp["paired"] = self[dgm_name].paired_as_matrix()
+			grp["paired"] = self[dgm_name]._paired_as_matrix()
 
 	@classmethod
 	def from_file(cls, file: Group) -> SixPack:
@@ -339,12 +339,12 @@ class SixPack(Mapping):
 			and dimensions[:].dtype == np.int64
 			else np.array([], dtype=np.int64)
 		)
-		names: list[DiagramName] = ["ker", "cok", "dom", "cod", "im", "rel"]
+		names: tuple[DiagramName, ...] = ("ker", "cok", "dom", "cod", "im", "rel")
 		for diagram_name in names:
 			grp = file[diagram_name]
 			if isinstance(grp, Group):
 				temp = {}
-				for name in ["paired", "unpaired"]:
+				for name in ("paired", "unpaired"):
 					if name not in grp:
 						errmsg = f"Invalid file: missing field {diagram_name}.{name}."
 						raise RuntimeError(errmsg)
@@ -455,6 +455,6 @@ class SimplexPairings(Collection):
 		unpaired = frozenset(x.item() for x in unpaired_vector)
 		return cls(paired, unpaired)
 
-	def paired_as_matrix(self) -> np.ndarray[tuple[int, Literal[2]], np.dtype[np.int64]]:
-		"""Return a matrix representation of the finite persistence features in the diagram."""
+	def _paired_as_matrix(self) -> np.ndarray[tuple[int, Literal[2]], np.dtype[np.int64]]:
+		r"""Return the pairings of simplex indices in a :math:`N\times 2` matrix."""
 		return np.array([[x, y] for (x, y) in self._paired], dtype=np.int64)
