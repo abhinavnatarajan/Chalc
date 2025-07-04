@@ -37,7 +37,7 @@
 #include <CGAL/Delaunay_triangulation.h>
 #include <CGAL/Dimension.h>
 #include <CGAL/Epick_d.h>
-#include <CGAL/Gmpzf.h>
+#include <CGAL/Mpzf.h>
 #include <CGAL/Spatial_sort_traits_adapter_d.h>
 #include <CGAL/Triangulation.h>
 #include <CGAL/spatial_sort.h>
@@ -59,7 +59,7 @@ using chalc::Filtration;
 using chalc::index_t;
 using chalc::MAX_NUM_COLOURS;
 
-using CGAL::Gmpzf;
+using CGAL::Mpzf;
 using CGAL::Quotient;
 using CGAL::spatial_sort;
 
@@ -67,7 +67,7 @@ using cmb::constrained_miniball;
 using cmb::miniball;
 using cmb::SolutionPrecision;
 using cmb::utility::equidistant_subspace;
-using cmb::utility::ToDouble;
+using cmb::utility::TypeConverter;
 
 using Eigen::all;
 using Eigen::lastN;
@@ -337,11 +337,11 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Fil
 	}
 	bool numerical_instability = false;
 	if (delX.dimension() >= 1) {
-		auto to_double = ToDouble();
+		auto to_double = TypeConverter<cmb::SolutionExactType, double>{};
 
 		// Modify the filtration values.
-		auto&& points_exact   = points.template cast<Gmpzf>();
-		auto&& points_exact_q = points.template cast<Quotient<Gmpzf>>();
+		auto&& points_exact   = points.template cast<Mpzf>();
+		auto&& points_exact_q = points.template cast<Quotient<Mpzf>>();
 
 		// Start at the current dimension.
 		for (auto&& p = delX.dimension(); p >= 1; p--) {
@@ -373,8 +373,8 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Fil
 				// Then the solution set E of the matrix equation
 				// E * x = b
 				// is the intersection over all j of the affine subspaces E_j.
-				MatrixX<Gmpzf> E(0, points.rows());
-				VectorX<Gmpzf> b;
+				MatrixX<Mpzf> E(0, points.rows());
+				VectorX<Mpzf> b;
 				for (auto&& verts_j: verts_by_colour_in_simplex) {
 					if (verts_j.empty()) {
 						continue;
@@ -386,8 +386,8 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Fil
 					auto num_new_rows = static_cast<Eigen::Index>(verts_j.size() - 1);
 					E.conservativeResize(E.rows() + num_new_rows, Eigen::NoChange);
 					b.conservativeResize(b.rows() + num_new_rows);
-					MatrixX<Gmpzf>::BlockXpr           E_new_rows = E.bottomRows(num_new_rows);
-					Eigen::VectorBlock<VectorX<Gmpzf>> b_new_rows = b(lastN(num_new_rows));
+					MatrixX<Mpzf>::BlockXpr           E_new_rows = E.bottomRows(num_new_rows);
+					Eigen::VectorBlock<VectorX<Mpzf>> b_new_rows = b(lastN(num_new_rows));
 					tie(E_new_rows, b_new_rows) = equidistant_subspace(points_exact(all, verts_j));
 				}
 
@@ -465,11 +465,11 @@ auto alpha_parallel(
 	if (delX.dimension() >= 1) {
 		task_arena arena(max_num_threads == 0 ? task_arena::automatic : max_num_threads);
 		// Modify the filtration values
-		auto&& points_exact   = points.template cast<Gmpzf>();
-		auto&& points_exact_q = points.template cast<Quotient<Gmpzf>>();
+		auto&& points_exact   = points.template cast<Mpzf>();
+		auto&& points_exact_q = points.template cast<Quotient<Mpzf>>();
 
 		// Each worker thread will get its own copy of the quotient-to-double approximator.
-		enumerable_thread_specific<ToDouble> thread_local_to_double;
+		enumerable_thread_specific<TypeConverter<cmb::SolutionExactType, double>> thread_local_to_double;
 		// Start at the current dimension.
 		for (auto&& p = delX.dimension(); p >= 1; p--) {
 			// Reserve space for all the numerical issue return values.
@@ -514,8 +514,8 @@ auto alpha_parallel(
 						    // Then the solution set E of the matrix equation
 						    // E * x = b
 						    // is the intersection over all j of the affine subspaces E_j.
-							MatrixX<Gmpzf> E(0, points.rows());
-							VectorX<Gmpzf> b;
+							MatrixX<Mpzf> E(0, points.rows());
+							VectorX<Mpzf> b;
 							for (auto&& verts_j: verts_by_colour_in_simplex) {
 								if (verts_j.empty()) {
 									continue;
@@ -527,8 +527,8 @@ auto alpha_parallel(
 								auto num_new_rows = static_cast<Eigen::Index>(verts_j.size() - 1);
 								E.conservativeResize(E.rows() + num_new_rows, Eigen::NoChange);
 								b.conservativeResize(b.rows() + num_new_rows);
-								MatrixX<Gmpzf>::BlockXpr E_new_rows = E.bottomRows(num_new_rows);
-								Eigen::VectorBlock<VectorX<Gmpzf>> b_new_rows =
+								MatrixX<Mpzf>::BlockXpr E_new_rows = E.bottomRows(num_new_rows);
+								Eigen::VectorBlock<VectorX<Mpzf>> b_new_rows =
 									b(lastN(num_new_rows));
 								tie(E_new_rows, b_new_rows) =
 									equidistant_subspace(points_exact(all, verts_j));
@@ -609,10 +609,10 @@ auto delcech(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<F
 	Filtration delX(delaunay(points, colours));
 	// Modify the filtration values.
 	bool       numerical_instability = false;
-	auto       points_exact_q        = points.template cast<Quotient<Gmpzf>>();
+	auto       points_exact_q        = points.template cast<Quotient<Mpzf>>();
 	const auto one_by_four =
-		Quotient<Gmpzf>(Gmpzf(0.25), Gmpzf(1.0));  // Used for the edge lengths.
-	auto to_double = ToDouble();
+		Quotient<Mpzf>(Mpzf(0.25));  // Used for the edge lengths.
+	auto to_double = TypeConverter<cmb::SolutionExactType, double>{};
 	if (delX.dimension() >= 1) {
 		for (auto&& p = delX.dimension(); p > 1; p--) {
 			for (auto&& [_, simplex]: delX.get_simplices()[p]) {
@@ -648,13 +648,13 @@ auto delcech_parallel(
 	Filtration delX(delaunay<CGAL::Parallel_tag>(points, colours));
 	// Modify the filtration values.
 	bool       numerical_instability = false;
-	auto       points_exact_q        = points.template cast<Quotient<Gmpzf>>();
+	auto       points_exact_q        = points.template cast<Quotient<Mpzf>>();
 	const auto one_by_four =
-		Quotient<Gmpzf>(Gmpzf(0.25), Gmpzf(1.0));  // Used for the edge lengths.
+		Quotient<Mpzf>(Mpzf(0.25), Mpzf(1.0));  // Used for the edge lengths.
 	if (delX.dimension() >= 1) {
 		task_arena arena(max_num_threads == 0 ? task_arena::automatic : max_num_threads);
 		// Each worker thread will get its own copy of the quotient-to-double approximator.
-		enumerable_thread_specific<ToDouble> thread_local_to_double;
+		enumerable_thread_specific<TypeConverter<cmb::SolutionExactType, double>> thread_local_to_double;
 		for (auto&& p = delX.dimension(); p > 1; p--) {
 			// Reserve space for all the numerical issue return values
 			vector<bool> issues(delX.get_simplices()[p].size(), false);

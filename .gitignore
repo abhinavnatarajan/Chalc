@@ -80,3 +80,6 @@ venv.bak/
 # Documentation artifacts
 docs/source/autoapi
 *.h5
+
+# Scratch files
+scratch/
