@@ -307,7 +307,7 @@ auto delrips_parallel(
 		}
 		arena.execute([&] {
 			parallel_for(
-				blocked_range<size_t>(0, edges.size()),
+				blocked_range<size_t>(0, edges.size(), 10000),
 				[&](const blocked_range<size_t>& r) {
 					for (size_t idx = r.begin(); idx < r.end(); idx++) {
 						auto&& edge   = *edges[idx];
@@ -339,7 +339,6 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Fil
 	if (delX.dimension() >= 1) {
 		auto to_double = TypeConverter<cmb::SolutionExactType, double>{};
 
-		// Modify the filtration values.
 		auto&& points_exact   = points.template cast<Mpzf>();
 		auto&& points_exact_q = points.template cast<Quotient<Mpzf>>();
 
@@ -483,7 +482,7 @@ auto alpha_parallel(
 			}
 			arena.execute([&] {
 				parallel_for(
-					blocked_range<size_t>(0, simplices.size()),
+					blocked_range<size_t>(0, simplices.size(), 250),
 					[&](const blocked_range<size_t>& r) {
 						auto&& to_double = thread_local_to_double.local();
 						for (size_t idx = r.begin(); idx < r.end(); idx++) {
@@ -667,7 +666,7 @@ auto delcech_parallel(
 			}
 			arena.execute([&] {
 				parallel_for(
-					blocked_range<size_t>(0, simplices.size()),
+					blocked_range<size_t>(0, simplices.size(), 500),
 					[&](const blocked_range<size_t>& r) {
 						auto&& to_double = thread_local_to_double.local();
 						for (size_t idx = r.begin(); idx < r.end(); idx++) {
@@ -693,7 +692,7 @@ auto delcech_parallel(
 		}
 		arena.execute([&] {
 			parallel_for(
-				blocked_range<size_t>(0, edges.size()),
+				blocked_range<size_t>(0, edges.size(), 500),
 				[&](const blocked_range<size_t>& r) {
 					auto&& to_double = thread_local_to_double.local();
 					for (size_t idx = r.begin(); idx < r.end(); idx++) {
