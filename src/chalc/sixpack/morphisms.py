@@ -237,12 +237,6 @@ class SubChromaticInclusion(FiltrationInclusion, Sized):
 					frozenset(face) for face in tau
 				),
 			)
-		else:
-			errmsg = (
-				"SubChromaticInclusion must be initialised with a collection of "
-				"integers or collections of integers."
-			)
-			raise TypeError(errmsg)
 
 		# Check that the colours in tau are valid.
 		all_colours = frozenset(vertex.colours[0] for vertex in filtration.simplices[0].values())
@@ -357,10 +351,7 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 		column: tuple[list[int], int, float, list[int]],
 		i: int,
 	) -> bool:
-		r"""Check if a simplex is in the |ith| subfiltration.
-
-		.. |ith| replace:: i\ :sup:`th`\
-		"""
+		r"""Check if a simplex is in the |ith| subfiltration."""
 
 	type BoundaryMatrix = list[tuple[float, int, list[int]]]
 
@@ -581,10 +572,7 @@ class SubChromaticQuotient(FiltrationQuotient):
 		column: tuple[list[int], int, float, list[int]],
 		i: int,
 	) -> bool:
-		r"""Check if a simplex is in the |ith| subfiltration.
-
-		.. |ith| replace:: i\ :sup:`th`\
-		"""
+		r"""Check if a simplex is in the |ith| subfiltration."""
 		return any(frozenset(column[3]).issubset(face) for face in self._tau[i])
 
 
@@ -653,8 +641,5 @@ class KChromaticQuotient(FiltrationQuotient):
 		column: tuple[list[int], int, float, list[int]],
 		i: int,
 	) -> bool:
-		r"""Check if a simplex is in the |ith| subfiltration.
-
-		.. |ith| replace:: i\ :sup:`th`\
-		"""
+		r"""Check if a simplex is in the |ith| subfiltration."""
 		return frozenset(column[3]).issubset(self._tau[i])

@@ -2,7 +2,10 @@ import os
 from pathlib import Path
 from tomllib import loads
 
+from autoapi.extension import Mapper
 from packaging.version import parse
+from importlib import metadata
+from sphinx.application import Sphinx
 
 # Configuration file for the Sphinx documentation builder.
 #
@@ -23,10 +26,17 @@ author = "Abhinav Natarajan"
 # Get the name and release from pyproject.toml
 
 with Path.open(project_root_dir / "pyproject.toml") as f:
-	proj_props = loads(f.read())["project"]
+	pyproject_toml = loads(f.read())
 
-project = proj_props["name"]
-release = ".".join(map(str, parse(proj_props["version"]).release))
+project = pyproject_toml["project"]["name"]
+release = ".".join(map(str, parse(pyproject_toml["project"]["version"]).release))
+
+# Variables for use within the docs
+rst_epilog = fr"""
+.. |chalc-version| replace:: {release}
+.. |chromatic-tda-version| replace:: {metadata.version("chromatic-tda")}
+.. |ith| replace:: i\ :sup:`th`\
+"""
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -75,10 +85,20 @@ autoapi_options = [
 ]
 autoapi_member_order = "alphabetical"
 autoapi_keep_files = True
-def autoapi_skip_member(app, what, name, obj, skip, options):
+
+
+def autoapi_skip_member(
+	_app: Sphinx,
+	_what: str,
+	name: str,
+	_obj: Mapper,
+	skip: bool,  # noqa: FBT001
+	_options: list[str],
+) -> bool:
 	if name == "chalc.sixpack.types.DiagramName":
 		skip = True
 	return skip
+
 
 # intersphinx options
 intersphinx_mapping = {
@@ -111,5 +131,6 @@ html_theme_options = {
 	"top_of_page_button": "edit",
 }
 
-def setup(sphinx):
+
+def setup(sphinx: Sphinx) -> None:
 	sphinx.connect("autoapi-skip-member", autoapi_skip_member)

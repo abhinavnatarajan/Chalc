@@ -52,8 +52,8 @@ dev = [
 	# Pybind11 headers for LSP
 	# Needs to be kept in sync with build-system.requires below
 	"pybind11~=2.13",
-	"pyqt6~=6.9.1",
-	"jupyterlab~=4.4.3",
+	"jupyterlab~=4.4",
+	"chromatic-tda~=1.1",
 ]
 test = ["pytest~=8.3", "gudhi~=3.11"]
 
@@ -82,6 +82,7 @@ experimental = true
 
 [tool.pytest.ini_options]
 addopts = ["--import-mode=importlib"]
+testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 100
@@ -104,6 +105,7 @@ ignore = [
 	"PYI021",  # flake8-pyi: disallows docstrings in stub files
 	"TD003",   # flake8-todos: allow todos without an issue link
 	"ANN401",  # flake8-annotations: disallows type 'Any' in function signatures
+	"COM812",  # flake8-commas: missing-trailing-comma (recommended to disable by ruff)
 ]
 pydocstyle.convention = "pep257"
 flake8-annotations.allow-star-arg-any = true
@@ -116,6 +118,10 @@ flake8-annotations.allow-star-arg-any = true
 	"D",       # pydocstyle
 ]
 "**.pyi" = ["ALL"]
+"docs/**/*.py" = [
+	"INP001", # pylint: docs folder does not need __init__.py
+	"D",       # pydocstyle
+]
 
 [tool.cibuildwheel]
 archs = "auto64"
