@@ -1,0 +1,590 @@
+[
+  {
+    "name": "chromatic alpha multi-threaded",
+    "num_points": 100,
+    "num_colours": 2,
+    "mean_exec_time": 0.060041672333075745,
+    "var_exec_time": 2.41298159932264e-06
+  },
+  {
+    "name": "chromatic alpha single-threaded",
+    "num_points": 100,
+    "num_colours": 2,
+    "mean_exec_time": 0.0730468526671757,
+    "var_exec_time": 3.319826821919843e-07
+  },
+  {
+    "name": "chromatic delcech multi-threaded",
+    "num_points": 100,
+    "num_colours": 2,
+    "mean_exec_time": 0.04429867499978476,
+    "var_exec_time": 1.4413457204034812e-08
+  },
+  {
+    "name": "chromatic delcech single-threaded",
+    "num_points": 100,
+    "num_colours": 2,
+    "mean_exec_time": 0.04943751066700012,
+    "var_exec_time": 5.3431146850251756e-08
+  },
+  {
+    "name": "chromatic delrips multi-threaded",
+    "num_points": 100,
+    "num_colours": 2,
+    "mean_exec_time": 0.001723237000987865,
+    "var_exec_time": 3.072437722788171e-09
+  },
+  {
+    "name": "chromatic delrips single-threaded",
+    "num_points": 100,
+    "num_colours": 2,
+    "mean_exec_time": 0.001640063999730046,
+    "var_exec_time": 3.208772230212856e-09
+  },
+  {
+    "name": "chromatic-tda",
+    "num_points": 100,
+    "num_colours": 2,
+    "mean_exec_time": 0.3774423943335326,
+    "var_exec_time": 7.562358225104664e-05
+  },
+  {
+    "name": "chromatic alpha multi-threaded",
+    "num_points": 100,
+    "num_colours": 3,
+    "mean_exec_time": 0.18306428566696317,
+    "var_exec_time": 1.832712709740814e-07
+  },
+  {
+    "name": "chromatic alpha single-threaded",
+    "num_points": 100,
+    "num_colours": 3,
+    "mean_exec_time": 0.23906448733335614,
+    "var_exec_time": 2.53347073864062e-07
+  },
+  {
+    "name": "chromatic delcech multi-threaded",
+    "num_points": 100,
+    "num_colours": 3,
+    "mean_exec_time": 0.17197042900018764,
+    "var_exec_time": 2.689251674245083e-07
+  },
+  {
+    "name": "chromatic delcech single-threaded",
+    "num_points": 100,
+    "num_colours": 3,
+    "mean_exec_time": 0.19195300499995938,
+    "var_exec_time": 8.41630144586952e-06
+  },
+  {
+    "name": "chromatic delrips multi-threaded",
+    "num_points": 100,
+    "num_colours": 3,
+    "mean_exec_time": 0.008919680666925464,
+    "var_exec_time": 1.987773578986397e-08
+  },
+  {
+    "name": "chromatic delrips single-threaded",
+    "num_points": 100,
+    "num_colours": 3,
+    "mean_exec_time": 0.009016438666852386,
+    "var_exec_time": 2.3675138179539088e-08
+  },
+  {
+    "name": "chromatic-tda",
+    "num_points": 100,
+    "num_colours": 3,
+    "mean_exec_time": 0.8609856160007135,
+    "var_exec_time": 1.1870273663386841e-05
+  },
+  {
+    "name": "chromatic alpha multi-threaded",
+    "num_points": 250,
+    "num_colours": 2,
+    "mean_exec_time": 0.14944944533272064,
+    "var_exec_time": 1.2291760035322637e-07
+  },
+  {
+    "name": "chromatic alpha single-threaded",
+    "num_points": 250,
+    "num_colours": 2,
+    "mean_exec_time": 0.19899372033311616,
+    "var_exec_time": 1.2915356560092191e-06
+  },
+  {
+    "name": "chromatic delcech multi-threaded",
+    "num_points": 250,
+    "num_colours": 2,
+    "mean_exec_time": 0.11069287999998778,
+    "var_exec_time": 1.7094103964631147e-07
+  },
+  {
+    "name": "chromatic delcech single-threaded",
+    "num_points": 250,
+    "num_colours": 2,
+    "mean_exec_time": 0.1408595103330299,
+    "var_exec_time": 1.662685753953876e-07
+  },
+  {
+    "name": "chromatic delrips multi-threaded",
+    "num_points": 250,
+    "num_colours": 2,
+    "mean_exec_time": 0.005398787333736739,
+    "var_exec_time": 1.2114544587870832e-09
+  },
+  {
+    "name": "chromatic delrips single-threaded",
+    "num_points": 250,
+    "num_colours": 2,
+    "mean_exec_time": 0.005392786000811611,
+    "var_exec_time": 1.3567332841744882e-09
+  },
+  {
+    "name": "chromatic-tda",
+    "num_points": 250,
+    "num_colours": 2,
+    "mean_exec_time": 0.9880896246662209,
+    "var_exec_time": 7.130543313102772e-05
+  },
+  {
+    "name": "chromatic alpha multi-threaded",
+    "num_points": 250,
+    "num_colours": 3,
+    "mean_exec_time": 0.4925796579997647,
+    "var_exec_time": 8.082608264323726e-06
+  },
+  {
+    "name": "chromatic alpha single-threaded",
+    "num_points": 250,
+    "num_colours": 3,
+    "mean_exec_time": 0.6633865333333233,
+    "var_exec_time": 4.187127849394458e-07
+  },
+  {
+    "name": "chromatic delcech multi-threaded",
+    "num_points": 250,
+    "num_colours": 3,
+    "mean_exec_time": 0.435409594333881,
+    "var_exec_time": 9.29525665711229e-06
+  },
+  {
+    "name": "chromatic delcech single-threaded",
+    "num_points": 250,
+    "num_colours": 3,
+    "mean_exec_time": 0.5420650663339378,
+    "var_exec_time": 2.9138284628233683e-05
+  },
+  {
+    "name": "chromatic delrips multi-threaded",
+    "num_points": 250,
+    "num_colours": 3,
+    "mean_exec_time": 0.03326999666630096,
+    "var_exec_time": 1.7844191062254203e-07
+  },
+  {
+    "name": "chromatic delrips single-threaded",
+    "num_points": 250,
+    "num_colours": 3,
+    "mean_exec_time": 0.03311773366658599,
+    "var_exec_time": 3.934494502613547e-07
+  },
+  {
+    "name": "chromatic-tda",
+    "num_points": 250,
+    "num_colours": 3,
+    "mean_exec_time": 2.313238660333809,
+    "var_exec_time": 0.0006737349310180807
+  },
+  {
+    "name": "chromatic alpha multi-threaded",
+    "num_points": 500,
+    "num_colours": 2,
+    "mean_exec_time": 0.3089691199996499,
+    "var_exec_time": 7.15421310154791e-07
+  },
+  {
+    "name": "chromatic alpha single-threaded",
+    "num_points": 500,
+    "num_colours": 2,
+    "mean_exec_time": 0.4168120100008916,
+    "var_exec_time": 6.971762898304793e-05
+  },
+  {
+    "name": "chromatic delcech multi-threaded",
+    "num_points": 500,
+    "num_colours": 2,
+    "mean_exec_time": 0.22786872299972552,
+    "var_exec_time": 3.2005748043242057e-06
+  },
+  {
+    "name": "chromatic delcech single-threaded",
+    "num_points": 500,
+    "num_colours": 2,
+    "mean_exec_time": 0.2869554766663593,
+    "var_exec_time": 1.2999494126242929e-06
+  },
+  {
+    "name": "chromatic delrips multi-threaded",
+    "num_points": 500,
+    "num_colours": 2,
+    "mean_exec_time": 0.012895344333325435,
+    "var_exec_time": 9.06430777486199e-08
+  },
+  {
+    "name": "chromatic delrips single-threaded",
+    "num_points": 500,
+    "num_colours": 2,
+    "mean_exec_time": 0.01283323399972384,
+    "var_exec_time": 1.2328666089881712e-07
+  },
+  {
+    "name": "chromatic-tda",
+    "num_points": 500,
+    "num_colours": 2,
+    "mean_exec_time": 1.9886113923330413,
+    "var_exec_time": 9.760362114169115e-06
+  },
+  {
+    "name": "chromatic alpha multi-threaded",
+    "num_points": 500,
+    "num_colours": 3,
+    "mean_exec_time": 1.0346258933332138,
+    "var_exec_time": 9.007328695428862e-06
+  },
+  {
+    "name": "chromatic alpha single-threaded",
+    "num_points": 500,
+    "num_colours": 3,
+    "mean_exec_time": 1.4026823100011825,
+    "var_exec_time": 0.0005680135849353718
+  },
+  {
+    "name": "chromatic delcech multi-threaded",
+    "num_points": 500,
+    "num_colours": 3,
+    "mean_exec_time": 0.9177323249999366,
+    "var_exec_time": 2.7325071839656172e-05
+  },
+  {
+    "name": "chromatic delcech single-threaded",
+    "num_points": 500,
+    "num_colours": 3,
+    "mean_exec_time": 1.1407297043333529,
+    "var_exec_time": 6.544540743522633e-05
+  },
+  {
+    "name": "chromatic delrips multi-threaded",
+    "num_points": 500,
+    "num_colours": 3,
+    "mean_exec_time": 0.08157533566615409,
+    "var_exec_time": 5.3263980978388215e-06
+  },
+  {
+    "name": "chromatic delrips single-threaded",
+    "num_points": 500,
+    "num_colours": 3,
+    "mean_exec_time": 0.07990562299952823,
+    "var_exec_time": 2.2380720623851674e-06
+  },
+  {
+    "name": "chromatic-tda",
+    "num_points": 500,
+    "num_colours": 3,
+    "mean_exec_time": 4.700896396666091,
+    "var_exec_time": 6.895512335066327e-05
+  },
+  {
+    "name": "chromatic alpha multi-threaded",
+    "num_points": 1000,
+    "num_colours": 2,
+    "mean_exec_time": 0.6417689226667184,
+    "var_exec_time": 2.1357712861639648e-05
+  },
+  {
+    "name": "chromatic alpha single-threaded",
+    "num_points": 1000,
+    "num_colours": 2,
+    "mean_exec_time": 0.8613519236660068,
+    "var_exec_time": 1.5292448235987544e-05
+  },
+  {
+    "name": "chromatic delcech multi-threaded",
+    "num_points": 1000,
+    "num_colours": 2,
+    "mean_exec_time": 0.47503513999981806,
+    "var_exec_time": 8.377555934921195e-06
+  },
+  {
+    "name": "chromatic delcech single-threaded",
+    "num_points": 1000,
+    "num_colours": 2,
+    "mean_exec_time": 0.6168871730005776,
+    "var_exec_time": 5.964347627447898e-05
+  },
+  {
+    "name": "chromatic delrips multi-threaded",
+    "num_points": 1000,
+    "num_colours": 2,
+    "mean_exec_time": 0.03793700400031715,
+    "var_exec_time": 1.597079313573521e-06
+  },
+  {
+    "name": "chromatic delrips single-threaded",
+    "num_points": 1000,
+    "num_colours": 2,
+    "mean_exec_time": 0.037354761000339444,
+    "var_exec_time": 5.81241460412882e-08
+  },
+  {
+    "name": "chromatic-tda",
+    "num_points": 1000,
+    "num_colours": 2,
+    "mean_exec_time": 4.207595819665585,
+    "var_exec_time": 0.0013762899080791823
+  },
+  {
+    "name": "chromatic alpha multi-threaded",
+    "num_points": 1000,
+    "num_colours": 3,
+    "mean_exec_time": 2.1428386260001084,
+    "var_exec_time": 5.921037082819443e-05
+  },
+  {
+    "name": "chromatic alpha single-threaded",
+    "num_points": 1000,
+    "num_colours": 3,
+    "mean_exec_time": 2.9567892066661443,
+    "var_exec_time": 0.0007466763999316411
+  },
+  {
+    "name": "chromatic delcech multi-threaded",
+    "num_points": 1000,
+    "num_colours": 3,
+    "mean_exec_time": 1.913988838999406,
+    "var_exec_time": 1.2367293361965366e-05
+  },
+  {
+    "name": "chromatic delcech single-threaded",
+    "num_points": 1000,
+    "num_colours": 3,
+    "mean_exec_time": 2.5030247136667945,
+    "var_exec_time": 0.00025885885024300956
+  },
+  {
+    "name": "chromatic delrips multi-threaded",
+    "num_points": 1000,
+    "num_colours": 3,
+    "mean_exec_time": 0.21159600433323553,
+    "var_exec_time": 1.2794350045969415e-06
+  },
+  {
+    "name": "chromatic delrips single-threaded",
+    "num_points": 1000,
+    "num_colours": 3,
+    "mean_exec_time": 0.20956460900015372,
+    "var_exec_time": 7.047308489019169e-06
+  },
+  {
+    "name": "chromatic-tda",
+    "num_points": 1000,
+    "num_colours": 3,
+    "mean_exec_time": 9.999644219999633,
+    "var_exec_time": 0.0013772498270568664
+  },
+  {
+    "name": "chromatic alpha multi-threaded",
+    "num_points": 2500,
+    "num_colours": 2,
+    "mean_exec_time": 1.6864667373332243,
+    "var_exec_time": 7.19308366883003e-06
+  },
+  {
+    "name": "chromatic alpha single-threaded",
+    "num_points": 2500,
+    "num_colours": 2,
+    "mean_exec_time": 2.2862465316666203,
+    "var_exec_time": 6.980336518034176e-05
+  },
+  {
+    "name": "chromatic delcech multi-threaded",
+    "num_points": 2500,
+    "num_colours": 2,
+    "mean_exec_time": 1.2787811920000725,
+    "var_exec_time": 5.635242806078396e-05
+  },
+  {
+    "name": "chromatic delcech single-threaded",
+    "num_points": 2500,
+    "num_colours": 2,
+    "mean_exec_time": 1.673738523000793,
+    "var_exec_time": 0.000328029211744465
+  },
+  {
+    "name": "chromatic delrips multi-threaded",
+    "num_points": 2500,
+    "num_colours": 2,
+    "mean_exec_time": 0.17301841500011506,
+    "var_exec_time": 1.7208684834538442e-05
+  },
+  {
+    "name": "chromatic delrips single-threaded",
+    "num_points": 2500,
+    "num_colours": 2,
+    "mean_exec_time": 0.17290458133296246,
+    "var_exec_time": 3.330777308904213e-05
+  },
+  {
+    "name": "chromatic-tda",
+    "num_points": 2500,
+    "num_colours": 2,
+    "mean_exec_time": 10.642851635000019,
+    "var_exec_time": 0.0010371039027989464
+  },
+  {
+    "name": "chromatic alpha multi-threaded",
+    "num_points": 2500,
+    "num_colours": 3,
+    "mean_exec_time": 5.814120494666592,
+    "var_exec_time": 0.00044975380012116675
+  },
+  {
+    "name": "chromatic alpha single-threaded",
+    "num_points": 2500,
+    "num_colours": 3,
+    "mean_exec_time": 8.05422412433351,
+    "var_exec_time": 0.005796680802282395
+  },
+  {
+    "name": "chromatic delcech multi-threaded",
+    "num_points": 2500,
+    "num_colours": 3,
+    "mean_exec_time": 5.227603881333077,
+    "var_exec_time": 0.00022345668713903894
+  },
+  {
+    "name": "chromatic delcech single-threaded",
+    "num_points": 2500,
+    "num_colours": 3,
+    "mean_exec_time": 6.963801201999861,
+    "var_exec_time": 0.005078535702131262
+  },
+  {
+    "name": "chromatic delrips multi-threaded",
+    "num_points": 2500,
+    "num_colours": 3,
+    "mean_exec_time": 0.8941458533336117,
+    "var_exec_time": 7.283118589427656e-05
+  },
+  {
+    "name": "chromatic delrips single-threaded",
+    "num_points": 2500,
+    "num_colours": 3,
+    "mean_exec_time": 0.905806875332928,
+    "var_exec_time": 3.1463895242191855e-05
+  },
+  {
+    "name": "chromatic-tda",
+    "num_points": 2500,
+    "num_colours": 3,
+    "mean_exec_time": 26.35153525266651,
+    "var_exec_time": 0.3164228457134278
+  },
+  {
+    "name": "chromatic alpha multi-threaded",
+    "num_points": 5000,
+    "num_colours": 2,
+    "mean_exec_time": 3.671546195000095,
+    "var_exec_time": 0.0004179373282245629
+  },
+  {
+    "name": "chromatic alpha single-threaded",
+    "num_points": 5000,
+    "num_colours": 2,
+    "mean_exec_time": 4.906323779333737,
+    "var_exec_time": 0.000816179688456355
+  },
+  {
+    "name": "chromatic delcech multi-threaded",
+    "num_points": 5000,
+    "num_colours": 2,
+    "mean_exec_time": 2.8515425926664952,
+    "var_exec_time": 7.659770556470997e-05
+  },
+  {
+    "name": "chromatic delcech single-threaded",
+    "num_points": 5000,
+    "num_colours": 2,
+    "mean_exec_time": 3.748794260332943,
+    "var_exec_time": 0.004153717223256601
+  },
+  {
+    "name": "chromatic delrips multi-threaded",
+    "num_points": 5000,
+    "num_colours": 2,
+    "mean_exec_time": 0.6653250406664787,
+    "var_exec_time": 0.00011978757304958348
+  },
+  {
+    "name": "chromatic delrips single-threaded",
+    "num_points": 5000,
+    "num_colours": 2,
+    "mean_exec_time": 0.6568845156671159,
+    "var_exec_time": 0.0006905029401842438
+  },
+  {
+    "name": "chromatic-tda",
+    "num_points": 5000,
+    "num_colours": 2,
+    "mean_exec_time": 22.39250020133295,
+    "var_exec_time": 0.03089354927745328
+  },
+  {
+    "name": "chromatic alpha multi-threaded",
+    "num_points": 5000,
+    "num_colours": 3,
+    "mean_exec_time": 12.81859211866625,
+    "var_exec_time": 0.009105630250425682
+  },
+  {
+    "name": "chromatic alpha single-threaded",
+    "num_points": 5000,
+    "num_colours": 3,
+    "mean_exec_time": 17.277357912333173,
+    "var_exec_time": 0.04578987028985209
+  },
+  {
+    "name": "chromatic delcech multi-threaded",
+    "num_points": 5000,
+    "num_colours": 3,
+    "mean_exec_time": 11.708949393666748,
+    "var_exec_time": 0.014490139646430138
+  },
+  {
+    "name": "chromatic delcech single-threaded",
+    "num_points": 5000,
+    "num_colours": 3,
+    "mean_exec_time": 15.198722120667298,
+    "var_exec_time": 0.16445301915340962
+  },
+  {
+    "name": "chromatic delrips multi-threaded",
+    "num_points": 5000,
+    "num_colours": 3,
+    "mean_exec_time": 3.017253691666459,
+    "var_exec_time": 0.0012683268037306775
+  },
+  {
+    "name": "chromatic delrips single-threaded",
+    "num_points": 5000,
+    "num_colours": 3,
+    "mean_exec_time": 3.0079405166664706,
+    "var_exec_time": 0.009769609859902812
+  },
+  {
+    "name": "chromatic-tda",
+    "num_points": 5000,
+    "num_colours": 3,
+    "mean_exec_time": 55.973318553666104,
+    "var_exec_time": 1.0878897569880677
+  }
+]
