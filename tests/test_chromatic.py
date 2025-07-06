@@ -53,8 +53,7 @@ def test_delaunay_triangulation_degenerate() -> None:
 
 def test_chromatic_alpha_deterministic() -> None:
 	"""Test chromatic alpha on a simple example."""
-	filtration, numerical_errors = ch.chromatic.alpha(points, list(colours))
-	assert not numerical_errors
+	filtration = ch.chromatic.alpha(points, list(colours))
 	assert filtration.is_filtration()
 	assert all(filtration.simplices[0][i].filtration_value == 0 for i in range(4))
 	assert all(math.isclose(filtration.simplices[1][i].filtration_value, 0.5) for i in range(3))
@@ -71,8 +70,7 @@ def test_chromatic_alpha_deterministic() -> None:
 
 def test_chromatic_delcech_deterministic() -> None:
 	"""Test chromatic Delaunay--Cech on a simple example."""
-	filtration, numerical_errors = ch.chromatic.delcech(points, list(colours))
-	assert not numerical_errors
+	filtration = ch.chromatic.delcech(points, list(colours))
 	assert filtration.is_filtration()
 	assert all(filtration.simplices[0][i].filtration_value == 0 for i in range(4))
 	assert all(math.isclose(filtration.simplices[1][i].filtration_value, 0.5) for i in range(3))
@@ -89,8 +87,7 @@ def test_chromatic_delcech_deterministic() -> None:
 
 def test_chromatic_delrips_deterministic() -> None:
 	"""Test chromatic delrips on a simple example."""
-	filtration, numerical_errors = ch.chromatic.delrips(points, list(colours))
-	assert not numerical_errors
+	filtration = ch.chromatic.delrips(points, list(colours))
 	assert filtration.is_filtration()
 	assert all(filtration.simplices[0][i].filtration_value == 0 for i in range(4))
 	assert all(math.isclose(filtration.simplices[1][i].filtration_value, 0.5) for i in range(3))
@@ -120,19 +117,17 @@ def test_chromatic_delcech_random() -> None:
 		for s in num_colours:
 			points = rng.uniform(size=(d, num_points))
 			colours = rng.integers(0, s, size=num_points).tolist()
-			filtration, numerical_errors = ch.chromatic.delcech(
+			filtration = ch.chromatic.delcech(
 				points,
 				colours,
 				max_num_threads=1,
 			)
-			assert not numerical_errors
 			assert filtration.is_filtration()
-			filtration_mt, numerical_errors_mt = ch.chromatic.delcech(
+			filtration_mt = ch.chromatic.delcech(
 				points,
 				colours,
 				max_num_threads=0,
 			)
-			assert not numerical_errors_mt
 			assert filtration_mt.is_filtration()
 			assert filtration.boundary_matrix() == filtration_mt.boundary_matrix()
 
@@ -153,19 +148,17 @@ def test_chromatic_alpha_random() -> None:
 		for s in num_colours:
 			points = rng.uniform(size=(d, num_points))
 			colours = rng.integers(0, s, size=num_points).tolist()
-			filtration_mt, numerical_errors_mt = ch.chromatic.alpha(
+			filtration_mt = ch.chromatic.alpha(
 				points,
 				colours,
 				max_num_threads=0,
 			)
-			assert not numerical_errors_mt
 			assert filtration_mt.is_filtration()
-			filtration, numerical_errors = ch.chromatic.alpha(
+			filtration = ch.chromatic.alpha(
 				points,
 				colours,
 				max_num_threads=1,
 			)
-			assert not numerical_errors
 			assert filtration.is_filtration()
 			assert filtration.boundary_matrix() == filtration_mt.boundary_matrix()
 
@@ -185,19 +178,17 @@ def test_delrips_random() -> None:
 		for s in num_colours:
 			points = rng.uniform(size=(d, 200))
 			colours = rng.integers(0, s, size=200).tolist()
-			filtration, numerical_errors = ch.chromatic.delrips(
+			filtration = ch.chromatic.delrips(
 				points,
 				colours,
 				max_num_threads=1,
 			)
-			assert not numerical_errors
 			assert filtration.is_filtration()
-			filtration_mt, numerical_errors_mt = ch.chromatic.delrips(
+			filtration_mt  = ch.chromatic.delrips(
 				points,
 				colours,
 				max_num_threads=0,
 			)
-			assert not numerical_errors_mt
 			assert filtration_mt.is_filtration()
 			assert filtration.boundary_matrix() == filtration_mt.boundary_matrix()
 
@@ -212,8 +203,8 @@ def test_alpha_delcech_homotopy_equivalent() -> None:
 		for s in num_colours:
 			points = rng.uniform(size=(dim, num_points))
 			colours = rng.integers(0, s + 1, size=num_points).tolist()
-			chromatic_delcech, _ = ch.chromatic.delcech(points, colours)
-			chromatic_alpha, _ = ch.chromatic.alpha(points, colours)
+			chromatic_delcech = ch.chromatic.delcech(points, colours)
+			chromatic_alpha = ch.chromatic.alpha(points, colours)
 			dgms_delcech = ch.sixpack.SubChromaticInclusion(chromatic_delcech, {0}).sixpack()
 			dgms_alpha = ch.sixpack.SubChromaticInclusion(chromatic_alpha, {0}).sixpack()
 			assert dgms_delcech.max_nonempty_dimension() == dgms_alpha.max_nonempty_dimension()

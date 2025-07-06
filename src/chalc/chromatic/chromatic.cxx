@@ -277,9 +277,12 @@ auto delrips(const MatrixXd& points, const vector<colour_t>& colours) -> Filtrat
 
 	// Modify the filtration values.
 	if (delX.dimension() >= 1) {
+		auto points_exact = points.template cast<Mpzf>();
 		for (auto& [idx, edge]: delX.get_simplices()[1]) {
-			auto&& verts  = edge->get_vertex_labels();
-			edge->value() = (points.col(verts[0]) - points.col(verts[1])).norm() * 0.5;
+			auto&& verts = edge->get_vertex_labels();
+			edge->value() =
+				((points_exact.col(verts[0]) - points_exact.col(verts[1])).norm() * Mpzf(0.5))
+					.to_double();
 		}
 		delX.propagate_filt_values(1, true);
 	}
@@ -297,6 +300,7 @@ auto delrips_parallel(
 
 	// Modify the filtration values.
 	if (delX.dimension() >= 1) {
+		auto       points_exact = points.template cast<Mpzf>();
 		task_arena arena(max_num_threads == 0 ? task_arena::automatic : max_num_threads);
 		// Store all the simplex pointers in a vector,
 		// which is convenient to iterate over using the TBB API.
@@ -310,9 +314,12 @@ auto delrips_parallel(
 				blocked_range<size_t>(0, edges.size(), 10000),
 				[&](const blocked_range<size_t>& r) {
 					for (size_t idx = r.begin(); idx < r.end(); idx++) {
-						auto&& edge   = *edges[idx];
-						auto&& verts  = edge->get_vertex_labels();
-						edge->value() = (points.col(verts[0]) - points.col(verts[1])).norm() * 0.5;
+						auto&& edge  = *edges[idx];
+						auto&& verts = edge->get_vertex_labels();
+						edge->value() =
+							((points_exact.col(verts[0]) - points_exact.col(verts[1])).norm() *
+					         Mpzf(0.5))
+								.to_double();
 					}
 				}
 			);
@@ -323,7 +330,7 @@ auto delrips_parallel(
 }
 
 // Compute the chromatic alpha complex.
-auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Filtration, bool> {
+auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> Filtration {
 	// Get the delaunay triangulation.
 	Filtration delX(delaunay(points, colours));
 
@@ -335,7 +342,6 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Fil
 	     colour++, i++) {
 		verts_by_colour.at(*colour).push_back(i);
 	}
-	bool numerical_instability = false;
 	if (delX.dimension() >= 1) {
 		auto to_double = TypeConverter<cmb::SolutionExactType, double>{};
 
@@ -396,6 +402,7 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Fil
 				// E * x = b i.e., it lies in the affine subspace E.
 				auto&& [centre, sqRadius, success] =
 					constrained_miniball<SolutionPrecision::EXACT>(points_exact(all, verts), E, b);
+				assert(success && "Constrained miniball failed.");
 				bool stack_is_empty = true;
 				if (p == delX.dimension()) {
 					// For maximal simplices there is nothing more to do.
@@ -435,12 +442,10 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Fil
 						}
 					}
 				}
-				// Check if there were any numerical issues.
-				numerical_instability |= !success;
 			}
 		}
 	}
-	return tuple{delX, static_cast<bool>(numerical_instability)};
+	return delX;
 }
 
 // Construct the chromatic alpha filtration with parallelisation.
@@ -448,7 +453,7 @@ auto alpha_parallel(
 	const MatrixXd&         points,
 	const vector<colour_t>& colours,
 	const int               max_num_threads
-) -> tuple<Filtration, bool> {
+) -> Filtration {
 	// Get the delaunay triangulation.
 	Filtration delX(delaunay<CGAL::Parallel_tag>(points, colours));
 
@@ -460,7 +465,6 @@ auto alpha_parallel(
 	     colour++, i++) {
 		verts_by_colour.at(*colour).push_back(i);
 	}
-	bool numerical_instability = false;
 	if (delX.dimension() >= 1) {
 		task_arena arena(max_num_threads == 0 ? task_arena::automatic : max_num_threads);
 		// Modify the filtration values
@@ -468,11 +472,10 @@ auto alpha_parallel(
 		auto&& points_exact_q = points.template cast<Quotient<Mpzf>>();
 
 		// Each worker thread will get its own copy of the quotient-to-double approximator.
-		enumerable_thread_specific<TypeConverter<cmb::SolutionExactType, double>> thread_local_to_double;
+		enumerable_thread_specific<TypeConverter<cmb::SolutionExactType, double>>
+			thread_local_to_double;
 		// Start at the current dimension.
 		for (auto&& p = delX.dimension(); p >= 1; p--) {
-			// Reserve space for all the numerical issue return values.
-			vector<bool> issues(delX.get_simplices()[p].size(), false);
 			// Store all the simplex pointers in a vector,
 			// which is convenient to iterate over using the TBB API.
 			vector<const shared_ptr<Filtration::Simplex>*> simplices;
@@ -482,7 +485,7 @@ auto alpha_parallel(
 			}
 			arena.execute([&] {
 				parallel_for(
-					blocked_range<size_t>(0, simplices.size(), 250),
+					blocked_range<size_t>(0, simplices.size(), 500),
 					[&](const blocked_range<size_t>& r) {
 						auto&& to_double = thread_local_to_double.local();
 						for (size_t idx = r.begin(); idx < r.end(); idx++) {
@@ -587,39 +590,32 @@ auto alpha_parallel(
 									}
 								}
 							}
-							// Check if there were any numerical issues.
-							issues[idx] = !success;
 						}
 					}
 				);
 			});
-			numerical_instability |= any_of(issues, [](bool issue) {
-				return issue;
-			});
 		}
 	}
 
-	return tuple{delX, static_cast<bool>(numerical_instability)};
+	return delX;
 }
 
 // Create the chromatic Delaunay-Cech complex.
-auto delcech(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<Filtration, bool> {
+auto delcech(const MatrixXd& points, const vector<colour_t>& colours) -> Filtration {
 	// Get the delaunay triangulation.
 	Filtration delX(delaunay(points, colours));
 	// Modify the filtration values.
-	bool       numerical_instability = false;
-	auto       points_exact_q        = points.template cast<Quotient<Mpzf>>();
-	const auto one_by_four =
-		Quotient<Mpzf>(Mpzf(0.25));  // Used for the edge lengths.
-	auto to_double = TypeConverter<cmb::SolutionExactType, double>{};
+	auto       points_exact_q = points.template cast<Quotient<Mpzf>>();
+	const auto one_by_four    = Quotient<Mpzf>(Mpzf(0.25));  // Used for the edge lengths.
+	auto       to_double      = TypeConverter<cmb::SolutionExactType, double>{};
 	if (delX.dimension() >= 1) {
 		for (auto&& p = delX.dimension(); p > 1; p--) {
 			for (auto&& [_, simplex]: delX.get_simplices()[p]) {
 				auto&& verts = simplex->get_vertex_labels();
 				auto&& [centre, sqRadius, success] =
 					miniball<SolutionPrecision::EXACT>(points(all, verts));
-				simplex->value()       = sqrt(to_double(sqRadius));
-				numerical_instability |= !success;
+				assert(success && "Miniball failed.");
+				simplex->value() = sqrt(to_double(sqRadius));
 			}
 		}
 		// Fast version for dimension 1.
@@ -633,7 +629,7 @@ auto delcech(const MatrixXd& points, const vector<colour_t>& colours) -> tuple<F
 			));
 		}
 	}
-	return tuple{delX, numerical_instability};
+	return delX;
 }
 
 // Create the chromatic Delaunay--Cech complex.
@@ -641,22 +637,19 @@ auto delcech_parallel(
 	const MatrixXd&         points,
 	const vector<colour_t>& colours,
 	const int               max_num_threads
-) -> tuple<Filtration, bool> {
+) -> Filtration {
 	// Start
 	// Get the delaunay triangulation.
 	Filtration delX(delaunay<CGAL::Parallel_tag>(points, colours));
 	// Modify the filtration values.
-	bool       numerical_instability = false;
-	auto       points_exact_q        = points.template cast<Quotient<Mpzf>>();
-	const auto one_by_four =
-		Quotient<Mpzf>(Mpzf(0.25), Mpzf(1.0));  // Used for the edge lengths.
+	auto       points_exact_q = points.template cast<Quotient<Mpzf>>();
+	const auto one_by_four = Quotient<Mpzf>(Mpzf(0.25), Mpzf(1.0));  // Used for the edge lengths.
 	if (delX.dimension() >= 1) {
 		task_arena arena(max_num_threads == 0 ? task_arena::automatic : max_num_threads);
 		// Each worker thread will get its own copy of the quotient-to-double approximator.
-		enumerable_thread_specific<TypeConverter<cmb::SolutionExactType, double>> thread_local_to_double;
+		enumerable_thread_specific<TypeConverter<cmb::SolutionExactType, double>>
+			thread_local_to_double;
 		for (auto&& p = delX.dimension(); p > 1; p--) {
-			// Reserve space for all the numerical issue return values
-			vector<bool> issues(delX.get_simplices()[p].size(), false);
 			// Store all the simplex pointers in a vector,
 			// which is convenient to iterate over using the TBB API.
 			vector<const shared_ptr<Filtration::Simplex>*> simplices;
@@ -675,13 +668,9 @@ auto delcech_parallel(
 							auto&& [centre, sqRadius, success] =
 								miniball<SolutionPrecision::EXACT>(points(all, verts));
 							simplex->value() = sqrt(to_double(sqRadius));
-							issues[idx]      = !success;
 						}
 					}
 				);
-			});
-			numerical_instability |= any_of(issues, [](bool issue) {
-				return issue;
 			});
 		}
 		// Fast version for dimension 1.
@@ -710,7 +699,7 @@ auto delcech_parallel(
 			);
 		});
 	}
-	return tuple{delX, numerical_instability};
+	return delX;
 }
 
 }  // namespace chalc

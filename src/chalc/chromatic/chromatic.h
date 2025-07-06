@@ -59,25 +59,25 @@ auto delrips_parallel(
 
 // Compute the chromatic alpha complex
 auto alpha(const Eigen::MatrixXd& points, const std::vector<colour_t>& colours)
-	-> std::tuple<Filtration, bool>;
+	-> Filtration;
 
 // Compute the chromatic alpha complex with parallelisation
 auto alpha_parallel(
 	const Eigen::MatrixXd&       points,
 	const std::vector<colour_t>& colours,
 	const int                    max_num_threads
-) -> std::tuple<Filtration, bool>;
+) -> Filtration;
 
 // Compute the chromatic Delaunay--Cech complex
 auto delcech(const Eigen::MatrixXd& points, const std::vector<colour_t>& colours)
-	-> std::tuple<Filtration, bool>;
+	-> Filtration;
 
 // Compute the chromatic Delaunay--Cech complex with parallelisation
 auto delcech_parallel(
 	const Eigen::MatrixXd&       points,
 	const std::vector<colour_t>& colours,
 	const int                    max_num_threads
-) -> std::tuple<Filtration, bool>;
+) -> Filtration;
 }  // namespace chalc
 
 #endif

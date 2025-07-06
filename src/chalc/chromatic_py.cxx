@@ -1,3 +1,4 @@
+#include <boost/type_traits/type_with_alignment.hpp>
 #include <chalc/chromatic/chromatic.h>
 #include <pybind11/eigen.h>
 #include <pybind11/pybind11.h>
@@ -78,10 +79,10 @@ Returns:
 	           const Eigen::VectorX<colour_t>& colours_ndarray,
 	           const int max_num_threads) {
 				const vector<colour_t> colours(colours_ndarray.cbegin(), colours_ndarray.cend());
-				if (max_num_threads != 1) {
-					return tuple{delrips_parallel(points, colours, max_num_threads), false};
+				if (max_num_threads == 1) {
+					return delrips(points, colours);
 				} else {
-					return tuple{delrips(points, colours), false};
+					return delrips_parallel(points, colours, max_num_threads);
 				}
 			},
 			py::arg("points"),
@@ -93,10 +94,10 @@ Returns:
 			[](const Eigen::MatrixXd& points,
 	           const vector<colour_t>& colours,
 	           const int max_num_threads) {
-				if (max_num_threads != 1) {
-					return tuple{delrips_parallel(points, colours, max_num_threads), false};
+				if (max_num_threads == 1) {
+					return delrips(points, colours);
 				} else {
-					return tuple{delrips(points, colours), false};
+					return delrips_parallel(points, colours, max_num_threads);
 				}
 			},
 			R"docstring(Compute the chromatic Delaunay--Rips filtration of a coloured point cloud.
@@ -111,9 +112,7 @@ Args:
 		and the system load.
 
 Returns:
-	The chromatic Delaunay--Rips filtration and a boolean flag to indicate
-	if numerical issues were encountered.
-	In case of numerical issues, a warning is also raised.
+	The chromatic Delaunay--Rips filtration.
 
 Raises:
 	ValueError:
@@ -148,10 +147,10 @@ See Also:
 	           const Eigen::VectorX<colour_t>& colours_ndarray,
 	           const int max_num_threads) {
 				const vector<colour_t> colours(colours_ndarray.cbegin(), colours_ndarray.cend());
-				if (max_num_threads != 1) {
-					return alpha_parallel(points, colours, max_num_threads);
-				} else {
+				if (max_num_threads == 1) {
 					return alpha(points, colours);
+				} else {
+					return alpha_parallel(points, colours, max_num_threads);
 				}
 			},
 			py::arg("points"),
@@ -163,10 +162,10 @@ See Also:
 			[](const Eigen::MatrixXd& points,
 	           const vector<colour_t>& colours,
 	           const int max_num_threads) {
-				if (max_num_threads != 1) {
-					return alpha_parallel(points, colours, max_num_threads);
-				} else {
+				if (max_num_threads == 1) {
 					return alpha(points, colours);
+				} else {
+					return alpha_parallel(points, colours, max_num_threads);
 				}
 			},
 			R"docstring(Compute the chromatic alpha filtration of a coloured point cloud.
@@ -181,9 +180,7 @@ Args:
 		and the system load.
 
 Returns:
-	The chromatic alpha filtration and a boolean flag to
-	indicate if numerical issues were encountered.
-	In case of numerical issues, a warning is also raised.
+	The chromatic alpha filtration.
 
 Raises:
 	ValueError:
@@ -196,8 +193,7 @@ Raises:
 
 Notes:
 	:func:`chalc.chromatic.delcech` has the same 6-pack of persistent homology, and often
-	has slightly better performance. We recommend benchmarking your application
-	to find what works best for you.
+	has slightly better performance.
 
 See Also:
 	:func:`delrips`, :func:`delcech`
@@ -213,10 +209,10 @@ See Also:
 	           const Eigen::VectorX<colour_t>& colours_ndarray,
 	           const int max_num_threads) {
 				const vector<colour_t> colours(colours_ndarray.cbegin(), colours_ndarray.cend());
-				if (max_num_threads != 1) {
-					return delcech_parallel(points, colours, max_num_threads);
-				} else {
+				if (max_num_threads == 1) {
 					return delcech(points, colours);
+				} else {
+					return delcech_parallel(points, colours, max_num_threads);
 				}
 			},
 			py::arg("points"),
@@ -228,10 +224,11 @@ See Also:
 			[](const Eigen::MatrixXd& points,
 	           const vector<colour_t>& colours,
 	           const int max_num_threads) {
-				if (max_num_threads != 1) {
+				if (max_num_threads == 1) {
+					return delcech(points, colours);
+				} else {
 					return delcech_parallel(points, colours, max_num_threads);
 				}
-				return delcech(points, colours);
 			},
 			R"docstring(Compute the chromatic Delaunay--Čech filtration of a coloured point cloud.
 
@@ -245,9 +242,7 @@ Args:
 		and the system load.
 
 Returns:
-	The chromatic Delaunay--Čech filtration and a boolean flag to indicate
-	if numerical issues were encountered.
-	In case of numerical issues, a warning is also raised.
+	The chromatic Delaunay--Čech filtration.
 
 Raises:
 	ValueError :
@@ -261,7 +256,8 @@ Raises:
 Notes:
 	The chromatic Delaunay--Čech filtration of the point cloud
 	has the same set of simplices as the chromatic alpha filtration,
-	but with Čech filtration times.
+	but with Čech filtration times. Despite the different filtration values,
+	it has the same persistent homology as the chromatic alpha filtration.
 
 See Also:
 	:func:`alpha`, :func:`delrips`

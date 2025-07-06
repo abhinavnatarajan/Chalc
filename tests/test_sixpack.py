@@ -20,8 +20,7 @@ def test_kchromatic_inclusion_vs_quotient() -> None:
 	for dim, s in product(dims, num_colours):
 		points = rng.uniform(size=(dim, num_points))
 		colours = rng.integers(0, s, size=num_points).tolist()
-		filtration, numerical_errors = ch.chromatic.delrips(points, colours, max_num_threads=0)
-		assert not numerical_errors
+		filtration = ch.chromatic.delrips(points, colours, max_num_threads=0)
 		dgms_inclusion = ch.sixpack.KChromaticInclusion(
 			filtration,
 			1,
@@ -53,12 +52,11 @@ def test_kchromatic_vs_subchromatic_inclusion() -> None:
 			colour_combos = list(combinations(range(s), k))
 			points = rng.uniform(size=(dim, num_points))
 			colours = rng.integers(0, s, size=num_points).tolist()
-			filtration, numerical_errors = ch.chromatic.delrips(
+			filtration = ch.chromatic.delrips(
 				points,
 				colours,
 				max_num_threads=0,
 			)
-			assert not numerical_errors
 			dgms_kchromatic = ch.sixpack.KChromaticInclusion(
 				filtration,
 				k,
@@ -93,12 +91,11 @@ def test_kchromatic_vs_subchromatic_quotient() -> None:
 			colour_combos = tuple((c,) for c in combinations(range(s), k))
 			points = rng.uniform(size=(dim, num_points))
 			colours = rng.integers(0, s, size=num_points).tolist()
-			filtration, numerical_errors = ch.chromatic.delrips(
+			filtration = ch.chromatic.delrips(
 				points,
 				colours,
 				max_num_threads=0,
 			)
-			assert not numerical_errors
 			dgms_kchromatic = ch.sixpack.KChromaticQuotient(
 				filtration,
 				k,
@@ -137,7 +134,7 @@ def test_subchromatic_inclusion_vs_quotient() -> None:
 			n_face_verts = rng.integers(1, num_colours)
 			face = rng.choice(list(range(num_colours)), size=n_face_verts, replace=False)
 			tau.append(face)
-		filtration, _ = ch.chromatic.delrips(
+		filtration = ch.chromatic.delrips(
 			points,
 			colours,
 			max_num_threads=0,
@@ -160,4 +157,3 @@ def test_subchromatic_inclusion_vs_quotient() -> None:
 			for d in range(dgms_inclusion.max_nonempty_dimension() + 1)
 		]
 		assert math.isclose(max(dists), 0, abs_tol=1e-6)
-
