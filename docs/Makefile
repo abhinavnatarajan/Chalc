@@ -12,18 +12,12 @@ BUILDDIR      = build
 help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-stubs:
-	@echo "Generating stubs for chalc.chromatic"
-	@python -m pybind11_stubgen chalc.chromatic --numpy-array-use-type-var --output-dir ../src
-	@echo "Generating stubs for chalc.filtration"
-	@python -m pybind11_stubgen chalc.filtration --numpy-array-use-type-var --output-dir ../src
-
-.PHONY: help Makefile stubs clean all
+.PHONY: help Makefile clean all test
 
 clean:
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
-%: Makefile stubs
+%: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
