@@ -23,22 +23,20 @@ Functions
 Module Contents
 ---------------
 
-.. py:function:: alpha(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, Literal[1]], numpy.dtype[numpy.uint16]], max_num_threads: int = 1) -> tuple[chalc.filtration.Filtration, bool]
-                 alpha(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 1) -> tuple[chalc.filtration.Filtration, bool]
+.. py:function:: alpha(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, Literal[1]], numpy.dtype[numpy.uint16]], max_num_threads: int = 0) -> chalc.filtration.Filtration
+                 alpha(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 0) -> chalc.filtration.Filtration
 
    Compute the chromatic alpha filtration of a coloured point cloud.
 
    :param points: Numpy matrix whose columns are points in the point cloud.
    :param colours: List or numpy array of integers describing the colours of the points.
-   :param max_num_threads: Maximum number of parallel threads to use.
+   :param max_num_threads: Hint for maximum number of parallel threads to use.
                            If non-positive, the number of threads to use is automatically determined
                            by the threading library (Intel OneAPI TBB). Note that this may be less
                            than the number of available CPU cores depending on the number of points
-                           and the system load. The default is 1, which means no parallelism.
+                           and the system load.
 
-   :returns: The chromatic alpha filtration and a boolean flag to
-             indicate if numerical issues were encountered.
-             In case of numerical issues, a warning is also raised.
+   :returns: The chromatic alpha filtration.
 
    :raises ValueError: If any value in ``colours`` is
        >= :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>` or < 0,
@@ -48,20 +46,20 @@ Module Contents
 
    .. rubric:: Notes
 
-   This function is included for pedantic reasons.
-   For most purposes you should instead consider using :func:`chalc.chromatic.delcech`,
-   which is faster to compute, more numerically stable, and has the same persistent homology.
+   :func:`chalc.chromatic.delcech` has the same 6-pack of persistent homology, and often
+   has slightly better performance.
 
    .. seealso:: :func:`delrips`, :func:`delcech`
 
 
-.. py:function:: delaunay(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, Literal[1]], numpy.dtype[numpy.uint16]]) -> chalc.filtration.Filtration
-                 delaunay(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int]) -> chalc.filtration.Filtration
+.. py:function:: delaunay(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, Literal[1]], numpy.dtype[numpy.uint16]], parallel: bool = True) -> chalc.filtration.Filtration
+                 delaunay(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], parallel: bool = True) -> chalc.filtration.Filtration
 
    Compute the chromatic Delaunay triangulation of a coloured point cloud in Euclidean space.
 
    :param points: Numpy matrix whose columns are points in the point cloud.
    :param colours: List or numpy array of integers describing the colours of the points.
+   :param parallel: If true, use parallel computation during the spatial sorting phase of the triangulation.
 
    :raises ValueError: If any value in ``colours`` is
        >= :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>` or < 0,
@@ -72,22 +70,20 @@ Module Contents
    :returns: The Delaunay triangulation.
 
 
-.. py:function:: delcech(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, Literal[1]], numpy.dtype[numpy.uint16]], max_num_threads: int = 1) -> tuple[chalc.filtration.Filtration, bool]
-                 delcech(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 1) -> tuple[chalc.filtration.Filtration, bool]
+.. py:function:: delcech(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, Literal[1]], numpy.dtype[numpy.uint16]], max_num_threads: int = 0) -> chalc.filtration.Filtration
+                 delcech(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 0) -> chalc.filtration.Filtration
 
    Compute the chromatic Delaunay--Čech filtration of a coloured point cloud.
 
    :param points: Numpy matrix whose columns are points in the point cloud.
    :param colours: List or numpy array of integers describing the colours of the points.
-   :param max_num_threads: Maximum number of parallel threads to use.
+   :param max_num_threads: Hint for maximum number of parallel threads to use.
                            If non-positive, the number of threads to use is automatically determined
                            by the threading library (Intel OneAPI TBB). Note that this may be less
                            than the number of available CPU cores depending on the number of points
-                           and the system load. The default is 1, which means no parallelism.
+                           and the system load.
 
-   :returns: The chromatic Delaunay--Čech filtration and a boolean flag to indicate
-             if numerical issues were encountered.
-             In case of numerical issues, a warning is also raised.
+   :returns: The chromatic Delaunay--Čech filtration.
 
    :raises ValueError: If any value in ``colours`` is
        >= :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>` or < 0,
@@ -99,27 +95,26 @@ Module Contents
 
    The chromatic Delaunay--Čech filtration of the point cloud
    has the same set of simplices as the chromatic alpha filtration,
-   but with Čech filtration times.
+   but with Čech filtration times. Despite the different filtration values,
+   it has the same persistent homology as the chromatic alpha filtration.
 
    .. seealso:: :func:`alpha`, :func:`delrips`
 
 
-.. py:function:: delrips(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, Literal[1]], numpy.dtype[numpy.uint16]], max_num_threads: int = 1) -> tuple[chalc.filtration.Filtration, bool]
-                 delrips(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 1) -> tuple[chalc.filtration.Filtration, bool]
+.. py:function:: delrips(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, Literal[1]], numpy.dtype[numpy.uint16]], max_num_threads: int = 0) -> chalc.filtration.Filtration
+                 delrips(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 0) -> chalc.filtration.Filtration
 
    Compute the chromatic Delaunay--Rips filtration of a coloured point cloud.
 
    :param points: Numpy matrix whose columns are points in the point cloud.
    :param colours: List or numpy array of integers describing the colours of the points.
-   :param max_num_threads: Maximum number of parallel threads to use.
+   :param max_num_threads: Hint for maximum number of parallel threads to use.
                            If non-positive, the number of threads to use is automatically determined
                            by the threading library (Intel OneAPI TBB). Note that this may be less
                            than the number of available CPU cores depending on the number of points
-                           and the system load. The default is 1, which means no parallelism.
+                           and the system load.
 
-   :returns: The chromatic Delaunay--Rips filtration and a boolean flag to indicate
-             if numerical issues were encountered.
-             In case of numerical issues, a warning is also raised.
+   :returns: The chromatic Delaunay--Rips filtration.
 
    :raises ValueError: If any value in ``colours`` is
        >= :attr:`MaxColoursChromatic <chalc.chromatic.MaxColoursChromatic>` or < 0,

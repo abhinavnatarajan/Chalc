@@ -178,8 +178,6 @@ Module Contents
 
       Check if a simplex is in the |ith| subfiltration.
 
-      .. |ith| replace:: i\ :sup:`th`\
-
 
 
    .. py:method:: sixpack(max_diagram_dimension: int | None = None) -> chalc.sixpack.types.SixPack
@@ -324,8 +322,6 @@ Module Contents
    .. py:method:: simplex_in_filtration(column: tuple[list[int], int, float, list[int]], i: int) -> bool
 
       Check if a simplex is in the |ith| subfiltration.
-
-      .. |ith| replace:: i\ :sup:`th`\
 
 
 
@@ -492,8 +488,6 @@ Module Contents
    .. py:method:: simplex_in_filtration(column: tuple[list[int], int, float, list[int]], i: int) -> bool
 
       Check if a simplex is in the |ith| subfiltration.
-
-      .. |ith| replace:: i\ :sup:`th`\
 
 
 

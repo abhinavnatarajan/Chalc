@@ -284,8 +284,6 @@ Package Contents
 
       Check if a simplex is in the |ith| subfiltration.
 
-      .. |ith| replace:: i\ :sup:`th`\
-
 
 
 .. py:class:: SimplexPairings(paired: collections.abc.Collection[tuple[int, int]] = set(), unpaired: collections.abc.Collection[int] = set())
@@ -349,12 +347,6 @@ Package Contents
 
 
       Set of indices of paired simplices.
-
-
-   .. py:method:: paired_as_matrix() -> numpy.ndarray[tuple[int, Literal[2]], numpy.dtype[numpy.int64]]
-
-      Return a matrix representation of the finite persistence features in the diagram.
-
 
 
    .. py:property:: unpaired
@@ -452,7 +444,7 @@ Package Contents
 
 
    .. py:method:: get_matrix(diagram_name: DiagramName, dimension: int) -> numpy.ndarray[tuple[int, Literal[2]], numpy.dtype[numpy.float64]]
-                  get_matrix(diagram_name: DiagramName, dimension: list[int] | None = None) -> list[numpy.ndarray[tuple[int, Literal[2]], numpy.dtype[numpy.float64]]]
+                  get_matrix(diagram_name: DiagramName, dimension: collections.abc.Sequence[int] | None = None) -> list[numpy.ndarray[tuple[int, Literal[2]], numpy.dtype[numpy.float64]]]
 
       Get a specific diagram as a matrix of birth and death times.
 
@@ -479,6 +471,14 @@ Package Contents
    .. py:method:: keys() -> collections.abc.KeysView[DiagramName]
 
       View of the names of the diagrams in the 6-pack.
+
+
+
+   .. py:method:: max_nonempty_dimension() -> int
+
+      Get the maximum dimension of features across all diagrams.
+
+      Returns -1 if there are no features in the 6-pack.
 
 
 
@@ -673,8 +673,6 @@ Package Contents
    .. py:method:: simplex_in_filtration(column: tuple[list[int], int, float, list[int]], i: int) -> bool
 
       Check if a simplex is in the |ith| subfiltration.
-
-      .. |ith| replace:: i\ :sup:`th`\
 
 
 

@@ -109,7 +109,7 @@ If you do not have vcpkg installed, the build process will automatically downloa
 
             # To build chalc as an editable package in a new virtual environment.
             # This will also install the dependencies for testing and building documentation.
-            uv sync --frozen --all-groups
+            uv sync --locked --all-groups --exact --verbose
 
     .. tab-item:: pip
         :sync: pip

@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Installation" href="installation.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>chalc 12.0.1 documentation</title>
+        <title>chalc 13.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
@@ -169,7 +169,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="#"><div class="brand">chalc 12.0.1 documentation</div></a>
+      <a href="#"><div class="brand">chalc 13.0.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="#">
   
   
-  <span class="sidebar-brand-text">chalc 12.0.1 documentation</span>
+  <span class="sidebar-brand-text">chalc 13.0.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -270,9 +270,26 @@
         <article role="main" id="furo-main-content">
           <section id="chalc-documentation">
 <h1>Chalc Documentation<a class="headerlink" href="#chalc-documentation" title="Link to this heading">¶</a></h1>
-<p>Chalc is a Python package for computing chromatic Delaunay filtrations of labelled point clouds in Euclidean space, and associated six-packs of persistent homology diagrams.
-Chalc is named for <span class="underline">ch</span>romatic <span class="underline">al</span>pha <span class="underline">c</span>omplexes, but it can also compute chromatic Delaunay–Čech and chromatic Delaunay–Rips filtrations.
-Chalc is written in C++ and relies on the <a class="reference external" href="https://www.cgal.org">Computational Geometry Algorithms Library (CGAL)</a> for fast and accurate geometric computations, <a class="reference external" href="https://github.com/tomchaplin/phimaker">Phimaker</a> for persistent homology calculations, and <a class="reference external" href="https://www.threadingbuildingblocks.org">Intel OneAPI Threading Building Blocks (TBB)</a> for parallelism.</p>
+<p>Chalc is a Python package for computing chromatic Delaunay filtrations of labelled point clouds in Euclidean space, and the associated 6-packs of persistent homology diagrams.
+6-packs are algebraic structures which can be used to quantify spatial relationships between various classes of points in a labelled point cloud, and chromatic Delaunay filtrations are a computational tool that make it feasible to compute 6-packs for low-dimensional labelled datasets.
+Chalc is named for <span class="underline">ch</span>romatic <span class="underline">al</span>pha <span class="underline">c</span>omplexes, which were defined in <a class="reference internal" href="#id2"><span class="std std-ref">[1]</span></a>, but the package can also compute chromatic Delaunay–Čech and chromatic Delaunay–Rips filtrations, which are computationally simpler and are based on the ideas in <a class="reference internal" href="#id4"><span class="std std-ref">[2]</span></a>.
+Chalc is written in C++ and relies on the <a class="reference external" href="https://www.cgal.org">Computational Geometry Algorithms Library (CGAL)</a> for geometric computations, <a class="reference external" href="https://github.com/tomchaplin/phimaker">Phimaker</a> for persistent homology calculations, and <a class="reference external" href="https://www.threadingbuildingblocks.org">Intel OneAPI Threading Building Blocks (TBB)</a> for parallelism.</p>
+<p>Here are some key features of Chalc:</p>
+<ol class="arabic simple">
+<li><p>Internal computations are performed with multiple precision exact arithmetic.</p></li>
+<li><p>Chalc will try to produce reasonable results even when the input points are degenerate.</p></li>
+<li><p>Parallelism is used wherever possible to speed up computations (unless explicitly disabled).</p></li>
+<li><p>Lock-free computation of persistence diagrams using the algorithm of <a class="reference internal" href="#id6"><span class="std std-ref">[3]</span></a>, along with the clearing optimisation from <a class="reference internal" href="#id7"><span class="std std-ref">[4]</span></a>.</p></li>
+</ol>
+<p>There are no constraints on the dimensionality of the point clouds that Chalc can handle, and up to 16 colours are supported.
+However, the package is primarily intended for 2D and 3D point clouds with two or three colours and a few thousand points.
+You may run into significant memory bottlenecks in higher dimensions or with more colours unless you have very few points.</p>
+<section id="contributing">
+<h2>Contributing<a class="headerlink" href="#contributing" title="Link to this heading">¶</a></h2>
+<p>Writing a mathematical library that is performant, bug-free, composable, and well-documented is a considerable task, and we welcome contributions from users of this package.
+If you find a bug, or an error in the documentation, or have a feature request, or would like to contribute, please open an <a class="reference external" href="https://github.com/abhinavnatarajan/Chalc/issues">issue on the GitHub repository</a>.
+If you have a question about how to use the package, please open a <a class="reference external" href="https://github.com/abhinavnatarajan/Chalc/discussions">discussion on the GitHub repository</a>.</p>
+</section>
 <section id="documentation-index">
 <h2>Documentation index<a class="headerlink" href="#documentation-index" title="Link to this heading">¶</a></h2>
 <div class="toctree-wrapper compound" id="toc">
@@ -283,7 +300,15 @@ Chalc is written in C++ and relies on the <a class="reference external" href="ht
 <li class="toctree-l2"><a class="reference internal" href="installation.html#building-the-documentation">Building the Documentation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="example.html">Example Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example.html">Example Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="example.html#Computing-chromatic-filtrations">Computing chromatic filtrations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example.html#Computing-6-packs-of-persistence-diagrams">Computing 6-packs of persistence diagrams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example.html#Plotting-6-packs-of-persistence-diagrams">Plotting 6-packs of persistence diagrams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example.html#Saving-diagrams-to-file">Saving diagrams to file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example.html#Other-mapping-methods">Other mapping methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example.html#Animating-the-filtration">Animating the filtration</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="API.html">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="autoapi/chalc/index.html">chalc</a></li>
 </ul>
@@ -300,8 +325,8 @@ Chalc is written in C++ and relies on the <a class="reference external" href="ht
 </section>
 <section id="citing-this-software">
 <h2>Citing this Software<a class="headerlink" href="#citing-this-software" title="Link to this heading">¶</a></h2>
-<p>If you want to use chalc in your work, please use the following citation:</p>
-<div class="sd-tab-set docutils">
+<p>If you find chalc useful, please consider citing it as below:</p>
+<div class="sd-tab-set docutils" id="morse-theory-for-chromatic-delaunay-triangulations">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="text" for="sd-tab-item-0">
 Text</label><div class="sd-tab-content docutils">
@@ -325,12 +350,28 @@ BibTex</label><div class="sd-tab-content docutils">
 </section>
 <section id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading">¶</a></h2>
-<p>The Python package <a class="reference external" href="https://pypi.org/project/chromatic-tda/">chromatic-tda</a> (written by the original authors of <a class="reference internal" href="#sebastiano"><span class="std std-ref">[1]</span></a>) has similar functionality, and can compute chromatic alpha filtrations and their six-packs of persistence diagrams, but does not provide functionality to compute chromatic Delaunay–Čech or chromatic Delaunay–Rips filtrations.</p>
+<p>The Python package <a class="reference external" href="https://pypi.org/project/chromatic-tda/">chromatic-tda</a> is written and maintained by the authors of <a class="reference internal" href="#id2"><span class="std std-ref">[1]</span></a>, the original creators of chromatic alpha filtrations, and we are indebted to them for their work.
+Chromatic-tda can compute chromatic alpha filtrations and their six-packs of persistence diagrams.
+It can also compute cycle representatives for persistent features, which chalc does not currently provide (although this is planned for a future release).</p>
+<p>On the other hand, chalc can compute chromatic Delaunay–Čech or chromatic Delaunay–Rips filtrations, which chromatic-tda does not currently support.
+Chalc is generally faster than chromatic-tda due to its lower-level implementation and the use of parallelism.
+If you are working with a large number of datasets, or with individual datasets with more than a few thousand points, you will likely find chalc to be significantly faster than chromatic-tda.
+The following is a chart comparing the runtime performance of chalc v13.0.0 and chromatic-tda v1.1.8 on randomly generated 2-dimensional point clouds with two and three colours.
+These tests were run on a laptop with an AMD Ryzen 7 6800U processor (8 cores &#64;2.7Ghz, x86-64 ISA) and 16 GB of RAM, running Ubuntu 24.04 (kernel 6.12.10-76061203-generic) and using Python 3.13.2.
+The code used to run these tests and generate the charts are available in the <code class="docutils literal notranslate"><span class="pre">docs/source</span></code> folder of the chalc repository, and the raw results are available as a JSON file in the same folder.</p>
+<img alt="_images/timing_results.png" src="_images/timing_results.png" />
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
 <ol class="arabic simple">
-<li><p><span class="target" id="sebastiano">Sebastiano</span> Cultrera di Montesano, Ondřej Draganov, Herbert Edelsbrunner, and Morteza Saghafian. “Chromatic Alpha Complexes”. Feb. 7, 2024. arXiv: <a class="reference external" href="https://arxiv.org/abs/2212.03128">2212.03128</a>.</p></li>
+<li><p id="id2">Sebastiano Cultrera di Montesano, Ondřej Draganov, Herbert Edelsbrunner, and Morteza Saghafian. “Chromatic Alpha Complexes”. Feb. 7, 2024. arXiv: <a class="reference external" href="https://arxiv.org/abs/2212.03128">2212.03128</a>.</p>
+</li>
+<li><p id="id4">Abhinav Natarajan, Thomas Chaplin, Adam Brown, and Maria-Jose Jimenez. “Morse Theory for Chromatic Delaunay Triangulations”. May 30, 2024. arXiv: <a class="reference external" href="https://arxiv.org/abs/2405.19303">2405.19303</a>.</p>
+</li>
+<li><p id="id6">Dmitriy Morozov and Arnur Nigmetov. 2020. Towards Lockfree Persistent Homology. In Proceedings of the 32nd ACM Symposium on Parallelism in Algorithms and Architectures (SPAA ‘20). Association for Computing Machinery, New York, NY, USA, 555–557. <a class="reference external" href="https://doi.org/10.1145/3350755.3400244">https://doi.org/10.1145/3350755.3400244</a>.</p>
+</li>
+<li><p id="id7">Bauer, U., Kerber, M., Reininghaus, J. (2014). Clear and Compress: Computing Persistent Homology in Chunks. In: Bremer, PT., Hotz, I., Pascucci, V., Peikert, R. (eds) Topological Methods in Data Analysis and Visualization III. Mathematics and Visualization. Springer, Cham. <a class="reference external" href="https://doi.org/10.1007/978-3-319-04099-8_7">https://doi.org/10.1007/978-3-319-04099-8_7</a>.</p>
+</li>
 </ol>
 </section>
 </section>
@@ -381,6 +422,7 @@ BibTex</label><div class="sd-tab-content docutils">
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Chalc Documentation</a><ul>
+<li><a class="reference internal" href="#contributing">Contributing</a></li>
 <li><a class="reference internal" href="#documentation-index">Documentation index</a><ul>
 </ul>
 </li>
@@ -398,7 +440,7 @@ BibTex</label><div class="sd-tab-content docutils">
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=b6b07430"></script>
+</div><script src="_static/documentation_options.js?v=efb8cf6f"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=5fa4622c"></script>

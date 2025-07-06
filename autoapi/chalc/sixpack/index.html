@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="chalc.sixpack.morphisms" href="morphisms/index.html" /><link rel="prev" title="chalc.plotting" href="../plotting/index.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>chalc.sixpack - chalc 12.0.1 documentation</title>
+        <title>chalc.sixpack - chalc 13.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
@@ -169,7 +169,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">chalc 12.0.1 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">chalc 13.0.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
   
-  <span class="sidebar-brand-text">chalc 12.0.1 documentation</span>
+  <span class="sidebar-brand-text">chalc 13.0.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -663,12 +663,6 @@ or a single simplex (int).</p>
 <dd><p>Set of indices of paired simplices.</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="chalc.sixpack.SimplexPairings.paired_as_matrix">
-<span class="sig-name descname"><span class="pre">paired_as_matrix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.3)"><span class="pre">numpy.dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#chalc.sixpack.SimplexPairings.paired_as_matrix" title="Link to this definition">¶</a></dt>
-<dd><p>Return a matrix representation of the finite persistence features in the diagram.</p>
-</dd></dl>
-
 <dl class="py property">
 <dt class="sig sig-object py" id="chalc.sixpack.SimplexPairings.unpaired">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unpaired</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#frozenset" title="(in Python v3.13)"><span class="pre">frozenset</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.sixpack.SimplexPairings.unpaired" title="Link to this definition">¶</a></dt>
@@ -789,7 +783,14 @@ a boolean indicating whether the feature should be kept.</p>
 <dt class="sig sig-object py" id="chalc.sixpack.SixPack.get_matrix">
 <span class="sig-name descname"><span class="pre">get_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">diagram_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DiagramName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dimension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.3)"><span class="pre">numpy.dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#chalc.sixpack.SixPack.get_matrix" title="Link to this definition">¶</a></dt>
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">get_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">diagram_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DiagramName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dimension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.3)"><span class="pre">numpy.dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span></dt>
+<span class="sig-name descname"><span class="pre">get_matrix</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">diagram_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DiagramName</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">dimension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.13)"><span class="pre">collections.abc.Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.3)"><span class="pre">numpy.dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span></dt>
 <dd><p>Get a specific diagram as a matrix of birth and death times.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -821,6 +822,13 @@ a pair of birth and death times, or a list of such matrices.</p>
 <dt class="sig sig-object py" id="chalc.sixpack.SixPack.keys">
 <span class="sig-name descname"><span class="pre">keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.KeysView" title="(in Python v3.13)"><span class="pre">collections.abc.KeysView</span></a><span class="p"><span class="pre">[</span></span><span class="pre">DiagramName</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#chalc.sixpack.SixPack.keys" title="Link to this definition">¶</a></dt>
 <dd><p>View of the names of the diagrams in the 6-pack.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chalc.sixpack.SixPack.max_nonempty_dimension">
+<span class="sig-name descname"><span class="pre">max_nonempty_dimension</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#chalc.sixpack.SixPack.max_nonempty_dimension" title="Link to this definition">¶</a></dt>
+<dd><p>Get the maximum dimension of features across all diagrams.</p>
+<p>Returns -1 if there are no features in the 6-pack.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1134,7 +1142,6 @@ same result as <a class="reference internal" href="#chalc.sixpack.SubChromaticIn
 <li><a class="reference internal" href="#chalc.sixpack.SimplexPairings.__len__"><code class="docutils literal notranslate"><span class="pre">__len__()</span></code></a></li>
 <li><a class="reference internal" href="#chalc.sixpack.SimplexPairings.__str__"><code class="docutils literal notranslate"><span class="pre">__str__()</span></code></a></li>
 <li><a class="reference internal" href="#chalc.sixpack.SimplexPairings.paired"><code class="docutils literal notranslate"><span class="pre">paired</span></code></a></li>
-<li><a class="reference internal" href="#chalc.sixpack.SimplexPairings.paired_as_matrix"><code class="docutils literal notranslate"><span class="pre">paired_as_matrix()</span></code></a></li>
 <li><a class="reference internal" href="#chalc.sixpack.SimplexPairings.unpaired"><code class="docutils literal notranslate"><span class="pre">unpaired</span></code></a></li>
 </ul>
 </li>
@@ -1153,6 +1160,7 @@ same result as <a class="reference internal" href="#chalc.sixpack.SubChromaticIn
 <li><a class="reference internal" href="#chalc.sixpack.SixPack.get_matrix"><code class="docutils literal notranslate"><span class="pre">get_matrix()</span></code></a></li>
 <li><a class="reference internal" href="#chalc.sixpack.SixPack.items"><code class="docutils literal notranslate"><span class="pre">items()</span></code></a></li>
 <li><a class="reference internal" href="#chalc.sixpack.SixPack.keys"><code class="docutils literal notranslate"><span class="pre">keys()</span></code></a></li>
+<li><a class="reference internal" href="#chalc.sixpack.SixPack.max_nonempty_dimension"><code class="docutils literal notranslate"><span class="pre">max_nonempty_dimension()</span></code></a></li>
 <li><a class="reference internal" href="#chalc.sixpack.SixPack.names"><code class="docutils literal notranslate"><span class="pre">names()</span></code></a></li>
 <li><a class="reference internal" href="#chalc.sixpack.SixPack.num_features"><code class="docutils literal notranslate"><span class="pre">num_features()</span></code></a></li>
 <li><a class="reference internal" href="#chalc.sixpack.SixPack.save"><code class="docutils literal notranslate"><span class="pre">save()</span></code></a></li>
@@ -1180,7 +1188,7 @@ same result as <a class="reference internal" href="#chalc.sixpack.SubChromaticIn
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=b6b07430"></script>
+</div><script src="../../../_static/documentation_options.js?v=efb8cf6f"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>
