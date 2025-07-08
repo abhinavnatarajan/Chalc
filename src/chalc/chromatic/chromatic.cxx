@@ -595,6 +595,7 @@ auto alpha_parallel(
 				);
 			});
 		}
+		thread_local_to_double.clear();  // Clear the thread-local storage.
 	}
 
 	return delX;
@@ -698,6 +699,7 @@ auto delcech_parallel(
 				}
 			);
 		});
+		thread_local_to_double.clear();  // Clear the thread-local storage.
 	}
 	return delX;
 }

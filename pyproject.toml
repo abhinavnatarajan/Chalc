@@ -1,6 +1,6 @@
 [project]
 name = "chalc"
-version = "13.0.0"
+version = "13.0.1"
 authors = [{ name = "Abhinav Natarajan", email = "natarajan@maths.ox.ac.uk" }]
 description = "Persistent homology of chromatic Delaunay filtrations"
 readme = { file = "README.md", content-type = "text/markdown" }
@@ -54,6 +54,7 @@ dev = [
 	"pybind11~=2.13",
 	"jupyterlab~=4.4",
 	"chromatic-tda~=1.1",
+	"tqdm>=4.67.1",
 ]
 test = ["pytest~=8.3", "gudhi~=3.11"]
 

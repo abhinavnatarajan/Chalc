@@ -209,9 +209,9 @@ struct Filtration::Simplex : public std::enable_shared_from_this<Filtration::Sim
 
 	static constexpr value_t DEFAULT_FILT_VALUE = 0.0;
 
-	/* PUBLIC METHODS OF Simplex */
 	// Delete the default constructor
 	Simplex() = delete;
+
 	// Get a handle to this simplex
 	[[nodiscard]]
 	auto get_handle() -> std::shared_ptr<Simplex>;
