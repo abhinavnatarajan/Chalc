@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Installation" href="installation.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>chalc 13.0.1 documentation</title>
+        <title>chalc 13.0.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
@@ -169,7 +169,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="#"><div class="brand">chalc 13.0.1 documentation</div></a>
+      <a href="#"><div class="brand">chalc 13.0.2 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="#">
   
   
-  <span class="sidebar-brand-text">chalc 13.0.1 documentation</span>
+  <span class="sidebar-brand-text">chalc 13.0.2 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -354,9 +354,8 @@ BibTex</label><div class="sd-tab-content docutils">
 Chromatic-tda can compute chromatic alpha filtrations and their six-packs of persistence diagrams.
 It can also compute cycle representatives for persistent features, which chalc does not currently provide (although this is planned for a future release).</p>
 <p>On the other hand, chalc can compute chromatic Delaunay–Čech or chromatic Delaunay–Rips filtrations, which chromatic-tda does not currently support.
-Chalc is generally faster than chromatic-tda due to its lower-level implementation and the use of parallelism.
-If you are working with a large number of datasets, or with individual datasets with more than a few thousand points, you will likely find chalc to be significantly faster than chromatic-tda.
-The following is a chart comparing the runtime performance of chalc v13.0.1 and chromatic-tda v1.1.8 on randomly generated 2-dimensional point clouds with two and three colours.
+Chalc is generally faster than chromatic-tda due to its lower-level implementation and the use of parallelism, and you may find this useful if you are working with a large number of datasets or datasets with a large number of points.
+The following is a chart comparing the runtime performance of chalc v13.0.2 and chromatic-tda v1.1.8 on randomly generated 2-dimensional point clouds with two and three colours.
 These tests were run on a laptop with an AMD Ryzen 7 6800U processor (8 cores &#64;2.7Ghz, x86-64 ISA) and 16 GB of RAM, running Ubuntu 24.04 (kernel 6.12.10-76061203-generic) and using Python 3.13.2.
 The code used to run these tests and generate the charts are available in the <code class="docutils literal notranslate"><span class="pre">docs/source</span></code> folder of the chalc repository, and the raw results are available as a JSON file in the same folder.</p>
 <img alt="_images/timing_results.png" src="_images/timing_results.png" />
@@ -440,7 +439,7 @@ The code used to run these tests and generate the charts are available in the <c
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=4bc04b76"></script>
+</div><script src="_static/documentation_options.js?v=7c38c11c"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=5fa4622c"></script>

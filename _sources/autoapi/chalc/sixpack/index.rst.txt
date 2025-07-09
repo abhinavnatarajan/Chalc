@@ -286,7 +286,7 @@ Package Contents
 
 
 
-.. py:class:: SimplexPairings(paired: collections.abc.Collection[tuple[int, int]] = set(), unpaired: collections.abc.Collection[int] = set())
+.. py:class:: SimplexPairings(paired: collections.abc.Collection[tuple[int, int]] = frozenset(), unpaired: collections.abc.Collection[int] = frozenset())
 
    Bases: :py:obj:`collections.abc.Collection`
 

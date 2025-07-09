@@ -120,6 +120,13 @@ If you do not have vcpkg installed, the build process will automatically downloa
             # This will also install the dependencies for testing and building documentation.
             pip lock -r pylock.toml
 
+4. (Optional) If you have GNU Make installed, you can generate type stubs for the package by running ``make stubs`` in the package root directory. If you do not have GNU Make installed, you can run the following commands:
+
+   .. code-block:: bash
+
+            python -m pybind11_stubgen chalc.chromatic --numpy-array-use-type-var --output-dir ./src
+            python -m pybind11_stubgen chalc.filtration --numpy-array-use-type-var --output-dir ./src
+
 Building the Documentation
 --------------------------
 
@@ -133,7 +140,7 @@ Then run the following commands from the project root directory to build the doc
 
         .. code-block:: bash
 
-            make -C docs html
+            make docs
 
     .. tab-item:: Windows Powershell
         :sync: powershell

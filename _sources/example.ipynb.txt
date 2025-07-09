@@ -866,8 +866,7 @@
     }
    ],
    "source": [
-    "# max_num_threads=0 gives automatic parallelism\n",
-    "chromatic_alpha_filt  = chromatic.alpha(points, colours, max_num_threads=0)\n",
+    "chromatic_alpha_filt  = chromatic.alpha(points, colours)\n",
     "print(f'\\'chromatic_alpha_filt\\' has {len(chromatic_alpha_filt.simplices[1])} 1-simplices and {len(chromatic_alpha_filt.simplices[2])} 2-simplices.')"
    ]
   },
@@ -1191,7 +1190,7 @@
    },
    "outputs": [],
    "source": [
-    "fig1, ax1 = plot_sixpack(dgms_alpha, threshold = 1e-3)\n",
+    "fig1, ax1 = plot_sixpack(dgms_alpha, threshold = 1e-3, truncations=0.5)\n",
     "fig1.suptitle('Chromatic Alpha')\n",
     "fig1.set_figwidth(15)\n",
     "fig1.set_figheight(9)\n",
@@ -1199,15 +1198,15 @@
     "plt.show()\n",
     "fig2, ax2 = plt.subplots(1, 3)\n",
     "# You can specify the dimensions of features to include in the plot.\n",
-    "plot_diagram(dgms_alpha, 'rel', dimensions = {0, 2}, truncation = 0.3, ax = ax2[0], threshold = 1e-3)\n",
+    "plot_diagram(dgms_alpha, 'rel', dimensions = {0, 2}, truncation = 0.5, ax = ax2[0], threshold = 1e-3)\n",
     "ax2[0].set_title('Chromatic Alpha')\n",
     "# You can also specify a single dimension as an integer.\n",
-    "plot_diagram(dgms_delcech, 'rel', dimensions = 1, truncation = 0.3, ax = ax2[1], threshold = 1e-3)\n",
+    "plot_diagram(dgms_delcech, 'rel', dimensions = 1, truncation = 0.5, ax = ax2[1], threshold = 1e-3)\n",
     "ax2[1].set_title('Chromatic Delaunay-Cech')\n",
     "# If no dimensions are specified, all features will be included.\n",
-    "plot_diagram(dgms_delrips, 'rel', truncation = 0.3, ax = ax2[2], threshold = 1e-3)\n",
+    "plot_diagram(dgms_delrips, 'rel', truncation = 0.5, ax = ax2[2], threshold = 1e-3)\n",
     "ax2[2].set_title('Chromatic Delaunay-Rips')\n",
-    "fig2.suptitle('Individual relative diagrams')\n",
+    "fig2.suptitle('Individual relative diagrams in specific dimensions')\n",
     "fig2.set_figwidth(15)\n",
     "plt.show()"
    ]
