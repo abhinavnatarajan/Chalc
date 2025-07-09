@@ -391,8 +391,8 @@ class SimplexPairings(Collection):
 
 	def __init__(
 		self,
-		paired: Collection[tuple[int, int]] = set(),
-		unpaired: Collection[int] = set(),
+		paired: Collection[tuple[int, int]] = frozenset(),
+		unpaired: Collection[int] = frozenset(),
 	) -> None:
 		"""Initialise a diagram with its paired and unpaired simplices."""
 		self._paired = frozenset(paired)
