@@ -245,7 +245,7 @@ wheels = [
 
 [[package]]
 name = "chalc"
-version = "13.0.0"
+version = "13.0.2"
 source = { editable = "." }
 dependencies = [
     { name = "h5py" },
@@ -283,7 +283,7 @@ requires-dist = [
     { name = "matplotlib", specifier = "~=3.9" },
     { name = "numpy", specifier = "~=2.0" },
     { name = "pandas", specifier = "~=2.2" },
-    { name = "phimaker", specifier = "~=0.2.2" },
+    { name = "phimaker", specifier = "~=0.3.0" },
 ]
 
 [package.metadata.requires-dev]
@@ -1384,24 +1384,12 @@ wheels = [
 
 [[package]]
 name = "phimaker"
-version = "0.2.2"
+version = "0.3.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/96/72/098bccc66b9bb84b93a6a9f2bcf58d5dacce673f0531368c4ccffaa72979/phimaker-0.2.2.tar.gz", hash = "sha256:7eb535a59116fd69a0a399be96b385eae3fbfaed0ed5c035db05a894b642d0b7", size = 312922, upload-time = "2025-06-23T16:37:48.178Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/19/a4/7bdec2c3d2701b9032d075fca9ee4545ee88332fa106c4d43cc0d19884a8/phimaker-0.3.0.tar.gz", hash = "sha256:954aaefc420b19f120d13398cef4d79cebb73748aa7f2ff7c52c94ac7e764eba", size = 312695, upload-time = "2025-07-09T18:05:57.954Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/07/e5/48c6323946e62b5b342042b6274f4427f4fbba3e35f2bef85b20d4e27e13/phimaker-0.2.2-cp313-cp313-macosx_10_12_x86_64.whl", hash = "sha256:7cbfcada8101a75798b1ceee69cdad8680413cbe3fd5e773fab2db8ce1e19bd3", size = 482350, upload-time = "2025-06-23T16:36:48.51Z" },
-    { url = "https://files.pythonhosted.org/packages/af/32/6dd572b7b3700ec9d0a324762291954387c6fb1e38947c88cbe133388d73/phimaker-0.2.2-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:b5a317edbb957c59169a4ef93bd51998b9a1be8080c4460a29eda23cd1360c3a", size = 470071, upload-time = "2025-06-23T16:36:44.071Z" },
-    { url = "https://files.pythonhosted.org/packages/c7/ba/bf4d0ecefc571f2a5a6207bf5eb0db7a2a4afb1a1071f2e43d88fbc6e081/phimaker-0.2.2-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:9a9af1f75e9e2c5831db067b12f6f36c9ed75da26d42d5f506297eebaa700e96", size = 525144, upload-time = "2025-06-23T16:35:29.125Z" },
-    { url = "https://files.pythonhosted.org/packages/2f/33/e1aaa9556403010750209010a6dd72ab7740a157e3cbb0c065692f07e03e/phimaker-0.2.2-cp313-cp313-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:1b92e80b3c73e7d0645275bc49db99b766ad9f22df02685d32b981047ff9cdd4", size = 546568, upload-time = "2025-06-23T16:35:43.514Z" },
-    { url = "https://files.pythonhosted.org/packages/57/3b/c9f675c47999ff64549bd63790972013f43d5691bc1f70bf64f7e86467b4/phimaker-0.2.2-cp313-cp313-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:af2da7d9bdce1f5bf123c3b2f3b603c4e3878bcf45c59bfba2bfd2dde76ab4c6", size = 585962, upload-time = "2025-06-23T16:36:25.147Z" },
-    { url = "https://files.pythonhosted.org/packages/bd/af/0e03077c41a5c2edaccaa12d8680ab6d90924ca2824287328806c5b8c513/phimaker-0.2.2-cp313-cp313-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:3854ed6b3f85b92950c164db1661ed389df889675082ce43fbbe6e33ef291176", size = 686985, upload-time = "2025-06-23T16:35:56.858Z" },
-    { url = "https://files.pythonhosted.org/packages/d7/16/c2850d6258ad07c6d0f14eea196033f0f88e7f1a88a7be7ea545669b32d2/phimaker-0.2.2-cp313-cp313-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:4eabf52978448f89900368bdcf104bee97b900b4a983797a8432e33497b37bf1", size = 578406, upload-time = "2025-06-23T16:36:11.246Z" },
-    { url = "https://files.pythonhosted.org/packages/ce/93/6e593ab7f7ab765bde5983cf5b38f78597b6caeca889416617bd4052326b/phimaker-0.2.2-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:07aff18b82d718453cda57b9c009e94534256fbb35cb37c315ad97a7f635d483", size = 532414, upload-time = "2025-06-23T16:36:34.741Z" },
-    { url = "https://files.pythonhosted.org/packages/a8/eb/0392a6e7275b3bc65219415ff4a53047f0b5df87a368a0608aa5732f34f5/phimaker-0.2.2-cp313-cp313-musllinux_1_2_aarch64.whl", hash = "sha256:947d70f2ea27dbabd6a63fe538215c6f1c6d53a1d4f58a45f2d483d8bc2e9a93", size = 703112, upload-time = "2025-06-23T16:36:53.541Z" },
-    { url = "https://files.pythonhosted.org/packages/ca/18/f09d138bb7d23f375cd2c03e06d03da7a6f09a80c6b9a302e93725906af0/phimaker-0.2.2-cp313-cp313-musllinux_1_2_armv7l.whl", hash = "sha256:3bc91b7d48339a52138006fe5bfe99b4b93dafae88a1ef7e95a0cd0542d03c7c", size = 809315, upload-time = "2025-06-23T16:37:07.608Z" },
-    { url = "https://files.pythonhosted.org/packages/f9/7f/c3e2fdabc92fdedf1939c23686b1b4b139b95d4904c59e692564e77128c7/phimaker-0.2.2-cp313-cp313-musllinux_1_2_i686.whl", hash = "sha256:5374cfda298b87c2f870bed63bd9f9b3ba7c021d3b3e7c020419c96fd3bbbcd5", size = 753232, upload-time = "2025-06-23T16:37:21.746Z" },
-    { url = "https://files.pythonhosted.org/packages/76/18/8457066dc2d5ab5f23cabe2d1f7c71f78bbef4af654bc5daae4c3f0d9131/phimaker-0.2.2-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:aad75e072f5f1daa3a1ed6138769502b22bb67828ee5eb2832b663f30e0a6022", size = 703106, upload-time = "2025-06-23T16:37:37.386Z" },
-    { url = "https://files.pythonhosted.org/packages/86/f1/4ce2e48cc2e6b6a7313f308e405bf828647f0468c4f8fad07dbf777e9907/phimaker-0.2.2-cp313-cp313-win32.whl", hash = "sha256:62c85a8adbd4404f91f4d3837ece76a3686cf2f0c6b0fc44731a58968dc13636", size = 322182, upload-time = "2025-06-23T16:38:00.48Z" },
-    { url = "https://files.pythonhosted.org/packages/16/97/5c422414d2e4fb95b73055ec9df0a3493814e148235c0a4e6ccb84580d3f/phimaker-0.2.2-cp313-cp313-win_amd64.whl", hash = "sha256:6a1ad9ae010cf45c1f0cee1d45458822a808a7a419f2915d1adce8d8c5c79142", size = 339216, upload-time = "2025-06-23T16:37:53.665Z" },
+    { url = "https://files.pythonhosted.org/packages/14/9c/851dffe25c346d08d440bd84e77f45768838f7ec2c220c74cb0cd9443d0f/phimaker-0.3.0-cp313-none-win32.whl", hash = "sha256:88792aa37147a9e920be7c06e01c6727e37180f90182d54c05d03f371b976e86", size = 324907, upload-time = "2025-07-09T18:06:07.116Z" },
+    { url = "https://files.pythonhosted.org/packages/17/87/514d1ceda96bb02728ef7da13cef6ee7a48e14108f9d545e033236e8f44f/phimaker-0.3.0-cp313-none-win_amd64.whl", hash = "sha256:235203c83dcb1bac8e71bcbd4a8301811d2379f8012a46c878077911306771bb", size = 336443, upload-time = "2025-07-09T18:06:02.308Z" },
 ]
 
 [[package]]

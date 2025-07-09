@@ -6,7 +6,13 @@ stubs:
 	@echo "Generating stubs for chalc.filtration"
 	@python -m pybind11_stubgen chalc.filtration --numpy-array-use-type-var --output-dir ./src
 
-.PHONY: Makefile stubs all clean test
+.PHONY: stubs all clean test docs
+
+docs:
+	cd docs && make html
+
+all: stubs docs
 
 clean:
 	rm src/chalc/chromatic.pyi src/chalc/filtration.pyi
+	cd docs && make clean
