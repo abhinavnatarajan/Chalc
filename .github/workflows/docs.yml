@@ -43,11 +43,14 @@ jobs:
           vcpkgGitCommitId: ${{ fromJson(env.vcpkg_json).builtin-baseline }}
           runVcpkgInstall: false
 
-      - name: Setup dependencies
-        run: uv sync --reinstall-package chalc
+      - name: Build package
+        run: uv sync --all-groups --exact --verbose --no-progress --reinstall-package chalc
+
+      - name: Install GraphViz
+        run: apt install graphviz
 
       - name: Build docs
-        run : source .venv/bin/activate && make -C docs html
+        run : source .venv/bin/activate && make all
 
       - name: Deploy to GH pages
         uses: JamesIves/github-pages-deploy-action@v4
