@@ -278,7 +278,7 @@ class KChromaticInclusion(FiltrationInclusion):
 
 		SubChromaticInclusion(
 			filtration,
-			itertools.combinations(range(n_colours), k)
+			itertools.combinations(range(n_colours), k),
 		).sixpack()
 
 	There is, however, a slight performance benefit to using :class:`KChromaticInclusion`
@@ -506,7 +506,7 @@ class SubChromaticQuotient(FiltrationQuotient):
 					[
 						[2, 3],
 					],  # tau_1 = {{2,3}, {2}, {3}}
-				]
+				],
 			).sixpack()
 
 			# Using SubChromaticInclusion
@@ -515,7 +515,7 @@ class SubChromaticQuotient(FiltrationQuotient):
 				[
 					# tau = {{0, 1}, {2, 3}, {0}, {1}, {2}, {3}}
 					[0, 1], [2, 3],
-				]
+				],
 			).sixpack()
 
 		In general this is not necessarily the case::
@@ -587,7 +587,7 @@ class KChromaticQuotient(FiltrationQuotient):
 
 	In practical terms, the following code::
 
-		KChromaticInclusion(filtration, k).sixpack()
+		KChromaticQuotient(filtration, k).sixpack()
 
 	should give the same 6-pack of persistence diagrams as this::
 
