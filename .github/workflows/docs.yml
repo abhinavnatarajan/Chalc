@@ -48,7 +48,7 @@ jobs:
         run: uv sync --all-groups --exact --verbose --no-progress --reinstall-package chalc
 
       - name: Install GraphViz
-        run: apt install graphviz
+        run: sudo apt-get install graphviz -y
 
       - name: Build docs
         run : source .venv/bin/activate && make all
