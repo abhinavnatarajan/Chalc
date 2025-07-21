@@ -400,6 +400,14 @@ void Filtration::propagate_filt_values(const index_t start_dim, const bool up) {
 	}
 }
 
+auto Filtration::simplices_begin() -> Filtration::SimplexIterator {
+	return SimplexIterator(simplices.begin(), simplices.end());
+}
+
+auto Filtration::simplices_end() -> Filtration::SimplexIterator {
+	return SimplexIterator(simplices.end(), simplices.end());
+}
+
 auto Filtration::boundary_matrix(index_t max_dimension) const
 	-> vector<tuple<vector<index_t>, label_t, value_t, vector<colour_t>>> {
 	if (max_dimension < -1) {
@@ -422,14 +430,14 @@ auto Filtration::boundary_matrix(index_t max_dimension) const
 				length_return += simplices[p].size();
 			}
 	}
-	vector<shared_ptr<Simplex>> sort_by_val;
+	vector<const Simplex*> sort_by_val;
 	sort_by_val.reserve(length_return);
 	for (index_t p = 0; p <= max_dimension; p++) {
 		for (auto&& s: simplices[p]) {
-			sort_by_val.push_back(s.second);
+			sort_by_val.push_back(s.second.get());
 		}
 	}
-	stable_sort(sort_by_val, [](const shared_ptr<Simplex>& s1, const shared_ptr<Simplex>& s2) {
+	stable_sort(sort_by_val, [](const Simplex* s1, const Simplex* s2) {
 		return (
 			s1->m_filt_value < s2->m_filt_value ||
 			(s1->m_filt_value == s2->m_filt_value && s1->m_dim < s2->m_dim) ||

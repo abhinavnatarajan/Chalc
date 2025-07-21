@@ -184,13 +184,45 @@ def test_delrips_random() -> None:
 				max_num_threads=1,
 			)
 			assert filtration.is_filtration()
-			filtration_mt  = ch.chromatic.delrips(
+			filtration_mt = ch.chromatic.delrips(
 				points,
 				colours,
 				max_num_threads=0,
 			)
 			assert filtration_mt.is_filtration()
 			assert filtration.boundary_matrix() == filtration_mt.boundary_matrix()
+
+
+def test_delrips_vs_delcech_random() -> None:
+	"""Test the equality of 1-skeletons of chromatic DelRips and chromatic DelCech filtrations."""
+	rng = np.random.default_rng(random_seed)
+	dims = [1, 2]
+	num_colours = [1, 2, 3]
+	for d in dims:
+		for s in num_colours:
+			points = rng.uniform(size=(d, 200))
+			colours = rng.integers(0, s, size=200).tolist()
+			filtration_delrips = ch.chromatic.delrips(
+				points,
+				colours,
+			)
+			filtration_delcech = ch.chromatic.delcech(
+				points,
+				colours,
+			)
+			simplex_labels = list(filtration_delrips.simplices[1].keys())
+			filtration_values_delrips = [
+				filtration_delrips.simplices[1][simplex_label].filtration_value
+				for simplex_label in simplex_labels
+			]
+			filtration_values_delcech = [
+				filtration_delcech.simplices[1][simplex_label].filtration_value
+				for simplex_label in simplex_labels
+			]
+			assert all(
+				x == y
+				for x, y in zip(filtration_values_delrips, filtration_values_delcech, strict=True)
+			)
 
 
 def test_alpha_delcech_homotopy_equivalent() -> None:

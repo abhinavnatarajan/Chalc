@@ -39,7 +39,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 	#include <bitset>
 	#include <cstdint>
+	#include <iterator>
 	#include <memory>
+	#include <type_traits>
 	#include <unordered_map>
 	#include <vector>
 
@@ -78,6 +80,8 @@ class BinomialCoeffTable {
 struct Filtration {
 	struct Simplex;
 
+	class SimplexIterator;
+
 	// Constructor - create a vertex set.
 	Filtration(const index_t num_vertices, const index_t max_dimension);
 
@@ -112,6 +116,14 @@ struct Filtration {
 		-> const std::vector<std::unordered_map<label_t, std::shared_ptr<Simplex>>>& {
 		return simplices;
 	}
+
+	// Returns an iterator over the simplices in the filtration.
+	[[nodiscard]]
+	auto simplices_begin() -> SimplexIterator;
+
+	// Returns a past-the-end iterator over the simplices in the filtration.
+	[[nodiscard]]
+	auto simplices_end() -> SimplexIterator;
 
 	// Returns the number of simplices in the filtration.
 	[[nodiscard]]
@@ -326,6 +338,73 @@ struct Filtration::Simplex : public std::enable_shared_from_this<Filtration::Sim
 	auto get_colours_bitmask() const noexcept -> const colours_t& {
 		return colours;
 	};
+};
+
+// A robust, flattening iterator for the vector of maps of simplices.
+// It iterates over the Simplex smart pointers.
+class Filtration::SimplexIterator {
+  private:
+	using Vec = std::remove_reference_t<
+		std::invoke_result_t<decltype(&Filtration::get_simplices), Filtration>>;
+	using Map        = Vec::value_type;
+	using VecConstIt = Vec::const_iterator;
+	using MapConstIt = Map::const_iterator;
+
+	VecConstIt vec_it, vec_end;
+	MapConstIt map_it;
+
+	// Advances the iterator to the next valid element, skipping empty maps.
+	void advance_to_valid() {
+		while (vec_it != vec_end && map_it == vec_it->end()) {
+			++vec_it;
+			if (vec_it != vec_end) {
+				map_it = vec_it->begin();
+			}
+		}
+	}
+
+  public:
+	using iterator_category = std::input_iterator_tag;
+	using value_type        = std::shared_ptr<Filtration::Simplex>;
+	using difference_type   = std::ptrdiff_t;
+	using pointer           = const value_type*;
+	using reference         = const value_type&;
+
+	// Constructor for begin and other valid iterators.
+	explicit SimplexIterator(const VecConstIt& vec_begin, const VecConstIt& vec_end) :
+		vec_it(vec_begin),
+		vec_end(vec_end) {
+		if (vec_it != vec_end) {
+			map_it = vec_it->begin();
+		}
+		advance_to_valid();
+	}
+
+	auto operator++() -> SimplexIterator& {
+		++map_it;
+		advance_to_valid();
+		return *this;
+	}
+
+	auto operator*() const -> reference {
+		return map_it->second;
+	}
+
+	auto operator->() const -> pointer {
+		return &map_it->second;
+	}
+
+	auto operator==(const SimplexIterator& other) const -> bool {
+		// If one is past-the-end then they are equal only if both are.
+		if (vec_it == vec_end) {
+			return (other.vec_it == other.vec_end && vec_it == other.vec_it);
+		}
+		return (vec_it == other.vec_it && vec_end == other.vec_end && map_it == other.map_it);
+	}
+
+	auto operator!=(const SimplexIterator& other) const -> bool {
+		return !(*this == other);
+	}
 };
 
 // The simplicial complex associated to the standard n-simplex.

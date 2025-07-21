@@ -30,6 +30,7 @@ class Filtration:
         Iterate over the simplices in the complex, ordered by dimension.
         
         There are no guarantees on the relative order of simplices with the same dimension.
+        Adding or removing simplices during iteration results in undefined behaviour.
         """
     def __len__(self) -> int:
         """

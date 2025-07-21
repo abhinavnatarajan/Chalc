@@ -16,12 +16,16 @@ Here are some key features of Chalc:
 
 #. Internal computations are performed with multiple precision exact arithmetic.
 #. Chalc will try to produce reasonable results even when the input points are degenerate.
-#. Parallelism is used wherever possible to speed up computations (unless explicitly disabled).
 #. Lock-free computation of persistence diagrams using the algorithm of :ref:`[3] <3>`, along with the clearing optimisation from :ref:`[4] <4>`.
+#. Parallelism is used wherever possible to speed up computations (unless explicitly disabled).
 
 There are no constraints on the dimensionality of the point clouds that Chalc can handle, and up to 16 colours are supported.
 However, the package is primarily intended for 2D and 3D point clouds with two or three colours and a few thousand points.
 You may run into significant memory bottlenecks in higher dimensions or with more colours unless you have very few points.
+
+    Note that the speedup from parallelism is not linear and depends on the system memory bandwidth, since the computations are memory bound.
+    In practice, the higher the data transfer rate of the system RAM, the better the scaling.
+    On a laptop, even 2 threads might be sufficient to saturate the memory bus.
 
 Contributing
 ------------

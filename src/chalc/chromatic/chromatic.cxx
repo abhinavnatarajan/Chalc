@@ -83,17 +83,16 @@ using oneapi::tbb::task_arena;
 using std::array;
 using std::domain_error;
 using std::iota;
-using std::map;
 using std::min;
 using std::numeric_limits;
 using std::ranges::any_of;
 using std::ranges::sort;
 using std::ranges::unique;
 using std::runtime_error;
-using std::shared_ptr;
 using std::tie;
 using std::to_string;
 using std::tuple;
+using std::unordered_map;
 using std::vector;
 
 // Typedefs for the CGAL Delaunay triangulation.
@@ -150,9 +149,9 @@ template <typename T> auto compare(const void* a, const void* b) -> int {
 // Make a vector contiguous and start at zero.
 // Returns new vector and number of distinct elements.
 auto canonicalise(const vector<colour_t>& vec) -> tuple<vector<colour_t>, index_t> {
-	vector<colour_t>        new_vec(vec.size());
-	map<colour_t, colour_t> m;
-	for (auto&& [c, i] = tuple{vec.begin(), static_cast<colour_t>(0)}; c != vec.end(); c++) {
+	vector<colour_t>                  new_vec(vec.size());
+	unordered_map<colour_t, colour_t> m;
+	for (auto&& [c, i] = tuple{vec.cbegin(), static_cast<colour_t>(0)}; c != vec.cend(); c++) {
 		if (!m.contains(*c)) {
 			m[*c] = i++;
 		}
@@ -262,6 +261,7 @@ auto delaunay(const MatrixXd& X, const vector<colour_t>& colours) -> Filtration 
 		}
 		result.add_simplex(max_cell_vertex_labels, 0.0);
 	}
+
 	// Modify the colours of the vertices.
 	for (auto& [idx, vert]: result.get_simplices()[0]) {
 		vert->set_colour(colours[idx]);
@@ -272,17 +272,18 @@ auto delaunay(const MatrixXd& X, const vector<colour_t>& colours) -> Filtration 
 
 // Create the chromatic Delaunay--Rips filtration.
 auto delrips(const MatrixXd& points, const vector<colour_t>& colours) -> Filtration {
-	// Get the delaunay triangulation
 	Filtration delX = delaunay(points, colours);
 
-	// Modify the filtration values.
 	if (delX.dimension() >= 1) {
-		auto points_exact = points.template cast<Mpzf>();
+		auto       to_double      = TypeConverter<cmb::SolutionExactType, double>{};
+		const auto one_by_four    = Quotient<Mpzf>(1, 4);  // Used for the edge lengths.
+		auto       points_exact_q = points.template cast<Quotient<Mpzf>>();
 		for (auto& [idx, edge]: delX.get_simplices()[1]) {
-			auto&& verts = edge->get_vertex_labels();
-			edge->value() =
-				((points_exact.col(verts[0]) - points_exact.col(verts[1])).norm() * Mpzf(0.5))
-					.to_double();
+			auto&& verts  = edge->get_vertex_labels();
+			edge->value() = sqrt(to_double(
+				(points_exact_q.col(verts[0]) - points_exact_q.col(verts[1])).squaredNorm() *
+				one_by_four
+			));
 		}
 		delX.propagate_filt_values(1, true);
 	}
@@ -295,31 +296,40 @@ auto delrips_parallel(
 	const vector<colour_t>& colours,
 	const int               max_num_threads
 ) -> Filtration {
-	// Get the delaunay triangulation.
 	Filtration delX = delaunay<CGAL::Parallel_tag>(points, colours);
 
-	// Modify the filtration values.
 	if (delX.dimension() >= 1) {
-		auto       points_exact = points.template cast<Mpzf>();
-		task_arena arena(max_num_threads == 0 ? task_arena::automatic : max_num_threads);
-		// Store all the simplex pointers in a vector,
-		// which is convenient to iterate over using the TBB API.
-		vector<const shared_ptr<Filtration::Simplex>*> edges;
+		auto       points_exact_q = points.template cast<Quotient<Mpzf>>();
+		const auto one_by_four    = Quotient<Mpzf>(1, 4);  // Used for the edge lengths.
+
+		task_arena::constraints parallelism_options(
+			task_arena::automatic,
+			max_num_threads == 0 ? task_arena::automatic : max_num_threads
+		);
+		parallelism_options.set_max_threads_per_core(1);
+		task_arena arena(parallelism_options);
+
+		enumerable_thread_specific<TypeConverter<cmb::SolutionExactType, double>>
+			thread_local_to_double;
+
+		vector<Filtration::Simplex*> edges;
 		edges.reserve(delX.get_simplices()[1].size());
-		for (auto&& [_, edge]: delX.get_simplices()[1]) {
-			edges.push_back(&edge);
+		for (auto&& [_, edge_ptr]: delX.get_simplices()[1]) {
+			edges.push_back(edge_ptr.get());
 		}
 		arena.execute([&] {
 			parallel_for(
 				blocked_range<size_t>(0, edges.size(), 10000),
 				[&](const blocked_range<size_t>& r) {
 					for (size_t idx = r.begin(); idx < r.end(); idx++) {
-						auto&& edge  = *edges[idx];
-						auto&& verts = edge->get_vertex_labels();
-						edge->value() =
-							((points_exact.col(verts[0]) - points_exact.col(verts[1])).norm() *
-					         Mpzf(0.5))
-								.to_double();
+						auto&& to_double = thread_local_to_double.local();
+						auto&& edge      = edges[idx];
+						auto&& verts     = edge->get_vertex_labels();
+						edge->value()    = sqrt(to_double(
+                            (points_exact_q.col(verts[0]) - points_exact_q.col(verts[1]))
+                                .squaredNorm() *
+                            one_by_four
+                        ));
 					}
 				}
 			);
@@ -331,26 +341,23 @@ auto delrips_parallel(
 
 // Compute the chromatic alpha complex.
 auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> Filtration {
-	// Get the delaunay triangulation.
 	Filtration delX(delaunay(points, colours));
 
-	// Partition the vertices by colour.
-	// We will need this later to check if stacks are empty.
-	array<vector<index_t>, MAX_NUM_COLOURS> verts_by_colour;
-	for (auto&& [i, colour] = tuple{static_cast<index_t>(0), colours.begin()};
-	     colour != colours.end();
-	     colour++, i++) {
-		verts_by_colour.at(*colour).push_back(i);
-	}
 	if (delX.dimension() >= 1) {
 		auto to_double = TypeConverter<cmb::SolutionExactType, double>{};
 
 		auto&& points_exact   = points.template cast<Mpzf>();
 		auto&& points_exact_q = points.template cast<Quotient<Mpzf>>();
 
-		// Start at the current dimension.
+		// Partition the vertices by colour.
+		// We will need this later to check if stacks are empty.
+		array<vector<index_t>, MAX_NUM_COLOURS> verts_by_colour;
+		for (auto&& [i, colour] = tuple{static_cast<index_t>(0), colours.cbegin()};
+		     colour != colours.cend();
+		     colour++, i++) {
+			verts_by_colour.at(*colour).push_back(i);
+		}
 		for (auto&& p = delX.dimension(); p >= 1; p--) {
-			// Iterate over p-simplices
 			for (auto&& [_, simplex]: delX.get_simplices()[p]) {
 				auto&& verts = simplex->get_vertex_labels();
 
@@ -409,14 +416,15 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> Filtratio
 					simplex->value() = sqrt(to_double(sqRadius));
 				} else {
 					// If the simplex is not maximal, check if the stack is empty.
-					for (auto&& [j, verts_j] = tuple{0, verts_by_colour_in_simplex.begin()};
-					     verts_j != verts_by_colour_in_simplex.end();
+					for (auto&& [j, verts_j] = tuple{0, verts_by_colour_in_simplex.cbegin()};
+					     verts_j != verts_by_colour_in_simplex.cend();
 					     verts_j++, j++) {
 						if (verts_j->empty()) {
 							continue;
 						}
 						// Get the radius of the j-coloured sphere in the stack.
-						auto rj_squared = (points_exact_q(all, verts_j[0]) - centre).squaredNorm();
+						auto rj_squared =
+							(points_exact_q(all, (*verts_j)[0]) - centre).squaredNorm();
 						// Get the distance of the nearest point of colour j to the centre,
 						// among all vertices in cofaces of this simplex.
 						auto squared_dist_to_nearest_pt_of_colour_j =
@@ -454,34 +462,36 @@ auto alpha_parallel(
 	const vector<colour_t>& colours,
 	const int               max_num_threads
 ) -> Filtration {
-	// Get the delaunay triangulation.
 	Filtration delX(delaunay<CGAL::Parallel_tag>(points, colours));
 
-	// Partition the vertices by colour.
-	// We will need this later to check if stacks are empty.
-	array<vector<index_t>, MAX_NUM_COLOURS> verts_by_colour{};
-	for (auto&& [i, colour] = tuple{static_cast<index_t>(0), colours.begin()};
-	     colour != colours.end();
-	     colour++, i++) {
-		verts_by_colour.at(*colour).push_back(i);
-	}
 	if (delX.dimension() >= 1) {
-		task_arena arena(max_num_threads == 0 ? task_arena::automatic : max_num_threads);
-		// Modify the filtration values
+		task_arena::constraints parallelism_options(
+			task_arena::automatic,
+			max_num_threads == 0 ? task_arena::automatic : max_num_threads
+		);
+		parallelism_options.set_max_threads_per_core(1);
+		task_arena arena(parallelism_options);
+
+		enumerable_thread_specific<TypeConverter<cmb::SolutionExactType, double>>
+			thread_local_to_double;
+
 		auto&& points_exact   = points.template cast<Mpzf>();
 		auto&& points_exact_q = points.template cast<Quotient<Mpzf>>();
 
-		// Each worker thread will get its own copy of the quotient-to-double approximator.
-		enumerable_thread_specific<TypeConverter<cmb::SolutionExactType, double>>
-			thread_local_to_double;
-		// Start at the current dimension.
+		// Partition the vertices by colour.
+		// We will need this later to check if stacks are empty.
+		array<vector<index_t>, MAX_NUM_COLOURS> verts_by_colour{};
+		for (auto&& [i, colour] = tuple{static_cast<index_t>(0), colours.cbegin()};
+		     colour != colours.cend();
+		     colour++, i++) {
+			verts_by_colour.at(*colour).push_back(i);
+		}
+
 		for (auto&& p = delX.dimension(); p >= 1; p--) {
-			// Store all the simplex pointers in a vector,
-			// which is convenient to iterate over using the TBB API.
-			vector<const shared_ptr<Filtration::Simplex>*> simplices;
+			vector<Filtration::Simplex*> simplices;
 			simplices.reserve(delX.get_simplices()[p].size());
-			for (auto&& [_, simplex]: delX.get_simplices()[p]) {
-				simplices.push_back(&simplex);
+			for (auto&& [_, simplex_ptr]: delX.get_simplices()[p]) {
+				simplices.push_back(simplex_ptr.get());
 			}
 			arena.execute([&] {
 				parallel_for(
@@ -489,7 +499,7 @@ auto alpha_parallel(
 					[&](const blocked_range<size_t>& r) {
 						auto&& to_double = thread_local_to_double.local();
 						for (size_t idx = r.begin(); idx < r.end(); idx++) {
-							auto   simplex = *simplices[idx];
+							auto&& simplex = simplices[idx];
 							auto&& verts   = simplex->get_vertex_labels();
 
 							// Partition the vertices of this simplex by colour.
@@ -553,15 +563,15 @@ auto alpha_parallel(
 							} else {
 								// If the simplex is not maximal, check if the stack is empty
 								for (auto&& [j, verts_j] =
-							             tuple{0, verts_by_colour_in_simplex.begin()};
-							         verts_j != verts_by_colour_in_simplex.end();
+							             tuple{0, verts_by_colour_in_simplex.cbegin()};
+							         verts_j != verts_by_colour_in_simplex.cend();
 							         j++, verts_j++) {
 									if (verts_j->empty()) {
 										continue;
 									}
 									// Get the radius of the j-coloured sphere in the stack.
 									auto rj_squared =
-										(points_exact_q(all, verts_j[0]) - centre).squaredNorm();
+										(points_exact_q(all, (*verts_j)[0]) - centre).squaredNorm();
 									// Get the distance of the nearest point of colour j to the
 								    // centre, among all vertices in cofaces of this simplex.
 									auto squared_dist_to_nearest_pt_of_colour_j =
@@ -595,7 +605,6 @@ auto alpha_parallel(
 				);
 			});
 		}
-		thread_local_to_double.clear();  // Clear the thread-local storage.
 	}
 
 	return delX;
@@ -603,18 +612,17 @@ auto alpha_parallel(
 
 // Create the chromatic Delaunay-Cech complex.
 auto delcech(const MatrixXd& points, const vector<colour_t>& colours) -> Filtration {
-	// Get the delaunay triangulation.
 	Filtration delX(delaunay(points, colours));
-	// Modify the filtration values.
+	auto       points_exact   = points.template cast<Mpzf>();
 	auto       points_exact_q = points.template cast<Quotient<Mpzf>>();
-	const auto one_by_four    = Quotient<Mpzf>(Mpzf(0.25));  // Used for the edge lengths.
+	const auto one_by_four    = Quotient<Mpzf>(1, 4);  // Used for the edge lengths.
 	auto       to_double      = TypeConverter<cmb::SolutionExactType, double>{};
 	if (delX.dimension() >= 1) {
 		for (auto&& p = delX.dimension(); p > 1; p--) {
 			for (auto&& [_, simplex]: delX.get_simplices()[p]) {
 				auto&& verts = simplex->get_vertex_labels();
 				auto&& [centre, sqRadius, success] =
-					miniball<SolutionPrecision::EXACT>(points(all, verts));
+					miniball<SolutionPrecision::EXACT>(points_exact(all, verts));
 				assert(success && "Miniball failed.");
 				simplex->value() = sqrt(to_double(sqRadius));
 			}
@@ -639,68 +647,55 @@ auto delcech_parallel(
 	const vector<colour_t>& colours,
 	const int               max_num_threads
 ) -> Filtration {
-	// Start
-	// Get the delaunay triangulation.
 	Filtration delX(delaunay<CGAL::Parallel_tag>(points, colours));
-	// Modify the filtration values.
+	auto       points_exact   = points.template cast<Mpzf>();
 	auto       points_exact_q = points.template cast<Quotient<Mpzf>>();
-	const auto one_by_four = Quotient<Mpzf>(Mpzf(0.25), Mpzf(1.0));  // Used for the edge lengths.
+	const auto one_by_four    = Quotient<Mpzf>(1, 4);  // Used for the edge lengths.
 	if (delX.dimension() >= 1) {
-		task_arena arena(max_num_threads == 0 ? task_arena::automatic : max_num_threads);
-		// Each worker thread will get its own copy of the quotient-to-double approximator.
+		task_arena::constraints parallelism_options(
+			task_arena::automatic,
+			max_num_threads == 0 ? task_arena::automatic : max_num_threads
+		);
+		parallelism_options.set_max_threads_per_core(1);
+		task_arena arena(parallelism_options);
+
 		enumerable_thread_specific<TypeConverter<cmb::SolutionExactType, double>>
 			thread_local_to_double;
-		for (auto&& p = delX.dimension(); p > 1; p--) {
-			// Store all the simplex pointers in a vector,
-			// which is convenient to iterate over using the TBB API.
-			vector<const shared_ptr<Filtration::Simplex>*> simplices;
-			simplices.reserve(delX.get_simplices()[p].size());
-			for (auto&& [_, simplex]: delX.get_simplices()[p]) {
-				simplices.push_back(&simplex);
+
+		vector<Filtration::Simplex*> simplices;
+		simplices.reserve(delX.size());
+		for (auto&& p = delX.dimension(); p >= 1; p--) {
+			for (auto&& [_, simplex_ptr]: delX.get_simplices()[p]) {
+				simplices.push_back(simplex_ptr.get());
 			}
-			arena.execute([&] {
-				parallel_for(
-					blocked_range<size_t>(0, simplices.size(), 500),
-					[&](const blocked_range<size_t>& r) {
-						auto&& to_double = thread_local_to_double.local();
-						for (size_t idx = r.begin(); idx < r.end(); idx++) {
-							auto   simplex = *simplices[idx];
-							auto&& verts   = simplex->get_vertex_labels();
-							auto&& [centre, sqRadius, success] =
-								miniball<SolutionPrecision::EXACT>(points(all, verts));
-							simplex->value() = sqrt(to_double(sqRadius));
-						}
-					}
-				);
-			});
 		}
-		// Fast version for dimension 1.
-		vector<const shared_ptr<Filtration::Simplex>*> edges;
-		edges.reserve(delX.get_simplices()[1].size());
-		for (auto&& [_, edge]: delX.get_simplices()[1]) {
-			edges.push_back(&edge);
-		}
+
 		arena.execute([&] {
 			parallel_for(
-				blocked_range<size_t>(0, edges.size(), 500),
+				blocked_range<size_t>(0, simplices.size(), 500),
 				[&](const blocked_range<size_t>& r) {
 					auto&& to_double = thread_local_to_double.local();
 					for (size_t idx = r.begin(); idx < r.end(); idx++) {
-						auto&& edge  = *edges[idx];
-						auto&& verts = edge->get_vertex_labels();
-						// We use exact types here for consistency with the calculations in higher
-					    // dimensions.
-						edge->value() = sqrt(to_double(
-							(points_exact_q.col(verts[0]) - points_exact_q.col(verts[1]))
-								.squaredNorm() *
-							one_by_four
-						));
+						auto&& simplex = simplices[idx];
+						auto&& verts   = simplex->get_vertex_labels();
+						if (simplex->get_dim() > 1) {
+							auto&& [centre, sqRadius, success] =
+								miniball<SolutionPrecision::EXACT>(points_exact(all, verts).eval());
+							simplex->value() = sqrt(to_double(sqRadius));
+						} else {
+							simplex->value() = sqrt(to_double(
+								(points_exact_q.col(verts[0]).eval() -
+						         points_exact_q.col(verts[1]).eval())
+									.squaredNorm() *
+								one_by_four
+							));
+						}
 					}
 				}
 			);
 		});
-		thread_local_to_double.clear();  // Clear the thread-local storage.
 	}
+
 	return delX;
 }
 

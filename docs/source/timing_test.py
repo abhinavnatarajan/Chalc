@@ -15,7 +15,6 @@ funcs = {
 	"chromatic alpha multi-threaded": lambda points, colours: ch.chromatic.alpha(
 		points,
 		colours,
-		max_num_threads=8,
 	),
 	"chromatic alpha single-threaded": lambda points, colours: ch.chromatic.alpha(
 		points,
@@ -25,7 +24,6 @@ funcs = {
 	"chromatic delcech multi-threaded": lambda points, colours: ch.chromatic.delcech(
 		points,
 		colours,
-		max_num_threads=8,
 	),
 	"chromatic delcech single-threaded": lambda points, colours: ch.chromatic.delcech(
 		points,
@@ -35,7 +33,6 @@ funcs = {
 	"chromatic delrips multi-threaded": lambda points, colours: ch.chromatic.delrips(
 		points,
 		colours,
-		max_num_threads=8,
 	),
 	"chromatic delrips single-threaded": lambda points, colours: ch.chromatic.delrips(
 		points,
