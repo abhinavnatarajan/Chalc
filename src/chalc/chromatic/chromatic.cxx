@@ -79,6 +79,8 @@ using oneapi::tbb::blocked_range;
 using oneapi::tbb::enumerable_thread_specific;
 using oneapi::tbb::parallel_for;
 using oneapi::tbb::task_arena;
+auto& automatic   = oneapi::tbb::task_arena::automatic;
+using constraints = task_arena::constraints;
 
 using std::array;
 using std::domain_error;
@@ -300,12 +302,14 @@ auto delaunay_rips_parallel(
 		auto       points_exact_q = points.template cast<Quotient<Mpzf>>();
 		const auto one_by_four    = Quotient<Mpzf>(1, 4);  // Used for the edge lengths.
 
-		task_arena::constraints parallelism_options(
-			task_arena::automatic,
-			max_num_threads == 0 ? task_arena::automatic : max_num_threads
+		task_arena arena(
+			constraints{
+				automatic,                                                       // numa_id
+				max_num_threads == 0 ? task_arena::automatic : max_num_threads,  // max_concurrency
+				automatic,                                                       // core_type
+				1  // max_threads_per_core
+			}
 		);
-		parallelism_options.set_max_threads_per_core(1);
-		task_arena arena(parallelism_options);
 
 		enumerable_thread_specific<TypeConverter<cmb::SolutionExactType, double>>
 			thread_local_to_double;
@@ -463,12 +467,14 @@ auto alpha_parallel(
 	Filtration delX(delaunay<CGAL::Parallel_tag>(points, colours));
 
 	if (delX.dimension() >= 1) {
-		task_arena::constraints parallelism_options(
-			task_arena::automatic,
-			max_num_threads == 0 ? task_arena::automatic : max_num_threads
+		task_arena arena(
+			constraints{
+				automatic,                                                       // numa_id
+				max_num_threads == 0 ? task_arena::automatic : max_num_threads,  // max_concurrency
+				automatic,                                                       // core_type
+				1  // max_threads_per_core
+			}
 		);
-		parallelism_options.set_max_threads_per_core(1);
-		task_arena arena(parallelism_options);
 
 		enumerable_thread_specific<TypeConverter<cmb::SolutionExactType, double>>
 			thread_local_to_double;
@@ -650,12 +656,14 @@ auto delaunay_cech_parallel(
 	auto       points_exact_q = points.template cast<Quotient<Mpzf>>();
 	const auto one_by_four    = Quotient<Mpzf>(1, 4);  // Used for the edge lengths.
 	if (delX.dimension() >= 1) {
-		task_arena::constraints parallelism_options(
-			task_arena::automatic,
-			max_num_threads == 0 ? task_arena::automatic : max_num_threads
+		task_arena arena(
+			constraints{
+				automatic,                                                       // numa_id
+				max_num_threads == 0 ? task_arena::automatic : max_num_threads,  // max_concurrency
+				automatic,                                                       // core_type
+				1  // max_threads_per_core
+			}
 		);
-		parallelism_options.set_max_threads_per_core(1);
-		task_arena arena(parallelism_options);
 
 		enumerable_thread_specific<TypeConverter<cmb::SolutionExactType, double>>
 			thread_local_to_double;
