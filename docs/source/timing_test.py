@@ -21,20 +21,20 @@ funcs = {
 		colours,
 		max_num_threads=1,
 	),
-	"chromatic delcech multi-threaded": lambda points, colours: ch.chromatic.delcech(
+	"chromatic delaunay_cech multi-threaded": lambda points, colours: ch.chromatic.delaunay_cech(
 		points,
 		colours,
 	),
-	"chromatic delcech single-threaded": lambda points, colours: ch.chromatic.delcech(
+	"chromatic delaunay_cech single-threaded": lambda points, colours: ch.chromatic.delaunay_cech(
 		points,
 		colours,
 		max_num_threads=1,
 	),
-	"chromatic delrips multi-threaded": lambda points, colours: ch.chromatic.delrips(
+	"chromatic delaunay_rips multi-threaded": lambda points, colours: ch.chromatic.delaunay_rips(
 		points,
 		colours,
 	),
-	"chromatic delrips single-threaded": lambda points, colours: ch.chromatic.delrips(
+	"chromatic delaunay_rips single-threaded": lambda points, colours: ch.chromatic.delaunay_rips(
 		points,
 		colours,
 		max_num_threads=1,

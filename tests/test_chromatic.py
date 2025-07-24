@@ -69,8 +69,8 @@ def test_chromatic_alpha_deterministic() -> None:
 
 
 def test_chromatic_delcech_deterministic() -> None:
-	"""Test chromatic Delaunay--Cech on a simple example."""
-	filtration = ch.chromatic.delcech(points, list(colours))
+	"""Test chromatic Delaunay--Čech on a simple example."""
+	filtration = ch.chromatic.delaunay_cech(points, list(colours))
 	assert filtration.is_filtration()
 	assert all(filtration.simplices[0][i].filtration_value == 0 for i in range(4))
 	assert all(math.isclose(filtration.simplices[1][i].filtration_value, 0.5) for i in range(3))
@@ -85,9 +85,9 @@ def test_chromatic_delcech_deterministic() -> None:
 	assert math.isclose(filtration.simplices[3][0].filtration_value, 1)
 
 
-def test_chromatic_delrips_deterministic() -> None:
-	"""Test chromatic delrips on a simple example."""
-	filtration = ch.chromatic.delrips(points, list(colours))
+def test_chromatic_delaunay_rips_deterministic() -> None:
+	"""Test chromatic delaunay_rips on a simple example."""
+	filtration = ch.chromatic.delaunay_rips(points, list(colours))
 	assert filtration.is_filtration()
 	assert all(filtration.simplices[0][i].filtration_value == 0 for i in range(4))
 	assert all(math.isclose(filtration.simplices[1][i].filtration_value, 0.5) for i in range(3))
@@ -102,7 +102,7 @@ def test_chromatic_delrips_deterministic() -> None:
 
 
 def test_chromatic_delcech_random() -> None:
-	"""Test the chromatic Delaunay--Cech filtration on random data.
+	"""Test the chromatic Delaunay--Čech filtration on random data.
 
 	This tests for monotonicity in the filtration values,
 	and for numerical instabilities.
@@ -117,13 +117,13 @@ def test_chromatic_delcech_random() -> None:
 		for s in num_colours:
 			points = rng.uniform(size=(d, num_points))
 			colours = rng.integers(0, s, size=num_points).tolist()
-			filtration = ch.chromatic.delcech(
+			filtration = ch.chromatic.delaunay_cech(
 				points,
 				colours,
 				max_num_threads=1,
 			)
 			assert filtration.is_filtration()
-			filtration_mt = ch.chromatic.delcech(
+			filtration_mt = ch.chromatic.delaunay_cech(
 				points,
 				colours,
 				max_num_threads=0,
@@ -178,13 +178,13 @@ def test_delrips_random() -> None:
 		for s in num_colours:
 			points = rng.uniform(size=(d, 200))
 			colours = rng.integers(0, s, size=200).tolist()
-			filtration = ch.chromatic.delrips(
+			filtration = ch.chromatic.delaunay_rips(
 				points,
 				colours,
 				max_num_threads=1,
 			)
 			assert filtration.is_filtration()
-			filtration_mt = ch.chromatic.delrips(
+			filtration_mt = ch.chromatic.delaunay_rips(
 				points,
 				colours,
 				max_num_threads=0,
@@ -194,7 +194,8 @@ def test_delrips_random() -> None:
 
 
 def test_delrips_vs_delcech_random() -> None:
-	"""Test the equality of 1-skeletons of chromatic DelRips and chromatic DelCech filtrations."""
+	"""Test the equality of 1-skeletons of chromatic Delaunay--Rips
+	and chromatic Delaunay-Čech filtrations."""
 	rng = np.random.default_rng(random_seed)
 	dims = [1, 2]
 	num_colours = [1, 2, 3]
@@ -202,11 +203,11 @@ def test_delrips_vs_delcech_random() -> None:
 		for s in num_colours:
 			points = rng.uniform(size=(d, 200))
 			colours = rng.integers(0, s, size=200).tolist()
-			filtration_delrips = ch.chromatic.delrips(
+			filtration_delrips = ch.chromatic.delaunay_rips(
 				points,
 				colours,
 			)
-			filtration_delcech = ch.chromatic.delcech(
+			filtration_delcech = ch.chromatic.delaunay_cech(
 				points,
 				colours,
 			)
@@ -235,7 +236,7 @@ def test_alpha_delcech_homotopy_equivalent() -> None:
 		for s in num_colours:
 			points = rng.uniform(size=(dim, num_points))
 			colours = rng.integers(0, s + 1, size=num_points).tolist()
-			chromatic_delcech = ch.chromatic.delcech(points, colours)
+			chromatic_delcech = ch.chromatic.delaunay_cech(points, colours)
 			chromatic_alpha = ch.chromatic.alpha(points, colours)
 			dgms_delcech = ch.sixpack.SubChromaticInclusion(chromatic_delcech, {0}).sixpack()
 			dgms_alpha = ch.sixpack.SubChromaticInclusion(chromatic_alpha, {0}).sixpack()

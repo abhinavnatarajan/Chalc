@@ -1,17 +1,14 @@
 #include <chalc/filtration/filtration.h>
-#include <memory>
 #include <pybind11/attr.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
 namespace {
 using chalc::Filtration;
-using std::shared_ptr;
-
 }  // namespace
 
 PYBIND11_MODULE(filtration, m) {  // NOLINT
-	using chalc::index_t;
+	using chalc::Index;
 	using chalc::MAX_NUM_COLOURS;
 	using chalc::standard_simplex;
 	using std::domain_error;
@@ -24,7 +21,7 @@ PYBIND11_MODULE(filtration, m) {  // NOLINT
 
 	// Forward declare our classes.
 	py::class_<Filtration> filtered_complex(m, "Filtration");
-	py::class_<Filtration::Simplex, shared_ptr<Filtration::Simplex>> simplex(m, "Simplex");
+	py::class_<Filtration::Simplex>                simplex(m, "Simplex");
 
 	// Subclass Filtration from Sized, Iterable, and Container.
 	auto Sized     = py::module_::import("collections.abc").attr("Sized");
@@ -38,7 +35,7 @@ PYBIND11_MODULE(filtration, m) {  // NOLINT
 	filtered_complex.doc() = "Class representing a filtered simplicial complex.";
 	filtered_complex
 		.def(
-			py::init<const index_t, const index_t>(),
+			py::init<const Index, const Index>(),
 			R"docstring(Construct a discrete filtered simplicial complex with default filtration time of 0.
 
 Args:
@@ -54,6 +51,7 @@ Args:
 		.def(
 			"skeleton",
 			&Filtration::skeleton,
+			py::return_value_policy::move,
 			R"docstring(Get a copy of the k-skeleton of the filtration.
 
 Args:
@@ -84,7 +82,7 @@ Note:
 		// Requirements from Container
 		.def(
 			"__contains__",
-			static_cast<bool (Filtration::*)(vector<index_t>& v) const>(&Filtration::has_simplex),
+			static_cast<bool (Filtration::*)(vector<Index>& v) const>(&Filtration::has_simplex),
 			R"docstring(Check for membership of a simplex in the complex.
 
 Args:
@@ -151,7 +149,8 @@ Args:
 		)
 		.def_property_readonly(
 			"simplices",
-			&Filtration::get_simplices,
+			&Filtration::simplices,
+			py::return_value_policy::reference_internal,
 			R"docstring(A list such that ``simplices[k]`` is a dictionary of handles
 to the :math:`k`-simplices in the complex.
 
@@ -229,14 +228,14 @@ Returns true if each simplex has a filtration value at least as large as each of
 	simplex
 		.def_property_readonly(
 			"dimension",
-			&Filtration::Simplex::get_dim,
+			&Filtration::Simplex::dimension,
 			R"docstring(
 			Dimension of the simplex.
 		)docstring"
 		)
 		.def_property_readonly(
 			"label",
-			&Filtration::Simplex::get_label,
+			&Filtration::Simplex::label,
 			R"docstring(Label of the simplex in its parent filtered complex.
 
 A :math:`k`-simplex :math:`\sigma` is labelled by the lexicographic index of :math:`\sigma`
@@ -247,8 +246,8 @@ counting all possible sorted subsequences of :math:`(0, ..., N-1)` of length :ma
 		)
 		.def_property_readonly(
 			"vertices",
-			static_cast<vector<index_t> (Filtration::Simplex::*)() const>(
-				&Filtration::Simplex::get_vertex_labels
+			static_cast<vector<Index> (Filtration::Simplex::*)() const>(
+				&Filtration::Simplex::vertex_labels
 			),
 			"List of (sorted, ascending) vertex labels of the simplex."
 		)
@@ -266,13 +265,13 @@ from the parent complex to ensure that filtration times remain monotonic.
 		)
 		.def_property_readonly(
 			"colours",
-			&Filtration::Simplex::get_colours_as_vec,
+			&Filtration::Simplex::colours,
 			"Set of colours of the vertices of the simplex."
 		)
 		.def(
 			"set_colour",
-			[](const shared_ptr<Filtration::Simplex>& s_ptr, index_t c) {
-				if (s_ptr->get_dim() == 0) {
+			[](Filtration::Simplex* s_ptr, Index c) {
+				if (s_ptr->dimension() == 0) {
 					if (c < MAX_NUM_COLOURS) {
 						s_ptr->set_colour(c);
 					} else {
@@ -298,19 +297,14 @@ Tip:
 		)
 		.def_property_readonly(
 			"facets",
-			[](const shared_ptr<Filtration::Simplex>& self) {
-				auto                                         facets = self->get_facets();
-				std::vector<shared_ptr<Filtration::Simplex>> result;
-				result.reserve(facets.size());
-				for (const auto& f: facets) {
-					result.push_back(f->get_handle());
-				}
-				return result;
+			[](const Filtration::Simplex* self) {
+				return self->facets();
 			},
+			py::return_value_policy::reference_internal,
 			"Read-only list of handles to the facets of the simplex."
 		)
-		.def("__repr__", [](const shared_ptr<Filtration::Simplex>& s_ptr) {
-			return "<" + to_string(s_ptr->get_dim()) + "-simplex>";
+		.def("__repr__", [](const Filtration::Simplex* s_ptr) {
+			return "<" + to_string(s_ptr->dimension()) + "-simplex>";
 		});
 
 	m.def(

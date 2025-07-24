@@ -54,9 +54,9 @@
 #include <string>
 
 namespace {
-using chalc::colour_t;
+using chalc::Colour;
 using chalc::Filtration;
-using chalc::index_t;
+using chalc::Index;
 using chalc::MAX_NUM_COLOURS;
 
 using CGAL::Mpzf;
@@ -96,37 +96,35 @@ using std::unordered_map;
 using std::vector;
 
 // Typedefs for the CGAL Delaunay triangulation.
-using Kernel_d                     = CGAL::Epick_d<CGAL::Dynamic_dimension_tag>;
-using Triangulation_data_structure = CGAL::Triangulation_data_structure<
-	Kernel_d::Dimension,
-	CGAL::Triangulation_vertex<Kernel_d, index_t>,
-	CGAL::Triangulation_full_cell<Kernel_d>>;
-using DelaunayTriangulation = CGAL::Delaunay_triangulation<Kernel_d, Triangulation_data_structure>;
-using Point_d               = Kernel_d::Point_d;
+using Kernel                     = CGAL::Epick_d<CGAL::Dynamic_dimension_tag>;
+using TriangulationDataStructure = CGAL::Triangulation_data_structure<
+	Kernel::Dimension,
+	CGAL::Triangulation_vertex<Kernel, Index>,
+	CGAL::Triangulation_full_cell<Kernel>>;
+using DelaunayTriangulation = CGAL::Delaunay_triangulation<Kernel, TriangulationDataStructure>;
+using Point                 = Kernel::Point_d;
 
 // Typedefs for spatial sorting the points before the triangulation.
 using PointVectorPropertyMap = boost::iterator_property_map<
-	vector<Point_d>::const_iterator,
-	boost::typed_identity_property_map<index_t>,
-	const Point_d,
-	const Point_d&>;
-using SpatialSortingTraits_d =
-	CGAL::Spatial_sort_traits_adapter_d<Kernel_d, PointVectorPropertyMap>;
+	vector<Point>::const_iterator,
+	boost::typed_identity_property_map<Index>,
+	const Point,
+	const Point&>;
+using SpatialSortingTraits = CGAL::Spatial_sort_traits_adapter_d<Kernel, PointVectorPropertyMap>;
 
 // Convert a matrix of coordinate column vectors to a vector of CGAL points.
-auto matrix_columns_to_points_vec(const MatrixXd& x_arr) -> vector<Point_d> {
-	vector<Point_d> points(x_arr.cols());
-	auto            cols_begin = x_arr.colwise().cbegin();
-	auto            cols_end   = x_arr.colwise().cend();
-	for (auto&& [i, column] = tuple<index_t, decltype(cols_begin)>{0, cols_begin};
-	     column != cols_end;
+auto matrix_columns_to_points_vec(const MatrixXd& x_arr) -> vector<Point> {
+	vector<Point> points(x_arr.cols());
+	auto          cols_begin = x_arr.colwise().cbegin();
+	auto          cols_end   = x_arr.colwise().cend();
+	for (auto&& [i, column] = tuple<Index, decltype(cols_begin)>{0, cols_begin}; column != cols_end;
 	     column++, i++) {
-		points[i] = Point_d(column->cbegin(), column->cend());
+		points[i] = Point(column->cbegin(), column->cend());
 	}
 	return points;
 }
 
-template <typename T> auto reorder(const vector<T>& v, const vector<index_t>& idx) -> vector<T> {
+template <typename T> auto reorder(const vector<T>& v, const vector<Index>& idx) -> vector<T> {
 	vector<T> result(v.size());
 	for (auto i = 0; i < v.size(); i++) {
 		result[i] = v[idx[i]];
@@ -148,10 +146,10 @@ template <typename T> auto compare(const void* a, const void* b) -> int {
 
 // Make a vector contiguous and start at zero.
 // Returns new vector and number of distinct elements.
-auto canonicalise(const vector<colour_t>& vec) -> tuple<vector<colour_t>, index_t> {
-	vector<colour_t>                  new_vec(vec.size());
-	unordered_map<colour_t, colour_t> m;
-	for (auto&& [c, i] = tuple{vec.cbegin(), static_cast<colour_t>(0)}; c != vec.cend(); c++) {
+auto canonicalise(const vector<Colour>& vec) -> tuple<vector<Colour>, Index> {
+	vector<Colour>                new_vec(vec.size());
+	unordered_map<Colour, Colour> m;
+	for (auto&& [c, i] = tuple{vec.cbegin(), static_cast<Colour>(0)}; c != vec.cend(); c++) {
 		if (!m.contains(*c)) {
 			m[*c] = i++;
 		}
@@ -165,11 +163,11 @@ auto canonicalise(const vector<colour_t>& vec) -> tuple<vector<colour_t>, index_
 // Stratify a coloured point set.
 // Points are provided as columns of a matrix or matrix expression.
 // Colours are provided as a vector.
-auto chromatic_lift(const MatrixXd& points, const vector<colour_t>& colours) -> MatrixXd {
+auto chromatic_lift(const MatrixXd& points, const vector<Colour>& colours) -> MatrixXd {
 	// Make sure colours are contiguous and start at zero
 	auto&& [new_colours, num_colours] = canonicalise(colours);
 	// Check that the number of colours is valid.
-	if (any_of(new_colours, [](const index_t& colour) {
+	if (any_of(new_colours, [](const Index& colour) {
 			return (colour >= MAX_NUM_COLOURS);
 		})) {
 		throw domain_error(
@@ -197,8 +195,8 @@ namespace chalc {
 
 // Create a Delaunay triangulation from a collection of coordinate vectors.
 template <typename Concurrency_tag>
-auto delaunay(const MatrixXd& X, const vector<colour_t>& colours) -> Filtration {
-	if (X.cols() > numeric_limits<index_t>::max()) {
+auto delaunay(const MatrixXd& X, const vector<Colour>& colours) -> Filtration {
+	if (X.cols() > numeric_limits<Index>::max()) {
 		throw runtime_error("Number of points is too large.");
 	}
 	if (colours.size() != X.cols()) {
@@ -216,16 +214,16 @@ auto delaunay(const MatrixXd& X, const vector<colour_t>& colours) -> Filtration 
 	auto points = matrix_columns_to_points_vec(Y);
 	// Spatial sorting for the points.
 	// This makes the insertion O(nlogn) instead of O(n^{ceil(d/2) + 1}).
-	vector<index_t> indices(Y.cols());
-	iota(indices.begin(), indices.end(), 0);
+	vector<Index> indices(Y.cols());
+	iota(indices.begin(), indices.end(), 0);  // NOLINT
 	spatial_sort<Concurrency_tag>(
 		indices.begin(),
 		indices.end(),
-		SpatialSortingTraits_d(PointVectorPropertyMap(points.cbegin()))
+		SpatialSortingTraits(PointVectorPropertyMap(points.cbegin()))
 	);
 	// Insert the points into the Delaunay triangulation one by one
 	// and add their indexing data.
-	int                                     max_dim = Y.rows();  // NOLINT
+	auto                                    max_dim = static_cast<int>(Y.rows());
 	auto                                    delY    = DelaunayTriangulation(max_dim);
 	DelaunayTriangulation::Full_cell_handle hint;
 	DelaunayTriangulation::Vertex_handle    v;
@@ -245,8 +243,8 @@ auto delaunay(const MatrixXd& X, const vector<colour_t>& colours) -> Filtration 
 	if (dim < 0) {
 		dim = 0;
 	}
-	Filtration      result(Y.cols(), dim);
-	vector<index_t> max_cell_vertex_labels(dim + 1);
+	Filtration    result(Y.cols(), dim);
+	vector<Index> max_cell_vertex_labels(dim + 1);
 	for (auto cell_it = delY.finite_full_cells_begin(); cell_it != delY.finite_full_cells_end();
 	     cell_it++) {
 		// Iterate over the vertices of the cell and get their labels.
@@ -263,7 +261,7 @@ auto delaunay(const MatrixXd& X, const vector<colour_t>& colours) -> Filtration 
 	}
 
 	// Modify the colours of the vertices.
-	for (auto& [idx, vert]: result.get_simplices()[0]) {
+	for (auto& [idx, vert]: result.simplices()[0]) {
 		vert->set_colour(colours[idx]);
 	}
 	result.propagate_colours();
@@ -271,15 +269,15 @@ auto delaunay(const MatrixXd& X, const vector<colour_t>& colours) -> Filtration 
 }
 
 // Create the chromatic Delaunay--Rips filtration.
-auto delrips(const MatrixXd& points, const vector<colour_t>& colours) -> Filtration {
+auto delaunay_rips(const MatrixXd& points, const vector<Colour>& colours) -> Filtration {
 	Filtration delX = delaunay(points, colours);
 
 	if (delX.dimension() >= 1) {
 		auto       to_double      = TypeConverter<cmb::SolutionExactType, double>{};
 		const auto one_by_four    = Quotient<Mpzf>(1, 4);  // Used for the edge lengths.
 		auto       points_exact_q = points.template cast<Quotient<Mpzf>>();
-		for (auto& [idx, edge]: delX.get_simplices()[1]) {
-			auto&& verts  = edge->get_vertex_labels();
+		for (auto& [idx, edge]: delX.simplices()[1]) {
+			auto&& verts  = edge->vertex_labels();
 			edge->value() = sqrt(to_double(
 				(points_exact_q.col(verts[0]) - points_exact_q.col(verts[1])).squaredNorm() *
 				one_by_four
@@ -291,10 +289,10 @@ auto delrips(const MatrixXd& points, const vector<colour_t>& colours) -> Filtrat
 }
 
 // Create the chromatic Delaunay--Rips filtration with parallelisation.
-auto delrips_parallel(
-	const MatrixXd&         points,
-	const vector<colour_t>& colours,
-	const int               max_num_threads
+auto delaunay_rips_parallel(
+	const MatrixXd&       points,
+	const vector<Colour>& colours,
+	const int             max_num_threads
 ) -> Filtration {
 	Filtration delX = delaunay<CGAL::Parallel_tag>(points, colours);
 
@@ -313,9 +311,9 @@ auto delrips_parallel(
 			thread_local_to_double;
 
 		vector<Filtration::Simplex*> edges;
-		edges.reserve(delX.get_simplices()[1].size());
-		for (auto&& [_, edge_ptr]: delX.get_simplices()[1]) {
-			edges.push_back(edge_ptr.get());
+		edges.reserve(delX.simplices()[1].size());
+		for (auto&& [_, edge_ptr]: delX.simplices()[1]) {
+			edges.push_back(edge_ptr);
 		}
 		arena.execute([&] {
 			parallel_for(
@@ -324,7 +322,7 @@ auto delrips_parallel(
 					for (size_t idx = r.begin(); idx < r.end(); idx++) {
 						auto&& to_double = thread_local_to_double.local();
 						auto&& edge      = edges[idx];
-						auto&& verts     = edge->get_vertex_labels();
+						auto&& verts     = edge->vertex_labels();
 						edge->value()    = sqrt(to_double(
                             (points_exact_q.col(verts[0]) - points_exact_q.col(verts[1]))
                                 .squaredNorm() *
@@ -340,7 +338,7 @@ auto delrips_parallel(
 }
 
 // Compute the chromatic alpha complex.
-auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> Filtration {
+auto alpha(const MatrixXd& points, const vector<Colour>& colours) -> Filtration {
 	Filtration delX(delaunay(points, colours));
 
 	if (delX.dimension() >= 1) {
@@ -351,18 +349,18 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> Filtratio
 
 		// Partition the vertices by colour.
 		// We will need this later to check if stacks are empty.
-		array<vector<index_t>, MAX_NUM_COLOURS> verts_by_colour;
-		for (auto&& [i, colour] = tuple{static_cast<index_t>(0), colours.cbegin()};
+		array<vector<Index>, MAX_NUM_COLOURS> verts_by_colour;
+		for (auto&& [i, colour] = tuple{static_cast<Index>(0), colours.cbegin()};
 		     colour != colours.cend();
 		     colour++, i++) {
 			verts_by_colour.at(*colour).push_back(i);
 		}
 		for (auto&& p = delX.dimension(); p >= 1; p--) {
-			for (auto&& [_, simplex]: delX.get_simplices()[p]) {
-				auto&& verts = simplex->get_vertex_labels();
+			for (auto&& [_, simplex]: delX.simplices()[p]) {
+				auto&& verts = simplex->vertex_labels();
 
 				// Partition the vertices of this simplex by colour.
-				array<vector<index_t>, MAX_NUM_COLOURS> verts_by_colour_in_simplex;
+				array<vector<Index>, MAX_NUM_COLOURS> verts_by_colour_in_simplex;
 				for (auto&& v: verts) {
 					verts_by_colour_in_simplex.at(colours[v]).push_back(v);
 				}
@@ -370,9 +368,9 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> Filtratio
 				// Partition the vertices of all cofaces of the simplex by colour.
 				// verts_by_colour_all_cofaces[j] will have duplicates but this
 				// does not affect correctness.
-				array<vector<index_t>, MAX_NUM_COLOURS> verts_by_colour_all_cofaces;
-				for (auto&& cofacet: simplex->get_cofacets()) {
-					for (auto&& v: cofacet->get_vertex_labels()) {
+				array<vector<Index>, MAX_NUM_COLOURS> verts_by_colour_all_cofaces;
+				for (auto&& cofacet: simplex->cofacets()) {
+					for (auto&& v: cofacet->vertex_labels()) {
 						verts_by_colour_all_cofaces.at(colours[v]).push_back(v);
 					}
 				}
@@ -440,7 +438,7 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> Filtratio
 					if (stack_is_empty) {
 						simplex->value() = sqrt(to_double(sqRadius));
 					} else {
-						auto&& cofacets = simplex->get_cofacets();
+						auto&& cofacets = simplex->cofacets();
 						if (cofacets.size() == 0) {
 							continue;
 						}
@@ -458,9 +456,9 @@ auto alpha(const MatrixXd& points, const vector<colour_t>& colours) -> Filtratio
 
 // Construct the chromatic alpha filtration with parallelisation.
 auto alpha_parallel(
-	const MatrixXd&         points,
-	const vector<colour_t>& colours,
-	const int               max_num_threads
+	const MatrixXd&       points,
+	const vector<Colour>& colours,
+	const int             max_num_threads
 ) -> Filtration {
 	Filtration delX(delaunay<CGAL::Parallel_tag>(points, colours));
 
@@ -480,8 +478,8 @@ auto alpha_parallel(
 
 		// Partition the vertices by colour.
 		// We will need this later to check if stacks are empty.
-		array<vector<index_t>, MAX_NUM_COLOURS> verts_by_colour{};
-		for (auto&& [i, colour] = tuple{static_cast<index_t>(0), colours.cbegin()};
+		array<vector<Index>, MAX_NUM_COLOURS> verts_by_colour{};
+		for (auto&& [i, colour] = tuple{static_cast<Index>(0), colours.cbegin()};
 		     colour != colours.cend();
 		     colour++, i++) {
 			verts_by_colour.at(*colour).push_back(i);
@@ -489,9 +487,9 @@ auto alpha_parallel(
 
 		for (auto&& p = delX.dimension(); p >= 1; p--) {
 			vector<Filtration::Simplex*> simplices;
-			simplices.reserve(delX.get_simplices()[p].size());
-			for (auto&& [_, simplex_ptr]: delX.get_simplices()[p]) {
-				simplices.push_back(simplex_ptr.get());
+			simplices.reserve(delX.simplices()[p].size());
+			for (auto&& [_, simplex_ptr]: delX.simplices()[p]) {
+				simplices.push_back(simplex_ptr);
 			}
 			arena.execute([&] {
 				parallel_for(
@@ -500,10 +498,10 @@ auto alpha_parallel(
 						auto&& to_double = thread_local_to_double.local();
 						for (size_t idx = r.begin(); idx < r.end(); idx++) {
 							auto&& simplex = simplices[idx];
-							auto&& verts   = simplex->get_vertex_labels();
+							auto&& verts   = simplex->vertex_labels();
 
 							// Partition the vertices of this simplex by colour.
-							array<vector<index_t>, MAX_NUM_COLOURS> verts_by_colour_in_simplex;
+							array<vector<Index>, MAX_NUM_COLOURS> verts_by_colour_in_simplex;
 							for (auto&& v: verts) {
 								verts_by_colour_in_simplex.at(colours[v]).push_back(v);
 							}
@@ -511,9 +509,9 @@ auto alpha_parallel(
 							// Partition the vertices of all cofaces of the simplex by colour.
 						    // verts_by_colour_all_cofaces[j] will have duplicates but this
 						    // does not affect correctness.
-							array<vector<index_t>, MAX_NUM_COLOURS> verts_by_colour_all_cofaces;
-							for (auto&& cofacet: simplex->get_cofacets()) {
-								for (auto&& v: cofacet->get_vertex_labels()) {
+							array<vector<Index>, MAX_NUM_COLOURS> verts_by_colour_all_cofaces;
+							for (auto&& cofacet: simplex->cofacets()) {
+								for (auto&& v: cofacet->vertex_labels()) {
 									verts_by_colour_all_cofaces.at(colours[v]).push_back(v);
 								}
 							}
@@ -590,7 +588,7 @@ auto alpha_parallel(
 								if (stack_is_empty) {
 									simplex->value() = sqrt(to_double(sqRadius));
 								} else {
-									auto&& cofacets = simplex->get_cofacets();
+									auto&& cofacets = simplex->cofacets();
 									if (cofacets.size() == 0) {
 										continue;
 									}
@@ -610,8 +608,8 @@ auto alpha_parallel(
 	return delX;
 }
 
-// Create the chromatic Delaunay-Cech complex.
-auto delcech(const MatrixXd& points, const vector<colour_t>& colours) -> Filtration {
+// Create the chromatic Delaunay-Čech complex.
+auto delaunay_cech(const MatrixXd& points, const vector<Colour>& colours) -> Filtration {
 	Filtration delX(delaunay(points, colours));
 	auto       points_exact   = points.template cast<Mpzf>();
 	auto       points_exact_q = points.template cast<Quotient<Mpzf>>();
@@ -619,8 +617,8 @@ auto delcech(const MatrixXd& points, const vector<colour_t>& colours) -> Filtrat
 	auto       to_double      = TypeConverter<cmb::SolutionExactType, double>{};
 	if (delX.dimension() >= 1) {
 		for (auto&& p = delX.dimension(); p > 1; p--) {
-			for (auto&& [_, simplex]: delX.get_simplices()[p]) {
-				auto&& verts = simplex->get_vertex_labels();
+			for (auto&& [_, simplex]: delX.simplices()[p]) {
+				auto&& verts = simplex->vertex_labels();
 				auto&& [centre, sqRadius, success] =
 					miniball<SolutionPrecision::EXACT>(points_exact(all, verts));
 				assert(success && "Miniball failed.");
@@ -628,8 +626,8 @@ auto delcech(const MatrixXd& points, const vector<colour_t>& colours) -> Filtrat
 			}
 		}
 		// Fast version for dimension 1.
-		for (auto&& [idx, edge]: delX.get_simplices()[1]) {
-			auto&& verts = edge->get_vertex_labels();
+		for (auto&& [idx, edge]: delX.simplices()[1]) {
+			auto&& verts = edge->vertex_labels();
 			// We use exact types here for consistency with the calculations in higher
 			// dimensions.
 			edge->value() = sqrt(to_double(
@@ -641,11 +639,11 @@ auto delcech(const MatrixXd& points, const vector<colour_t>& colours) -> Filtrat
 	return delX;
 }
 
-// Create the chromatic Delaunay--Cech complex.
-auto delcech_parallel(
-	const MatrixXd&         points,
-	const vector<colour_t>& colours,
-	const int               max_num_threads
+// Create the chromatic Delaunay--Čech complex.
+auto delaunay_cech_parallel(
+	const MatrixXd&       points,
+	const vector<Colour>& colours,
+	const int             max_num_threads
 ) -> Filtration {
 	Filtration delX(delaunay<CGAL::Parallel_tag>(points, colours));
 	auto       points_exact   = points.template cast<Mpzf>();
@@ -665,8 +663,8 @@ auto delcech_parallel(
 		vector<Filtration::Simplex*> simplices;
 		simplices.reserve(delX.size());
 		for (auto&& p = delX.dimension(); p >= 1; p--) {
-			for (auto&& [_, simplex_ptr]: delX.get_simplices()[p]) {
-				simplices.push_back(simplex_ptr.get());
+			for (auto&& [_, simplex_ptr]: delX.simplices()[p]) {
+				simplices.push_back(simplex_ptr);
 			}
 		}
 
@@ -677,8 +675,8 @@ auto delcech_parallel(
 					auto&& to_double = thread_local_to_double.local();
 					for (size_t idx = r.begin(); idx < r.end(); idx++) {
 						auto&& simplex = simplices[idx];
-						auto&& verts   = simplex->get_vertex_labels();
-						if (simplex->get_dim() > 1) {
+						auto&& verts   = simplex->vertex_labels();
+						if (simplex->dimension() > 1) {
 							auto&& [centre, sqRadius, success] =
 								miniball<SolutionPrecision::EXACT>(points_exact(all, verts).eval());
 							simplex->value() = sqrt(to_double(sqRadius));

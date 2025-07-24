@@ -7,14 +7,14 @@
 PYBIND11_MODULE(chromatic, m) {  // NOLINT
 	using chalc::alpha;
 	using chalc::alpha_parallel;
-	using chalc::colour_t;
+	using chalc::Colour;
 	using chalc::delaunay;
-	using chalc::delcech;
-	using chalc::delcech_parallel;
-	using chalc::delrips;
-	using chalc::delrips_parallel;
-	using chalc::index_t;
-	using chalc::label_t;
+	using chalc::delaunay_cech;
+	using chalc::delaunay_cech_parallel;
+	using chalc::delaunay_rips;
+	using chalc::delaunay_rips_parallel;
+	using chalc::Index;
+	using chalc::Label;
 	using chalc::MAX_NUM_COLOURS;
 	using std::tuple;
 	using std::vector;
@@ -27,9 +27,9 @@ PYBIND11_MODULE(chromatic, m) {  // NOLINT
 	m.def(
 		 "delaunay",
 		 [](const Eigen::MatrixXd&          points,
-	        const Eigen::VectorX<colour_t>& colours_ndarray,
+	        const Eigen::VectorX<Colour>& colours_ndarray,
 	        bool                            parallel) {
-			 const vector<colour_t> colours(colours_ndarray.cbegin(), colours_ndarray.cend());
+			 const vector<Colour> colours(colours_ndarray.cbegin(), colours_ndarray.cend());
 			 if (parallel) {
 				 return delaunay<CGAL::Parallel_tag>(points, colours);
 			 } else {
@@ -42,7 +42,7 @@ PYBIND11_MODULE(chromatic, m) {  // NOLINT
 	)
 		.def(
 			"delaunay",
-			[](const Eigen::MatrixXd& points, const vector<colour_t>& colours, bool parallel) {
+			[](const Eigen::MatrixXd& points, const vector<Colour>& colours, bool parallel) {
 				if (parallel) {
 					return delaunay<CGAL::Parallel_tag>(points, colours);
 				} else {
@@ -74,15 +74,15 @@ Returns:
 			py::arg("parallel") = true
 		)
 		.def(
-			"delrips",
+			"delaunay_rips",
 			[](const Eigen::MatrixXd& points,
-	           const Eigen::VectorX<colour_t>& colours_ndarray,
+	           const Eigen::VectorX<Colour>& colours_ndarray,
 	           const int max_num_threads) {
-				const vector<colour_t> colours(colours_ndarray.cbegin(), colours_ndarray.cend());
+				const vector<Colour> colours(colours_ndarray.cbegin(), colours_ndarray.cend());
 				if (max_num_threads == 1) {
-					return delrips(points, colours);
+					return delaunay_rips(points, colours);
 				} else {
-					return delrips_parallel(points, colours, max_num_threads);
+					return delaunay_rips_parallel(points, colours, max_num_threads);
 				}
 			},
 			py::arg("points"),
@@ -90,14 +90,14 @@ Returns:
 			py::arg("max_num_threads") = 0
 		)
 		.def(
-			"delrips",
+			"delaunay_rips",
 			[](const Eigen::MatrixXd& points,
-	           const vector<colour_t>& colours,
+	           const vector<Colour>& colours,
 	           const int max_num_threads) {
 				if (max_num_threads == 1) {
-					return delrips(points, colours);
+					return delaunay_rips(points, colours);
 				} else {
-					return delrips_parallel(points, colours, max_num_threads);
+					return delaunay_rips_parallel(points, colours, max_num_threads);
 				}
 			},
 			R"docstring(Compute the chromatic Delaunay--Rips filtration of a coloured point cloud.
@@ -134,7 +134,7 @@ Notes:
 	in degree zero.
 
 See Also:
-	:func:`alpha`, :func:`delcech`
+	:func:`alpha`, :func:`delaunay_cech`
 
 )docstring",
 			py::arg("points"),
@@ -144,9 +144,9 @@ See Also:
 		.def(
 			"alpha",
 			[](const Eigen::MatrixXd& points,
-	           const Eigen::VectorX<colour_t>& colours_ndarray,
+	           const Eigen::VectorX<Colour>& colours_ndarray,
 	           const int max_num_threads) {
-				const vector<colour_t> colours(colours_ndarray.cbegin(), colours_ndarray.cend());
+				const vector<Colour> colours(colours_ndarray.cbegin(), colours_ndarray.cend());
 				if (max_num_threads == 1) {
 					return alpha(points, colours);
 				} else {
@@ -160,7 +160,7 @@ See Also:
 		.def(
 			"alpha",
 			[](const Eigen::MatrixXd& points,
-	           const vector<colour_t>& colours,
+	           const vector<Colour>& colours,
 	           const int max_num_threads) {
 				if (max_num_threads == 1) {
 					return alpha(points, colours);
@@ -192,11 +192,11 @@ Raises:
 		for computations to run without overflowing.
 
 Notes:
-	:func:`chalc.chromatic.delcech` has the same 6-pack of persistent homology, and often
+	:func:`chalc.chromatic.delaunay_cech` has the same 6-pack of persistent homology, and often
 	has slightly better performance.
 
 See Also:
-	:func:`delrips`, :func:`delcech`
+	:func:`delaunay_rips`, :func:`delaunay_cech`
 
 )docstring",
 			py::arg("points"),
@@ -204,15 +204,15 @@ See Also:
 			py::arg("max_num_threads") = 0
 		)
 		.def(
-			"delcech",
+			"delaunay_cech",
 			[](const Eigen::MatrixXd& points,
-	           const Eigen::VectorX<colour_t>& colours_ndarray,
+	           const Eigen::VectorX<Colour>& colours_ndarray,
 	           const int max_num_threads) {
-				const vector<colour_t> colours(colours_ndarray.cbegin(), colours_ndarray.cend());
+				const vector<Colour> colours(colours_ndarray.cbegin(), colours_ndarray.cend());
 				if (max_num_threads == 1) {
-					return delcech(points, colours);
+					return delaunay_cech(points, colours);
 				} else {
-					return delcech_parallel(points, colours, max_num_threads);
+					return delaunay_cech_parallel(points, colours, max_num_threads);
 				}
 			},
 			py::arg("points"),
@@ -220,14 +220,14 @@ See Also:
 			py::arg("max_num_threads") = 0
 		)
 		.def(
-			"delcech",
+			"delaunay_cech",
 			[](const Eigen::MatrixXd& points,
-	           const vector<colour_t>& colours,
+	           const vector<Colour>& colours,
 	           const int max_num_threads) {
 				if (max_num_threads == 1) {
-					return delcech(points, colours);
+					return delaunay_cech(points, colours);
 				} else {
-					return delcech_parallel(points, colours, max_num_threads);
+					return delaunay_cech_parallel(points, colours, max_num_threads);
 				}
 			},
 			R"docstring(Compute the chromatic Delaunay--Čech filtration of a coloured point cloud.
@@ -260,7 +260,7 @@ Notes:
 	it has the same persistent homology as the chromatic alpha filtration.
 
 See Also:
-	:func:`alpha`, :func:`delrips`
+	:func:`alpha`, :func:`delaunay_rips`
 
 )docstring",
 			py::arg("points"),

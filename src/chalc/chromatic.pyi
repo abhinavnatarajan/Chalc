@@ -5,7 +5,7 @@ from __future__ import annotations
 import chalc.filtration
 import numpy
 import typing
-__all__ = ['MaxColoursChromatic', 'alpha', 'delaunay', 'delcech', 'delrips']
+__all__ = ['MaxColoursChromatic', 'alpha', 'delaunay', 'delaunay_cech', 'delaunay_rips']
 M = typing.TypeVar("M", bound=int)
 N = typing.TypeVar("N", bound=int)
 @typing.overload
@@ -38,11 +38,11 @@ def alpha(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colour
     		for computations to run without overflowing.
     
     Notes:
-    	:func:`chalc.chromatic.delcech` has the same 6-pack of persistent homology, and often
+    	:func:`chalc.chromatic.delaunay_cech` has the same 6-pack of persistent homology, and often
     	has slightly better performance.
     
     See Also:
-    	:func:`delrips`, :func:`delcech`
+    	:func:`delaunay_rips`, :func:`delaunay_cech`
     """
 @typing.overload
 def delaunay(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, typing.Literal[1]], numpy.dtype[numpy.uint16]], parallel: bool = True) -> chalc.filtration.Filtration:
@@ -70,10 +70,10 @@ def delaunay(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], col
     	The Delaunay triangulation.
     """
 @typing.overload
-def delcech(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, typing.Literal[1]], numpy.dtype[numpy.uint16]], max_num_threads: int = 0) -> chalc.filtration.Filtration:
+def delaunay_cech(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, typing.Literal[1]], numpy.dtype[numpy.uint16]], max_num_threads: int = 0) -> chalc.filtration.Filtration:
     ...
 @typing.overload
-def delcech(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 0) -> chalc.filtration.Filtration:
+def delaunay_cech(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 0) -> chalc.filtration.Filtration:
     """
     Compute the chromatic Delaunay--Čech filtration of a coloured point cloud.
     
@@ -105,13 +105,13 @@ def delcech(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colo
     	it has the same persistent homology as the chromatic alpha filtration.
     
     See Also:
-    	:func:`alpha`, :func:`delrips`
+    	:func:`alpha`, :func:`delaunay_rips`
     """
 @typing.overload
-def delrips(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, typing.Literal[1]], numpy.dtype[numpy.uint16]], max_num_threads: int = 0) -> chalc.filtration.Filtration:
+def delaunay_rips(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, typing.Literal[1]], numpy.dtype[numpy.uint16]], max_num_threads: int = 0) -> chalc.filtration.Filtration:
     ...
 @typing.overload
-def delrips(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 0) -> chalc.filtration.Filtration:
+def delaunay_rips(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 0) -> chalc.filtration.Filtration:
     """
     Compute the chromatic Delaunay--Rips filtration of a coloured point cloud.
     
@@ -147,6 +147,6 @@ def delrips(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colo
     	in degree zero.
     
     See Also:
-    	:func:`alpha`, :func:`delcech`
+    	:func:`alpha`, :func:`delaunay_cech`
     """
 MaxColoursChromatic: int = 16
