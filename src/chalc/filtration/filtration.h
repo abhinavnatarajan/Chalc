@@ -284,12 +284,6 @@ struct Filtration::Simplex {
 		return filt_value_;
 	}
 
-	// Filtration value of the simplex.
-	[[nodiscard]]
-	auto get_value() const noexcept -> Value {  // exported
-		return filt_value_;
-	}
-
 	// Set the filtration value of the simplex.
 	auto set_value(Value v) noexcept -> void {  // exported
 		filt_value_ = v;

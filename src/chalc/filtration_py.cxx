@@ -253,7 +253,7 @@ counting all possible sorted subsequences of :math:`(0, ..., N-1)` of length :ma
 		)
 		.def_property(
 			"filtration_value",
-			&Filtration::Simplex::get_value,
+			&Filtration::Simplex::value,
 			&Filtration::Simplex::set_value,
 			R"docstring(Filtration value of the simplex.
 

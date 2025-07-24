@@ -200,7 +200,7 @@ auto Filtration::skeleton(const Index k) const -> Filtration {
 	for (Index i = min(cur_dim_, k); i >= 1; i--) {
 		for (auto&& [key, simplex]: simplices_map_[i]) {
 			if (simplex->cofacets().empty()) {
-				ret.add_simplex_unchecked(simplex->vertex_labels(), simplex->get_value());
+				ret.add_simplex_unchecked(simplex->vertex_labels(), simplex->value());
 			}
 		}
 	}
