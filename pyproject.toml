@@ -67,6 +67,7 @@ minimum-version = "build-system.requires"
 build.verbose = true
 # cmake.build-type = "Debug"
 cmake.build-type = "Release"
+cmake.define = { VCPKG_BUILD_TYPE = "Release" }
 logging.level = "DEBUG"
 build-dir = "build/{wheel_tag}"
 sdist.exclude = [
@@ -121,19 +122,5 @@ flake8-annotations.allow-star-arg-any = true
 "**.pyi" = ["ALL"]
 "docs/**/*.py" = [
 	"INP001", # pylint: docs folder does not need __init__.py
-	"D",       # pydocstyle
+	"D",      # pydocstyle
 ]
-
-[tool.cibuildwheel]
-archs = "auto64"
-build-verbosity = 1
-build-frontend = "build[uv]"
-skip = ["pp*", "*-musllinux_*"]
-test-command = "pytest {package}/tests"
-test-groups = ["test"]
-
-[tool.cibuildwheel.linux]
-# We need rustup to build phimaker from source if necessary
-# CIBW_BEFORE_ALL_LINUX: dnf install -y zip && curl -sSf https://sh.rustup.rs | sh -s -- -y
-environment = { PATH = "$HOME/.cargo/bin:$PATH" }
-environment-pass = "CI"

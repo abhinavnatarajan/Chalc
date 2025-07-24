@@ -1,8 +1,36 @@
 name: Build
+
 on:
   workflow_dispatch:
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
+  dependency_graph:
+    name: Populate dependency graph
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: "recursive"
+
+      - name: Setup vcpkg
+        run: |
+          git clone https://github.com/microsoft/vcpkg
+          ./vcpkg/bootstrap-vcpkg.sh -disableMetrics
+
+      - name: Write dependency graph
+        if: ${{ runner.os == 'linux' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VCPKG_FEATURE_FLAGS: dependencygraph
+        run: ./vcpkg/vcpkg install --dry-run --debug
+
   build_sdist:
     name: Build source distribution
     runs-on: ubuntu-latest
@@ -28,47 +56,91 @@ jobs:
     name: Build wheels
     strategy:
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest, macos-13]
+        os: [ubuntu-latest, windows-latest, macos-latest, macos-13]
+        include:
+          - os: ubuntu-latest
+            mono: "mono"
+            nuget: "`./vcpkg/vcpkg fetch nuget | tail -n 1`"
+            # Cibuildwheel containers mount the host filesystem at /host
+          - os: macos-latest
+            mono: ""
+            nuget: "nuget"
+          - os: macos-13
+            mono: ""
+            nuget: "nuget"
+          - os: windows-latest
+            mono: ""
+            nuget: "nuget"
     runs-on: ${{ matrix.os }}
+    env:
+      NUGET_FEED_URL: https://nuget.pkg.github.com/abhinavnatarajan/index.json
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           submodules: "recursive"
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-
-      # - name: Get CMake
-      #   uses: lukka/get-cmake@v3.28.0
-       #
-      - name: Setup build tools on macOS
-        run: brew install automake autoconf libtool
+      - name: Setup build tools (macos)
         if: ${{ runner.os == 'macos' }}
-
-      - name: Set deployment target on macOS
-        run: echo "MACOSX_DEPLOYMENT_TARGET=$(sw_vers -productVersion | cut -d '.' -f 1-2)" >> "$GITHUB_ENV"
-        if: ${{ runner.os == 'macos' }}
-
-      - name: Get vcpkg commit ID from manifest
-        shell: bash
         run: |
-          {
-            echo 'vcpkg_json<<EOF'
-            cat vcpkg.json
-            echo 'EOF'
-          } >> "$GITHUB_ENV"
+          brew install automake autoconf libtool
+
+      - name: Setup build tools (linux)
+        if: ${{ runner.os == 'linux' }}
+        run: |
+          sudo apt-get install mono-complete -y
+
+      - name: Set deployment target (macos)
+        if: ${{ runner.os == 'macos' }}
+        run: echo "MACOSX_DEPLOYMENT_TARGET=$(sw_vers -productVersion | cut -d '.' -f 1-2)" >> "$GITHUB_ENV"
 
       - name: Setup vcpkg
-        uses: lukka/run-vcpkg@v11
-        with:
-          vcpkgGitCommitId: ${{ fromJson(env.vcpkg_json).builtin-baseline }}
-          runVcpkgInstall: false
+        run: |
+          git clone https://github.com/microsoft/vcpkg
+          ./vcpkg/bootstrap-vcpkg.sh -disableMetrics
+
+      - name: Setup vcpkg binary cache
+        run: >
+          ${{ matrix.mono }} ${{ matrix.nuget }}
+          sources add
+          -Name GithubPackages
+          -Source "${{ env.NUGET_FEED_URL }}"
+          -UserName "${{ github.repository_owner }}"
+          -Password "${{ secrets.GH_PACKAGES_TOKEN }}"
+          -StorePasswordInClearText
+
+          ${{ matrix.mono }} ${{ matrix.nuget }}
+          setapikey "${{ secrets.GH_PACKAGES_TOKEN }}"
+          -Source "${{ env.NUGET_FEED_URL }}"
+
+          echo "VCPKG_BINARY_SOURCES=clear;nuget,GithubPackages,readwrite" >> "$GITHUB_ENV"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        if: ${{ runner.os == 'macos' || runner.os == 'windows' }}
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v3.0.0
         env:
-          CIBW_BEFORE_ALL_LINUX: dnf install -y zip
+          CIBW_ARCHS: auto64
+          # Poorly documented: Nuget feed API keys are stored in encrypted form
+          # but can only be decoded on the same machine, which breaks inside
+          # the cibuildwheel container. We need to set the API key again inside the
+          # container.
+          CIBW_BEFORE_ALL_LINUX: |
+            dnf install mono-complete curl zip unzip tar -y
+            ./vcpkg/bootstrap-vcpkg.sh
+            mkdir -p $HOME/.config/NuGet
+            cp /host/home/runner/.config/NuGet/NuGet.Config $HOME/.config/NuGet/NuGet.Config
+            ${{ matrix.mono }} ${{ matrix.nuget }} \
+            setapikey "${{ secrets.GH_PACKAGES_TOKEN }}" \
+            -Source "${{ env.NUGET_FEED_URL }}"
+          CIBW_BUILD_FRONTEND: build[uv]
+          CIBW_BUILD_VERBOSITY: 1
+          CIBW_ENVIRONMENT_PASS_LINUX: CI VCPKG_BINARY_SOURCES
+          CIBW_SKIP: pp* *-musllinux_*
+          CIBW_TEST_COMMAND: pytest {package}/tests
+          CIBW_TEST_GROUPS: test
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
