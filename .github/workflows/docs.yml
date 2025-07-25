@@ -15,37 +15,48 @@ jobs:
       - name: Install pandoc
         uses: pandoc/actions/setup@v1
 
-      - name: Get CMake
-        uses: lukka/get-cmake@v3.28.0
-
       - name: Setup uv
         uses: astral-sh/setup-uv@v3
         with:
           enable-cache: true
           cache-dependency-glob: ""
 
+      - name: Setup mono for nuget
+        if: ${{ runner.os == 'linux' }}
+        run: |
+          sudo apt-get install mono-complete -y
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
           submodules: "recursive"
 
-      - name: Get vcpkg commit ID from manifest
-        shell: bash
-        run: |
-          {
-            echo 'vcpkg_json<<EOF'
-            cat vcpkg.json
-            echo 'EOF'
-          } >> "$GITHUB_ENV"
-
       - name: Setup vcpkg
-        uses: lukka/run-vcpkg@v11
-        with:
-          vcpkgGitCommitId: ${{ fromJson(env.vcpkg_json).builtin-baseline }}
-          runVcpkgInstall: false
+        run: |
+          git clone https://github.com/microsoft/vcpkg
+          ./vcpkg/bootstrap-vcpkg.sh -disableMetrics
+
+      - name: Setup vcpkg binary cache
+        env:
+          NUGET: "`./vcpkg/vcpkg fetch nuget | tail -n 1`"
+          NUGET_FEED_URL: https://nuget.pkg.github.com/abhinavnatarajan/index.json
+        run: >
+          mono ${{ env.NUGET }}
+          sources add
+          -Name GithubPackages
+          -Source "${{ env.NUGET_FEED_URL }}"
+          -UserName "${{ github.repository_owner }}"
+          -Password "${{ secrets.GH_PACKAGES_TOKEN }}"
+          -StorePasswordInClearText
+
+          mono ${{ env.NUGET }}
+          setapikey "${{ secrets.GH_PACKAGES_TOKEN }}"
+          -Source "${{ env.NUGET_FEED_URL }}"
+
+          echo "VCPKG_BINARY_SOURCES=clear;nuget,GithubPackages,readwrite" >> "$GITHUB_ENV"
 
       - name: Build package
-        run: uv sync --all-groups --exact --verbose --no-progress --reinstall-package chalc
+        run: uv sync --all-groups --exact --verbose --no-progress
 
       - name: Install GraphViz
         run: sudo apt-get install graphviz -y
