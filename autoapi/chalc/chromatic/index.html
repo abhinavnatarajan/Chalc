@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="chalc.filtration" href="../filtration/index.html" /><link rel="prev" title="chalc" href="../index.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>chalc.chromatic - chalc 13.0.2 documentation</title>
+        <title>chalc.chromatic - chalc 14.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
@@ -169,7 +169,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">chalc 13.0.2 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">chalc 14.0.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
   
-  <span class="sidebar-brand-text">chalc 13.0.2 documentation</span>
+  <span class="sidebar-brand-text">chalc 14.0.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -282,10 +282,10 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#chalc.chromatic.delaunay" title="chalc.chromatic.delaunay"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delaunay</span></code></a>(…)</p></td>
 <td><p>Compute the chromatic Delaunay triangulation of a coloured point cloud in Euclidean space.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#chalc.chromatic.delcech" title="chalc.chromatic.delcech"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delcech</span></code></a>(…)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#chalc.chromatic.delaunay_cech" title="chalc.chromatic.delaunay_cech"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delaunay_cech</span></code></a>(…)</p></td>
 <td><p>Compute the chromatic Delaunay--Čech filtration of a coloured point cloud.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#chalc.chromatic.delrips" title="chalc.chromatic.delrips"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delrips</span></code></a>(…)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#chalc.chromatic.delaunay_rips" title="chalc.chromatic.delaunay_rips"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delaunay_rips</span></code></a>(…)</p></td>
 <td><p>Compute the chromatic Delaunay--Rips filtration of a coloured point cloud.</p></td>
 </tr>
 </tbody>
@@ -334,11 +334,11 @@ for computations to run without overflowing.</p></li>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p><a class="reference internal" href="#chalc.chromatic.delcech" title="chalc.chromatic.delcech"><code class="xref py py-func docutils literal notranslate"><span class="pre">chalc.chromatic.delcech()</span></code></a> has the same 6-pack of persistent homology, and often
+<p><a class="reference internal" href="#chalc.chromatic.delaunay_cech" title="chalc.chromatic.delaunay_cech"><code class="xref py py-func docutils literal notranslate"><span class="pre">chalc.chromatic.delaunay_cech()</span></code></a> has the same 6-pack of persistent homology, and often
 has slightly better performance.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#chalc.chromatic.delrips" title="chalc.chromatic.delrips"><code class="xref py py-func docutils literal notranslate"><span class="pre">delrips()</span></code></a>, <a class="reference internal" href="#chalc.chromatic.delcech" title="chalc.chromatic.delcech"><code class="xref py py-func docutils literal notranslate"><span class="pre">delcech()</span></code></a></p>
+<p><a class="reference internal" href="#chalc.chromatic.delaunay_rips" title="chalc.chromatic.delaunay_rips"><code class="xref py py-func docutils literal notranslate"><span class="pre">delaunay_rips()</span></code></a>, <a class="reference internal" href="#chalc.chromatic.delaunay_cech" title="chalc.chromatic.delaunay_cech"><code class="xref py py-func docutils literal notranslate"><span class="pre">delaunay_cech()</span></code></a></p>
 </div>
 </dd></dl>
 
@@ -380,8 +380,8 @@ for computations to run without overflowing.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="chalc.chromatic.delcech">
-<span class="sig-name descname"><span class="pre">delcech</span></span><span class="sig-paren">(</span>
+<dt class="sig sig-object py" id="chalc.chromatic.delaunay_cech">
+<span class="sig-name descname"><span class="pre">delaunay_cech</span></span><span class="sig-paren">(</span>
 
 <dl>
 <dd><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">M</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">N</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.3)"><span class="pre">numpy.dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>,</dd>
@@ -389,9 +389,9 @@ for computations to run without overflowing.</p></li>
 <dd><em class="sig-param"><span class="n"><span class="pre">max_num_threads</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>,</dd>
 </dl>
 
-<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../filtration/index.html#chalc.filtration.Filtration" title="chalc.filtration.Filtration"><span class="pre">chalc.filtration.Filtration</span></a></span></span><a class="headerlink" href="#chalc.chromatic.delcech" title="Link to this definition">¶</a></dt>
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../filtration/index.html#chalc.filtration.Filtration" title="chalc.filtration.Filtration"><span class="pre">chalc.filtration.Filtration</span></a></span></span><a class="headerlink" href="#chalc.chromatic.delaunay_cech" title="Link to this definition">¶</a></dt>
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">delcech</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">M</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">N</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.3)"><span class="pre">numpy.dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colours</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_num_threads</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../filtration/index.html#chalc.filtration.Filtration" title="chalc.filtration.Filtration"><span class="pre">chalc.filtration.Filtration</span></a></span></span></dt>
+<span class="sig-name descname"><span class="pre">delaunay_cech</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">M</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">N</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.3)"><span class="pre">numpy.dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colours</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_num_threads</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../filtration/index.html#chalc.filtration.Filtration" title="chalc.filtration.Filtration"><span class="pre">chalc.filtration.Filtration</span></a></span></span></dt>
 <dd><p>Compute the chromatic Delaunay–Čech filtration of a coloured point cloud.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -425,13 +425,13 @@ but with Čech filtration times. Despite the different filtration values,
 it has the same persistent homology as the chromatic alpha filtration.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#chalc.chromatic.alpha" title="chalc.chromatic.alpha"><code class="xref py py-func docutils literal notranslate"><span class="pre">alpha()</span></code></a>, <a class="reference internal" href="#chalc.chromatic.delrips" title="chalc.chromatic.delrips"><code class="xref py py-func docutils literal notranslate"><span class="pre">delrips()</span></code></a></p>
+<p><a class="reference internal" href="#chalc.chromatic.alpha" title="chalc.chromatic.alpha"><code class="xref py py-func docutils literal notranslate"><span class="pre">alpha()</span></code></a>, <a class="reference internal" href="#chalc.chromatic.delaunay_rips" title="chalc.chromatic.delaunay_rips"><code class="xref py py-func docutils literal notranslate"><span class="pre">delaunay_rips()</span></code></a></p>
 </div>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="chalc.chromatic.delrips">
-<span class="sig-name descname"><span class="pre">delrips</span></span><span class="sig-paren">(</span>
+<dt class="sig sig-object py" id="chalc.chromatic.delaunay_rips">
+<span class="sig-name descname"><span class="pre">delaunay_rips</span></span><span class="sig-paren">(</span>
 
 <dl>
 <dd><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">M</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">N</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.3)"><span class="pre">numpy.dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>,</dd>
@@ -439,9 +439,9 @@ it has the same persistent homology as the chromatic alpha filtration.</p>
 <dd><em class="sig-param"><span class="n"><span class="pre">max_num_threads</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>,</dd>
 </dl>
 
-<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../filtration/index.html#chalc.filtration.Filtration" title="chalc.filtration.Filtration"><span class="pre">chalc.filtration.Filtration</span></a></span></span><a class="headerlink" href="#chalc.chromatic.delrips" title="Link to this definition">¶</a></dt>
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../filtration/index.html#chalc.filtration.Filtration" title="chalc.filtration.Filtration"><span class="pre">chalc.filtration.Filtration</span></a></span></span><a class="headerlink" href="#chalc.chromatic.delaunay_rips" title="Link to this definition">¶</a></dt>
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">delrips</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">M</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">N</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.3)"><span class="pre">numpy.dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colours</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_num_threads</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../filtration/index.html#chalc.filtration.Filtration" title="chalc.filtration.Filtration"><span class="pre">chalc.filtration.Filtration</span></a></span></span></dt>
+<span class="sig-name descname"><span class="pre">delaunay_rips</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">M</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">N</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.3)"><span class="pre">numpy.dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colours</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_num_threads</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../filtration/index.html#chalc.filtration.Filtration" title="chalc.filtration.Filtration"><span class="pre">chalc.filtration.Filtration</span></a></span></span></dt>
 <dd><p>Compute the chromatic Delaunay–Rips filtration of a coloured point cloud.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -479,7 +479,7 @@ and chromatic alpha filtration have the same persistence diagrams
 in degree zero.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#chalc.chromatic.alpha" title="chalc.chromatic.alpha"><code class="xref py py-func docutils literal notranslate"><span class="pre">alpha()</span></code></a>, <a class="reference internal" href="#chalc.chromatic.delcech" title="chalc.chromatic.delcech"><code class="xref py py-func docutils literal notranslate"><span class="pre">delcech()</span></code></a></p>
+<p><a class="reference internal" href="#chalc.chromatic.alpha" title="chalc.chromatic.alpha"><code class="xref py py-func docutils literal notranslate"><span class="pre">alpha()</span></code></a>, <a class="reference internal" href="#chalc.chromatic.delaunay_cech" title="chalc.chromatic.delaunay_cech"><code class="xref py py-func docutils literal notranslate"><span class="pre">delaunay_cech()</span></code></a></p>
 </div>
 </dd></dl>
 
@@ -546,8 +546,8 @@ in degree zero.</p>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#chalc.chromatic.alpha"><code class="docutils literal notranslate"><span class="pre">alpha()</span></code></a></li>
 <li><a class="reference internal" href="#chalc.chromatic.delaunay"><code class="docutils literal notranslate"><span class="pre">delaunay()</span></code></a></li>
-<li><a class="reference internal" href="#chalc.chromatic.delcech"><code class="docutils literal notranslate"><span class="pre">delcech()</span></code></a></li>
-<li><a class="reference internal" href="#chalc.chromatic.delrips"><code class="docutils literal notranslate"><span class="pre">delrips()</span></code></a></li>
+<li><a class="reference internal" href="#chalc.chromatic.delaunay_cech"><code class="docutils literal notranslate"><span class="pre">delaunay_cech()</span></code></a></li>
+<li><a class="reference internal" href="#chalc.chromatic.delaunay_rips"><code class="docutils literal notranslate"><span class="pre">delaunay_rips()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -561,7 +561,7 @@ in degree zero.</p>
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=7c38c11c"></script>
+</div><script src="../../../_static/documentation_options.js?v=707b797e"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>

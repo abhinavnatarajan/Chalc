@@ -16,8 +16,8 @@ Functions
 
    chalc.chromatic.alpha
    chalc.chromatic.delaunay
-   chalc.chromatic.delcech
-   chalc.chromatic.delrips
+   chalc.chromatic.delaunay_cech
+   chalc.chromatic.delaunay_rips
 
 
 Module Contents
@@ -46,10 +46,10 @@ Module Contents
 
    .. rubric:: Notes
 
-   :func:`chalc.chromatic.delcech` has the same 6-pack of persistent homology, and often
+   :func:`chalc.chromatic.delaunay_cech` has the same 6-pack of persistent homology, and often
    has slightly better performance.
 
-   .. seealso:: :func:`delrips`, :func:`delcech`
+   .. seealso:: :func:`delaunay_rips`, :func:`delaunay_cech`
 
 
 .. py:function:: delaunay(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, Literal[1]], numpy.dtype[numpy.uint16]], parallel: bool = True) -> chalc.filtration.Filtration
@@ -70,8 +70,8 @@ Module Contents
    :returns: The Delaunay triangulation.
 
 
-.. py:function:: delcech(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, Literal[1]], numpy.dtype[numpy.uint16]], max_num_threads: int = 0) -> chalc.filtration.Filtration
-                 delcech(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 0) -> chalc.filtration.Filtration
+.. py:function:: delaunay_cech(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, Literal[1]], numpy.dtype[numpy.uint16]], max_num_threads: int = 0) -> chalc.filtration.Filtration
+                 delaunay_cech(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 0) -> chalc.filtration.Filtration
 
    Compute the chromatic Delaunay--Čech filtration of a coloured point cloud.
 
@@ -98,11 +98,11 @@ Module Contents
    but with Čech filtration times. Despite the different filtration values,
    it has the same persistent homology as the chromatic alpha filtration.
 
-   .. seealso:: :func:`alpha`, :func:`delrips`
+   .. seealso:: :func:`alpha`, :func:`delaunay_rips`
 
 
-.. py:function:: delrips(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, Literal[1]], numpy.dtype[numpy.uint16]], max_num_threads: int = 0) -> chalc.filtration.Filtration
-                 delrips(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 0) -> chalc.filtration.Filtration
+.. py:function:: delaunay_rips(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, Literal[1]], numpy.dtype[numpy.uint16]], max_num_threads: int = 0) -> chalc.filtration.Filtration
+                 delaunay_rips(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 0) -> chalc.filtration.Filtration
 
    Compute the chromatic Delaunay--Rips filtration of a coloured point cloud.
 
@@ -133,6 +133,6 @@ Module Contents
    and chromatic alpha filtration have the same persistence diagrams
    in degree zero.
 
-   .. seealso:: :func:`alpha`, :func:`delcech`
+   .. seealso:: :func:`alpha`, :func:`delaunay_cech`
 
 
