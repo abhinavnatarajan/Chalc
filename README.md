@@ -5,7 +5,7 @@
 
 Chalc is a Python package to compute chromatic Delaunay filtrations from labelled datasets in Euclidean space.
 Chromatic Delaunay filtrations are a family of combinatorial objects that capture spatial relations among the classes of a labelled dataset.
-You can find more details on the math behind chromatic Delaunay filtrations in the following papers:
+You can find more details on the maths behind chromatic Delaunay filtrations in the following papers:
 
 [Chromatic Alpha Complexes](https://arxiv.org/abs/2212.03128)\
 [Morse Theory for Chromatic Delaunay Triangulations](https://arxiv.org/abs/2405.19303)
