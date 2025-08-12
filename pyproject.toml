@@ -113,14 +113,18 @@ pydocstyle.convention = "pep257"
 flake8-annotations.allow-star-arg-any = true
 
 [tool.ruff.per-file-ignores]
-"tests/**/*.py" = [
+"tests/**.py" = [
 	"S101",    # flake8-bandit: disallows use of assert statements
 	"PLR2004", # pylint: disallows magic values
 	"INP001",  # pylint: test folder does not need __init__.py
 	"D",       # pydocstyle
 ]
+"**/__init__.py" = [
+	"F401", # pyflakes: disallows unused imports
+	"F403", # pyflakes: disallows wildcard imports
+]
 "**.pyi" = ["ALL"]
-"docs/**/*.py" = [
+"docs/**.py" = [
 	"INP001", # pylint: docs folder does not need __init__.py
 	"D",      # pydocstyle
 ]
