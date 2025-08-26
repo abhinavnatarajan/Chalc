@@ -108,6 +108,7 @@ ignore = [
 	"TD003",   # flake8-todos: allow todos without an issue link
 	"ANN401",  # flake8-annotations: disallows type 'Any' in function signatures
 	"COM812",  # flake8-commas: missing-trailing-comma (recommended to disable by ruff)
+	"ANN003",  # flake8-annotations: disallows missing types for keyword args dictionary
 ]
 pydocstyle.convention = "pep257"
 flake8-annotations.allow-star-arg-any = true
@@ -117,7 +118,7 @@ flake8-annotations.allow-star-arg-any = true
 	"S101",    # flake8-bandit: disallows use of assert statements
 	"PLR2004", # pylint: disallows magic values
 	"INP001",  # pylint: test folder does not need __init__.py
-	"D",       # pydocstyle
+	"D",       # pydocstyle: tests do not need docs
 ]
 "**/__init__.py" = [
 	"F401", # pyflakes: disallows unused imports
@@ -126,5 +127,5 @@ flake8-annotations.allow-star-arg-any = true
 "**.pyi" = ["ALL"]
 "docs/**.py" = [
 	"INP001", # pylint: docs folder does not need __init__.py
-	"D",      # pydocstyle
+	"D",       # pydocstyle: doc setup files do not need docs
 ]
