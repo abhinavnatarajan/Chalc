@@ -83,7 +83,7 @@ jobs:
       - name: Setup build tools (macos)
         if: ${{ runner.os == 'macos' }}
         run: |
-          brew install automake autoconf libtool
+          brew install automake autoconf libtool nuget
 
       - name: Setup build tools (linux)
         if: ${{ runner.os == 'linux' }}
