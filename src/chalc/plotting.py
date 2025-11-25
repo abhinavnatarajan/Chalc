@@ -166,6 +166,8 @@ def plot_diagram(
 	dimensions: Collection[int] | int | None = None,
 	ax: Axes | None = None,
 	threshold: float = 0,
+	kwargs_per_dim: Mapping[int, dict] | None = None,
+	**kwargs,
 ) -> Axes | None:
 	"""
 	Plot a specific diagram from a 6-pack.
@@ -247,6 +249,8 @@ def plot_diagram(
 		lines_legend=True,
 		dim_shift=dim_shift,
 		threshold=threshold,
+		kwargs_per_dim=kwargs_per_dim,
+		**kwargs,
 	)
 	return ax1
 
@@ -263,8 +267,9 @@ def _plot_diagram(
 	points_legend: bool,  # show legend for points (which dimension)
 	lines_legend: bool,  # show legend for lines (truncation, infinity)
 	dim_shift: int,  # dimension shift if any; only relevant for kernel
-	threshold: float,
-	**kwargs: Any,
+	threshold: float,  # threshold of persistence below which features will be omitted
+	kwargs_per_dim: Mapping[int, dict] | None = None,
+	**kwargs,
 ) -> None:
 	# Truncate all times
 	truncate_level = truncation * 1.04
@@ -291,17 +296,22 @@ def _plot_diagram(
 		for birth_idx in diagram.unpaired
 		if (feature_dimension := dimensions[birth_idx] - dim_shift) in dims
 	]
-	plot_colours = np.array(plt.rcParams["axes.prop_cycle"].by_key()["color"])
+	marker_colours_default = np.array(
+			plt.rcParams["axes.prop_cycle"].by_key()["color"]
+			).tolist()
 	plot_df = DataFrame.from_records(data=all_pts, columns=["Birth", "Death", "Dimension"])
 	plot_df["Dimension"] = plot_df["Dimension"].astype("category")
 	for d in sorted(plot_df["Dimension"].cat.categories):
+		kwargs_this_dim = { "c" : marker_colours_default[d] }
+		kwargs_this_dim |= kwargs
+		if kwargs_per_dim is not None and d in kwargs_per_dim:
+			kwargs_this_dim |= kwargs_per_dim[d]
 		ax.scatter(
 			plot_df.loc[plot_df["Dimension"] == d, "Birth"],
 			plot_df.loc[plot_df["Dimension"] == d, "Death"],
-			c=plot_colours[d],
 			edgecolors="white",
 			label=f"$H_{{{d}}}$",
-			**kwargs,
+			**kwargs_this_dim,
 		)
 	ax.set(xlabel=None)
 	ax.set(ylabel=None)
