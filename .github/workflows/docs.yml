@@ -56,7 +56,7 @@ jobs:
           echo "VCPKG_BINARY_SOURCES=clear;nuget,GithubPackages,readwrite" >> "$GITHUB_ENV"
 
       - name: Build package
-        run: uv sync --all-groups --exact --verbose --no-progress
+        run: uv sync --exact --verbose --no-progress
 
       - name: Install GraphViz
         run: sudo apt-get install graphviz -y
