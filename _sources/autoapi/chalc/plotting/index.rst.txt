@@ -51,7 +51,7 @@ Module Contents
                         If not provided, the current matplotlib colour cycle will be used.
 
 
-.. py:function:: plot_diagram(dgms: chalc.sixpack.SixPack, diagram_name: chalc.sixpack.DiagramName, truncation: float | None = None, dimensions: collections.abc.Collection[int] | int | None = None, ax: matplotlib.axes.Axes | None = None, threshold: float = 0) -> matplotlib.axes.Axes | None
+.. py:function:: plot_diagram(dgms: chalc.sixpack.SixPack, diagram_name: chalc.sixpack.DiagramName, truncation: float | None = None, dimensions: collections.abc.Collection[int] | int | None = None, ax: matplotlib.axes.Axes | None = None, threshold: float = 0, kwargs_per_dim: collections.abc.Mapping[int, dict] | None = None, **kwargs) -> matplotlib.axes.Axes | None
 
    Plot a specific diagram from a 6-pack.
 
