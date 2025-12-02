@@ -173,18 +173,22 @@ def plot_diagram(
 	Plot a specific diagram from a 6-pack.
 
 	Args:
-		dgms         : The 6-pack of persistence diagrams.
-		diagram_name : One of ``'ker'``, ``'cok'``, ``'dom'``, ``'cod'``, ``'im'``, or ``'rel'``.
-		truncation   :
+		dgms           : The 6-pack of persistence diagrams.
+		diagram_name   : One of ``'ker'``, ``'cok'``, ``'dom'``, ``'cod'``, ``'im'``, or ``'rel'``.
+		truncation     :
 			The maximum entrance time for which the diagrams are plotted.
 			A sensible default will be calculated if not provided.
-		dimensions   :
+		dimensions     :
 			The homological dimensions for which to plot features.
 			If not provided, all dimensions will be included in the plots.
-		ax           :
+		ax             :
 			A matplotlib axes object.
 			If provided then the diagram will be plotted on the given axes.
-		threshold    : Only features with persistence greater than this value will be plotted.
+		threshold      : Only features with persistence greater than this value will be plotted.
+		kwargs_per_dim : Keyword arguments for each dimension,
+			as a mapping { dimension: dictionary of kwargs }.
+			These will be passed to the matplotlib scatter function.
+		**kwargs      : Additional keyword arguments to pass to the matplotlib scatter function.
 
 	"""
 	dgm = dgms[diagram_name]
@@ -296,13 +300,11 @@ def _plot_diagram(
 		for birth_idx in diagram.unpaired
 		if (feature_dimension := dimensions[birth_idx] - dim_shift) in dims
 	]
-	marker_colours_default = np.array(
-			plt.rcParams["axes.prop_cycle"].by_key()["color"]
-			).tolist()
+	marker_colours_default = np.array(plt.rcParams["axes.prop_cycle"].by_key()["color"]).tolist()
 	plot_df = DataFrame.from_records(data=all_pts, columns=["Birth", "Death", "Dimension"])
 	plot_df["Dimension"] = plot_df["Dimension"].astype("category")
 	for d in sorted(plot_df["Dimension"].cat.categories):
-		kwargs_this_dim = { "c" : marker_colours_default[d] }
+		kwargs_this_dim = {"c": marker_colours_default[d]}
 		kwargs_this_dim |= kwargs
 		if kwargs_per_dim is not None and d in kwargs_per_dim:
 			kwargs_this_dim |= kwargs_per_dim[d]
