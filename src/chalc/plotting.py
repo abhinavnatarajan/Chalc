@@ -7,6 +7,7 @@ from itertools import product
 from numbers import Real
 from typing import TYPE_CHECKING, Any, Literal
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import animation
@@ -344,6 +345,9 @@ def draw_filtration(
 	include_colours: Collection[int] | None = None,
 	ax: Axes | None = None,
 	plot_colours: str | np.ndarray | None = None,
+	vertices_kwargs: dict | None = None,
+	edges_kwargs: dict | None = None,
+	faces_kwargs: dict | None = None,
 ) -> Axes:
 	r"""
 	Visualise a 2D filtration at given time, optionally including only certain colours.
@@ -361,8 +365,20 @@ def draw_filtration(
 		plot_colours    :
 			Either the name of a matplotlib qualitative colour map, or a list of colours.
 			If not provided, the current matplotlib colour cycle will be used.
+		vertices_kwargs :
+			Keyword arguments to pass to the matplotlib scatter function for plotting points.
+		edges_kwargs    :
+			Keyword arguments to pass to the matplotlib plot function for plotting edges.
+		faces_kwargs    :
+			Keyword arguments to pass to the matplotlib fill function for plotting faces.
 
 	"""
+	if vertices_kwargs is None:
+		vertices_kwargs = {}
+	if edges_kwargs is None:
+		edges_kwargs = {}
+	if faces_kwargs is None:
+		faces_kwargs = {}
 	if len(points.shape) != 2:  # noqa: PLR2004
 		raise NotImplementedError
 
@@ -389,29 +405,33 @@ def draw_filtration(
 			vertex_plot_colours.append(plot_colours[colours_map[vertex.colours[0]]])
 			vertices_to_plot.append(idx)
 
+	vertices_kwargs = {"s": 10, **vertices_kwargs}
 	ax1.scatter(
 		points[0, vertices_to_plot],
 		points[1, vertices_to_plot],
 		c=list(vertex_plot_colours),
-		s=10,
+		**vertices_kwargs,
 	)
 
 	# Plot the edges
+	edges_kwargs = {"linewidth": 1, **edges_kwargs}
 	for edge in K.simplices[1].values():
 		if set(edge.colours).issubset(include_colours) and edge.filtration_value <= time:
-			colour, alpha = (
-				(plot_colours[colours_map[edge.colours[0]]], 0.5)
-				if len(edge.colours) == 1
-				else ("black", 0.2)
-			)
+			if len(edge.colours) == 1:
+				colour = plot_colours[colours_map[edge.colours[0]]]
+				alpha = 0.5
+			else:
+				colour = "black"
+				alpha = 0.3
 			ax1.plot(
 				points[0, edge.vertices],
 				points[1, edge.vertices],
-				c=colour,
+				color=colour,
 				alpha=alpha,
-				linewidth=1,
+				**edges_kwargs,
 			)
 
+	faces_kwargs = {"alpha": 0.2, **faces_kwargs}
 	for triangle in K.simplices[2].values():
 		if set(triangle.colours).issubset(include_colours) and triangle.filtration_value <= time:
 			colour = (
@@ -422,8 +442,9 @@ def draw_filtration(
 			ax1.fill(
 				points[0, triangle.vertices],
 				points[1, triangle.vertices],
-				c=colour,
-				alpha=0.2,
+				edgecolor=None,
+				facecolor=colour,
+				**faces_kwargs,
 			)
 
 	ax1.set_aspect("equal")
@@ -437,6 +458,9 @@ def animate_filtration(
 	filtration_times: Sequence[float],
 	animation_length: float,
 	plot_colours: str | np.ndarray | None = None,
+	vertices_kwargs: dict | None = None,
+	edges_kwargs: dict | None = None,
+	faces_kwargs: dict | None = None,
 ) -> animation.FuncAnimation:
 	r"""
 	Create animation of 2-skeleton of filtered simplicial complex.
@@ -448,13 +472,25 @@ def animate_filtration(
 		animation_length :
 			Total length of the animation in seconds, unrelated to the
 			filtration times.
-		plot_colours    :
+		plot_colours     :
 			Either the name of a matplotlib qualitative colour map, or a list of colours.
 			If not provided, the current matplotlib colour cycle will be used.
+		vertices_kwargs  :
+			Keyword arguments to pass to the matplotlib scatter function for plotting points.
+		edges_kwargs     :
+			Keyword arguments to pass to the matplotlib plot function for plotting edges.
+		faces_kwargs     :
+			Keyword arguments to pass to the matplotlib fill function for plotting faces.
 
 	"""
 	if len(points.shape) != 2:  # noqa: PLR2004
 		raise NotImplementedError
+	if vertices_kwargs is None:
+		vertices_kwargs = {}
+	if edges_kwargs is None:
+		edges_kwargs = {}
+	if faces_kwargs is None:
+		faces_kwargs = {}
 
 	fig: Figure
 	ax: Axes
@@ -474,23 +510,44 @@ def animate_filtration(
 		plot_colours[colours_map[K.simplices[0][i].colours[0]]] for i in range(K.num_vertices)
 	]
 
-	ax.scatter(points[0, :], points[1, :], c=vertex_plot_colours, s=10)
+	vertices_kwargs = {"s": 10, **vertices_kwargs}
+	ax.scatter(
+		points[0, :],
+		points[1, :],
+		c=list(vertex_plot_colours),
+		**vertices_kwargs,
+	)
 
+	edges_kwargs = {"linewidth": 1, **edges_kwargs}
 	lines = {}
-	patches = {}
 	for idx, edge in K.simplices[1].items():
-		colour, alpha = (
-			(plot_colours[colours_map[edge.colours[0]]], 0.5)
-			if len(edge.colours) == 1
-			else ("black", 0.2)
-		)
-		lines[idx] = ax.plot([], [], c=colour, alpha=alpha, linewidth=1)[0]
+		if len(edge.colours) == 1:
+			colour = plot_colours[colours_map[edge.colours[0]]]
+			alpha = 0.5
+		else:
+			colour = "black"
+			alpha = 0.3
+		lines[idx] = ax.plot(
+			[],
+			[],
+			color=colour,
+			alpha=alpha,
+			**edges_kwargs,
+		)[0]
 
+	faces_kwargs = {"alpha": 0.2, **faces_kwargs}
+	patches = {}
 	for idx, triangle in K.simplices[2].items():
 		colour = (
 			plot_colours[colours_map[triangle.colours[0]]] if len(triangle.colours) == 1 else "grey"
 		)
-		patches[idx] = ax.fill([], [], c=colour, alpha=0.2)[0]
+		patches[idx] = ax.fill(
+			[],
+			[],
+			edgecolor=None,
+			facecolor=colour,
+			**faces_kwargs,
+		)[0]
 
 	ax.set_aspect("equal")
 	ax.set_xlabel("Time = " + f"{0.0:.4f}")

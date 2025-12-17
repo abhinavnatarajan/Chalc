@@ -1,6 +1,6 @@
 [project]
 name = "chalc"
-version = "14.1.0.post1"
+version = "14.2.0"
 authors = [{ name = "Abhinav Natarajan", email = "natarajan@maths.ox.ac.uk" }]
 description = "Persistent homology of chromatic Delaunay filtrations"
 readme = { file = "README.md", content-type = "text/markdown" }
@@ -107,7 +107,6 @@ ignore = [
 	"PYI021",  # flake8-pyi: disallows docstrings in stub files
 	"TD003",   # flake8-todos: allow todos without an issue link
 	"ANN401",  # flake8-annotations: disallows type 'Any' in function signatures
-	"COM812",  # flake8-commas: missing-trailing-comma (recommended to disable by ruff)
 	"ANN003",  # flake8-annotations: disallows missing types for keyword args dictionary
 ]
 pydocstyle.convention = "pep257"

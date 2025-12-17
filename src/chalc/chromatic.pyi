@@ -5,7 +5,7 @@ from __future__ import annotations
 import chalc.filtration
 import numpy
 import typing
-__all__ = ['MaxColoursChromatic', 'alpha', 'delaunay', 'delaunay_cech', 'delaunay_rips']
+__all__: list[str] = ['MaxColoursChromatic', 'alpha', 'delaunay', 'delaunay_cech', 'delaunay_rips']
 M = typing.TypeVar("M", bound=int)
 N = typing.TypeVar("N", bound=int)
 @typing.overload

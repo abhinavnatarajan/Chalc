@@ -3,7 +3,7 @@ Module containing utilities to store and manipulate abstract filtered simplicial
 """
 from __future__ import annotations
 import typing
-__all__ = ['Filtration', 'Simplex', 'complete_complex', 'standard_simplex']
+__all__: list[str] = ['Filtration', 'Simplex', 'complete_complex', 'standard_simplex']
 class Filtration:
     """
     Class representing a filtered simplicial complex.
