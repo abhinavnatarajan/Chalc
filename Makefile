@@ -8,7 +8,7 @@ stubs:
 
 .PHONY: stubs all clean test docs
 
-docs:
+docs: stubs
 	cd docs && make html
 
 all: stubs docs
