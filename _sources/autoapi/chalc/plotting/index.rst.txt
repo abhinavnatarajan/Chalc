@@ -23,7 +23,7 @@ Functions
 Module Contents
 ---------------
 
-.. py:function:: animate_filtration(K: chalc.filtration.Filtration, points: numpy.ndarray[tuple[Literal[2], int], numpy.dtype[numpy.floating]], filtration_times: collections.abc.Sequence[float], animation_length: float, plot_colours: str | numpy.ndarray | None = None) -> matplotlib.animation.FuncAnimation
+.. py:function:: animate_filtration(K: chalc.filtration.Filtration, points: numpy.ndarray[tuple[Literal[2], int], numpy.dtype[numpy.floating]], filtration_times: collections.abc.Sequence[float], animation_length: float, plot_colours: str | numpy.ndarray | None = None, vertices_kwargs: dict | None = None, edges_kwargs: dict | None = None, faces_kwargs: dict | None = None) -> matplotlib.animation.FuncAnimation
 
    Create animation of 2-skeleton of filtered simplicial complex.
 
@@ -34,9 +34,12 @@ Module Contents
                             filtration times.
    :param plot_colours: Either the name of a matplotlib qualitative colour map, or a list of colours.
                         If not provided, the current matplotlib colour cycle will be used.
+   :param vertices_kwargs: Keyword arguments to pass to the matplotlib scatter function for plotting points.
+   :param edges_kwargs: Keyword arguments to pass to the matplotlib plot function for plotting edges.
+   :param faces_kwargs: Keyword arguments to pass to the matplotlib fill function for plotting faces.
 
 
-.. py:function:: draw_filtration(K: chalc.filtration.Filtration, points: numpy.ndarray[tuple[Literal[2], int], numpy.dtype[numpy.floating]], time: float, include_colours: collections.abc.Collection[int] | None = None, ax: matplotlib.axes.Axes | None = None, plot_colours: str | numpy.ndarray | None = None) -> matplotlib.axes.Axes
+.. py:function:: draw_filtration(K: chalc.filtration.Filtration, points: numpy.ndarray[tuple[Literal[2], int], numpy.dtype[numpy.floating]], time: float, include_colours: collections.abc.Collection[int] | None = None, ax: matplotlib.axes.Axes | None = None, plot_colours: str | numpy.ndarray | None = None, vertices_kwargs: dict | None = None, edges_kwargs: dict | None = None, faces_kwargs: dict | None = None) -> matplotlib.axes.Axes
 
    Visualise a 2D filtration at given time, optionally including only certain colours.
 
@@ -49,6 +52,9 @@ Module Contents
               If provided then the diagram will be plotted on the given axes.
    :param plot_colours: Either the name of a matplotlib qualitative colour map, or a list of colours.
                         If not provided, the current matplotlib colour cycle will be used.
+   :param vertices_kwargs: Keyword arguments to pass to the matplotlib scatter function for plotting points.
+   :param edges_kwargs: Keyword arguments to pass to the matplotlib plot function for plotting edges.
+   :param faces_kwargs: Keyword arguments to pass to the matplotlib fill function for plotting faces.
 
 
 .. py:function:: plot_diagram(dgms: chalc.sixpack.SixPack, diagram_name: chalc.sixpack.DiagramName, truncation: float | None = None, dimensions: collections.abc.Collection[int] | int | None = None, ax: matplotlib.axes.Axes | None = None, threshold: float = 0, kwargs_per_dim: collections.abc.Mapping[int, dict] | None = None, **kwargs) -> matplotlib.axes.Axes | None
@@ -64,6 +70,10 @@ Module Contents
    :param ax: A matplotlib axes object.
               If provided then the diagram will be plotted on the given axes.
    :param threshold: Only features with persistence greater than this value will be plotted.
+   :param kwargs_per_dim: Keyword arguments for each dimension,
+                          as a mapping { dimension: dictionary of kwargs }.
+                          These will be passed to the matplotlib scatter function.
+   :param \*\*kwargs: Additional keyword arguments to pass to the matplotlib scatter function.
 
 
 .. py:function:: plot_sixpack(dgms: chalc.sixpack.SixPack, truncations: collections.abc.Mapping[chalc.sixpack.DiagramName, float] | float | None = None, dimensions: collections.abc.Collection[int] | int | None = None, threshold: float = 0) -> tuple[matplotlib.figure.Figure, numpy.ndarray[tuple[Literal[2], Literal[3]], numpy.dtype[Any]]]
