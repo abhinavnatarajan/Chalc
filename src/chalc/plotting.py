@@ -393,7 +393,7 @@ def draw_filtration(
 		num_colours = K.dimension - 1
 		colour_indices = np.arange(num_colours)
 		plot_colours = plt.get_cmap(plot_colours)(colour_indices)
-	elif plot_colours is None:
+	if plot_colours is None:
 		plot_colours = np.array(plt.rcParams["axes.prop_cycle"].by_key()["color"])
 
 	# Plot the vertices
@@ -503,7 +503,7 @@ def animate_filtration(
 		num_colours = K.dimension - 1
 		colour_indices = np.arange(num_colours)
 		plot_colours = plt.get_cmap(plot_colours)(colour_indices)
-	elif plot_colours is None:
+	if plot_colours is None:
 		plot_colours = np.array(plt.rcParams["axes.prop_cycle"].by_key()["color"])
 
 	vertex_plot_colours = [
