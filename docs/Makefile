@@ -1,5 +1,5 @@
-# Minimal makefile for Sphinx documentation
-#
+VIRTUAL_ENV ?= $(shell pwd)/../.venv
+export PATH := $(VIRTUAL_ENV)/bin:$(PATH)
 
 # You can set these variables from the command line, and also
 # from the environment for the first two.
