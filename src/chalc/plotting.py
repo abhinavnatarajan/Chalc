@@ -7,7 +7,6 @@ from itertools import product
 from numbers import Real
 from typing import TYPE_CHECKING, Any, Literal
 
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import animation

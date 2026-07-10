@@ -307,8 +307,7 @@ class SixPack(Mapping):
 		file["dimensions"] = np.array(self._dimensions, dtype=np.int64)
 		for dgm_name in self:
 			grp = file.require_group(dgm_name)
-			grp["unpaired"] = np.array(list(self[dgm_name].unpaired), dtype=np.int64)
-			grp["paired"] = self[dgm_name]._paired_as_matrix()
+			self[dgm_name].save(grp)
 
 	@classmethod
 	def from_file(cls, file: Group) -> SixPack:
@@ -343,30 +342,14 @@ class SixPack(Mapping):
 		for diagram_name in names:
 			grp = file[diagram_name]
 			if isinstance(grp, Group):
-				temp = {}
-				for name in ("paired", "unpaired"):
-					if name not in grp:
-						errmsg = f"Invalid file: missing field {diagram_name}.{name}."
-						raise RuntimeError(errmsg)
-					if not isinstance(grp[name], Dataset):
-						errmsg = f"Invalid file: expected {diagram_name}.{name} "
-						f"to be a Dataset(dtype=np.int64), but found {type(grp[name])}."
-						raise TypeError(errmsg)
-					temp[name] = grp[name]
-					if temp[name].dtype != np.int64:
-						errmsg = f"Invalid file: expected {diagram_name}.{name} "
-						"to be a Dataset(dtype=np.int64), "
-						f"but found Dataset(dtype={temp[name].dtype})."
-						raise RuntimeError(errmsg)
-				paired = temp["paired"].astype(int)
-				unpaired = temp["unpaired"].astype(int)
-				dgms._simplex_pairings[diagram_name] = SimplexPairings._from_matrices(  # noqa: SLF001
-					paired[...],
-					unpaired[...],
-				)
+				try:
+					dgms._simplex_pairings[diagram_name] = SimplexPairings.from_file(grp)
+				except Exception as err:
+					errmsg = f"Error while trying to read {file}[{diagram_name}]."
+					raise RuntimeError(errmsg) from err
 			else:
-				errmsg = f"Invalid file: expected {diagram_name} to be a group "
-				f"but found a {type(grp)}."
+				errmsg = f"Error while trying to read {file}[{diagram_name}]: "
+				f"expected a `Group` but found {type(grp)}."
 				raise TypeError(errmsg)
 
 		return dgms
@@ -455,6 +438,39 @@ class SimplexPairings(Collection):
 		unpaired = frozenset(x.item() for x in unpaired_vector)
 		return cls(paired, unpaired)
 
+	@classmethod
+	def from_file(cls, group: Group) -> SimplexPairings:
+		"""
+		Construct a SimplexPairings object from matrices stored in a HDF5 file or group.
+
+		Args:
+			group: The HDF5 file or group to read from.
+		"""
+
+		def checked_dataset(name: str) -> Dataset:
+			if name not in group:
+				errmsg = f"Missing field {name}."
+				raise RuntimeError(errmsg)
+			dataset = group[name]
+			if not isinstance(dataset, Dataset):
+				errmsg = "Expected a Dataset(dtype=np.int64), "
+				f"but found a {type(group[name])}."
+				raise TypeError(errmsg)
+			if dataset.dtype != np.int64:
+				errmsg = "Expected Dataset(dtype=np.int64), "
+				f"but found Dataset(dtype={dataset.dtype})."
+				raise RuntimeError(errmsg)
+			return dataset
+
+		paired = checked_dataset("paired").astype(int)
+		unpaired = checked_dataset("unpaired").astype(int)
+		return SimplexPairings._from_matrices(paired[...], unpaired[...])
+
 	def _paired_as_matrix(self) -> np.ndarray[tuple[int, Literal[2]], np.dtype[np.int64]]:
 		r"""Return the pairings of simplex indices in a :math:`N\times 2` matrix."""
 		return np.array([[x, y] for (x, y) in self._paired], dtype=np.int64)
+
+	def save(self, group: Group) -> None:
+		"""Save a diagram to a HDF5 file or group."""
+		group["unpaired"] = np.array(list(self.unpaired), dtype=np.int64)
+		group["paired"] = self._paired_as_matrix()
