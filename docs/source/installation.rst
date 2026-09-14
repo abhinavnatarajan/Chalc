@@ -38,16 +38,18 @@ Chalc is a C++ extension module for Python and has several additional dependenci
 4. `Boost C++ libraries <https://www.boost.org/>`_ (transitive dependency through CGAL).
 5. `Intel OneAPI Threading Building Blocks (TBB) <https://www.threadingbuildingblocks.org/>`_ (tested with version 2022.1.0).
 
-The recommended way to obtain and manage these dependencies is using vcpkg (see the build dependencies section) . It is also recommended to use a `Python virtual environment <https://docs.python.org/3/tutorial/venv.html>`_ for the build process to avoid polluting the package namespace.
+The recommended way to obtain and manage these dependencies is using vcpkg (see the build dependencies section).
 
 Build dependencies
 ^^^^^^^^^^^^^^^^^^
-1. CMake (version 3.23 or later).
+1. CMake (version 4.0.0 or later).
 2. On Windows: Visual Studio 2019 or later.
     On Linux: GCC11 or later.
     On MacOS: Clang 14 or later.
-3. (Recommended) `Microsoft vcpkg <https://vcpkg.io/>`_ C++ dependency manager.
-4. (MacOS only) The build tools automake, autoconf, and libtool. You can install these with ``brew install automake autoconf libtool``.
+3. (MacOS only) The build tools automake, autoconf, and libtool. You can install these with ``brew install automake autoconf libtool``.
+4. The Python project tool `uv <https://astral.sh/uv>`_.
+5. (Recommended) `Microsoft vcpkg <https://vcpkg.io/>`_ C++ dependency manager.
+6. (Recommended) `GNU Make <https://www.gnu.org/software/make/>`_.
 
 Build steps
 ^^^^^^^^^^^
@@ -98,39 +100,33 @@ If you do not have vcpkg installed, the build process will automatically downloa
 
                 $Env:NO_USE_VPKG = $null
 
-3. Build the package using your build tool of choice.
+3. Install the project as an editable package, along with the development dependencies.
 
 .. tab-set::
 
-    .. tab-item:: uv
-        :sync: uv
+    .. tab-item:: Bash
+        :sync: bash
 
         .. code-block:: bash
 
-            # To build chalc as an editable package in a new virtual environment.
-            # This will also install the dependencies for testing and building documentation.
-            uv sync --locked --all-groups --exact --verbose
+            make install
 
-    .. tab-item:: pip
-        :sync: pip
+    .. tab-item:: Windows Powershell
+        :sync: powershell
 
-        .. code-block:: bash
+        .. code-block:: powershell
 
-            # To install chalc into the current Python environment from the package lock file.
-            # This will also install the dependencies for testing and building documentation.
-            pip lock -r pylock.toml
-
-4. (Optional) If you have GNU Make installed, you can generate type stubs for the package by running ``make stubs`` in the package root directory. If you do not have GNU Make installed, you can run the following commands:
-
-   .. code-block:: bash
-
-            python -m pybind11_stubgen chalc.chromatic --numpy-array-use-type-var --output-dir ./src
-            python -m pybind11_stubgen chalc.filtration --numpy-array-use-type-var --output-dir ./src
+            uv sync --verbose --all-groups --no-progress
+            uv run python -m pybind11_stubgen chalc.chromatic --numpy-array-use-type-var --output-dir ..\src
+            uv run python -m pybind11_stubgen chalc.filtration --numpy-array-use-type-var --output-dir ..\src
+            uv lock
+            uv export --format pylock.toml --all-groups -o pylock.toml --quiet
 
 Building the Documentation
 --------------------------
 
 To build the documentation, the development dependencies of the project need to be installed into the current environment.
+You also need to have `GraphViz <https://graphviz.org/download/>`_ installed.
 Then run the following commands from the project root directory to build the documentation files.
 
 .. tab-set::
@@ -148,9 +144,7 @@ Then run the following commands from the project root directory to build the doc
         .. code-block:: powershell
 
             Set-Location docs
-            python -m pybind11_stubgen chalc.chromatic --numpy-array-use-type-var --output-dir ..\src
-            python -m pybind11_stubgen chalc.filtration --numpy-array-use-type-var --output-dir ..\src
-            sphinx-build -M html source build
+            uv run sphinx-build -M html source build
 
 This will build the documentation into the folder ``docs/build`` with root ``index.html``.
 
