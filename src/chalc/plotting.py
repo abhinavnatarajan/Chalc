@@ -304,9 +304,12 @@ def _plot_diagram(
 	plot_df = DataFrame.from_records(data=all_pts, columns=["Birth", "Death", "Dimension"])
 	plot_df["Dimension"] = plot_df["Dimension"].astype("category")
 	for d in sorted(plot_df["Dimension"].cat.categories):
-		kwargs_this_dim = {"c": marker_colours_default[d]}
+		kwargs_this_dim = {"color": marker_colours_default[d]}
 		kwargs_this_dim |= kwargs
 		if kwargs_per_dim is not None and d in kwargs_per_dim:
+			if "c" in kwargs_per_dim[d]:
+				kwargs_per_dim[d]["color"] = kwargs_per_dim[d]["c"]
+				del kwargs_per_dim[d]["c"]
 			kwargs_this_dim |= kwargs_per_dim[d]
 		ax.scatter(
 			plot_df.loc[plot_df["Dimension"] == d, "Birth"],
