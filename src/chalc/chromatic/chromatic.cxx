@@ -35,8 +35,8 @@ using cmb::SolutionPrecision;
 using cmb::utility::equidistant_subspace;
 using cmb::utility::TypeConverter;
 
-using Eigen::all;
-using Eigen::lastN;
+using Eigen::indexing::all;
+using Eigen::indexing::lastN;
 using Eigen::MatrixX;
 using Eigen::MatrixXd;
 using Eigen::VectorX;
