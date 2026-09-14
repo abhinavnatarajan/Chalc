@@ -8,10 +8,11 @@ jobs:
     name: Publish to TestPyPI and PyPI
     runs-on: ubuntu-latest
     permissions:
+      actions: read
       id-token: write
     steps:
       - name: Download build artifacts
-        uses: dawidd6/action-download-artifact@v3
+        uses: dawidd6/action-download-artifact@d63b86af1b34672e53c440b1b83979861906bad7 # v24
         with:
           workflow: build.yml
           workflow_conclusion: success
