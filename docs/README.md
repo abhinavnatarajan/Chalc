@@ -1,6 +1,8 @@
 # Chalc Documentation Source Directory
 
-To build the documentation, first make sure that ``chalc`` and its development dependencies are installed and available to the Python interpreter. Then run the following commands from the root directory of the repository.
+To build the documentation, first make sure that ``chalc`` and its development dependencies are installed and available to the Python interpreter.
+You also need to have [``graphviz``](https://graphviz.org/download/) installed.
+Then run the following commands from the root directory of the repository.
 
 ```bash
 make -C docs html
