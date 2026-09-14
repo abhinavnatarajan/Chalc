@@ -3,6 +3,9 @@ name: Build
 on:
   workflow_dispatch:
 
+env:
+  VCPKG_COMMIT: 9e593bb18ea69cc5095e012465dcd675a822ed0d
+
 defaults:
   run:
     shell: bash
@@ -15,13 +18,14 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: "recursive"
 
       - name: Setup vcpkg
         run: |
           git clone https://github.com/microsoft/vcpkg
+          git -C vcpkg checkout "$VCPKG_COMMIT"
           ./vcpkg/bootstrap-vcpkg.sh -disableMetrics
 
       - name: Write dependency graph
@@ -36,18 +40,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: "recursive"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
 
       - name: Build SDist
         run: uv build --sdist --no-progress --verbose
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: sdist
           path: ./dist/*.tar.gz
@@ -56,16 +60,13 @@ jobs:
     name: Build wheels
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest, macos-15-intel]
+        os: [ubuntu-latest, windows-latest, macos-latest]
         include:
           - os: ubuntu-latest
             mono: "mono"
             nuget: "`./vcpkg/vcpkg fetch nuget | tail -n 1`"
             # Cibuildwheel containers mount the host filesystem at /host
           - os: macos-latest
-            mono: ""
-            nuget: "nuget"
-          - os: macos-15-intel
             mono: ""
             nuget: "nuget"
           - os: windows-latest
@@ -76,14 +77,14 @@ jobs:
       NUGET_FEED_URL: https://nuget.pkg.github.com/abhinavnatarajan/index.json
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: "recursive"
 
       - name: Setup build tools (macos)
         if: ${{ runner.os == 'macos' }}
         run: |
-          brew install automake autoconf libtool nuget
+          brew install automake autoconf autoconf-archive libtool nuget
 
       - name: Setup build tools (linux)
         if: ${{ runner.os == 'linux' }}
@@ -97,6 +98,7 @@ jobs:
       - name: Setup vcpkg
         run: |
           git clone https://github.com/microsoft/vcpkg
+          git -C vcpkg checkout "$VCPKG_COMMIT"
           ./vcpkg/bootstrap-vcpkg.sh -disableMetrics
 
       - name: Setup vcpkg binary cache
@@ -116,11 +118,11 @@ jobs:
           echo "VCPKG_BINARY_SOURCES=clear;nuget,GithubPackages,readwrite" >> "$GITHUB_ENV"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
         if: ${{ runner.os == 'macos' || runner.os == 'windows' }}
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v3.0.0
+        uses: pypa/cibuildwheel@e090b81e30c4d855ea63bf4b6e59204c09a101ae # v4.2.1
         env:
           CIBW_ARCHS: auto64
           # Poorly documented: Nuget feed API keys are stored in encrypted form
@@ -128,7 +130,7 @@ jobs:
           # the cibuildwheel container. We need to set the API key again inside the
           # container.
           CIBW_BEFORE_ALL_LINUX: |
-            dnf install mono-complete curl zip unzip tar -y
+            dnf install mono-complete curl zip unzip tar autoconf autoconf-archive automake libtool -y
             ./vcpkg/bootstrap-vcpkg.sh
             mkdir -p $HOME/.config/NuGet
             cp /host/home/runner/.config/NuGet/NuGet.Config $HOME/.config/NuGet/NuGet.Config
@@ -143,7 +145,7 @@ jobs:
           CIBW_TEST_GROUPS: test
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: wheels-${{ matrix.os }}
           path: ./wheelhouse/*.whl
@@ -154,7 +156,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Merge artifacts
-        uses: actions/upload-artifact/merge@v4
+        uses: actions/upload-artifact/merge@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: wheels
           pattern: wheels-*

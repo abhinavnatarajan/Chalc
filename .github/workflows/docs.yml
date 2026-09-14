@@ -5,6 +5,9 @@ on:
     tags: ["**"]
     # run on all tags
 
+env:
+  VCPKG_COMMIT: 9e593bb18ea69cc5095e012465dcd675a822ed0d
+
 jobs:
   docs:
     name: Build and deploy docs
@@ -12,11 +15,16 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: "recursive"
+
       - name: Install pandoc
         uses: pandoc/actions/setup@v1
 
       - name: Setup uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
         with:
           enable-cache: true
           cache-dependency-glob: ""
@@ -24,16 +32,12 @@ jobs:
       - name: Setup mono for nuget
         if: ${{ runner.os == 'linux' }}
         run: |
-          sudo apt-get install mono-complete -y
-
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          submodules: "recursive"
+          sudo apt-get install mono-complete autoconf autoconf-archive automake libtool -y
 
       - name: Setup vcpkg
         run: |
           git clone https://github.com/microsoft/vcpkg
+          git -C vcpkg checkout "$VCPKG_COMMIT"
           ./vcpkg/bootstrap-vcpkg.sh -disableMetrics
 
       - name: Setup vcpkg binary cache
