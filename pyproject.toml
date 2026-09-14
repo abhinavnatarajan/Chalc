@@ -23,12 +23,10 @@ dependencies = [
   "phimaker~=0.3.0",
 ]
 classifiers = [
-  "Development Status :: 3 - Alpha",
   "Intended Audience :: Science/Research",
   "Programming Language :: C++",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: Implementation :: CPython",
-  "Programming Language :: Python :: Implementation :: PyPy",
   "Topic :: Scientific/Engineering :: Mathematics",
 ]
 
