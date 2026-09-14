@@ -98,7 +98,13 @@ target_include_directories(_filtration PUBLIC src)
 add_library(_chromatic STATIC src/chalc/chromatic/chromatic.cxx)
 target_link_libraries(
     _chromatic
-	PUBLIC _filtration Eigen3::Eigen TBB::tbb CGAL::CGAL CGAL::Eigen3_support CGAL::TBB_support
+    PUBLIC
+        _filtration
+        Eigen3::Eigen
+        TBB::tbb
+        CGAL::CGAL
+        CGAL::Eigen3_support
+        CGAL::TBB_support
 )
 set_target_properties(
     _filtration
@@ -121,10 +127,7 @@ if(USING_VCPKG AND WIN32)
         "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/*"
     )
     install(
-        RUNTIME_DEPENDENCY_SET
-        vcpkg_libs
-        DESTINATION
-        lib
+        RUNTIME_DEPENDENCY_SET vcpkg_libs DESTINATION lib
         PRE_INCLUDE_REGEXES ${VCPKG_SHARED_LIBRARIES}
         PRE_EXCLUDE_REGEXES ".*"
         DIRECTORIES "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/"
