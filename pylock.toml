@@ -1572,10 +1572,10 @@ wheels = [{ url = "https://files.pythonhosted.org/packages/6d/18/83376915176eb05
 
 [[packages]]
 name = "pybind11"
-version = "2.13.6"
+version = "3.1.0"
 index = "https://pypi.org/simple"
-sdist = { url = "https://files.pythonhosted.org/packages/d2/c1/72b9622fcb32ff98b054f724e213c7f70d6898baa714f4516288456ceaba/pybind11-2.13.6.tar.gz", upload-time = 2024-09-14T00:35:22Z, size = 218403, hashes = { sha256 = "ba6af10348c12b24e92fa086b39cfba0eff619b61ac77c406167d813b096d39a" } }
-wheels = [{ url = "https://files.pythonhosted.org/packages/13/2f/0f24b288e2ce56f51c920137620b4434a38fd80583dbbe24fc2a1656c388/pybind11-2.13.6-py3-none-any.whl", upload-time = 2024-09-14T00:35:20Z, size = 243282, hashes = { sha256 = "237c41e29157b962835d356b370ededd57594a26d5894a795960f0047cb5caf5" } }]
+sdist = { url = "https://files.pythonhosted.org/packages/76/f3/95b0f40b31df41dbfe6bb0857419c9442c15839cbac4796f1c26ae0b6081/pybind11-3.1.0.tar.gz", upload-time = 2026-08-06T23:33:00Z, size = 603746, hashes = { sha256 = "a1cc06b524ab3edca51f8ad3895f9c4fa20b8b19283173dff4ae781449dc9639" } }
+wheels = [{ url = "https://files.pythonhosted.org/packages/33/fd/8762f7ee3e4e4be6d1d846cffb4916dd9bb02b2f800d3603718a0efe494c/pybind11-3.1.0-py3-none-any.whl", upload-time = 2026-08-06T23:32:59Z, size = 319402, hashes = { sha256 = "b8488090f8acffbcb6b5d6a85571a6827a0a2981ffb75e5a0b27b87c4a6b7dd0" } }]
 
 [[packages]]
 name = "pybind11-stubgen"

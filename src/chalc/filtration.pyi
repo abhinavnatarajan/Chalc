@@ -2,20 +2,21 @@
 Module containing utilities to store and manipulate abstract filtered simplicial complexes.
 """
 from __future__ import annotations
+import collections.abc
 import typing
 __all__: list[str] = ['Filtration', 'Simplex', 'complete_complex', 'standard_simplex']
 class Filtration:
     """
     Class representing a filtered simplicial complex.
     """
-    def __contains__(self, vertices: list[int]) -> bool:
+    def __contains__(self, vertices: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex]) -> bool:
         """
         Check for membership of a simplex in the complex.
         
         Args:
         	vertices : Vertex labels of the simplex to check for.
         """
-    def __init__(self, n: int, k: int) -> None:
+    def __init__(self, n: typing.SupportsInt | typing.SupportsIndex, k: typing.SupportsInt | typing.SupportsIndex) -> None:
         """
         Construct a discrete filtered simplicial complex with default filtration time of 0.
         
@@ -25,7 +26,7 @@ class Filtration:
         		This parameter is required for memory efficiency,
         		and cannot be changed after initialisation.
         """
-    def __iter__(self) -> typing.Iterator[Simplex]:
+    def __iter__(self) -> collections.abc.Iterator[Simplex]:
         """
         Iterate over the simplices in the complex, ordered by dimension.
         
@@ -38,7 +39,7 @@ class Filtration:
         """
     def __repr__(self) -> str:
         ...
-    def add_simplex(self, vertices: list[int], filt_value: float) -> bool:
+    def add_simplex(self, vertices: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex], filt_value: typing.SupportsFloat | typing.SupportsIndex) -> bool:
         """
         Add a simplex to a filtered simplicial complex.
         
@@ -50,7 +51,7 @@ class Filtration:
         	Faces of the added simplex that are already present
         	in the simplicial complex will have their filtration values reduced if necessary.
         """
-    def boundary_matrix(self, max_dimension: int = -1) -> list[tuple[list[int], int, float, list[int]]]:
+    def boundary_matrix(self, max_dimension: typing.SupportsInt | typing.SupportsIndex = -1) -> list[tuple[list[int], int, float, list[int]]]:
         """
         Compute the boundary matrix of the filtration.
         
@@ -68,7 +69,7 @@ class Filtration:
         	3.  The filtration time of :math:`\\sigma`.
         	4.  The set of colours of the vertices of :math:`\\sigma`.
         """
-    def get_label_from_vertex_labels(self, vertices: list[int]) -> int:
+    def get_label_from_vertex_labels(self, vertices: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex]) -> int:
         """
         Get the dictionary key of a simplex.
         
@@ -94,7 +95,7 @@ class Filtration:
         
         You should call this whenever you change the colour of any vertices.
         """
-    def propagate_filt_values(self, start_dim: int, upwards: bool = True) -> None:
+    def propagate_filt_values(self, start_dim: typing.SupportsInt | typing.SupportsIndex, upwards: bool = True) -> None:
         """
         Propagate filtration values upwards or downwards.
         
@@ -109,7 +110,7 @@ class Filtration:
         	start_dim : Dimension from which to start propagating (exclusive).
         	upwards : If true then values are propagated upwards, downwards otherwise. Defaults to true.
         """
-    def skeleton(self, k: int) -> Filtration:
+    def skeleton(self, k: typing.SupportsInt | typing.SupportsIndex) -> Filtration:
         """
         Get a copy of the k-skeleton of the filtration.
         
@@ -151,7 +152,7 @@ class Simplex:
     """
     def __repr__(self) -> str:
         ...
-    def set_colour(self, colour: int) -> None:
+    def set_colour(self, colour: typing.SupportsInt | typing.SupportsIndex) -> None:
         """
         Change the colour of a vertex.
         
@@ -189,7 +190,7 @@ class Simplex:
         from the parent complex to ensure that filtration times remain monotonic.
         """
     @filtration_value.setter
-    def filtration_value(self, arg1: float) -> None:
+    def filtration_value(self, arg1: typing.SupportsFloat | typing.SupportsIndex) -> None:
         ...
     @property
     def label(self) -> int:
@@ -205,7 +206,7 @@ class Simplex:
         """
         List of (sorted, ascending) vertex labels of the simplex.
         """
-def complete_complex(n: int, k: int) -> Filtration:
+def complete_complex(n: typing.SupportsInt | typing.SupportsIndex, k: typing.SupportsInt | typing.SupportsIndex) -> Filtration:
     """
     Compute the :math:`k`-skeleton of the complete simplicial complex on :math:`n` vertices.
     
@@ -215,7 +216,7 @@ def complete_complex(n: int, k: int) -> Filtration:
     	RuntimeError:
     		If ``n<= 0`` or ``k >= n`` or ``k < 0``.
     """
-def standard_simplex(n: int) -> Filtration:
+def standard_simplex(n: typing.SupportsInt | typing.SupportsIndex) -> Filtration:
     """
     Compute the filtered simplicial complex corresponding to the standard abstract :math:`n`-simplex.
     

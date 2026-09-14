@@ -3,16 +3,16 @@ Module containing geometry routines to compute chromatic Delaunay filtrations.
 """
 from __future__ import annotations
 import chalc.filtration
+import collections.abc
 import numpy
+import numpy.typing
 import typing
 __all__: list[str] = ['MaxColoursChromatic', 'alpha', 'delaunay', 'delaunay_cech', 'delaunay_rips']
-M = typing.TypeVar("M", bound=int)
-N = typing.TypeVar("N", bound=int)
 @typing.overload
-def alpha(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, typing.Literal[1]], numpy.dtype[numpy.uint16]], max_num_threads: int = 0) -> chalc.filtration.Filtration:
+def alpha(points: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, n]"], colours: typing.Annotated[numpy.typing.ArrayLike, numpy.uint16, "[m, 1]"], max_num_threads: typing.SupportsInt | typing.SupportsIndex = 0) -> chalc.filtration.Filtration:
     ...
 @typing.overload
-def alpha(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 0) -> chalc.filtration.Filtration:
+def alpha(points: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, n]"], colours: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex], max_num_threads: typing.SupportsInt | typing.SupportsIndex = 0) -> chalc.filtration.Filtration:
     """
     Compute the chromatic alpha filtration of a coloured point cloud.
     
@@ -45,10 +45,10 @@ def alpha(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colour
     	:func:`delaunay_rips`, :func:`delaunay_cech`
     """
 @typing.overload
-def delaunay(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, typing.Literal[1]], numpy.dtype[numpy.uint16]], parallel: bool = True) -> chalc.filtration.Filtration:
+def delaunay(points: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, n]"], colours: typing.Annotated[numpy.typing.ArrayLike, numpy.uint16, "[m, 1]"], parallel: bool = True) -> chalc.filtration.Filtration:
     ...
 @typing.overload
-def delaunay(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], parallel: bool = True) -> chalc.filtration.Filtration:
+def delaunay(points: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, n]"], colours: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex], parallel: bool = True) -> chalc.filtration.Filtration:
     """
     Compute the chromatic Delaunay triangulation of a coloured point cloud in Euclidean space.
     
@@ -70,10 +70,10 @@ def delaunay(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], col
     	The Delaunay triangulation.
     """
 @typing.overload
-def delaunay_cech(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, typing.Literal[1]], numpy.dtype[numpy.uint16]], max_num_threads: int = 0) -> chalc.filtration.Filtration:
+def delaunay_cech(points: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, n]"], colours: typing.Annotated[numpy.typing.ArrayLike, numpy.uint16, "[m, 1]"], max_num_threads: typing.SupportsInt | typing.SupportsIndex = 0) -> chalc.filtration.Filtration:
     ...
 @typing.overload
-def delaunay_cech(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 0) -> chalc.filtration.Filtration:
+def delaunay_cech(points: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, n]"], colours: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex], max_num_threads: typing.SupportsInt | typing.SupportsIndex = 0) -> chalc.filtration.Filtration:
     """
     Compute the chromatic Delaunay--Čech filtration of a coloured point cloud.
     
@@ -108,10 +108,10 @@ def delaunay_cech(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]]
     	:func:`alpha`, :func:`delaunay_rips`
     """
 @typing.overload
-def delaunay_rips(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, typing.Literal[1]], numpy.dtype[numpy.uint16]], max_num_threads: int = 0) -> chalc.filtration.Filtration:
+def delaunay_rips(points: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, n]"], colours: typing.Annotated[numpy.typing.ArrayLike, numpy.uint16, "[m, 1]"], max_num_threads: typing.SupportsInt | typing.SupportsIndex = 0) -> chalc.filtration.Filtration:
     ...
 @typing.overload
-def delaunay_rips(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 0) -> chalc.filtration.Filtration:
+def delaunay_rips(points: typing.Annotated[numpy.typing.ArrayLike, numpy.float64, "[m, n]"], colours: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex], max_num_threads: typing.SupportsInt | typing.SupportsIndex = 0) -> chalc.filtration.Filtration:
     """
     Compute the chromatic Delaunay--Rips filtration of a coloured point cloud.
     

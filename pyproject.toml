@@ -46,7 +46,7 @@ dev = [
   "nbsphinx~=0.9",
   # Pybind11 headers for LSP
   # Needs to be kept in sync with build-system.requires below
-  "pybind11~=2.13",
+  "pybind11~=3.1",
   "pybind11-stubgen~=2.5",
   "sphinx~=8.2",
   "sphinx-autoapi~=3.3",
@@ -57,7 +57,7 @@ dev = [
 test = ["gudhi~=3.11", "pytest~=8.3"]
 
 [build-system]
-requires = ["pybind11~=2.13", "scikit-build-core~=0.11.4"]
+requires = ["pybind11~=3.1", "scikit-build-core~=0.11.4"]
 build-backend = "scikit_build_core.build"
 
 [tool.pyrefly]
