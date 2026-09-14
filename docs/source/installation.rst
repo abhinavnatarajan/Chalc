@@ -3,7 +3,7 @@ Installation
 
 Using pip
 ---------
-The recommended way to download and install chalc is from the `PyPI repository <https://pypi.org/project/chalc/>`_ using pip. Pre-packaged binary distributions are available for Windows and Linux (x86_64), and macOS (x86_64 and aarch64). Chalc works with CPython and PyPy ≥ 3.12.
+The recommended way to download and install chalc is from the `PyPI repository <https://pypi.org/project/chalc/>`_ using pip. Pre-packaged binary distributions are available for Windows and Linux with x86_64 CPUs, and MacOS with M-series CPUs.
 
 .. tab-set::
 
@@ -46,7 +46,7 @@ Build dependencies
 2. On Windows: Visual Studio 2019 or later.
     On Linux: GCC11 or later.
     On MacOS: Clang 14 or later.
-3. (MacOS only) The build tools automake, autoconf, and libtool. You can install these with ``brew install automake autoconf libtool``.
+3. On Linux and MacOS, the build tools automake, autoconf, autoconf-archive, and libtool. Install them with ``apt install autoconf autoconf-archive automake libtool``, ``dnf install autoconf autoconf-archive automake libtool``, ``pacman -S autoconf autoconf-archive automake libtool``, or ``brew install autoconf autoconf-archive automake libtool``.
 4. The Python project tool `uv <https://astral.sh/uv>`_.
 5. (Recommended) `Microsoft vcpkg <https://vcpkg.io/>`_ C++ dependency manager.
 6. (Recommended) `GNU Make <https://www.gnu.org/software/make/>`_.
@@ -147,4 +147,3 @@ Then run the following commands from the project root directory to build the doc
             uv run sphinx-build -M html source build
 
 This will build the documentation into the folder ``docs/build`` with root ``index.html``.
-
