@@ -18,7 +18,7 @@
 		{
 			"name": "gmp",
 			"platform": "windows",
-			"version>=": "6.2.1#21"
+			"version>=": "6.3.0#3"
 		},
 		{
 			"name": "gmp",
@@ -26,7 +26,7 @@
 				"fat"
 			],
 			"platform": "!windows",
-			"version>=": "6.2.1#21"
+			"version>=": "6.3.0#3"
 		},
 		{
 			"name": "mpfr",
