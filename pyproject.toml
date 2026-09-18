@@ -1,12 +1,12 @@
 [project]
 name = "chalc"
 version = "14.2.0"
-authors = [{ name = "Abhinav Natarajan", email = "natarajan@maths.ox.ac.uk" }]
 description = "Persistent homology of chromatic Delaunay filtrations"
 readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.13"
 license = "GPL-3.0-or-later"
 license-files = ["COPYING"]
+authors = [{ name = "Abhinav Natarajan", email = "natarajan@maths.ox.ac.uk" }]
 keywords = [
   "TDA",
   "chromatic Delaunay",
@@ -15,19 +15,19 @@ keywords = [
   "persistent homology",
   "topological data analysis",
 ]
-dependencies = [
-  "h5py~=3.12",
-  "matplotlib~=3.9",
-  "numpy~=2.0",
-  "pandas~=2.2",
-  "phimaker~=0.3.0",
-]
 classifiers = [
   "Intended Audience :: Science/Research",
   "Programming Language :: C++",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: Implementation :: CPython",
   "Topic :: Scientific/Engineering :: Mathematics",
+]
+dependencies = [
+  "h5py~=3.12",
+  "matplotlib~=3.9",
+  "numpy~=2.0",
+  "pandas~=2.2",
+  "phimaker~=0.3.0",
 ]
 
 [project.urls]
@@ -37,17 +37,17 @@ Repository = "https://github.com/abhinavnatarajan/Chalc.git"
 
 [dependency-groups]
 dev = [
-  "chromatic-tda~=1.1",
-  "furo>=2024.8.6",
-  "ipykernel~=6.29",
   "ipympl~=0.9",
-  "ipython~=8.29",
-  "jupyterlab~=4.4",
-  "nbsphinx~=0.9",
+  "marimo[lsp]>=0.24.2",
   # Pybind11 headers for LSP
   # Needs to be kept in sync with build-system.requires below
   "pybind11~=3.1",
   "pybind11-stubgen~=2.5",
+]
+docs = [
+  "furo>=2024.8.6",
+  "jupyterlab~=4.4",
+  "nbsphinx~=0.9",
   "sphinx~=8.2",
   "sphinx-autoapi~=3.3",
   "sphinx-design~=0.6",

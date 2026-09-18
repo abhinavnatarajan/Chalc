@@ -4,7 +4,6 @@ from tomllib import loads
 
 from autoapi.extension import Mapper
 from packaging.version import parse
-from importlib import metadata
 from sphinx.application import Sphinx
 
 # Configuration file for the Sphinx documentation builder.
@@ -32,9 +31,8 @@ project = pyproject_toml["project"]["name"]
 release = ".".join(map(str, parse(pyproject_toml["project"]["version"]).release))
 
 # Variables for use within the docs
-rst_epilog = fr"""
+rst_epilog = rf"""
 .. |chalc-version| replace:: {release}
-.. |chromatic-tda-version| replace:: {metadata.version("chromatic-tda")}
 .. |ith| replace:: i\ :sup:`th`\
 """
 

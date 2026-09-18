@@ -82,12 +82,6 @@ It can also compute cycle representatives for persistent features, which chalc d
 
 On the other hand, chalc can compute chromatic Delaunay--Čech or chromatic Delaunay--Rips filtrations, which chromatic-tda does not currently support.
 Chalc is generally faster than chromatic-tda due to its lower-level implementation and the use of parallelism, and you may find this useful if you are working with a large number of datasets or datasets with a large number of points.
-The following is a chart comparing the runtime performance of chalc v\ |chalc-version| and chromatic-tda v\ |chromatic-tda-version| on randomly generated 2-dimensional point clouds with two and three colours.
-These tests were run on a laptop with an AMD Ryzen 7 6800U processor (8 cores @2.7Ghz, x86-64 ISA) and 16 GB of RAM, running Ubuntu 24.04 (kernel 6.12.10-76061203-generic) and using Python 3.13.2.
-The code used to run these tests and generate the charts are available in the ``docs/source`` folder of the chalc repository, and the raw results are available as a JSON file in the same folder.
-
-.. image:: /timing_results.png
-
 
 References
 ----------

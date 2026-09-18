@@ -2,7 +2,7 @@
 # Put it first so that "make" without argument is like "make stubs".
 install: dev stubs lock
 
-dev: # install editable project + dev/test dependencies
+dev: # install editable project + dev/docs/test dependencies
 	uv sync --verbose --all-groups --no-progress
 
 upgrade: # update project dependencies
