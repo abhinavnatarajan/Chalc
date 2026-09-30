@@ -184,10 +184,9 @@ class SixPack(Mapping):
 			)
 			diagram._paired = paired  # noqa: SLF001
 			diagram._unpaired = unpaired  # noqa: SLF001
-		self._cleanup()
 		return self
 
-	def _cleanup(self) -> SixPack:
+	def cleanup(self) -> SixPack:
 		"""Remove all simplices not associated with a feature."""
 		# Find all simplices that are part of some feature
 		active_simplices: set[int] = set()

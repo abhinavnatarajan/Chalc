@@ -39,8 +39,8 @@ class FiltrationMorphism(ABC):
 		:class:`KChromaticQuotient`.
 	"""
 
-	__slots__ = ("filtration",)
-	filtration: Filtration
+	__slots__ = ("_filtration",)
+	_filtration: Filtration
 
 	@abstractmethod
 	def sixpack(
@@ -79,7 +79,7 @@ class FiltrationMorphism(ABC):
 		"""
 
 	def __init__(self, filtration: Filtration) -> None:  # noqa: D107
-		self.filtration = filtration
+		self._filtration = filtration
 
 
 class FiltrationInclusion(FiltrationMorphism, ABC):
@@ -105,6 +105,7 @@ class FiltrationInclusion(FiltrationMorphism, ABC):
 	@abstractmethod
 	def simplex_in_domain(
 		self,
+		# column: (facets, label, filtration_time, colours)
 		column: tuple[list[int], int, float, list[int]],
 	) -> bool:
 		"""Check if a simplex is in the domain of the inclusion map.
@@ -118,7 +119,7 @@ class FiltrationInclusion(FiltrationMorphism, ABC):
 		self,
 		max_diagram_dimension: int | None = None,
 	) -> SixPack:
-		filtration = self.filtration
+		filtration = self._filtration
 
 		# We do not need all the simplices.
 		# Let n = max_diagram_dimension.
@@ -161,17 +162,18 @@ class FiltrationInclusion(FiltrationMorphism, ABC):
 
 		d = compute_ensemble(codomain_boundary_matrix)
 		return SixPack(
-			SimplexPairings(d.ker.paired, d.ker.unpaired),
-			SimplexPairings(d.cok.paired, d.cok.unpaired),
-			SimplexPairings(d.g.paired, d.g.unpaired),
-			SimplexPairings(d.f.paired, d.f.unpaired),
-			SimplexPairings(d.im.paired, d.im.unpaired),
-			SimplexPairings(d.rel.paired, d.rel.unpaired),
-			entrance_times,
-			dimensions,
+			kernel=SimplexPairings(d.ker.paired, d.ker.unpaired),
+			cokernel=SimplexPairings(d.cok.paired, d.cok.unpaired),
+			codomain=SimplexPairings(d.f.paired, d.f.unpaired),
+			domain=SimplexPairings(d.g.paired, d.g.unpaired),
+			image=SimplexPairings(d.im.paired, d.im.unpaired),
+			relative=SimplexPairings(d.rel.paired, d.rel.unpaired),
+			entrance_times=entrance_times,
+			dimensions=dimensions,
 		).filter(
-			lambda _, dim, birth_time, death_time: death_time - birth_time > 0.0
-			and dim <= max_diagram_dimension,
+			lambda _, dim, birth_time, death_time: (
+				death_time - birth_time > 0.0 and dim <= max_diagram_dimension
+			),
 		)
 
 
@@ -195,23 +197,23 @@ class SubChromaticInclusion(FiltrationInclusion, Sized):
 	Examples:
 		The inclusion of all monochromatic simplices of colours 0 and 1::
 
-			SubChromaticInclusion(filtration, [[0], [1]]).sixpack()
+	                SubChromaticInclusion(filtration, [[0], [1]]).sixpack()
 
 		The inclusion of any simplex with colours in :math:`\{0, 1\}`,
 		(which includes all monochromatic simplices of colours 0 and 1),
 		i.e., :math:`\tau = \{\{0, 1\}, \{0\}, \{1\}\}`::
 
-			SubChromaticInclusion(filtration, [[0, 1]]).sixpack()
+	                SubChromaticInclusion(filtration, [[0, 1]]).sixpack()
 
 		In this case since :math:`\tau` has a single maximal face, you can also write the following.
 		::
 
-			SubChromaticInclusion(filtration, [0, 1]).sixpack()
+	                SubChromaticInclusion(filtration, [0, 1]).sixpack()
 
 		You can also specify more general subsets of colours, for example
 		:math:`\tau = \{\{0, 1\}, \{1, 2\}, \{0\}, \{1\}, \{2\}\}`. ::
 
-			SubChromaticInclusion(filtration, [[0, 1], [1, 2]]).sixpack()
+	                SubChromaticInclusion(filtration, [[0, 1], [1, 2]]).sixpack()
 
 	See Also:
 		:class:`KChromaticInclusion`, :class:`KChromaticQuotient`, :class:`SubChromaticQuotient`.
@@ -272,14 +274,14 @@ class KChromaticInclusion(FiltrationInclusion):
 
 	In practical terms, the following code::
 
-		KChromaticInclusion(filtration, k).sixpack()
+	        KChromaticInclusion(filtration, k).sixpack()
 
 	should give the same 6-pack of persistence diagrams as this::
 
-		SubChromaticInclusion(
-			filtration,
-			itertools.combinations(range(n_colours), k),
-		).sixpack()
+	        SubChromaticInclusion(
+	            filtration,
+	            itertools.combinations(range(n_colours), k),
+	        ).sixpack()
 
 	There is, however, a slight performance benefit to using :class:`KChromaticInclusion`
 	over :class:`SubChromaticInclusion` in this situation.
@@ -287,11 +289,11 @@ class KChromaticInclusion(FiltrationInclusion):
 	Examples:
 		To consider the inclusion of all monochromatic simplices::
 
-			KChromaticInclusion(filtration, 1).sixpack()
+	                KChromaticInclusion(filtration, 1).sixpack()
 
 		To consider the inclusion of all simplices spanned by at most two colours::
 
-			KChromaticInclusion(filtration, 2).sixpack()
+	                KChromaticInclusion(filtration, 2).sixpack()
 
 	See Also:
 		:class:`SubChromaticInclusion`, :class:`KChromaticQuotient`, :class:`SubChromaticQuotient`.
@@ -337,12 +339,11 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 
 	"""
 
-	__slots__ = ("num_subfiltrations",)
-	num_subfiltrations: int
-	"""The number of subfiltrations in the quotient map."""
+	__slots__ = ("_num_subfiltrations",)
+	_num_subfiltrations: int
 
 	def __init__(self, filtration: Filtration, num_subfiltrations: int) -> None:  # noqa: D107
-		self.num_subfiltrations = num_subfiltrations
+		self._num_subfiltrations = num_subfiltrations
 		super().__init__(filtration)
 
 	@abstractmethod
@@ -359,7 +360,8 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 		self,
 		max_diagram_dimension: int | None = None,
 	) -> SixPack:
-		filtration = self.filtration
+		filtration = self._filtration
+		num_subfiltrations = self._num_subfiltrations
 
 		# We do not need all the simplices.
 		# Let n = max_diagram_dimension, and f: L -> K be a cellular map.
@@ -390,7 +392,7 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 		# belonging to the jth subfiltration.
 		# Caution: only some values end up being initialized.
 		# We initialize with -1 to avoid silent bugs.
-		offsets = np.ones(shape=(len(filtration), self.num_subfiltrations), dtype=int) * -1
+		offsets = np.ones(shape=(len(filtration), num_subfiltrations), dtype=int) * -1
 
 		# Build the matrices
 		domain_idx_counter = 0
@@ -401,7 +403,7 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 			codomain_matrix.append((entrance_time, dimension, facet_idxs))
 
 			# Construct the domain matrix
-			for i in range(self.num_subfiltrations):
+			for i in range(num_subfiltrations):
 				if self.simplex_in_filtration(column, i):
 					# If this simplex is in the jth subfiltration,
 					# we add it to the domain matrix
@@ -446,8 +448,9 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 			entrance_times,
 			dimensions,
 		).filter(
-			lambda _, dim, birth_time, death_time: death_time - birth_time > 0.0
-			and dim <= max_diagram_dimension,
+			lambda _, dim, birth_time, death_time: (
+				death_time - birth_time > 0.0 and dim <= max_diagram_dimension
+			),
 		)
 
 
@@ -479,68 +482,70 @@ class SubChromaticQuotient(FiltrationQuotient):
 		6-pack of persistence diagrams, corresponding to
 		the inclusion of all monochromatic simplices of colours 0 and 1::
 
-			# Using SubChromaticQuotient
-			SubChromaticQuotient(
-				filtration,
-				[
-					[[0, 1]],  # tau_0 = {{0,1}, {0}, {1}}
-				],
-			).sixpack()
+	                # Using SubChromaticQuotient
+	                SubChromaticQuotient(
+	                    filtration,
+	                    [
+	                        [[0, 1]],  # tau_0 = {{0,1}, {0}, {1}}
+	                    ],
+	                ).sixpack()
 
-			# Using SubChromaticInclusion
-			SubChromaticInclusion(
-				filtration,
-				[[0,1]],
-			).sixpack()
+	                # Using SubChromaticInclusion
+	                SubChromaticInclusion(
+	                    filtration,
+	                    [[0, 1]],
+	                ).sixpack()
 
 		If the :math:`\tau_i` are disjoint, then this class produces the
 		same result as :class:`SubChromaticInclusion`::
 
-			# Using SubChromaticQuotient
-			SubChromaticQuotient(
-				filtration,
-				[
-					[
-						[0, 1],
-					],  # tau_0 = {{0,1}, {0}, {1}}
-					[
-						[2, 3],
-					],  # tau_1 = {{2,3}, {2}, {3}}
-				],
-			).sixpack()
+	                # Using SubChromaticQuotient
+	                SubChromaticQuotient(
+	                    filtration,
+	                    [
+	                        [
+	                            [0, 1],
+	                        ],  # tau_0 = {{0,1}, {0}, {1}}
+	                        [
+	                            [2, 3],
+	                        ],  # tau_1 = {{2,3}, {2}, {3}}
+	                    ],
+	                ).sixpack()
 
-			# Using SubChromaticInclusion
-			SubChromaticInclusion(
-				filtration,
-				[
-					# tau = {{0, 1}, {2, 3}, {0}, {1}, {2}, {3}}
-					[0, 1], [2, 3],
-				],
-			).sixpack()
+	                # Using SubChromaticInclusion
+	                SubChromaticInclusion(
+	                    filtration,
+	                    [
+	                        # tau = {{0, 1}, {2, 3}, {0}, {1}, {2}, {3}}
+	                        [0, 1],
+	                        [2, 3],
+	                    ],
+	                ).sixpack()
 
 		In general this is not necessarily the case::
 
-			# Using SubChromaticQuotient - gluing two subfiltrations
-			SubChromaticQuotient(
-				filtration,
-				[
-					[
-						[0, 1],
-					],  # tau_0 = {{0,1}, {0}, {1}}
-					[
-						[1, 2],
-					],  # tau_1 = {{1,2}, {1}, {2}}
-				],
-			).sixpack()
+	                # Using SubChromaticQuotient - gluing two subfiltrations
+	                SubChromaticQuotient(
+	                    filtration,
+	                    [
+	                        [
+	                            [0, 1],
+	                        ],  # tau_0 = {{0,1}, {0}, {1}}
+	                        [
+	                            [1, 2],
+	                        ],  # tau_1 = {{1,2}, {1}, {2}}
+	                    ],
+	                ).sixpack()
 
-			# Using SubChromaticInclusion - inclusion of a union of two subfiltrations
-			SubChromaticInclusion(
-				filtration,
-				[
-					# tau = {{0, 1}, {1, 2}, {0}, {1}, {2}}
-					[0, 1], [1, 2],
-				]
-			)
+	                # Using SubChromaticInclusion - inclusion of a union of two subfiltrations
+	                SubChromaticInclusion(
+	                    filtration,
+	                    [
+	                        # tau = {{0, 1}, {1, 2}, {0}, {1}, {2}}
+	                        [0, 1],
+	                        [1, 2],
+	                    ],
+	                )
 
 
 	See Also:
@@ -587,7 +592,7 @@ class KChromaticQuotient(FiltrationQuotient):
 
 	In practical terms, the following code::
 
-		KChromaticQuotient(filtration, k).sixpack()
+	        KChromaticQuotient(filtration, k).sixpack()
 
 	should give the same 6-pack of persistence diagrams as this::
 

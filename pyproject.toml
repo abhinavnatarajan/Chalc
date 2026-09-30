@@ -6,7 +6,7 @@ readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.13"
 license = "GPL-3.0-or-later"
 license-files = ["COPYING"]
-authors = [{ name = "Abhinav Natarajan", email = "natarajan@maths.ox.ac.uk" }]
+authors = [{ name = "Abhinav Natarajan" }]
 keywords = [
   "TDA",
   "chromatic Delaunay",
