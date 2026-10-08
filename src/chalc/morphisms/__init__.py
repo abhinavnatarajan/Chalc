@@ -7,10 +7,22 @@ from itertools import combinations
 from typing import Any, TypeIs
 
 import numpy as np
-from phimaker import compute_ensemble, compute_ensemble_cylinder
+from phimaker import sixpack, sixpack_from_inclusion
 
 from chalc.filtration import Filtration
-from chalc.sixpack.types import SimplexPairings, SixPack
+from chalc.morphisms.types import DiagramName, SimplexPairings, SixPack
+
+__all__ = [
+	"DiagramName",
+	"FiltrationInclusion",
+	"FiltrationMorphism",
+	"KChromaticInclusion",
+	"KChromaticQuotient",
+	"SimplexPairings",
+	"SixPack",
+	"SubChromaticInclusion",
+	"SubChromaticQuotient",
+]
 
 # A face of the simplex of colours.
 type ColourSimplexFace = frozenset[int]
@@ -139,35 +151,30 @@ class FiltrationInclusion(FiltrationMorphism, ABC):
 		else:
 			max_simplex_dimension = max_diagram_dimension + 2
 
-		codomain_boundary_matrix: list[
-			tuple[bool, int, list[int]]
-		] = []  # [(in_domain, dimension, facet_idxs)]
+		codomain_boundary_matrix: list[list[int]] = []
 		entrance_times: list[float] = []
 		dimensions: list[int] = []
+		cols_in_domain: list[int] = []
 
 		# Build the codomain boundary matrix.
-		for column in filtration.boundary_matrix(max_simplex_dimension):
+		for idx, column in enumerate(filtration.boundary_matrix(max_simplex_dimension)):
+			if self.simplex_in_domain(column):
+				cols_in_domain.append(idx)
 			facet_idxs = column[0]
-			entrance_time = column[2]
+			codomain_boundary_matrix.append(facet_idxs)
 			dimension = max(0, len(facet_idxs) - 1)
-			codomain_boundary_matrix.append(
-				(
-					self.simplex_in_domain(column),
-					dimension,
-					facet_idxs,
-				),
-			)
 			dimensions.append(dimension)
+			entrance_time = column[2]
 			entrance_times.append(entrance_time)
 
-		d = compute_ensemble(codomain_boundary_matrix)
+		d = sixpack_from_inclusion(codomain_boundary_matrix, dimensions, cols_in_domain)
 		return SixPack(
-			kernel=SimplexPairings(d.ker.paired, d.ker.unpaired),
-			cokernel=SimplexPairings(d.cok.paired, d.cok.unpaired),
-			codomain=SimplexPairings(d.f.paired, d.f.unpaired),
-			domain=SimplexPairings(d.g.paired, d.g.unpaired),
-			image=SimplexPairings(d.im.paired, d.im.unpaired),
-			relative=SimplexPairings(d.rel.paired, d.rel.unpaired),
+			domain=SimplexPairings.from_mapping(d.domain),
+			codomain=SimplexPairings.from_mapping(d.codomain),
+			kernel=SimplexPairings.from_mapping(d.kernel),
+			image=SimplexPairings.from_mapping(d.image),
+			cokernel=SimplexPairings.from_mapping(d.cokernel),
+			relative=SimplexPairings.from_mapping(d.relative),
 			entrance_times=entrance_times,
 			dimensions=dimensions,
 		).filter(
@@ -342,7 +349,7 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 	__slots__ = ("_num_subfiltrations",)
 	_num_subfiltrations: int
 
-	def __init__(self, filtration: Filtration, num_subfiltrations: int) -> None:  # noqa: D107
+	def __init__(self, filtration: Filtration, num_subfiltrations: int) -> None:
 		self._num_subfiltrations = num_subfiltrations
 		super().__init__(filtration)
 
@@ -356,7 +363,7 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 
 	type BoundaryMatrix = list[tuple[float, int, list[int]]]
 
-	def sixpack(  # noqa: D102
+	def sixpack(
 		self,
 		max_diagram_dimension: int | None = None,
 	) -> SixPack:
@@ -417,7 +424,7 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 					offsets[codomain_idx, i] = domain_idx_counter
 					domain_idx_counter += 1
 
-		d, meta = compute_ensemble_cylinder(domain_matrix, codomain_matrix, mapping)
+		d, meta = sixpack(domain_matrix, codomain_matrix, mapping)
 
 		# meta.<domain|codomain|domain_shifted> is a vector
 		# mapping from the index of a column in the <domain|codomain>
@@ -439,14 +446,14 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 			dimensions[cyl_cod_idx] = codomain_matrix[cod_idx][1]
 
 		return SixPack(
-			SimplexPairings(d.ker.paired, d.ker.unpaired),
-			SimplexPairings(d.cok.paired, d.cok.unpaired),
-			SimplexPairings(d.g.paired, d.g.unpaired),
-			SimplexPairings(d.f.paired, d.f.unpaired),
-			SimplexPairings(d.im.paired, d.im.unpaired),
-			SimplexPairings(d.rel.paired, d.rel.unpaired),
-			entrance_times,
-			dimensions,
+			domain=SimplexPairings.from_mapping(d.domain),
+			codomain=SimplexPairings.from_mapping(d.codomain),
+			kernel=SimplexPairings.from_mapping(d.kernel),
+			image=SimplexPairings.from_mapping(d.image),
+			cokernel=SimplexPairings.from_mapping(d.cokernel),
+			relative=SimplexPairings.from_mapping(d.relative),
+			entrance_times=entrance_times,
+			dimensions=dimensions,
 		).filter(
 			lambda _, dim, birth_time, death_time: (
 				death_time - birth_time > 0.0 and dim <= max_diagram_dimension

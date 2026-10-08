@@ -12,7 +12,7 @@ from collections.abc import (
 	Sequence,
 	ValuesView,
 )
-from typing import Literal, get_args, overload
+from typing import Literal, Self, get_args, overload
 
 import numpy as np
 from h5py import Dataset, Group
@@ -73,11 +73,12 @@ class SixPack(Mapping):
 
 	def __init__(
 		self,
-		kernel: SimplexPairings | None = None,
-		cokernel: SimplexPairings | None = None,
+		*,
 		domain: SimplexPairings | None = None,
 		codomain: SimplexPairings | None = None,
+		kernel: SimplexPairings | None = None,
 		image: SimplexPairings | None = None,
+		cokernel: SimplexPairings | None = None,
 		relative: SimplexPairings | None = None,
 		entrance_times: Sequence[float] = [],
 		dimensions: Sequence[int] = [],
@@ -309,7 +310,7 @@ class SixPack(Mapping):
 			self[dgm_name].save(grp)
 
 	@classmethod
-	def from_file(cls, file: Group) -> SixPack:
+	def from_file(cls, file: Group) -> Self:
 		"""
 		Load a 6-pack of persistence diagrams from a HDF5 file or group.
 
@@ -317,7 +318,7 @@ class SixPack(Mapping):
 			file : A h5py file or group.
 
 		"""
-		dgms = SixPack()
+		dgms = cls()
 		if any(
 			attr not in file
 			for attr in ["entrance_times", "dimensions", "ker", "cok", "dom", "cod", "im", "rel"]
@@ -380,6 +381,23 @@ class SimplexPairings(Collection):
 		self._paired = frozenset(paired)
 		self._unpaired = frozenset(unpaired)
 
+	@classmethod
+	def from_mapping(
+		cls,
+		pairings: Mapping[int, int | None] | None = None,
+	) -> Self:
+		"""Initialise a diagram from a mapping of birth to death indices."""
+		if pairings is None:
+			pairings = {}
+		paired = []
+		unpaired = []
+		for birth, death in pairings.items():
+			if death is None:
+				unpaired.append(birth)
+			else:
+				paired.append((birth, death))
+		return cls(paired, unpaired)
+
 	def __str__(self) -> str:
 		"""Represent the persistence diagram as a string."""
 		return f"Paired: {self._paired}\nUnpaired: {self._unpaired}"
@@ -427,7 +445,7 @@ class SimplexPairings(Collection):
 		cls,
 		paired_matrix: np.ndarray[tuple[NRows, Literal[2]], np.dtype[np.integer]],
 		unpaired_vector: np.ndarray[tuple[int], np.dtype[np.integer]],
-	) -> SimplexPairings:
+	) -> Self:
 		# Construct a SimplexPairings object from
 		# paired and unpaired simplices represented as matrices.
 		# Internal use only - used to load diagrams from file.
@@ -438,7 +456,7 @@ class SimplexPairings(Collection):
 		return cls(paired, unpaired)
 
 	@classmethod
-	def from_file(cls, group: Group) -> SimplexPairings:
+	def from_file(cls, group: Group) -> Self:
 		"""
 		Construct a SimplexPairings object from matrices stored in a HDF5 file or group.
 
@@ -463,7 +481,7 @@ class SimplexPairings(Collection):
 
 		paired = checked_dataset("paired").astype(int)
 		unpaired = checked_dataset("unpaired").astype(int)
-		return SimplexPairings._from_matrices(paired[...], unpaired[...])
+		return cls._from_matrices(paired[...], unpaired[...])
 
 	def _paired_as_matrix(self) -> np.ndarray[tuple[int, Literal[2]], np.dtype[np.int64]]:
 		r"""Return the pairings of simplex indices in a :math:`N\times 2` matrix."""

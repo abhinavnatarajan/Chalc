@@ -13,7 +13,7 @@ from matplotlib import animation
 from matplotlib.legend import Legend
 from pandas import DataFrame
 
-from chalc.sixpack import DiagramName, SimplexPairings, SixPack
+from chalc.morphisms import DiagramName, SimplexPairings, SixPack
 
 if TYPE_CHECKING:
 	from matplotlib.artist import Artist

@@ -238,8 +238,8 @@ def test_alpha_delcech_homotopy_equivalent() -> None:
 			colours = rng.integers(0, s + 1, size=num_points).tolist()
 			chromatic_delcech = ch.chromatic.delaunay_cech(points, colours)
 			chromatic_alpha = ch.chromatic.alpha(points, colours)
-			dgms_delcech = ch.sixpack.SubChromaticInclusion(chromatic_delcech, {0}).sixpack()
-			dgms_alpha = ch.sixpack.SubChromaticInclusion(chromatic_alpha, {0}).sixpack()
+			dgms_delcech = ch.morphisms.SubChromaticInclusion(chromatic_delcech, {0}).sixpack()
+			dgms_alpha = ch.morphisms.SubChromaticInclusion(chromatic_alpha, {0}).sixpack()
 			assert dgms_delcech.max_nonempty_dimension() == dgms_alpha.max_nonempty_dimension()
 			dists = [
 				bottleneck_distance(

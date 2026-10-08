@@ -21,11 +21,11 @@ def test_kchromatic_inclusion_vs_quotient() -> None:
 		points = rng.uniform(size=(dim, num_points))
 		colours = rng.integers(0, s, size=num_points).tolist()
 		filtration = ch.chromatic.delaunay_rips(points, colours, max_num_threads=0)
-		dgms_inclusion = ch.sixpack.KChromaticInclusion(
+		dgms_inclusion = ch.morphisms.KChromaticInclusion(
 			filtration,
 			1,
 		).sixpack()
-		dgms_quotient = ch.sixpack.KChromaticQuotient(
+		dgms_quotient = ch.morphisms.KChromaticQuotient(
 			filtration,
 			1,
 		).sixpack()
@@ -57,11 +57,11 @@ def test_kchromatic_vs_subchromatic_inclusion() -> None:
 				colours,
 				max_num_threads=0,
 			)
-			dgms_kchromatic = ch.sixpack.KChromaticInclusion(
+			dgms_kchromatic = ch.morphisms.KChromaticInclusion(
 				filtration,
 				k,
 			).sixpack()
-			dgms_subchromatic = ch.sixpack.SubChromaticInclusion(
+			dgms_subchromatic = ch.morphisms.SubChromaticInclusion(
 				filtration,
 				colour_combos,
 			).sixpack()
@@ -96,11 +96,11 @@ def test_kchromatic_vs_subchromatic_quotient() -> None:
 				colours,
 				max_num_threads=0,
 			)
-			dgms_kchromatic = ch.sixpack.KChromaticQuotient(
+			dgms_kchromatic = ch.morphisms.KChromaticQuotient(
 				filtration,
 				k,
 			).sixpack()
-			dgms_subchromatic = ch.sixpack.SubChromaticQuotient(
+			dgms_subchromatic = ch.morphisms.SubChromaticQuotient(
 				filtration,
 				colour_combos,
 			).sixpack()
@@ -139,11 +139,11 @@ def test_subchromatic_inclusion_vs_quotient() -> None:
 			colours,
 			max_num_threads=0,
 		)
-		dgms_inclusion = ch.sixpack.SubChromaticInclusion(
+		dgms_inclusion = ch.morphisms.SubChromaticInclusion(
 			filtration,
 			tau,
 		).sixpack()
-		dgms_quotient = ch.sixpack.SubChromaticQuotient(
+		dgms_quotient = ch.morphisms.SubChromaticQuotient(
 			filtration,
 			[tau],
 		).sixpack()

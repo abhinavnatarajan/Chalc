@@ -31,6 +31,6 @@ if platform.system() == "Windows":
 else:
 	from . import chromatic
 
-from . import plotting, sixpack
+from . import morphisms, plotting
 
-__all__ = ["chromatic", "filtration", "plotting", "sixpack"]
+__all__ = ["chromatic", "filtration", "morphisms", "plotting"]
