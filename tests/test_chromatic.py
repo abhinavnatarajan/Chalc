@@ -240,12 +240,12 @@ def test_alpha_delcech_homotopy_equivalent() -> None:
 			chromatic_alpha = ch.chromatic.alpha(points, colours)
 			dgms_delcech = ch.morphisms.SubChromaticInclusion(chromatic_delcech, {0}).sixpack()
 			dgms_alpha = ch.morphisms.SubChromaticInclusion(chromatic_alpha, {0}).sixpack()
-			assert dgms_delcech.max_nonempty_dimension() == dgms_alpha.max_nonempty_dimension()
+			assert dgms_delcech.max_nonempty_degree() == dgms_alpha.max_nonempty_degree()
 			dists = [
 				bottleneck_distance(
-					dgms_delcech.get_matrix("cod", d),
-					dgms_alpha.get_matrix("cod", d),
+					dgms_delcech.get_module("codomain").intervals(d),
+					dgms_alpha.get_module("codomain").intervals(d),
 				)
-				for d in range(dgms_delcech.max_nonempty_dimension() + 1)
+				for d in range(dgms_delcech.max_nonempty_degree() + 1)
 			]
 			assert math.isclose(max(dists), 0, abs_tol=1e-6)

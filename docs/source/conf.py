@@ -93,7 +93,7 @@ def autoapi_skip_member(
 	skip: bool,  # noqa: FBT001
 	_options: list[str],
 ) -> bool:
-	if name == "chalc.sixpack.types.DiagramName":
+	if name == "chalc.morphisms.types.DiagramName":
 		skip = True
 	return skip
 

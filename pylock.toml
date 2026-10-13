@@ -1742,10 +1742,10 @@ wheels = [
 
 [[packages]]
 name = "pytz"
-version = "2026.4"
+version = "2026.5"
 index = "https://pypi.org/simple"
-sdist = { url = "https://files.pythonhosted.org/packages/b0/ed/fa23d28713004418bbf2407127f80f385bfb0bf4e677bef02c25c27b00ee/pytz-2026.4.tar.gz", upload-time = 2026-09-24T03:58:40Z, size = 318444, hashes = { sha256 = "464303645bafafd72418898368b2429458f709cf1eb6a15372fbcc396b64da63" } }
-wheels = [{ url = "https://files.pythonhosted.org/packages/d5/11/e3df59614bebe0ca50c905442603eda64ae7ac19811d4e4f74aa2d51ca85/pytz-2026.4-py2.py3-none-any.whl", upload-time = 2026-09-24T03:58:38Z, size = 506747, hashes = { sha256 = "9d514388fbc89ca0833203464272ac485b8828568ab73532f5020f17e892a0ff" } }]
+sdist = { url = "https://files.pythonhosted.org/packages/14/21/d83d6ef28c4c912c4bb4d1dcf591f7b8c6bde87b9c66f9f454677314e16d/pytz-2026.5.tar.gz", upload-time = 2026-10-04T02:37:58Z, size = 318572, hashes = { sha256 = "fa23724b9c486543b9ff54a327ee7569ac83ade54bb9afd0fc18676620401c86" } }
+wheels = [{ url = "https://files.pythonhosted.org/packages/4f/ef/c66110d46fb800dda0bf33164182dfadabe26a90e4476844d502a23dca8e/pytz-2026.5-py2.py3-none-any.whl", upload-time = 2026-10-04T02:37:56Z, size = 506342, hashes = { sha256 = "e658af3757f9e26a9d25dd2aff38335acd92bc9104f890a894b2c1ba28311b03" } }]
 
 [[packages]]
 name = "pywinpty"

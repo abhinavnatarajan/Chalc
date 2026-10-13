@@ -3,17 +3,12 @@
 from __future__ import annotations
 
 from collections.abc import Collection, Mapping, Sequence
-from itertools import product
-from numbers import Real
+from numbers import Integral
 from typing import TYPE_CHECKING, Any, Literal
 
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import animation
-from matplotlib.legend import Legend
-from pandas import DataFrame
-
-from chalc.morphisms import DiagramName, SimplexPairings, SixPack
 
 if TYPE_CHECKING:
 	from matplotlib.artist import Artist
@@ -21,109 +16,45 @@ if TYPE_CHECKING:
 	from matplotlib.figure import Figure
 
 	from chalc.filtration import Filtration
+	from chalc.morphisms import AugmentedPersistenceModule, PersistenceModuleName, SixPack
 
 plt.rcParams["animation.html"] = "jshtml"
 
+__all__ = ["animate_filtration", "draw_filtration", "plot_persistence_diagram", "plot_sixpack"]
+
+type _1DArrayFloat = Sequence[float] | np.ndarray[tuple[int], np.dtype[np.floating]]  # noqa: PYI042
+
 
 def plot_sixpack(
-	dgms: SixPack,
-	truncations: Mapping[DiagramName, float] | float | None = None,
-	dimensions: Collection[int] | int | None = None,
+	sixpack: SixPack,
+	truncations: Mapping[PersistenceModuleName, float | None] | float | None = None,
+	degrees: Collection[int] | int | None = None,
 	threshold: float = 0,
 ) -> tuple[Figure, np.ndarray[tuple[Literal[2], Literal[3]], np.dtype[Any]]]:
 	"""
-	Plot the 6-pack of persistence diagrams returned by :func:`compute <.sixpack.compute>`.
+	Plot the persistence diagrams for a :meth:`chalc.morphisms.FiltrationMorphism.sixpack`.
 
 	Args:
-		dgms        : The 6-pack of persistence diagrams.
+		sixpack        : The 6-pack of persistence modules.
 		truncations :
-			The maximum entrance time upto which features are plotted.
-			Can be either a single value, or a mapping from diagram names to values.
-			A sensible default will be calculated (for each individual diagram) if not provided.
-		dimensions  :
-			The homological dimensions for which to plot features.
-			If not provided, all dimensions will be included in the plots.
+			The maximum entrance time up to which features are plotted.
+			Can be either a single value, or a mapping from persistence module
+			names to values. A sensible default is calculated for module names
+			omitted from the mapping.
+		degrees  :
+			The homological degrees for which to plot features.
+			If not provided, all degrees will be included in the plots.
 		threshold   : Only features with persistence greater than this value will be plotted.
 
+	Returns:
+		The figure and a ``(2, 3)`` array of axes. The top row contains domain,
+		codomain, and image; the bottom row contains kernel, cokernel, and relative.
 	"""
-	diagram_names = SixPack.names()
-	dims: dict[DiagramName, list[int]]
-	if dimensions is None:
-		if dgms:
-			dim_range = list(range(max(dgms.dimensions.tolist())))
-			# The relative diagram may contain features
-			# one dimension higher than that of the filtration.
-			dims = {
-				name: (dim_range if name != "rel" else [*dim_range, max(dim_range) + 1])
-				for name in diagram_names
-			}
-		else:
-			# if the diagrams are all empty then we gracefully fail
-			# by plotting empty diagrams
-			dims = {name: [] for name in diagram_names}
-	elif isinstance(dimensions, int):
-		dims = {name: [dimensions] for name in diagram_names}
-	elif isinstance(dimensions, Collection) and all(isinstance(dim, int) for dim in dimensions):
-		dims = {key: sorted(dimensions) for key in diagram_names}
+	if isinstance(truncations, Mapping):
+		truncations = dict(truncations)
 	else:
-		errmsg = "Invalid dimensions argument."
-		raise ValueError(errmsg)
+		truncations = dict.fromkeys(sixpack, truncations)
 
-	# In general, the dimension of a feature represented by a simplex pair (a, b)
-	# is dim(a), unless the diagram is in the kernel, in which case
-	# it is dim(a) - 1.
-	dim_shift: dict[DiagramName, int] = {
-		name: (1 if name == "ker" else 0) for name in diagram_names
-	}
-
-	if truncations is None:
-		truncations = {}
-	if isinstance(truncations, Mapping) and all(
-		isinstance(val, Real) for val in truncations.values()
-	):
-		truncs: dict[DiagramName, float] = {}
-		for diagram_name in diagram_names:
-			if diagram_name in truncations:
-				truncs[diagram_name] = truncations[diagram_name]
-				continue
-			births = []
-			deaths = []
-			for pair in dgms[diagram_name].paired:
-				if (
-					dgms.dimensions[pair[0]] - dim_shift[diagram_name] in dims[diagram_name]
-					and dgms.entrance_times[pair[1]] - dgms.entrance_times[pair[0]] > threshold
-				):
-					births.append(dgms.entrance_times[pair[0]].item())
-					deaths.append(dgms.entrance_times[pair[1]].item())
-			births.extend(
-				dgms.entrance_times[unpaired].item()
-				for unpaired in dgms[diagram_name].unpaired
-				if dgms.dimensions[unpaired] - dim_shift[diagram_name] in dims[diagram_name]
-			)
-			if not births or not deaths:
-				# The diagram is either (no births) or has only infinite features (no deaths).
-				truncs[diagram_name] = 1.0
-			else:
-				truncs[diagram_name] = _get_truncation(births, deaths)
-	elif isinstance(truncations, Real):
-		truncs = dict.fromkeys(diagram_names, float(truncations))
-	else:
-		errmsg = "Invalid truncations argument."
-		raise TypeError(errmsg)
-
-	plot_pos: dict[DiagramName, tuple[int, int]] = {
-		name: (val[1], val[0])
-		for name, val in zip(diagram_names, product((0, 1, 2), (0, 1)), strict=True)
-	}
-	plot_titles: dict[DiagramName, str] = {
-		"ker": "Kernel",
-		"cok": "Cokernel",
-		"im": "Image",
-		"dom": "Domain",
-		"cod": "Codomain",
-		"rel": "Relative",
-	}
-	points_legend: dict[DiagramName, bool] = {name: (name == "rel") for name in diagram_names}
 	fig, axes = plt.subplots(
 		nrows=2,
 		ncols=3,
@@ -131,219 +62,181 @@ def plot_sixpack(
 		sharex=False,
 		sharey=False,
 	)
-	for diagram_name in diagram_names:
-		_plot_diagram(
-			diagram=dgms[diagram_name],
-			entrance_times=dgms.entrance_times.tolist(),
-			dimensions=dgms.dimensions.tolist(),
-			truncation=truncs[diagram_name],
-			dims=dims[diagram_name],
-			ax=axes[plot_pos[diagram_name]],
-			dim_shift=dim_shift[diagram_name],
-			title=plot_titles[diagram_name],
-			points_legend=points_legend[diagram_name],
-			lines_legend=False,
+
+	plot_pos: dict[PersistenceModuleName, tuple[int, int]] = {
+		"domain": (0, 0),
+		"kernel": (1, 0),
+		"codomain": (0, 1),
+		"cokernel": (1, 1),
+		"image": (0, 2),
+		"relative": (1, 2),
+	}
+	for name in sixpack:
+		plot_persistence_diagram(
+			sixpack.get_module(name),
+			truncation=truncations.get(name),
+			degrees=degrees,
 			threshold=threshold,
+			points_legend=False,
+			lines_legend=False,
+			ax=axes[plot_pos[name]],
 		)
+		axes[plot_pos[name]].set_title(name.title())
 	legends = {}
 	for ax in fig.axes:
 		ax.tick_params(labelleft=True, labelbottom=True)
 		handles, labels = ax.get_legend_handles_labels()
 		legends |= dict(zip(labels, handles, strict=True))
-	fig.legend(
-		handles=[legends[key] for key in sorted(legends)],
-		labels=sorted(legends),
-		loc="lower center",
-		ncol=5,
-	)
+	if legends:
+		fig.legend(
+			handles=[legends[key] for key in sorted(legends)],
+			labels=sorted(legends),
+			loc="lower center",
+			ncol=5,
+		)
 	return fig, axes
 
 
-def plot_diagram(
-	dgms: SixPack,
-	diagram_name: DiagramName,
+def plot_persistence_diagram(
+	persistence_module: AugmentedPersistenceModule,
+	*,
 	truncation: float | None = None,
-	dimensions: Collection[int] | int | None = None,
+	degrees: Collection[int] | int | None = None,
 	ax: Axes | None = None,
 	threshold: float = 0,
 	kwargs_per_dim: Mapping[int, dict] | None = None,
+	points_legend: bool = True,
+	lines_legend: bool = True,
 	**kwargs,
-) -> Axes | None:
+) -> Axes:
 	"""
-	Plot a specific diagram from a 6-pack.
+	Plot the persistence diagram for a persistence module.
 
 	Args:
-		dgms           : The 6-pack of persistence diagrams.
-		diagram_name   : One of ``'ker'``, ``'cok'``, ``'dom'``, ``'cod'``, ``'im'``, or ``'rel'``.
-		truncation     :
-			The maximum entrance time for which the diagrams are plotted.
-			A sensible default will be calculated if not provided.
-		dimensions     :
-			The homological dimensions for which to plot features.
-			If not provided, all dimensions will be included in the plots.
-		ax             :
+		persistence_module:
+			The augmented persistence module.
+		truncation:
+			The maximum entrance time for which the persistence module is plotted.
+			A positive finite default is calculated from the retained intervals.
+		degrees:
+			The homological degrees in which to plot features.
+			If not provided, all degrees will be included in the plots.
+		ax:
 			A matplotlib axes object.
-			If provided then the diagram will be plotted on the given axes.
-		threshold      : Only features with persistence greater than this value will be plotted.
-		kwargs_per_dim : Keyword arguments for each dimension,
-			as a mapping { dimension: dictionary of kwargs }.
-			These will be passed to the matplotlib scatter function.
-		**kwargs      : Additional keyword arguments to pass to the matplotlib scatter function.
+			If provided then the persistence diagram will be plotted on the given axes.
+		threshold:
+			Only features with persistence greater than this value will be plotted.
+			The threshold is applied before truncating their displayed coordinates.
+		kwargs_per_dim:
+			Keyword arguments for each degree, as a mapping `{ degree : dictionary of kwargs }`.
+			These will be passed to the matplotlib scatter function, and take precedence over
+			any other keyword arguments.
+		points_legend:
+			Whether to show a legend for the feature degrees.
+		lines_legend:
+			Whether to show a legend for the truncation lines.
+		**kwargs:
+			Additional keyword arguments to pass to the matplotlib scatter function.
 
+	Returns:
+		The axes containing the diagram, creating a new figure if ``ax`` is omitted.
 	"""
-	dgm = dgms[diagram_name]
+	degrees = _select_degrees(persistence_module, degrees)
 
-	# In general, the dimension of a feature represented by a simplex pair (a, b)
-	# is dim(a), unless the diagram is in the kernel, in which case
-	# it is dim(a) - 1.
-	dim_shift = 1 if diagram_name == "ker" else 0
-
-	if dimensions is None:
-		dimensions = list(range(max(dgms.dimensions.tolist()))) if dgm else []
-	elif isinstance(dimensions, int):
-		dimensions = [dimensions]
-	elif isinstance(dimensions, Collection) and all(isinstance(dim, int) for dim in dimensions):
-		dimensions = sorted(dimensions)
-	else:
-		errmsg = "Invalid dimensions argument."
-		raise ValueError(errmsg)
-
+	intervals_by_degree = {
+		d: mat[(mat[:, 1] - mat[:, 0]) > threshold]
+		for d, mat in persistence_module.intervals(degrees).items()
+	}
 	if truncation is None:
-		births = []
-		deaths = []
-		for pair in dgms[diagram_name].paired:
-			if (
-				dgms.dimensions[pair[0]] - dim_shift in dimensions
-				and dgms.entrance_times[pair[1]] - dgms.entrance_times[pair[0]] > threshold
-			):
-				births.append(dgms.entrance_times[pair[0]].item())
-				deaths.append(dgms.entrance_times[pair[1]].item())
-
-		births.extend(
-			dgms.entrance_times[unpaired].item()
-			for unpaired in dgms[diagram_name].unpaired
-			if dgms.dimensions[unpaired] - dim_shift in dimensions
-		)
-		truncation = 1.0 if not births or not deaths else _get_truncation(births, deaths)
+		matrices = list(intervals_by_degree.values())
+		intervals = np.concatenate(matrices) if matrices else np.empty((0, 2))
+		truncation = _get_truncation(intervals[:, 0], intervals[:, 1])
+	if not np.isfinite(truncation) or truncation <= 0:
+		msg = "Truncation must be a positive finite number."
+		raise ValueError(msg)
 
 	if ax is None:
-		ax1: Axes
-		_, ax1 = plt.subplots()
-	else:
-		ax1 = ax
-
-	titles: dict[DiagramName, str] = {
-		"ker": "Kernel",
-		"cok": "Cokernel",
-		"im": "Image",
-		"dom": "Domain",
-		"cod": "Codomain",
-		"rel": "Relative",
-	}
-
-	_plot_diagram(
-		diagram=dgm,
-		entrance_times=dgms.entrance_times.tolist(),
-		dimensions=dgms.dimensions.tolist(),
-		truncation=truncation,
-		dims=dimensions,
-		ax=ax1,
-		title=titles[diagram_name],
-		points_legend=True,
-		lines_legend=True,
-		dim_shift=dim_shift,
-		threshold=threshold,
-		kwargs_per_dim=kwargs_per_dim,
-		**kwargs,
-	)
-	return ax1
-
-
-def _plot_diagram(
-	*,
-	diagram: SimplexPairings,
-	entrance_times: Sequence[float],  # entrance times of the simplices by index
-	dimensions: Sequence[int],  # dimensions of the simplices by index
-	truncation: float,  # max birth/death time to plot
-	dims: Collection[int],  # dimensions for which features are plotted
-	ax: Axes,  # axes to plot on
-	title: str,  # title of the plot
-	points_legend: bool,  # show legend for points (which dimension)
-	lines_legend: bool,  # show legend for lines (truncation, infinity)
-	dim_shift: int,  # dimension shift if any; only relevant for kernel
-	threshold: float,  # threshold of persistence below which features will be omitted
-	kwargs_per_dim: Mapping[int, dict] | None = None,
-	**kwargs,
-) -> None:
-	# Truncate all times
+		_, ax = plt.subplots()
 	truncate_level = truncation * 1.04
 	inf_level = truncation * 1.08
-	entrance_times = [
-		et if et <= truncation else truncate_level if et is not np.inf else inf_level
-		for et in entrance_times
-	]
-	all_pts = [
-		(
-			entrance_times[birth_idx],
-			entrance_times[death_idx],
-			feature_dimension,
-		)
-		for birth_idx, death_idx in diagram.paired
-		if (feature_dimension := dimensions[birth_idx] - dim_shift) in dims
-		and entrance_times[death_idx] - entrance_times[birth_idx] > threshold
-	] + [
-		(
-			entrance_times[birth_idx],
+
+	def truncate(values: np.ndarray) -> np.ndarray:
+		return np.where(
+			np.isinf(values),
 			inf_level,
-			feature_dimension,
+			np.where(values > truncation, truncate_level, values),
 		)
-		for birth_idx in diagram.unpaired
-		if (feature_dimension := dimensions[birth_idx] - dim_shift) in dims
-	]
-	marker_colours_default = np.array(plt.rcParams["axes.prop_cycle"].by_key()["color"]).tolist()
-	plot_df = DataFrame.from_records(data=all_pts, columns=["Birth", "Death", "Dimension"])
-	plot_df["Dimension"] = plot_df["Dimension"].astype("category")
-	for d in sorted(plot_df["Dimension"].cat.categories):
-		kwargs_this_dim = {"color": marker_colours_default[d]}
-		kwargs_this_dim |= kwargs
-		if kwargs_per_dim is not None and d in kwargs_per_dim:
-			if "c" in kwargs_per_dim[d]:
-				kwargs_per_dim[d]["color"] = kwargs_per_dim[d]["c"]
-				del kwargs_per_dim[d]["c"]
-			kwargs_this_dim |= kwargs_per_dim[d]
-		ax.scatter(
-			plot_df.loc[plot_df["Dimension"] == d, "Birth"],
-			plot_df.loc[plot_df["Dimension"] == d, "Death"],
-			edgecolors="white",
-			label=f"$H_{{{d}}}$",
-			**kwargs_this_dim,
+
+	marker_colours = plt.rcParams["axes.prop_cycle"].by_key()["color"]
+	for d, mat in intervals_by_degree.items():
+		if mat.size == 0:
+			continue
+		style = _scatter_options(
+			marker_colours[d % len(marker_colours)],
+			kwargs,
+			kwargs_per_dim.get(d, {}) if kwargs_per_dim is not None else {},
 		)
-	ax.set(xlabel=None)
-	ax.set(ylabel=None)
-	ax.set(title=title)
+		ax.scatter(truncate(mat[:, 0]), truncate(mat[:, 1]), label=f"$H_{{{d}}}$", **style)
+	ax.set(xlabel=None, ylabel=None)
 	ax.set_aspect("equal")
-	has_legend = any(True for c in ax.get_children() if isinstance(c, Legend))
-	if points_legend and has_legend:
-		ax.legend(loc="lower right")
-	handle = ax if ax is not None else plt
-	handle.plot([0, inf_level], [0, inf_level], "k-", alpha=0.4)
-	handle.plot(
+	ax.plot([0, inf_level], [0, inf_level], "k-", alpha=0.4)
+	ax.plot(
 		[0, truncate_level],
 		[truncate_level, truncate_level],
 		"k:",
 		alpha=0.4,
-		label="Truncated",
+		label="Truncated" if lines_legend else "_nolegend_",
 	)
-	handle.plot([0, inf_level], [inf_level, inf_level], "k--", alpha=0.4, label=r"$\infty$")
-	handle.plot([0, 0], [0, inf_level], "k-", alpha=0.4)
-	if lines_legend:
-		handle.legend()
+	ax.plot(
+		[0, inf_level],
+		[inf_level, inf_level],
+		"k--",
+		alpha=0.4,
+		label=r"$\infty$" if lines_legend else "_nolegend_",
+	)
+	ax.plot([0, 0], [0, inf_level], "k-", alpha=0.4)
+	handles, labels = ax.get_legend_handles_labels()
+	selected = [
+		(h, label)
+		for h, label in zip(handles, labels, strict=True)
+		if points_legend or not label.startswith("$H_{")
+	]
+	if selected:
+		legend_handles, legend_labels = zip(*selected, strict=True)
+		ax.legend(legend_handles, legend_labels)
+	return ax
+
+
+def _select_degrees(
+	module: AugmentedPersistenceModule,
+	degrees: Collection[int] | int | None,
+) -> list[int]:
+	if degrees is None:
+		return module.degrees
+	if isinstance(degrees, Integral):
+		degrees = [int(degrees)]
+	if not isinstance(degrees, Collection) or not all(isinstance(d, Integral) for d in degrees):
+		msg = "Invalid degrees argument."
+		raise ValueError(msg)
+	return sorted(set(module.degrees).intersection(degrees))
+
+
+def _scatter_options(colour: str, global_options: dict, degree_options: dict) -> dict:
+	style = {"color": colour, "edgecolors": "white", **global_options}
+	if "c" in style:
+		style.pop("color", None)
+	if "c" in degree_options:
+		style.pop("color", None)
+	elif "color" in degree_options:
+		style.pop("c", None)
+	return style | degree_options
 
 
 def draw_filtration(
 	K: Filtration,  # noqa: N803
 	points: np.ndarray[tuple[Literal[2], int], np.dtype[np.floating]],
 	time: float,
+	*,
 	include_colours: Collection[int] | None = None,
 	ax: Axes | None = None,
 	plot_colours: str | np.ndarray | None = None,
@@ -363,7 +256,7 @@ def draw_filtration(
 			If not specified then all colours will be drawn.
 		ax              :
 			A matplotlib axes object.
-			If provided then the diagram will be plotted on the given axes.
+			If provided then the filtration will be plotted on the given axes.
 		plot_colours    :
 			Either the name of a matplotlib qualitative colour map, or a list of colours.
 			If not provided, the current matplotlib colour cycle will be used.
@@ -458,6 +351,7 @@ def animate_filtration(
 	K: Filtration,  # noqa: N803
 	points: np.ndarray[tuple[Literal[2], int], np.dtype[np.floating]],
 	filtration_times: Sequence[float],
+	*,
 	animation_length: float,
 	plot_colours: str | np.ndarray | None = None,
 	vertices_kwargs: dict | None = None,
@@ -555,7 +449,7 @@ def animate_filtration(
 	ax.set_xlabel("Time = " + f"{0.0:.4f}")
 
 	def update(time: float) -> list[Artist]:
-		modified_artists = []
+		modified_artists: list[Artist] = []
 		for idx, edge in K.simplices[1].items():
 			if edge.filtration_value <= time:
 				lines[idx].set_xdata(points[0, edge.vertices])
@@ -579,8 +473,12 @@ def animate_filtration(
 	)
 
 
-def _get_truncation(births: list[float], deaths: list[float]) -> float:
-	perc95_death = np.percentile(deaths, [95])[0]
-	max_death = max(deaths)
-	death_sensible_trunc = perc95_death * 2 if max_death > 2 * perc95_death else max_death
-	return max(max(births) * 1.05, death_sensible_trunc)
+def _get_truncation(births: _1DArrayFloat, deaths: _1DArrayFloat) -> float:
+	finite_births = np.asarray(births)[np.isfinite(births)]
+	finite_deaths = np.asarray(deaths)[np.isfinite(deaths)]
+	birth_bound = float(np.max(finite_births)) * 1.05 if finite_births.size else 0.0
+	death_bound = 0.0
+	if finite_deaths.size:
+		perc95 = float(np.percentile(finite_deaths, 95))
+		death_bound = min(float(np.max(finite_deaths)), 2 * perc95)
+	return max(0.0, birth_bound, death_bound) or 1.0

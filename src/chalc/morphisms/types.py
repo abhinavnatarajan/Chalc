@@ -1,493 +1,437 @@
-"""Implementation of a 6-pack of persistence diagrams."""
+"""Augmented persistence modules and 6-packs of persistence modules."""
 
 from __future__ import annotations
 
-from collections.abc import (
-	Callable,
-	Collection,
-	ItemsView,
-	Iterator,
-	KeysView,
-	Mapping,
-	Sequence,
-	ValuesView,
-)
-from typing import Literal, Self, get_args, overload
+from collections.abc import Callable, Iterator, Mapping, Sequence
+from numbers import Integral
+from typing import ClassVar, Literal, Self, get_args, overload
 
+import h5py
 import numpy as np
-from h5py import Dataset, Group
 
-type DiagramName = Literal["ker", "cok", "dom", "cod", "im", "rel"]
-"""Names of diagrams in a 6-pack of persistence diagrams."""
+type PersistenceModuleName = Literal[
+	"kernel",
+	"cokernel",
+	"domain",
+	"codomain",
+	"image",
+	"relative",
+]
+"""Names of persistence modules in a 6-pack of persistence modules."""
 
 
-class SixPack(Mapping):
-	"""6-pack of persistence diagrams."""
+class AugmentedPersistenceModule:
+	r"""An :math:`\mathbb{R}`-indexed persistence module of :math:`\mathbb{N}`-graded vector spaces.
 
-	__slots__ = ("_dimensions", "_entrance_times", "_simplex_pairings")
-	_dimensions: np.ndarray[tuple[int], np.dtype[np.int64]]
-	_entrance_times: np.ndarray[tuple[int], np.dtype[np.float64]]
-	_simplex_pairings: dict[DiagramName, SimplexPairings]
+	The module is augmented with (1) a choice of interval basis, where each interval is a pairing
+	between a generator and a relation, and (2) a strict linear ordering of the set of all
+	generators and relations, which is compatible with their entrance times.
 
-	@classmethod
-	def names(cls) -> tuple[DiagramName, ...]:
-		"""Return the names of the diagrams in the 6-pack."""
-		return get_args(DiagramName.__value__)
+	In particular, each interval is uniquely identified by the integer index of its generator,
+	and distinct integer indices may correspond to elements that have the same entrance time.
+	"""
 
-	@property
-	def entrance_times(self) -> np.ndarray[tuple[int], np.dtype[np.float64]]:
-		"""Entrance times of the simplices."""
-		temp = self._entrance_times[:]
-		temp.setflags(write=False)
-		return temp
+	__slots__ = ("_degrees", "_entrance_times", "_intervals")
+	_intervals: dict[int, int | None]
+	_degrees: dict[int, int]
+	_entrance_times: np.ndarray[tuple[int], np.dtype[np.floating]]
 
-	@property
-	def dimensions(self) -> np.ndarray[tuple[int], np.dtype[np.int64]]:
-		"""Dimensions of the simplices."""
-		temp = self._dimensions[:]
-		temp.setflags(write=False)
-		return temp
+	def __init__(
+		self,
+		intervals: Mapping[int, int | None] | None = None,
+		entrance_times: Sequence[float] | np.ndarray[tuple[int], np.dtype[np.floating]] = (),
+		degrees: Mapping[int, int] | None = None,
+	) -> None:
+		r"""Initialize the persistence module from its augmented interval decomposition.
 
-	def max_nonempty_dimension(self) -> int:
-		"""Get the maximum dimension of features across all diagrams.
-
-		Returns -1 if there are no features in the 6-pack.
+		Args:
+			intervals: A sequence of intervals, given as a mapping from generators to relations.
+			entrance_times: The sorted sequence of entrance times of the generators and relations
+				that define the persistence module.
+			degrees: A sequence associating each interval (identified by its generator index)
+				to its degree.
 		"""
-		max_dim = -1
-		for name, dgm in self.items():
-			if not dgm:
-				continue
-			if name != "ker":
-				max_dim = max(
-					max_dim,
-					*(self._dimensions[simplex] for simplex in dgm.unpaired),
-					*(self._dimensions[s1] for s1, _ in dgm.paired),
+		self._intervals = dict(intervals) if intervals is not None else {}
+		self._degrees = dict(degrees) if degrees is not None else {}
+		self._entrance_times = np.array(entrance_times, dtype=np.float64, copy=True)
+		if (
+			self._entrance_times.ndim != 1
+			or np.isnan(self._entrance_times).any()
+			or np.any(self._entrance_times[:-1] > self._entrance_times[1:])
+		):
+			msg = "Endpoint entrance times must be a nondecreasing sequence without NaN."
+			raise ValueError(msg)
+		if self._degrees.keys() != self._intervals.keys():
+			msg = "Degrees must be specified for exactly the interval generators."
+			raise ValueError(msg)
+		for birth, death in self._intervals.items():
+			if (
+				not isinstance(birth, Integral)
+				or not 0 <= birth < len(self._entrance_times)
+				or (
+					death is not None
+					and (
+						not isinstance(death, Integral)
+						or not birth <= death < len(self._entrance_times)
+					)
 				)
-			else:
-				max_dim = max(
-					max_dim,
-					*(self._dimensions[simplex] - 1 for simplex in dgm.unpaired),
-					*(self._dimensions[s1] - 1 for s1, _ in dgm.paired),
-				)
-		return max_dim
+			):
+				msg = "Interval indices must be in range, with birth preceding death."
+				raise ValueError(msg)
+			if not isinstance(self._degrees[birth], Integral) or self._degrees[birth] < 0:
+				msg = "Interval degrees must be nonnegative integers."
+				raise ValueError(msg)
+		self._entrance_times.setflags(write=False)
+
+	def __eq__(self, other: object) -> bool:
+		"""Check if two persistence modules are equal."""
+		if not isinstance(other, AugmentedPersistenceModule):
+			return NotImplemented
+		return (
+			self._intervals == other._intervals
+			and np.array_equal(self._entrance_times, other._entrance_times)
+			and self._degrees == other._degrees
+		)
+
+	def __bool__(self) -> bool:
+		"""Check if the persistence module is non-empty."""
+		return bool(self._intervals)
+
+	def __hash__(self) -> int:  # noqa: D105
+		return hash(
+			(
+				tuple(self._entrance_times),
+				frozenset(self._degrees.items()),
+				frozenset(self._intervals.items()),
+			),
+		)
+
+	@property
+	def degrees(self) -> list[int]:
+		"""Return all inhabited degrees in the persistence module."""
+		return sorted(set(self._degrees.values()))
+
+	@property
+	def entrance_times(self) -> list[float]:
+		"""Return all unique endpoint entrance times in the persistence module."""
+		return np.unique(self._entrance_times).tolist()
+
+	@overload
+	def intervals(
+		self,
+		degrees: int,
+	) -> np.ndarray[tuple[int, Literal[2]], np.dtype[np.float64]]: ...
+
+	@overload
+	def intervals(
+		self,
+		degrees: Sequence[int] | None = None,
+	) -> dict[int, np.ndarray[tuple[int, Literal[2]], np.dtype[np.float64]]]: ...
+
+	def intervals(
+		self,
+		degrees=None,
+	):
+		r"""
+		Get the interval decomposition of the persistence module.
+
+		Args:
+			degrees:
+				Degrees in which the intervals are desired.
+				If a list is provided then a list of matrices is returned,
+				with the order of matrices respecting the order of entries of `degree`.
+				If `degree` is not provided then the returned matrix will contain
+				intervals features from all degrees from zero to ``max(self.degrees)``.
+
+		Returns:
+			An :math:`m \times 2` matrix whose rows are the endpoints of intervals in the
+			interval decomposition, or a dictionary of such matrices indexed by degree.
+			The rows are sorted by generator index.
+			Degenerate intervals (having zero persistence) are not removed.
+
+		"""
+		if degrees is None:
+			degrees = self.degrees
+		if isinstance(degrees, Integral):
+			result = [
+				[self._entrance_times[b], self._entrance_times[d] if d is not None else np.inf]
+				for b, d in sorted(self._intervals.items())
+				if self._degrees[b] == degrees
+			]
+			return np.asarray(result, dtype=np.float64).reshape((-1, 2))
+		if isinstance(degrees, Sequence) and all(isinstance(d, Integral) for d in degrees):
+			return {d: self.intervals(d) for d in degrees}
+		msg = "`degrees` must be an integer or a sequence of integers."
+		raise TypeError(msg)
+
+
+class SixPack(Mapping[PersistenceModuleName, dict[int, int | None]]):
+	"""6-pack of persistence modules."""
+
+	__slots__ = (
+		"_codomain",
+		"_cokernel",
+		"_degrees",
+		"_domain",
+		"_entrance_times",
+		"_image",
+		"_kernel",
+		"_relative",
+	)
+	_degrees: np.ndarray[tuple[int], np.dtype[np.int64]]
+	_entrance_times: np.ndarray[tuple[int], np.dtype[np.float64]]
+	_kernel: dict[int, int | None]
+	_cokernel: dict[int, int | None]
+	_domain: dict[int, int | None]
+	_codomain: dict[int, int | None]
+	_image: dict[int, int | None]
+	_relative: dict[int, int | None]
+	__hash__ = None
+	_MODULE_NAMES: ClassVar[tuple[PersistenceModuleName, ...]] = get_args(
+		PersistenceModuleName.__value__,
+	)
 
 	def __init__(
 		self,
 		*,
-		domain: SimplexPairings | None = None,
-		codomain: SimplexPairings | None = None,
-		kernel: SimplexPairings | None = None,
-		image: SimplexPairings | None = None,
-		cokernel: SimplexPairings | None = None,
-		relative: SimplexPairings | None = None,
-		entrance_times: Sequence[float] = [],
-		dimensions: Sequence[int] = [],
+		domain: Mapping[int, int | None] | None = None,
+		codomain: Mapping[int, int | None] | None = None,
+		kernel: Mapping[int, int | None] | None = None,
+		image: Mapping[int, int | None] | None = None,
+		cokernel: Mapping[int, int | None] | None = None,
+		relative: Mapping[int, int | None] | None = None,
+		entrance_times: Sequence[float] = (),
+		degrees: Sequence[int] = (),
 	) -> None:
-		"""Initialise the 6-pack of persistence diagrams."""
-		self._simplex_pairings = {}
+		"""Initialise the 6-pack of persistence modules."""
+		self._kernel = dict(kernel) if kernel is not None else {}
+		self._cokernel = dict(cokernel) if cokernel is not None else {}
+		self._domain = dict(domain) if domain is not None else {}
+		self._codomain = dict(codomain) if codomain is not None else {}
+		self._image = dict(image) if image is not None else {}
+		self._relative = dict(relative) if relative is not None else {}
+		self._entrance_times = np.array(entrance_times, dtype=np.float64, copy=True)
+		self._degrees = np.array(degrees, dtype=np.int64, copy=True)
+		if self._entrance_times.ndim != 1 or self._degrees.shape != self._entrance_times.shape:
+			msg = "Entrance times and degrees must be one-dimensional arrays of equal length."
+			raise ValueError(msg)
 
-		self._simplex_pairings["ker"] = kernel or SimplexPairings()
-		self._simplex_pairings["cok"] = cokernel or SimplexPairings()
-		self._simplex_pairings["dom"] = domain or SimplexPairings()
-		self._simplex_pairings["cod"] = codomain or SimplexPairings()
-		self._simplex_pairings["im"] = image or SimplexPairings()
-		self._simplex_pairings["rel"] = relative or SimplexPairings()
-		self._entrance_times = np.array(
-			entrance_times,
-		)
-		self._dimensions = np.array(dimensions)
-
-	def __getitem__(self, key: DiagramName) -> SimplexPairings:
-		"""Access a specific diagram in the 6-pack."""
-		return self._simplex_pairings[key]
-
-	def items(self) -> ItemsView[DiagramName, SimplexPairings]:
-		"""View of the diagrams in the 6-pack."""
-		return self._simplex_pairings.items()
-
-	def __contains__(self, key: object) -> bool:
-		"""Return true if a diagram is in the 6-pack."""
-		return key in self._simplex_pairings
-
-	def __iter__(
+	@overload
+	def get_module(
 		self,
-	) -> Iterator[DiagramName]:
-		"""Iterate over all diagrams in the 6-pack."""
-		yield from self._simplex_pairings
+		key: PersistenceModuleName,
+		*,
+		return_index_map: Literal[False] = False,
+	) -> AugmentedPersistenceModule:
+		...
 
-	def keys(self) -> KeysView[DiagramName]:
-		"""View of the names of the diagrams in the 6-pack."""
-		return self._simplex_pairings.keys()
+	@overload
+	def get_module(
+		self,
+		key: PersistenceModuleName,
+		*,
+		return_index_map: Literal[True],
+	) -> tuple[AugmentedPersistenceModule, dict[int, int]]:
+		...
 
-	def values(self) -> ValuesView[SimplexPairings]:
-		"""View of the diagrams in the 6-pack."""
-		return self._simplex_pairings.values()
+	@overload
+	def get_module(
+		self,
+		key: PersistenceModuleName,
+		*,
+		return_index_map: bool,
+	) -> AugmentedPersistenceModule | tuple[AugmentedPersistenceModule, dict[int, int]]:
+		...
+
+	def get_module(
+		self,
+		key: PersistenceModuleName,
+		*,
+		return_index_map: bool = False,
+	) -> AugmentedPersistenceModule | tuple[AugmentedPersistenceModule, dict[int, int]]:
+		"""Access a specific persistence module in the 6-pack.
+
+		Constructs the persistence module from scratch on each access.
+		Cache the results if performance is a concern.
+		"""
+		module = self[key]
+		endpoint_indices = [*module.keys(), *(d for d in module.values() if d is not None)]
+		sorted_endpoint_indices = sorted(endpoint_indices)
+		new_indices = {e: i for i, e in enumerate(sorted_endpoint_indices)}
+		intervals = {
+			new_indices[b]: new_indices[d] if d is not None else None for b, d in module.items()
+		}
+		entrance_times = self._entrance_times[sorted_endpoint_indices]
+		degrees = {new_indices[b]: int(self._degrees[b]) - (key == "kernel") for b in module}
+		if return_index_map:
+			return AugmentedPersistenceModule(intervals, entrance_times, degrees), new_indices
+		return AugmentedPersistenceModule(intervals, entrance_times, degrees)
+
+	def __getitem__(self, key: object) -> dict[int, int | None]:
+		"""Get a persistence module as raw birth-death integer indices.
+
+		In most cases, prefer :func:`SixPack.get_module`.
+		"""
+		if isinstance(key, str) and key in self._MODULE_NAMES:
+			return getattr(self, "_" + key)
+		raise KeyError(key)
+
+	def __setitem__(self, key: PersistenceModuleName, value: Mapping[int, int | None]) -> None:
+		"""Set pairings for a persistence module in the 6-pack, for internal use only."""
+		if key not in self._MODULE_NAMES:
+			raise KeyError(key)
+		setattr(self, "_" + key, dict(value))
+
+	def __iter__(self) -> Iterator[PersistenceModuleName]:
+		"""Iterate over the six persistence module names."""
+		return iter(self._MODULE_NAMES)
 
 	def __len__(self) -> int:
-		"""Return the number of diagrams in the 6-pack."""
-		return 6
+		"""Get the number of persistence modules in the 6-pack (hint: it's in the name).
+
+		Implemented for conformance with the Mapping protocol.
+		"""
+		return len(self._MODULE_NAMES)
 
 	def __bool__(self) -> bool:
-		"""Return true if any diagram in the 6-pack is non-empty."""
-		return any(self._simplex_pairings.values())
+		"""Check whether any persistence module in the 6-pack is non-trivial."""
+		return any(self.values())
 
 	def __eq__(self, other: object) -> bool:
-		"""Check if two 6-packs of persistence diagrams are identical."""
+		"""Check equality of 6-packs.
+
+		Checks if all the persistence modules in the 6-packs are equal,
+		with identical interval endpoint metadata.
+		"""
 		if not isinstance(other, SixPack):
-			return False
+			return NotImplemented
 		return (
 			all(self[name] == other[name] for name in self)
-			and all(self._entrance_times == other._entrance_times)
-			and all(self._dimensions == other._dimensions)
+			and np.array_equal(self._entrance_times, other._entrance_times)
+			and np.array_equal(self._degrees, other._degrees)
 		)
 
-	def __hash__(self) -> int:
-		"""Return a hash of the 6-pack of persistence diagrams."""
-		return hash(
+	@classmethod
+	def module_names(cls) -> tuple[PersistenceModuleName, ...]:
+		"""Return all six persistence module names in iteration order."""
+		return cls._MODULE_NAMES
+
+	def max_nonempty_degree(self) -> int:
+		"""Get the maximum degree of all features in all persistence modules in the 6-pack.
+
+		Returns -1 if all persistence modules in the 6-pack are trivial.
+		"""
+		return max(
 			(
-				self._simplex_pairings.items(),
-				self._entrance_times,
-				self._dimensions,
+				int(self._degrees[birth_idx]) - (name == "kernel")
+				for name in self
+				for birth_idx in self[name]
 			),
+			default=-1,
 		)
 
-	def num_features(self) -> int:
-		"""Count the total number of features across all diagrams in the 6-pack."""
-		return sum(len(dgm) for dgm in self.values())
+	def filter(
+		self,
+		predicate: Callable[[PersistenceModuleName, int, int, int | None, float, float], bool],
+	) -> Self:
+		"""Retain intervals satisfying ``predicate``, modifying this 6-pack in place.
 
-	def filter(self, func: Callable[[str, int, float, float], bool]) -> SixPack:
-		"""Filter out features in the diagram.
+		The predicate receives the persistence module name, degree, birth index, death index,
+		birth time, and death time of a feature. Infinite intervals have death index
+		``None`` and death time ``np.inf``.
 
-		``func`` should take four arguments: the name of the diagram to which a feature
-		belongs, the dimension of the feature, and its birth and death times, and should return
-		a boolean indicating whether the feature should be kept.
+		Shared endpoint metadata is retained. Returns this 6-pack for chaining.
 		"""
-		for name, diagram in self.items():
-			paired = frozenset(
-				(birth_simplex, death_simplex)
-				for birth_simplex, death_simplex in diagram.paired
-				if func(
+		for name in self:
+			self[name] = {
+				b: d
+				for b, d in self[name].items()
+				if predicate(
 					name,
-					self._dimensions[birth_simplex] - (1 if name == "ker" else 0),
-					self._entrance_times[birth_simplex],
-					self._entrance_times[death_simplex],
+					int(self._degrees[b]) - (name == "kernel"),
+					b,
+					d,
+					float(self._entrance_times[b]),
+					float(self._entrance_times[d]) if d is not None else np.inf,
 				)
-			)
-			unpaired = frozenset(
-				simplex
-				for simplex in diagram.unpaired
-				if func(
-					name,
-					self._dimensions[simplex] - (1 if name == "ker" else 0),
-					self._entrance_times[simplex],
-					np.inf,
-				)
-			)
-			diagram._paired = paired  # noqa: SLF001
-			diagram._unpaired = unpaired  # noqa: SLF001
+			}
 		return self
 
-	def cleanup(self) -> SixPack:
-		"""Remove all simplices not associated with a feature."""
-		# Find all simplices that are part of some feature
-		active_simplices: set[int] = set()
-		for pairings in self.values():
-			for simplex_1, simplex_2 in pairings.paired:
-				active_simplices.add(simplex_1)
-				active_simplices.add(simplex_2)
-			for simplex in pairings.unpaired:
-				active_simplices.add(simplex)
+	def cleanup(self) -> Self:
+		"""Remove unused endpoints and reindex all persistence modules in the 6-pack.
 
-		# Create a map from old indices to new indices
-		sorted_active_simplices = sorted(active_simplices)
-		index_map = {old: new for new, old in enumerate(sorted_active_simplices)}
+		This is an in-place operation. Entrance times, degrees, and intervals are preserved.
+		This is useful after :meth:`filter`.
 
-		# Filter dimensions and entrance times
-		if active_simplices:
-			self._dimensions = self._dimensions[sorted_active_simplices]
-			self._entrance_times = self._entrance_times[sorted_active_simplices]
-		else:
-			self._dimensions = np.array([], dtype=np.int64)
-			self._entrance_times = np.array([], dtype=np.float64)
-
-		# Re-index the simplex pairings
-		for name in self._simplex_pairings:
-			pairings = self._simplex_pairings[name]
-			new_paired = frozenset((index_map[s1], index_map[s2]) for s1, s2 in pairings.paired)
-			new_unpaired = frozenset(index_map[s] for s in pairings.unpaired)
-			self._simplex_pairings[name] = SimplexPairings(new_paired, new_unpaired)
-
+		Returns this 6-pack for method chaining.
+		"""
+		active_indices = {birth_idx for module in self.values() for birth_idx in module}
+		active_indices.update(
+			death_idx
+			for module in self.values()
+			for death_idx in module.values()
+			if death_idx is not None
+		)
+		sorted_indices = sorted(active_indices)
+		index_map = {old: new for new, old in enumerate(sorted_indices)}
+		self._degrees = self._degrees[sorted_indices]
+		self._entrance_times = self._entrance_times[sorted_indices]
+		for name in self:
+			self[name] = {
+				index_map[b]: index_map[d] if d is not None else None for b, d in self[name].items()
+			}
 		return self
 
-	@overload
-	def get_matrix(
-		self,
-		diagram_name: DiagramName,
-		dimension: int,
-	) -> np.ndarray[tuple[int, Literal[2]], np.dtype[np.float64]]: ...
-
-	@overload
-	def get_matrix(
-		self,
-		diagram_name: DiagramName,
-		dimension: Sequence[int] | None = None,
-	) -> list[np.ndarray[tuple[int, Literal[2]], np.dtype[np.float64]]]: ...
-
-	def get_matrix(self, diagram_name, dimension=None):
-		r"""
-		Get a specific diagram as a matrix of birth and death times.
-
-		Args:
-			diagram_name :
-				One of ``'ker'``, ``'cok'``, ``'dom'``,
-				``'cod'``, ``'im'``, or ``'rel'``.
-			dimension    :
-				Dimension(s) of the diagram desired.
-				If a list is provided then a list of matrices is returned,
-				with the order of matrices respecting the order of entries of `dim`.
-				If `dimension` is not provided then the returned matrix will contain
-				persistent features from all homological dimensions
-				from zero to ``max(self.dimensions)``.
-
-		Returns:
-			An :math:`m \times 2` matrix whose rows are
-			a pair of birth and death times, or a list of such matrices.
-
+	def to_hdf5(self, file: h5py.Group) -> None:
 		"""
-		if dimension is None:
-			simplices = set()
-			dgm = self[diagram_name]
-			for b, d in dgm.paired:
-				simplices.add(b)
-				simplices.add(d)
-			for s in dgm.unpaired:
-				simplices.add(s)
-			relevant_dims = np.array(self._dimensions)[list(simplices)]
-			if relevant_dims.size == 0 or relevant_dims.ndim == 0:
-				# there are no features in the diagram
-				return []
-			dimension = list(range(max([x.item() for x in relevant_dims])))
-
-		if isinstance(dimension, int):
-			# a p-dimensional homology class is captured by
-			# a pairing of (p+1) simplices for kernels
-			if diagram_name == "ker":
-				dimension += 1
-			diagram = self[diagram_name]
-			entrance_times = np.array(self._entrance_times)
-			paired_list = np.array(
-				[pair for pair in diagram.paired if self._dimensions[pair[0]] == dimension],
-				dtype=np.int64,
-			)
-			unpaired_list = np.array(
-				[sigma for sigma in diagram.unpaired if self._dimensions[sigma] == dimension],
-				dtype=np.int64,
-			)
-			paired_matrix = entrance_times[paired_list.flatten()].reshape((-1, 2))
-			unpaired_matrix = entrance_times[unpaired_list][:, np.newaxis]
-			inf_array = np.array([np.inf for _ in range(len(unpaired_list))])[:, np.newaxis]
-			unpaired_matrix = np.concatenate((unpaired_matrix, inf_array), axis=1)
-			return np.concatenate((paired_matrix, unpaired_matrix), axis=0)
-
-		if isinstance(dimension, Sequence):
-			return [self.get_matrix(diagram_name, d) for d in dimension]
-
-		errmsg = "dim must be an integer or a list of integers"
-		raise TypeError(errmsg)
-
-	def save(self, file: Group) -> None:
-		"""
-		Save a 6-pack of persistence diagrams to a HDF5 file or group.
+		Save a 6-pack of persistence modules to a HDF5 file or group.
 
 		Args:
 			file : A h5py file or group.
 
 		"""
-		file["entrance_times"] = np.array(self._entrance_times, dtype=np.float64)
-		file["dimensions"] = np.array(self._dimensions, dtype=np.int64)
-		for dgm_name in self:
-			grp = file.require_group(dgm_name)
-			self[dgm_name].save(grp)
+		file["entrance_times"] = self._entrance_times
+		file["degrees"] = self._degrees
+		for name in self:
+			file[name] = np.asarray(
+				[(b, d if d is not None else -1) for b, d in self[name].items()],
+				dtype=np.int64,
+			).reshape((-1, 2))
 
 	@classmethod
-	def from_file(cls, file: Group) -> Self:
+	def from_hdf5(cls, file: h5py.Group) -> Self:
+		"""Load a 6-pack written by :meth:`to_hdf5` from an HDF5 file or group.
+
+		Raises ``RuntimeError`` if a required dataset is missing or has an invalid
+		shape or dtype.
 		"""
-		Load a 6-pack of persistence diagrams from a HDF5 file or group.
-
-		Args:
-			file : A h5py file or group.
-
-		"""
-		dgms = cls()
-		if any(
-			attr not in file
-			for attr in ["entrance_times", "dimensions", "ker", "cok", "dom", "cod", "im", "rel"]
-		):
-			errmsg = "Invalid file: missing fields"
-			raise RuntimeError(errmsg)
-
-		dgms._entrance_times = (
-			entrance_times[:]
-			if isinstance((entrance_times := file["entrance_times"]), Dataset)
-			and entrance_times[:].dtype == np.float64
-			else np.array([], dtype=np.float64)
-		)
-		dgms._dimensions = (
-			dimensions[:]
-			if isinstance((dimensions := file["dimensions"]), Dataset)
-			and dimensions[:].dtype == np.int64
-			else np.array([], dtype=np.int64)
-		)
-		names: tuple[DiagramName, ...] = ("ker", "cok", "dom", "cod", "im", "rel")
-		for diagram_name in names:
-			grp = file[diagram_name]
-			if isinstance(grp, Group):
-				try:
-					dgms._simplex_pairings[diagram_name] = SimplexPairings.from_file(grp)
-				except Exception as err:
-					errmsg = f"Error while trying to read {file}[{diagram_name}]."
-					raise RuntimeError(errmsg) from err
-			else:
-				errmsg = f"Error while trying to read {file}[{diagram_name}]: "
-				f"expected a `Group` but found {type(grp)}."
-				raise TypeError(errmsg)
-
-		return dgms
-
-
-class SimplexPairings(Collection):
-	"""Persistence diagram represented by paired and unpaired simplices."""
-
-	__slots__ = ("_paired", "_unpaired")
-	_paired: frozenset[tuple[int, int]]
-	_unpaired: frozenset[int]
-
-	@property
-	def paired(self) -> frozenset[tuple[int, int]]:
-		"""Set of indices of paired simplices."""
-		return self._paired
-
-	@property
-	def unpaired(self) -> frozenset[int]:
-		"""Set of indices of unpaired simplices."""
-		return self._unpaired
-
-	def __init__(
-		self,
-		paired: Collection[tuple[int, int]] = frozenset(),
-		unpaired: Collection[int] = frozenset(),
-	) -> None:
-		"""Initialise a diagram with its paired and unpaired simplices."""
-		self._paired = frozenset(paired)
-		self._unpaired = frozenset(unpaired)
-
-	@classmethod
-	def from_mapping(
-		cls,
-		pairings: Mapping[int, int | None] | None = None,
-	) -> Self:
-		"""Initialise a diagram from a mapping of birth to death indices."""
-		if pairings is None:
-			pairings = {}
-		paired = []
-		unpaired = []
-		for birth, death in pairings.items():
-			if death is None:
-				unpaired.append(birth)
-			else:
-				paired.append((birth, death))
-		return cls(paired, unpaired)
-
-	def __str__(self) -> str:
-		"""Represent the persistence diagram as a string."""
-		return f"Paired: {self._paired}\nUnpaired: {self._unpaired}"
-
-	def __eq__(self, other: object) -> bool:
-		"""Check if two diagrams have the same paired and unpaired simplices."""
-		if not isinstance(other, SimplexPairings):
-			return False
-		return self._paired == other._paired and self._unpaired == other._unpaired
-
-	def __hash__(self) -> int:
-		"""Return a hash of the persistence diagram."""
-		return hash((self._paired, self._unpaired))
-
-	def __bool__(self) -> bool:
-		"""Return true if the diagram is non-empty."""
-		# check if the diagram is non-empty
-		return bool(self._paired) or bool(self._unpaired)
-
-	# Implement the collections protocol
-	def __len__(self) -> int:
-		"""Return the number of features in the diagram."""
-		return len(self._paired) + len(self._unpaired)
-
-	def __iter__(self) -> Iterator[tuple[int, int] | int]:
-		"""Iterate over all features in the diagram."""
-		yield from self._paired
-		yield from self._unpaired
-
-	def __contains__(self, feature: object) -> bool:
-		"""
-		Return true if a feature is in the diagram.
-
-		The feature to check should be either a pair of simplices (int, int)
-		or a single simplex (int).
-		"""
-		if isinstance(feature, int):
-			return feature in self._unpaired
-		if isinstance(feature, tuple) and tuple(map(type, feature)) == (int, int):
-			return feature in self._paired
-		return False
-
-	@classmethod
-	def _from_matrices[NRows: int](
-		cls,
-		paired_matrix: np.ndarray[tuple[NRows, Literal[2]], np.dtype[np.integer]],
-		unpaired_vector: np.ndarray[tuple[int], np.dtype[np.integer]],
-	) -> Self:
-		# Construct a SimplexPairings object from
-		# paired and unpaired simplices represented as matrices.
-		# Internal use only - used to load diagrams from file.
-		paired = frozenset(
-			tuple(x.item() for x in paired_matrix[i, :]) for i in range(paired_matrix.shape[0])
-		)
-		unpaired = frozenset(x.item() for x in unpaired_vector)
-		return cls(paired, unpaired)
-
-	@classmethod
-	def from_file(cls, group: Group) -> Self:
-		"""
-		Construct a SimplexPairings object from matrices stored in a HDF5 file or group.
-
-		Args:
-			group: The HDF5 file or group to read from.
-		"""
-
-		def checked_dataset(name: str) -> Dataset:
-			if name not in group:
-				errmsg = f"Missing field {name}."
-				raise RuntimeError(errmsg)
-			dataset = group[name]
-			if not isinstance(dataset, Dataset):
-				errmsg = "Expected a Dataset(dtype=np.int64), "
-				f"but found a {type(group[name])}."
-				raise TypeError(errmsg)
-			if dataset.dtype != np.int64:
-				errmsg = "Expected Dataset(dtype=np.int64), "
-				f"but found Dataset(dtype={dataset.dtype})."
-				raise RuntimeError(errmsg)
-			return dataset
-
-		paired = checked_dataset("paired").astype(int)
-		unpaired = checked_dataset("unpaired").astype(int)
-		return cls._from_matrices(paired[...], unpaired[...])
-
-	def _paired_as_matrix(self) -> np.ndarray[tuple[int, Literal[2]], np.dtype[np.int64]]:
-		r"""Return the pairings of simplex indices in a :math:`N\times 2` matrix."""
-		return np.array([[x, y] for (x, y) in self._paired], dtype=np.int64)
-
-	def save(self, group: Group) -> None:
-		"""Save a diagram to a HDF5 file or group."""
-		group["unpaired"] = np.array(list(self.unpaired), dtype=np.int64)
-		group["paired"] = self._paired_as_matrix()
+		fields = ["entrance_times", "degrees", *cls._MODULE_NAMES]
+		missing = [field for field in fields if field not in file]
+		if missing:
+			msg = f"Invalid file: missing fields {missing}"
+			raise RuntimeError(msg)
+		arrays = {}
+		for field in fields:
+			dataset = file[field]
+			shape_valid = (
+				(
+					dataset.ndim == 1
+					if field in {"entrance_times", "degrees"}
+					else dataset.ndim == 2 and dataset.shape[1] == 2  # noqa: PLR2004
+				)
+				if isinstance(dataset, h5py.Dataset)
+				else False
+			)
+			dtype = np.float64 if field == "entrance_times" else np.int64
+			if not shape_valid or dataset.dtype != dtype:
+				msg = f"Invalid dataset: {field}"
+				raise RuntimeError(msg)
+			arrays[field] = dataset[:]
+		if arrays["degrees"].shape != arrays["entrance_times"].shape:
+			msg = "Invalid file: entrance times and degrees have different lengths."
+			raise RuntimeError(msg)
+		modules = {
+			name: {int(b): int(d) if d != -1 else None for b, d in arrays[name]}
+			for name in cls._MODULE_NAMES
+		}
+		return cls(**modules, entrance_times=arrays["entrance_times"], degrees=arrays["degrees"])
