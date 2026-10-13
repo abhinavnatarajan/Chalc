@@ -124,7 +124,7 @@ def test_sixpack_mapping_and_modules(sixpack: SixPack) -> None:
 		with pytest.raises(KeyError):
 			sixpack[key]
 		with pytest.raises(KeyError):
-			# pyrefly: ignore [bad-argument-type]
+			# pyrefly: ignore [no-matching-overload]
 			sixpack.get_module(key)
 	with pytest.raises(TypeError):
 		hash(sixpack)
@@ -167,12 +167,12 @@ def test_sixpack_equality(sixpack: SixPack) -> None:
 @pytest.mark.parametrize("empty", [False, True])
 def test_hdf5_roundtrip(tmp_path: Path, sixpack: SixPack, *, empty: bool) -> None:
 	original = SixPack() if empty else sixpack
-	with h5py.File(tmp_path / "diagrams.h5", "w") as file:
+	with h5py.File(tmp_path / "sixpack.h5", "w") as file:
 		group = file.create_group("sixpack")
 		original.to_hdf5(group)
 		assert group["image"].shape == (0, 2)
 		assert group["image"].dtype == np.int64
-	with h5py.File(tmp_path / "diagrams.h5", "r") as file:
+	with h5py.File(tmp_path / "sixpack.h5", "r") as file:
 		loaded = SixPack.from_hdf5(file["sixpack"])
 	assert loaded == original
 	assert {name: loaded.get_module(name) for name in loaded} == {

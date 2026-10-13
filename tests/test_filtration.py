@@ -1,5 +1,6 @@
 import chalc as ch
 
+# pyrefly: ignore [missing-import]
 from .utils import assert_clique_complex
 
 random_seed = 44

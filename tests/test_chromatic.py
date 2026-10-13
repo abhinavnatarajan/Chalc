@@ -7,6 +7,7 @@ from gudhi.bottleneck import bottleneck_distance
 
 import chalc as ch
 
+# pyrefly: ignore [missing-import]
 from .utils import assert_clique_complex
 
 # equilateral triangle centred at origin
@@ -227,7 +228,7 @@ def test_delrips_vs_delcech_random() -> None:
 
 
 def test_alpha_delcech_homotopy_equivalent() -> None:
-	"""Test that the 6-pack of diagrams from the delcech and alpha filtrations are identical."""
+	"""Test that 6-packs from chromatic delcech and chromatic alpha filtrations are identical."""
 	rng = np.random.default_rng(random_seed)
 	dims = [1, 2]
 	num_colours = [2, 3]

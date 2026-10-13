@@ -26,6 +26,7 @@ def test_plot_diagram_degrees_and_styles() -> None:
 	assert styles == {12: {"c": "red", "s": 40}}
 	assert np.isfinite(ax.collections[1].get_offsets()).all()
 	assert (
+		# pyrefly: ignore [bad-argument-type]
 		plot_persistence_diagram(module, degrees=np.int64(0)).collections[0].get_label()
 		== "$H_{0}$"
 	)
