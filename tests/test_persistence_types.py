@@ -2,6 +2,8 @@
 
 import gc
 import weakref
+from collections.abc import Mapping
+from dataclasses import fields
 from pathlib import Path
 
 import h5py
@@ -10,11 +12,17 @@ import pytest
 
 from chalc.morphisms import (
 	AugmentedPersistenceModule,
+	IndexArray,
 	SixPack,
 	SixPackMorphisms,
 	SixPackPairings,
 	SixPackRepresentatives,
 )
+from chalc.morphisms.types import _endpoint_indices
+
+
+def _rows(mapping: Mapping[int, list[int] | IndexArray]) -> dict[int, IndexArray]:
+	return {key: np.asarray(value, dtype=np.int64) for key, value in mapping.items()}
 
 
 @pytest.fixture
@@ -27,7 +35,10 @@ def module() -> AugmentedPersistenceModule:
 
 
 def test_intervals_by_degree(module: AugmentedPersistenceModule) -> None:
-	assert module.nonempty_degrees() == [0, 2]
+	np.testing.assert_equal(module.nonempty_degrees(), [0, 2])
+	assert module.nonempty_degrees().dtype == np.int64
+	assert module.nonempty_degrees().flags.c_contiguous
+	assert list(module.intervals(np.array([2, 0], dtype=np.int64))) == [2, 0]
 	np.testing.assert_array_equal(module.entrance_times, [0.0, 0.0, 1.0, 2.0, 3.0])
 	assert module.entrance_times.dtype == np.float64
 	np.testing.assert_array_equal(module.intervals(0), [[0.0, 1.0]])
@@ -36,14 +47,15 @@ def test_intervals_by_degree(module: AugmentedPersistenceModule) -> None:
 	assert module.intervals(1).dtype == np.float64
 	assert list(module.intervals()) == [0, 2]
 	assert list(module.intervals([2, 1, 0])) == [2, 1, 0]
-	# pyrefly: ignore [no-matching-overload]
 	np.testing.assert_array_equal(module.intervals(np.int64(2)), module.intervals(2))
 
 
 def test_empty_module() -> None:
 	module = AugmentedPersistenceModule()
 	assert not module
-	assert module.nonempty_degrees() == []
+	np.testing.assert_equal(module.nonempty_degrees(), [])
+	assert module.nonempty_degrees().dtype == np.int64
+	assert module.nonempty_degrees().shape == (0,)
 	assert module.entrance_times.shape == (0,)
 	assert module.entrance_times.dtype == np.float64
 	assert module.intervals() == {}
@@ -174,9 +186,9 @@ def test_sixpack_modules(sixpack: SixPack) -> None:
 	assert SixPack().max_nonempty_degree() == -1
 	assert sixpack.max_nonempty_degree() == 1
 	assert sixpack.pairings.domain == {1: 4, 2: None}
-	assert sixpack.domain.nonempty_degrees() == [0]
+	np.testing.assert_equal(sixpack.domain.nonempty_degrees(), [0])
 	np.testing.assert_array_equal(sixpack.domain.intervals(0), [[0.0, 2.0], [0.0, np.inf]])
-	assert sixpack.kernel.nonempty_degrees() == [0]
+	np.testing.assert_equal(sixpack.kernel.nonempty_degrees(), [0])
 	np.testing.assert_array_equal(sixpack.kernel.intervals(0), [[1.0, 3.0]])
 	assert not sixpack.image
 	assert sixpack.representatives is None
@@ -250,19 +262,19 @@ def test_sixpack_takes_ownership_and_reindexes_representatives_and_maps() -> Non
 		codomain={3: None},
 	)
 	representatives = SixPackRepresentatives(
-		kernel={5: [10, 11]},
-		domain={2: [10], 4: [11]},
-		image={4: [11]},
-		codomain={3: [12]},
-		cokernel={},
-		relative={},
+		kernel=_rows({5: [10, 11]}),
+		domain=_rows({2: [10], 4: [11]}),
+		image=_rows({4: [11]}),
+		codomain=_rows({3: [12]}),
+		cokernel=_rows({}),
+		relative=_rows({}),
 	)
 	morphisms = SixPackMorphisms(
-		kernel_to_domain={5: [2, 4]},
-		domain_to_image={2: [], 4: [4]},
-		image_to_codomain={4: [3]},
-		domain_to_codomain={2: [], 4: [3]},
-		codomain_to_cokernel={3: []},
+		kernel_to_domain=_rows({5: [2, 4]}),
+		domain_to_image=_rows({2: [], 4: [4]}),
+		image_to_codomain=_rows({4: [3]}),
+		domain_to_codomain=_rows({2: [], 4: [3]}),
+		codomain_to_cokernel=_rows({3: []}),
 	)
 
 	kernel_support = representatives.kernel[5]
@@ -277,13 +289,13 @@ def test_sixpack_takes_ownership_and_reindexes_representatives_and_maps() -> Non
 	assert pack.pairings is pairings
 	assert pack.representatives is representatives
 	assert pack.morphisms is morphisms
-	assert representatives.kernel == {0: [10, 11]}
-	assert representatives.domain == {0: [10], 1: [11]}
+	np.testing.assert_equal(representatives.kernel, {0: [10, 11]})
+	np.testing.assert_equal(representatives.domain, {0: [10], 1: [11]})
 	assert representatives.kernel[0] is kernel_support
 	assert representatives.domain[0] is domain_support
-	assert morphisms.kernel_to_domain == {0: [0, 1]}
-	assert morphisms.domain_to_image == {0: [], 1: [0]}
-	assert morphisms.domain_to_codomain == {0: [], 1: [0]}
+	np.testing.assert_equal(morphisms.kernel_to_domain, {0: [0, 1]})
+	np.testing.assert_equal(morphisms.domain_to_image, {0: [], 1: [0]})
+	np.testing.assert_equal(morphisms.domain_to_codomain, {0: [], 1: [0]})
 
 
 @pytest.mark.parametrize("empty", [False, True])
@@ -336,19 +348,19 @@ def sixpack_with_representatives() -> SixPack:
 		entrance_times=[0.0, 0.0, 1.0, 1.0, 2.0, 3.0],
 		degrees=[0, 0, 0, 0, 0, 1],
 		representatives=SixPackRepresentatives(
-			kernel={5: [10, 11]},
-			domain={2: [10], 4: [11]},
-			image={4: [11]},
-			codomain={3: [12]},
-			cokernel={},
-			relative={},
+			kernel=_rows({5: [10, 11]}),
+			domain=_rows({2: [10], 4: [11]}),
+			image=_rows({4: [11]}),
+			codomain=_rows({3: [12]}),
+			cokernel=_rows({}),
+			relative=_rows({}),
 		),
 		morphisms=SixPackMorphisms(
-			kernel_to_domain={5: [2, 4]},
-			domain_to_image={2: [], 4: [4]},
-			image_to_codomain={4: [3]},
-			domain_to_codomain={2: [], 4: [3]},
-			codomain_to_cokernel={3: []},
+			kernel_to_domain=_rows({5: [2, 4]}),
+			domain_to_image=_rows({2: [], 4: [4]}),
+			image_to_codomain=_rows({4: [3]}),
+			domain_to_codomain=_rows({2: [], 4: [3]}),
+			codomain_to_cokernel=_rows({3: []}),
 		),
 	)
 
@@ -369,9 +381,9 @@ def test_hdf5_representatives_and_maps_roundtrip(
 	assert loaded.morphisms == original.morphisms
 	assert loaded.representatives is not None
 	assert loaded.morphisms is not None
-	assert loaded.representatives.kernel == {0: [10, 11]}
-	assert loaded.morphisms.kernel_to_domain == {0: [0, 1]}
-	assert loaded.morphisms.domain_to_codomain == {0: [], 1: [0]}
+	np.testing.assert_equal(loaded.representatives.kernel, {0: [10, 11]})
+	np.testing.assert_equal(loaded.morphisms.kernel_to_domain, {0: [0, 1]})
+	np.testing.assert_equal(loaded.morphisms.domain_to_codomain, {0: [], 1: [0]})
 
 
 def test_metadata_is_a_direct_consumer_attribute() -> None:
@@ -404,17 +416,22 @@ def test_hdf5_optional_empty_representatives_and_maps(
 	with_morphisms: bool,
 ) -> None:
 	representatives = (
-		SixPackRepresentatives(**{name: {} for name in SixPack.module_names()})
+		SixPackRepresentatives(
+			**{
+				name: _rows(rows)
+				for name, rows in ({name: {} for name in SixPack.module_names()}).items()
+			},
+		)
 		if with_representatives
 		else None
 	)
 	morphisms = (
 		SixPackMorphisms(
-			kernel_to_domain={},
-			domain_to_image={},
-			image_to_codomain={},
-			domain_to_codomain={},
-			codomain_to_cokernel={},
+			kernel_to_domain=_rows({}),
+			domain_to_image=_rows({}),
+			image_to_codomain=_rows({}),
+			domain_to_codomain=_rows({}),
+			codomain_to_cokernel=_rows({}),
 		)
 		if with_morphisms
 		else None
@@ -477,11 +494,16 @@ def test_hdf5_rejects_invalid_contents(tmp_path: Path, sixpack: SixPack, damage:
 @pytest.mark.parametrize("name", SixPack.module_names())
 def test_sixpack_discards_degenerate_intervals_and_representatives(name: str) -> None:
 	pairings = SixPackPairings(**{name: {0: 1, 1: 2, 3: None, 4: 4}})
-	support = [10, 11]
+	support = np.array([10, 11], dtype=np.int64)
 	representatives = SixPackRepresentatives(
 		**{
-			module: ({0: support, 1: [12], 3: [13], 4: [14]} if module == name else {})
-			for module in SixPack.module_names()
+			name: _rows(rows)
+			for name, rows in (
+				{
+					module: ({0: support, 1: [12], 3: [13], 4: [14]} if module == name else {})
+					for module in SixPack.module_names()
+				}
+			).items()
 		},
 	)
 	pack = SixPack(
@@ -495,9 +517,9 @@ def test_sixpack_discards_degenerate_intervals_and_representatives(name: str) ->
 	assert getattr(pairings, name) == {0: 1, 3: None}
 	assert dict(module.pairings) == {0: 1, 2: None}
 	np.testing.assert_array_equal(module.entrance_times, [0.0, 1.0, 2.0])
-	assert getattr(representatives, name) == {0: [10, 11], 2: [13]}
+	np.testing.assert_equal(getattr(representatives, name), {0: [10, 11], 2: [13]})
 	assert getattr(representatives, name)[0] is support
-	assert module.nonempty_degrees() == [0]
+	np.testing.assert_equal(module.nonempty_degrees(), [0])
 	assert pack._endpoint_relabelling == {  # noqa: SLF001
 		module_name: ({0: 0, 3: 2} if module_name == name else {})
 		for module_name in SixPack.module_names()
@@ -514,23 +536,28 @@ def test_sixpack_filters_morphism_sources_and_targets(
 	representatives = (
 		SixPackRepresentatives(
 			**{
-				name: (
-					{birth: [10 + birth] for birth in pairings}
-					if name in {"domain", "image", "codomain"}
-					else {}
-				)
-				for name in SixPack.module_names()
+				name: _rows(rows)
+				for name, rows in (
+					{
+						name: (
+							{birth: [10 + birth] for birth in pairings}
+							if name in {"domain", "image", "codomain"}
+							else {}
+						)
+						for name in SixPack.module_names()
+					}
+				).items()
 			},
 		)
 		if with_representatives
 		else None
 	)
 	morphisms = SixPackMorphisms(
-		kernel_to_domain={},
-		domain_to_image={0: [1, 4], 1: [0], 3: [3], 4: [0]},
-		image_to_codomain={0: [0], 1: [1], 3: [3], 4: [4]},
-		domain_to_codomain={0: [0, 1, 4], 1: [3], 3: [1, 3], 4: [0]},
-		codomain_to_cokernel={0: [], 1: [], 3: [], 4: []},
+		kernel_to_domain=_rows({}),
+		domain_to_image=_rows({0: [1, 4], 1: [0], 3: [3], 4: [0]}),
+		image_to_codomain=_rows({0: [0], 1: [1], 3: [3], 4: [4]}),
+		domain_to_codomain=_rows({0: [0, 1, 4], 1: [3], 3: [1, 3], 4: [0]}),
+		codomain_to_cokernel=_rows({0: [], 1: [], 3: [], 4: []}),
 	)
 	pack = SixPack(
 		pairings=SixPackPairings(domain=pairings, image=pairings, codomain=pairings),
@@ -540,10 +567,10 @@ def test_sixpack_filters_morphism_sources_and_targets(
 		morphisms=morphisms,
 	)
 	assert pack.morphisms is morphisms
-	assert morphisms.domain_to_codomain == {0: [0], 2: [2]}
-	assert morphisms.domain_to_image == {0: [], 2: [2]}
-	assert morphisms.image_to_codomain == {0: [0], 2: [2]}
-	assert morphisms.codomain_to_cokernel == {0: [], 2: []}
+	np.testing.assert_equal(morphisms.domain_to_codomain, {0: [0], 2: [2]})
+	np.testing.assert_equal(morphisms.domain_to_image, {0: [], 2: [2]})
+	np.testing.assert_equal(morphisms.image_to_codomain, {0: [0], 2: [2]})
+	np.testing.assert_equal(morphisms.codomain_to_cokernel, {0: [], 2: []})
 	with h5py.File(tmp_path / "filtered_maps.h5", "w") as file:
 		pack.to_hdf5(file)
 	with h5py.File(tmp_path / "filtered_maps.h5", "r") as file:
@@ -649,3 +676,48 @@ def test_hdf5_rebuilds_generator_relabelling_from_pairings(tmp_path: Path) -> No
 		reloaded = SixPack.from_hdf5(file)
 	assert reloaded == loaded
 	assert reloaded._endpoint_relabelling == loaded._endpoint_relabelling  # noqa: SLF001
+
+
+@pytest.mark.parametrize(
+	("pairings", "expected"),
+	[({}, []), ({4: None, 1: 4, 2: 2}, [1, 2, 4]), ({9: 12, 3: 9}, [3, 9, 12])],
+)
+def test_endpoint_indices_are_sorted_unique_arrays(
+	pairings: dict[int, int | None],
+	expected: list[int],
+) -> None:
+	actual = _endpoint_indices(pairings)
+	np.testing.assert_array_equal(actual, expected)
+	assert actual.dtype == np.int64
+	assert actual.ndim == 1
+	assert actual.flags.c_contiguous
+
+
+@pytest.mark.parametrize("invalid", [np.array([[0, 2]]), np.array([0.5]), np.array(0)])
+def test_intervals_reject_invalid_degree_arrays(
+	module: AugmentedPersistenceModule,
+	invalid: np.ndarray,
+) -> None:
+	with pytest.raises(TypeError, match="degrees"):
+		module.intervals(invalid)
+
+
+def test_sparse_dataclass_equality_uses_array_values(sixpack_with_representatives: SixPack) -> None:
+	pack = sixpack_with_representatives
+	assert pack.representatives is not None
+	assert pack.morphisms is not None
+	for data in (pack.representatives, pack.morphisms):
+		copied = type(data)(
+			**{
+				f.name: {b: row.copy() for b, row in getattr(data, f.name).items()}
+				for f in fields(data)
+			},
+		)
+		assert data == copied
+		assert data != object()
+		for f in fields(copied):
+			rows = getattr(copied, f.name)
+			if rows:
+				next(iter(rows.values()))[0] += 1
+				break
+		assert data != copied

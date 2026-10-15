@@ -201,7 +201,7 @@ def test_quotient_retains_relative_degree_above_filtration(*, get_representative
 		assert set(pack.representatives.relative) == {0}
 		assert limited.representatives.relative == {}
 		assert pack.morphisms is not None
-		assert pack.morphisms.kernel_to_domain == {0: [0, 1]}
+		np.testing.assert_equal(pack.morphisms.kernel_to_domain, {0: [0, 1]})
 
 
 @pytest.mark.parametrize(
@@ -225,11 +225,19 @@ def test_sixpack_representatives_and_maps(
 	for name, module in pack:
 		reps = getattr(representatives, name)
 		assert all(module.interval(b) for b in reps)
+		for support in reps.values():
+			assert support.dtype == np.int64
+			assert support.ndim == 1
+			assert support.flags.c_contiguous
 		assert len(reps) == sum(len(intervals) for intervals in module.intervals().values())
 	for field in fields(morphisms):
 		source, target = field.name.split("_to_")
 		coefficients = getattr(morphisms, field.name)
 		assert coefficients.keys() == getattr(representatives, source).keys()
+		for support in coefficients.values():
+			assert support.dtype == np.int64
+			assert support.ndim == 1
+			assert support.flags.c_contiguous
 		assert all(
 			set(image).issubset(getattr(representatives, target)) for image in coefficients.values()
 		)
@@ -241,6 +249,13 @@ def test_sixpack_representatives_and_maps(
 	assert loaded.pairings == pack.pairings
 	assert loaded.representatives == representatives
 	assert loaded.morphisms == morphisms
+	for data in (loaded.representatives, loaded.morphisms):
+		assert data is not None
+		for f in fields(data):
+			for support in getattr(data, f.name).values():
+				assert support.dtype == np.int64
+				assert support.ndim == 1
+				assert support.flags.c_contiguous
 	assert loaded.metadata is None
 
 
@@ -256,9 +271,9 @@ def test_kernel_map_retained_at_degree_limit() -> None:
 	assert pack.representatives is not None
 	assert pack.morphisms is not None
 	assert pack.pairings.kernel == {2: None}
-	assert pack.kernel.nonempty_degrees() == [0]
-	assert pack.representatives.kernel == {0: [0, 1]}
-	assert pack.morphisms.kernel_to_domain == {0: [0, 1]}
+	np.testing.assert_equal(pack.kernel.nonempty_degrees(), [0])
+	np.testing.assert_equal(pack.representatives.kernel, {0: [0, 1]})
+	np.testing.assert_equal(pack.morphisms.kernel_to_domain, {0: [0, 1]})
 
 
 @pytest.mark.parametrize(

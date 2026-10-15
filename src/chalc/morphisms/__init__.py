@@ -13,6 +13,7 @@ import phimaker as pm
 from chalc.filtration import Filtration
 from chalc.morphisms.types import (
 	AugmentedPersistenceModule,
+	IndexArray,
 	PersistenceModuleName,
 	SixPack,
 	SixPackMorphisms,
@@ -24,6 +25,7 @@ __all__ = [
 	"AugmentedPersistenceModule",
 	"FiltrationInclusion",
 	"FiltrationMorphism",
+	"IndexArray",
 	"KChromaticInclusion",
 	"KChromaticQuotient",
 	"PersistenceModuleName",
@@ -114,9 +116,10 @@ class FiltrationMorphism(ABC):
 
 			#. ``representatives`` contains representative cycles for each module.
 			Each set is a dictionary mapping an interval in the module
-			(identified by its module-local birth index) to a list of integer indices of columns in
-			the boundary matrix of the codomain filtration (or the mapping cylinder, if
-			the map of filtrations is not an inclusion); the list represents simplices
+			(identified by its module-local birth index) to a one-dimensional int64 array
+			of column indices in the boundary matrix of the codomain filtration (or the mapping
+			cylinder, if
+			the map of filtrations is not an inclusion); the array represents simplices
 			whose sum is a representative cycle.
 			#. ``morphisms`` contains the natural maps between the persistence modules
 			in the 6-pack. Each persistence map is represented by a binary matrix with
@@ -752,7 +755,7 @@ def filter_representatives(
 	for name in SixPack.module_names():
 		reps = getattr(ensemble, f"{name}_representatives")
 		representatives_dict[name] = {
-			birth_idx: reps[birth_idx]
+			birth_idx: np.asarray(reps[birth_idx], dtype=np.int64)
 			for birth_idx in reps
 			if degrees[birth_idx] - (name == "kernel") <= max_homological_degree
 		}
@@ -762,7 +765,7 @@ def filter_representatives(
 		morphism_name = field.name
 		morph = getattr(ensemble, morphism_name)
 		morphisms_dict[morphism_name] = {
-			interval_birth_idx: morph[interval_birth_idx]
+			interval_birth_idx: np.asarray(morph[interval_birth_idx], dtype=np.int64)
 			for interval_birth_idx in morph
 			if degrees[interval_birth_idx] - (morphism_name.startswith("kernel"))
 			<= max_homological_degree

@@ -93,7 +93,10 @@ def autoapi_skip_member(
 	skip: bool,  # noqa: FBT001
 	_options: list[str],
 ) -> bool:
-	if name == "chalc.morphisms.types.PersistenceModuleName":
+	if name in {
+		"chalc.morphisms.types.PersistenceModuleName",
+		"chalc.morphisms.types.IndexArray",
+	}:
 		return True
 	return skip
 

@@ -103,3 +103,9 @@ def test_plot_module_with_negative_times() -> None:
 	ax = plot_persistence_diagram(module)
 	ax.figure.canvas.draw()
 	np.testing.assert_array_equal(ax.collections[0].get_offsets(), [[-2.0, -1.0]])
+
+
+def test_plotting_accepts_degree_arrays() -> None:
+	module = AugmentedPersistenceModule({0: 2, 1: None}, [0.0, 0.0, 2.0], {0: 0, 1: 12})
+	ax = plot_persistence_diagram(module, degrees=np.array([0, 12], dtype=np.int64))
+	assert len(ax.collections) == 2

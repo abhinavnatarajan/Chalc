@@ -16,7 +16,12 @@ if TYPE_CHECKING:
 	from matplotlib.figure import Figure
 
 	from chalc.filtration import Filtration
-	from chalc.morphisms import AugmentedPersistenceModule, PersistenceModuleName, SixPack
+	from chalc.morphisms import (
+		AugmentedPersistenceModule,
+		IndexArray,
+		PersistenceModuleName,
+		SixPack,
+	)
 
 plt.rcParams["animation.html"] = "jshtml"
 
@@ -28,7 +33,7 @@ type _1DArrayFloat = Sequence[float] | np.ndarray[tuple[int], np.dtype[np.floati
 def plot_sixpack(
 	sixpack: SixPack,
 	truncations: Mapping[PersistenceModuleName, float | None] | float | None = None,
-	degrees: Collection[int] | int | None = None,
+	degrees: Collection[int] | IndexArray | int | np.integer | None = None,
 	threshold: float = 0,
 ) -> tuple[Figure, np.ndarray[tuple[Literal[2], Literal[3]], np.dtype[Any]]]:
 	"""
@@ -101,7 +106,7 @@ def plot_persistence_diagram(
 	persistence_module: AugmentedPersistenceModule,
 	*,
 	truncation: float | None = None,
-	degrees: Collection[int] | int | None = None,
+	degrees: Collection[int] | IndexArray | int | np.integer | None = None,
 	ax: Axes | None = None,
 	threshold: float = 0,
 	kwargs_per_dim: Mapping[int, dict] | None = None,
@@ -209,8 +214,8 @@ def plot_persistence_diagram(
 
 def _select_degrees(
 	module: AugmentedPersistenceModule,
-	degrees: Collection[int] | int | None,
-) -> list[int]:
+	degrees: Collection[int] | IndexArray | int | np.integer | None,
+) -> IndexArray:
 	if degrees is None:
 		return module.nonempty_degrees()
 	if isinstance(degrees, Integral):
@@ -218,7 +223,7 @@ def _select_degrees(
 	if not isinstance(degrees, Collection) or not all(isinstance(d, Integral) for d in degrees):
 		msg = "Invalid degrees argument."
 		raise ValueError(msg)
-	return sorted(frozenset(module.nonempty_degrees()).intersection(degrees))
+	return np.intersect1d(module.nonempty_degrees(), np.fromiter(degrees, dtype=np.int64))
 
 
 def _scatter_options(colour: str, global_options: dict, degree_options: dict) -> dict:

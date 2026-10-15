@@ -25,6 +25,12 @@ Changes since 14.2.0.
   Each module has compact endpoint indices; `pack.pairings` retains the original
   ambient indices. Distinct endpoints with equal entrance times remain distinct.
   The pack takes ownership of the supplied dataclasses and reindexes their data.
+- Store representative-cycle supports and natural-map columns in
+  `SixPackRepresentatives` and `SixPackMorphisms` as one-dimensional `np.int64`
+  arrays. Direct construction should supply array values, for example
+  `np.asarray(indices, dtype=np.int64)`.
+- Return an `np.int64` array from `AugmentedPersistenceModule.nonempty_degrees()`
+  instead of a list.
 - Remove zero-persistence intervals when constructing a `SixPack`, including
   their representatives and coefficients in the natural maps.
 - Rename `sixpack(max_diagram_dimension=...)` to
@@ -41,10 +47,13 @@ Changes since 14.2.0.
   instead of `dimensions`. Optional arguments to `draw_filtration`, and
   `animation_length` and subsequent arguments to `animate_filtration`, are now
   keyword-only.
-- Require `phimaker >= 0.4.0`.
+- Require `phimaker >= 0.4.1`.
 
 ### Added
 
+- Export `IndexArray` as the shared type for one-dimensional `np.int64` arrays.
+  Accept NumPy degree arrays and integer scalars in interval queries and plotting,
+  and NumPy integer scalars when looking up an interval by birth index.
 - Add `sixpack(get_representatives=True)` to compute representative cycles for
   all six modules and the natural maps between kernel, domain, image, codomain,
   and cokernel. Access them through `pack.representatives` and `pack.morphisms`.
@@ -74,6 +83,17 @@ Changes since 14.2.0.
   coordinates, honor scatter colour overrides, and fix colour argument typing
   and a Matplotlib warning.
 - Fix C++ build compatibility with Eigen 5 and GCC in C++23 mode.
+
+### Array storage and processing
+
+- Keep endpoint-index helpers, degree selection, and sparse-solver results as
+  NumPy arrays. Retain lists for incrementally built Rust inputs and sets for
+  mutable F2 elimination work.
+- Write sparse HDF5 supports using array operations and load rows as array views
+  into the flat support buffers. The NumPy migration does not change the HDF5
+  dataset layout.
+- Compare array-valued persistence containers by their contents, preserving
+  equality checks and HDF5 round-trip comparisons.
 
 ### Documentation and development
 

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Iterator, Mapping, Sequence
 from dataclasses import dataclass, field, fields
+from itertools import chain
 from numbers import Integral
 from types import MappingProxyType
 from typing import ClassVar, Literal, get_args, overload
@@ -13,12 +14,17 @@ import numpy as np
 
 __all__ = [
 	"AugmentedPersistenceModule",
+	"IndexArray",
 	"PersistenceModuleName",
 	"SixPack",
 	"SixPackMorphisms",
 	"SixPackPairings",
 	"SixPackRepresentatives",
 ]
+
+type IndexArray = np.ndarray[tuple[int], np.dtype[np.int64]]
+"""One-dimensional arrays of integer indices or degrees."""
+
 
 type PersistenceModuleName = Literal[
 	"kernel",
@@ -121,9 +127,9 @@ class AugmentedPersistenceModule:
 		"""Return the number of features in the module."""
 		return len(self._intervals)
 
-	def nonempty_degrees(self) -> list[int]:
+	def nonempty_degrees(self) -> IndexArray:
 		"""Return all inhabited degrees in the persistence module."""
-		return np.unique(list(self._degrees.values())).tolist()
+		return np.unique(np.fromiter(self._degrees.values(), dtype=np.int64))
 
 	@property
 	def pairings(self) -> MappingProxyType[int, int | None]:
@@ -138,8 +144,10 @@ class AugmentedPersistenceModule:
 		"""
 		return self._entrance_times
 
-	def interval(self, i: int) -> tuple[float, float]:
+	def interval(self, i: int | np.integer) -> tuple[float, float]:
 		"""Return the interval with birth index ``i``."""
+		if isinstance(i, np.integer):
+			i = int(i)
 		if i not in self._intervals:
 			raise KeyError
 		death_idx = self._intervals[i]
@@ -151,13 +159,13 @@ class AugmentedPersistenceModule:
 	@overload
 	def intervals(
 		self,
-		degrees: int,
+		degrees: int | np.integer,
 	) -> np.ndarray[tuple[int, Literal[2]], np.dtype[np.float64]]: ...
 
 	@overload
 	def intervals(
 		self,
-		degrees: Sequence[int] | None = ...,
+		degrees: Sequence[int] | IndexArray | None = ...,
 	) -> dict[int, np.ndarray[tuple[int, Literal[2]], np.dtype[np.float64]]]: ...
 
 	def intervals(
@@ -185,14 +193,24 @@ class AugmentedPersistenceModule:
 		if degrees is None:
 			degrees = self.nonempty_degrees()
 		if isinstance(degrees, Integral):
-			result = [
-				[self._entrance_times[b], self._entrance_times[d] if d is not None else np.inf]
-				for b, d in sorted(self._intervals.items())
-				if self._degrees[b] == degrees
-			]
-			return np.asarray(result, dtype=np.float64).reshape((-1, 2))
-		if isinstance(degrees, Sequence) and all(isinstance(d, Integral) for d in degrees):
-			return {d: self.intervals(d) for d in degrees}
+			return np.fromiter(
+				(
+					time
+					for b, d in sorted(self._intervals.items())
+					if self._degrees[b] == degrees
+					for time in (
+						self._entrance_times[b],
+						self._entrance_times[d] if d is not None else np.inf,
+					)
+				),
+				dtype=np.float64,
+			).reshape((-1, 2))
+		if (
+			isinstance(degrees, (Sequence, np.ndarray))
+			and (not isinstance(degrees, np.ndarray) or degrees.ndim == 1)
+			and all(isinstance(d, Integral) for d in degrees)
+		):
+			return {int(d): self.intervals(int(d)) for d in degrees}
 		msg = "`degrees` must be an integer or a sequence of integers."
 		raise TypeError(msg)
 
@@ -209,17 +227,20 @@ class AugmentedPersistenceModule:
 		can supply its original pairings instead, in the same interval order.
 		"""
 		stored_pairings = self._intervals if pairings is None else pairings
-		file["pairings"] = np.asarray(
-			[
-				(birth, death if death is not None else -1)
+		file["pairings"] = np.fromiter(
+			(
+				index
 				for birth, death in stored_pairings.items()
-			],
+				for index in (birth, death if death is not None else -1)
+			),
 			dtype=np.int64,
+			count=2 * len(stored_pairings),
 		).reshape((-1, 2))
 		file["entrance_times"] = self._entrance_times
-		file["degrees"] = np.asarray(
-			[self._degrees[birth] for birth in self._intervals],
+		file["degrees"] = np.fromiter(
+			(self._degrees[birth] for birth in self._intervals),
 			dtype=np.int64,
+			count=len(self._intervals),
 		)
 
 
@@ -338,9 +359,10 @@ class SixPack:
 					self._morphisms,
 					name,
 					{
-						source_indices[birth]: [
-							target_indices[idx] for idx in support if idx in target_indices
-						]
+						source_indices[birth]: np.fromiter(
+							(target_indices[idx] for idx in support if idx in target_indices),
+							dtype=np.int64,
+						)
 						for birth, support in morphism.items()
 						if birth in source_indices
 					},
@@ -385,7 +407,7 @@ class SixPack:
 		}
 		object.__setattr__(self._pairings, key, filtered_module_pairings)
 		sorted_endpoint_indices = _endpoint_indices(filtered_module_pairings)
-		new_indices = {e: i for i, e in enumerate(sorted_endpoint_indices)}
+		new_indices = {int(e): i for i, e in enumerate(sorted_endpoint_indices)}
 		intervals = {
 			new_indices[b]: new_indices[d] if d is not None else None
 			for b, d in filtered_module_pairings.items()
@@ -478,7 +500,7 @@ class SixPack:
 		Returns -1 if all persistence modules in the 6-pack are trivial.
 		"""
 		return max(
-			(degree for _, module in self for degree in module.nonempty_degrees()),
+			(int(degree) for _, module in self for degree in module.nonempty_degrees()),
 			default=-1,
 		)
 
@@ -568,47 +590,67 @@ class SixPack:
 					raise ValueError(msg)
 
 
-@dataclass(slots=True, frozen=True)
+@dataclass(slots=True, frozen=True, eq=False)
 class SixPackMorphisms:
-	"""Natural maps between persistence modules in a 6-pack."""
+	"""Natural maps between persistence modules, with one-dimensional int64 support arrays."""
 
-	kernel_to_domain: dict[int, list[int]] = field(kw_only=True)
+	kernel_to_domain: dict[int, IndexArray] = field(kw_only=True)
 	"""Monomorphism of kernel into the domain."""
 
-	domain_to_image: dict[int, list[int]] = field(kw_only=True)
+	domain_to_image: dict[int, IndexArray] = field(kw_only=True)
 	"""Epimorphism of domain onto image."""
 
-	image_to_codomain: dict[int, list[int]] = field(kw_only=True)
+	image_to_codomain: dict[int, IndexArray] = field(kw_only=True)
 	"""Monomorphism of the image into the codomain."""
 
-	domain_to_codomain: dict[int, list[int]] = field(kw_only=True)
+	domain_to_codomain: dict[int, IndexArray] = field(kw_only=True)
 	"""Domain to codomain map."""
 
-	codomain_to_cokernel: dict[int, list[int]] = field(kw_only=True)
+	codomain_to_cokernel: dict[int, IndexArray] = field(kw_only=True)
 	"""Epimorphism of codomain onto cokernel."""
 
+	__hash__ = None
 
-@dataclass(slots=True, frozen=True)
+	def __eq__(self, other: object) -> bool:
+		"""Compare the sparse support arrays by value."""
+		if not isinstance(other, SixPackMorphisms):
+			return NotImplemented
+		return all(
+			_sparse_rows_equal(getattr(self, f.name), getattr(other, f.name)) for f in fields(self)
+		)
+
+
+@dataclass(slots=True, frozen=True, eq=False)
 class SixPackRepresentatives:
-	"""Representative cycles for persistence modules in a 6-pack."""
+	"""Representative cycles for persistence modules, with one-dimensional int64 support arrays."""
 
-	kernel: dict[int, list[int]] = field(kw_only=True)
+	kernel: dict[int, IndexArray] = field(kw_only=True)
 	"""Kernel representatives."""
 
-	domain: dict[int, list[int]] = field(kw_only=True)
+	domain: dict[int, IndexArray] = field(kw_only=True)
 	"""Domain representatives."""
 
-	image: dict[int, list[int]] = field(kw_only=True)
+	image: dict[int, IndexArray] = field(kw_only=True)
 	"""Image representatives."""
 
-	codomain: dict[int, list[int]] = field(kw_only=True)
+	codomain: dict[int, IndexArray] = field(kw_only=True)
 	"""Codomain representatives."""
 
-	cokernel: dict[int, list[int]] = field(kw_only=True)
+	cokernel: dict[int, IndexArray] = field(kw_only=True)
 	"""Cokernel representatives."""
 
-	relative: dict[int, list[int]] = field(kw_only=True)
+	relative: dict[int, IndexArray] = field(kw_only=True)
 	"""Relative representatives."""
+
+	__hash__ = None
+
+	def __eq__(self, other: object) -> bool:
+		"""Compare the sparse support arrays by value."""
+		if not isinstance(other, SixPackRepresentatives):
+			return NotImplemented
+		return all(
+			_sparse_rows_equal(getattr(self, f.name), getattr(other, f.name)) for f in fields(self)
+		)
 
 
 @dataclass(slots=True, frozen=True)
@@ -634,8 +676,19 @@ class SixPackPairings:
 	"""Relative pairings."""
 
 
-def _endpoint_indices(pairings: Mapping[int, int | None]) -> list[int]:
-	return sorted(set(pairings) | {death for death in pairings.values() if death is not None})
+def _endpoint_indices(pairings: Mapping[int, int | None]) -> IndexArray:
+	return np.unique(
+		np.fromiter(
+			chain(pairings, (death for death in pairings.values() if death is not None)),
+			dtype=np.int64,
+		),
+	)
+
+
+def _sparse_rows_equal(left: Mapping[int, IndexArray], right: Mapping[int, IndexArray]) -> bool:
+	return left.keys() == right.keys() and all(
+		np.array_equal(row, right[key]) for key, row in left.items()
+	)
 
 
 def _morphism_modules(name: str) -> tuple[PersistenceModuleName, PersistenceModuleName]:
@@ -667,7 +720,7 @@ def _read_module(
 	if len(times) != len(indices) or len(degrees) != len(pairings):
 		msg = f"Invalid endpoint or degree count: {group.name}"
 		raise ValueError(msg)
-	index_map = {old: new for new, old in enumerate(indices)}
+	index_map = {int(old): new for new, old in enumerate(indices)}
 	module = AugmentedPersistenceModule(
 		{index_map[b]: index_map[d] if d is not None else None for b, d in pairings.items()},
 		times,
@@ -682,18 +735,21 @@ def _read_module(
 	return module, {birth: index_map[birth] for birth in pairings}
 
 
-def _write_sparse_rows(group: h5py.Group, rows: Mapping[int, Sequence[int]]) -> None:
-	group["keys"] = np.asarray(list(rows), dtype=np.int64)
+def _write_sparse_rows(group: h5py.Group, rows: Mapping[int, IndexArray]) -> None:
+	group["keys"] = np.fromiter(rows, dtype=np.int64, count=len(rows))
 	group["offsets"] = np.concatenate(
 		(
 			np.zeros(1, dtype=np.int64),
-			np.cumsum([len(row) for row in rows.values()], dtype=np.int64),
+			np.cumsum(
+				np.fromiter((row.size for row in rows.values()), dtype=np.int64),
+				dtype=np.int64,
+			),
 		),
 	)
-	group["indices"] = np.asarray([idx for row in rows.values() for idx in row], dtype=np.int64)
+	group["indices"] = np.concatenate(tuple(rows.values())) if rows else np.empty(0, dtype=np.int64)
 
 
-def _read_sparse_rows(group: h5py.Group) -> dict[int, list[int]]:
+def _read_sparse_rows(group: h5py.Group) -> dict[int, IndexArray]:
 	keys = _read_array(group, "keys", np.dtype(np.int64), 1)
 	offsets = _read_array(group, "offsets", np.dtype(np.int64), 1)
 	indices = _read_array(group, "indices", np.dtype(np.int64), 1)
@@ -708,7 +764,7 @@ def _read_sparse_rows(group: h5py.Group) -> dict[int, list[int]]:
 	):
 		msg = f"Invalid sparse rows: {group.name}"
 		raise ValueError(msg)
-	return {int(key): indices[offsets[i] : offsets[i + 1]].tolist() for i, key in enumerate(keys)}
+	return {int(key): indices[offsets[i] : offsets[i + 1]] for i, key in enumerate(keys)}
 
 
 def _read_group(group: h5py.Group, name: str) -> h5py.Group:
