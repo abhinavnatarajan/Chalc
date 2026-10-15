@@ -6,7 +6,7 @@ from collections.abc import Iterator, Mapping, Sequence
 from dataclasses import dataclass, field, fields
 from numbers import Integral
 from types import MappingProxyType
-from typing import ClassVar, Literal, Self, get_args, overload
+from typing import ClassVar, Literal, get_args, overload
 
 import h5py
 import numpy as np
@@ -504,7 +504,7 @@ class SixPack:
 				)
 
 	@classmethod
-	def from_hdf5(cls, file: h5py.Group) -> Self:
+	def from_hdf5(cls, file: h5py.Group) -> SixPack:
 		"""Load modules, raw pairings, and optional representatives and maps.
 
 		Consumer metadata is ignored and initialized to ``None``.

@@ -374,7 +374,7 @@ wheels = [
 
 [[package]]
 name = "chalc"
-version = "14.2.0"
+version = "15.0.0"
 source = { editable = "." }
 dependencies = [
     { name = "h5py" },
