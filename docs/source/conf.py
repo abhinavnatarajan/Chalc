@@ -83,7 +83,7 @@ autoapi_options = [
 ]
 autoapi_member_order = "alphabetical"
 autoapi_keep_files = True
-
+autoapi_ignore = ["*/.ipynb_checkpoints/*"]
 
 def autoapi_skip_member(
 	_app: Sphinx,
@@ -93,8 +93,8 @@ def autoapi_skip_member(
 	skip: bool,  # noqa: FBT001
 	_options: list[str],
 ) -> bool:
-	if name == "chalc.morphisms.types.DiagramName":
-		skip = True
+	if name == "chalc.morphisms.types.PersistenceModuleName":
+		return True
 	return skip
 
 

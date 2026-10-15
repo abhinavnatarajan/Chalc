@@ -53,7 +53,7 @@ def plot_sixpack(
 	if isinstance(truncations, Mapping):
 		truncations = dict(truncations)
 	else:
-		truncations = dict.fromkeys(sixpack, truncations)
+		truncations = dict.fromkeys(sixpack.module_names(), truncations)
 
 	fig, axes = plt.subplots(
 		nrows=2,
@@ -71,9 +71,9 @@ def plot_sixpack(
 		"image": (0, 2),
 		"relative": (1, 2),
 	}
-	for name in sixpack:
+	for name, module in sixpack:
 		plot_persistence_diagram(
-			sixpack.get_module(name),
+			module,
 			truncation=truncations.get(name),
 			degrees=degrees,
 			threshold=threshold,
@@ -212,13 +212,13 @@ def _select_degrees(
 	degrees: Collection[int] | int | None,
 ) -> list[int]:
 	if degrees is None:
-		return module.degrees
+		return module.nonempty_degrees()
 	if isinstance(degrees, Integral):
 		degrees = [int(degrees)]
 	if not isinstance(degrees, Collection) or not all(isinstance(d, Integral) for d in degrees):
 		msg = "Invalid degrees argument."
 		raise ValueError(msg)
-	return sorted(set(module.degrees).intersection(degrees))
+	return sorted(frozenset(module.nonempty_degrees()).intersection(degrees))
 
 
 def _scatter_options(colour: str, global_options: dict, degree_options: dict) -> dict:

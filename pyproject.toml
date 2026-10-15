@@ -1,6 +1,6 @@
 [project]
 name = "chalc"
-version = "14.2.0"
+version = "15.0.0"
 description = "Persistent homology of chromatic Delaunay filtrations"
 readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.13"
@@ -52,7 +52,7 @@ docs = [
 	"sphinx-autoapi~=3.3",
 	"sphinx-design~=0.6",
 	"sphinx-toolbox~=3.5",
-	"tqdm>=4.67.1",
+	"tqdm~=4.67",
 ]
 test = ["gudhi~=3.11", "pytest~=8.3"]
 
@@ -148,6 +148,3 @@ experimental = true
 [tool.tombi.format.rules]
 indent-style = "tab"
 line-width = 100
-
-[tool.uv.sources]
-phimaker = { path = "/home/abhinav/Documents/software/phimaker" }

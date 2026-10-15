@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 
-from chalc.morphisms import AugmentedPersistenceModule, SixPack
+from chalc.morphisms import AugmentedPersistenceModule, SixPack, SixPackPairings
 from chalc.plotting import plot_persistence_diagram, plot_sixpack
 
 
@@ -53,8 +53,18 @@ def test_plot_threshold_before_truncation() -> None:
 	)
 	ax = plot_persistence_diagram(module, truncation=1.0, threshold=2.0)
 	# Both long-lived intervals survive even though displayed persistence is small.
-	np.testing.assert_allclose(ax.collections[0].get_offsets(), [[0.0, 1.04], [1.04, 1.08]])
-	assert len(plot_persistence_diagram(module, threshold=10.0).collections[0].get_offsets()) == 1
+	np.testing.assert_allclose(
+		np.asarray(ax.collections[0].get_offsets()),
+		[[0.0, 1.04], [1.04, 1.08]],
+	)
+	assert (
+		len(
+			np.asarray(
+				plot_persistence_diagram(module, threshold=10.0).collections[0].get_offsets(),
+			),
+		)
+		== 1
+	)
 
 
 @pytest.mark.parametrize("points", [False, True])
@@ -71,7 +81,11 @@ def test_plot_legend_flags(*, points: bool, lines: bool) -> None:
 
 @pytest.mark.parametrize("empty", [False, True])
 def test_plot_sixpack(*, empty: bool) -> None:
-	pack = SixPack() if empty else SixPack(domain={0: None}, entrance_times=[0.0], degrees=[0])
+	pack = (
+		SixPack()
+		if empty
+		else SixPack(pairings=SixPackPairings(domain={0: None}), entrance_times=[0.0], degrees=[0])
+	)
 	fig, axes = plot_sixpack(pack, truncations={"domain": 2.0})
 	assert axes.shape == (2, 3)
 	assert [[ax.get_title() for ax in row] for row in axes] == [

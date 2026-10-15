@@ -244,8 +244,8 @@ def test_alpha_delcech_homotopy_equivalent() -> None:
 			assert dgms_delcech.max_nonempty_degree() == dgms_alpha.max_nonempty_degree()
 			dists = [
 				bottleneck_distance(
-					dgms_delcech.get_module("codomain").intervals(d),
-					dgms_alpha.get_module("codomain").intervals(d),
+					dgms_delcech.codomain.intervals(d),
+					dgms_alpha.codomain.intervals(d),
 				)
 				for d in range(dgms_delcech.max_nonempty_degree() + 1)
 			]

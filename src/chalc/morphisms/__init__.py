@@ -2,15 +2,23 @@
 
 import logging
 from abc import ABC, abstractmethod
-from collections.abc import Collection, Iterator, Sized
+from collections.abc import Collection, Iterator, Sequence, Sized
+from dataclasses import fields
 from itertools import combinations
 from typing import Any, TypeIs
 
 import numpy as np
-from phimaker import sixpack, sixpack_from_inclusion
+import phimaker as pm
 
 from chalc.filtration import Filtration
-from chalc.morphisms.types import AugmentedPersistenceModule, PersistenceModuleName, SixPack
+from chalc.morphisms.types import (
+	AugmentedPersistenceModule,
+	PersistenceModuleName,
+	SixPack,
+	SixPackMorphisms,
+	SixPackPairings,
+	SixPackRepresentatives,
+)
 
 __all__ = [
 	"AugmentedPersistenceModule",
@@ -20,6 +28,9 @@ __all__ = [
 	"KChromaticQuotient",
 	"PersistenceModuleName",
 	"SixPack",
+	"SixPackMorphisms",
+	"SixPackPairings",
+	"SixPackRepresentatives",
 	"SubChromaticInclusion",
 	"SubChromaticQuotient",
 ]
@@ -59,7 +70,7 @@ class FiltrationMorphism(ABC):
 		self,
 		max_homological_degree: int | None = None,
 		*,
-		discard_degenerate_intervals: bool = True,
+		get_representatives: bool = False,
 	) -> SixPack:
 		r"""
 		Compute the 6-pack of persistence modules of a coloured point-cloud.
@@ -74,9 +85,11 @@ class FiltrationMorphism(ABC):
 				By default modules of all dimensions are computed.
 
 		Keyword Args:
-			discard_degenerate_intervals:
-				Whether to discard intervals with equal birth and death times.
-				Defaults to ``True``. The homological degree limit applies either way.
+			get_representatives:
+				If ``True``, also compute representative cycles for each persistence module
+				in the 6-pack, and the natural maps between the persistence modules in the 6-pack
+				with respect to the interval basis defined by these representative cycles.
+				Defaults to ``False``.
 
 		Returns :
 			A 6-pack object containing the following persistence modules
@@ -90,11 +103,31 @@ class FiltrationMorphism(ABC):
 			#. :math:`\mathrm{im}(f_*)` (image)
 			#. :math:`H_*(\mathrm{cyl}(f), L)` (relative homology)
 
-			A :class:`SixPack` mapping full module names to dictionaries of birth
-			and death indices, with ``None`` for infinite deaths. Use
-			:meth:`SixPack.get_module` and :meth:`AugmentedPersistenceModule.intervals`
-			to obtain birth and death times in the desired homological degrees.
+			A :class:`SixPack` exposes its modules as attributes and iterates over
+			``(module_name, module)`` pairs. Use :meth:`AugmentedPersistenceModule.intervals`
+			on these modules to obtain birth and death times in the desired degrees.
+			The original birth and death indices, with ``None`` for infinite deaths,
+			are available through :attr:`SixPack.pairings`.
 
+			If ``get_representatives=True``, then the returned
+			:class:`SixPack <chalc.morphisms.types.SixPack>` has additional attributes:
+
+			#. ``representatives`` contains representative cycles for each module.
+			Each set is a dictionary mapping an interval in the module
+			(identified by its module-local birth index) to a list of integer indices of columns in
+			the boundary matrix of the codomain filtration (or the mapping cylinder, if
+			the map of filtrations is not an inclusion); the list represents simplices
+			whose sum is a representative cycle.
+			#. ``morphisms`` contains the natural maps between the persistence modules
+			in the 6-pack. Each persistence map is represented by a binary matrix with
+			respect to chosen interval bases of its source and target modules. The interval
+			generators are specified by the stored representative cycles, whose classes are
+			taken in the quotient defining each module. At each filtration index, the
+			representatives of the intervals alive at that index form a basis, and restricting
+			the matrix to those source and target intervals gives the linear map at that index.
+			For the domain, codomain, image, cokernel, and relative persistence modules,
+			the birth time of an interval is the maximum birth time of any simplex in its
+			representative cycle. This is not necessarily true for the kernel.
 		"""
 
 	def __init__(self, filtration: Filtration) -> None:  # noqa: D107
@@ -138,9 +171,15 @@ class FiltrationInclusion(FiltrationMorphism, ABC):
 		self,
 		max_homological_degree: int | None = None,
 		*,
-		discard_degenerate_intervals: bool = True,
+		get_representatives: bool = False,
 	) -> SixPack:
 		filtration = self._filtration
+
+		if max_homological_degree is not None and max_homological_degree < 0:
+			err = (
+				f"`max_homological_degree` must be non-negative, but got {max_homological_degree}."
+			)
+			raise ValueError(err)
 
 		# We do not need all the simplices.
 		# Let n = max_homological_degree.
@@ -151,15 +190,14 @@ class FiltrationInclusion(FiltrationMorphism, ABC):
 		# Consequently we also get the correct kernel, cokernel, and image.
 		# Therefore we only need the boundary matrix of simplices whose
 		# dimension is at most max_homological_degree + 2.
-		if max_homological_degree is not None and max_homological_degree < 0:
-			err = (
-				f"`max_homological_degree` must be non-negative, but got {max_homological_degree}."
-			)
-			raise ValueError(err)
 		if max_homological_degree is None or max_homological_degree + 2 >= filtration.dimension:
-			max_simplex_dimension = -1  # fast path
+			max_simplex_dimension = -1  # need all simplices
 		else:
 			max_simplex_dimension = max_homological_degree + 2
+
+		# Feature degrees cannot exceed filtration dimension
+		if max_homological_degree is None:
+			max_homological_degree = filtration.dimension
 
 		codomain_boundary_matrix: list[list[int]] = []
 		entrance_times: list[float] = []
@@ -177,26 +215,36 @@ class FiltrationInclusion(FiltrationMorphism, ABC):
 			entrance_time = column[2]
 			entrance_times.append(entrance_time)
 
-		module_ensemble = sixpack_from_inclusion(
+		module_ensemble = pm.sixpack_from_inclusion(
 			codomain_boundary_matrix,
 			dimensions,
 			cols_in_domain,
+			get_representatives=get_representatives,
+			num_threads=int(get_representatives),
+			slow=False,
 		)
-		result = SixPack(
-			domain=module_ensemble.domain,
-			codomain=module_ensemble.codomain,
-			kernel=module_ensemble.kernel,
-			image=module_ensemble.image,
-			cokernel=module_ensemble.cokernel,
-			relative=module_ensemble.relative,
+
+		pairings = SixPackPairings(
+			**{
+				name: filter_pairings(name, module_ensemble, dimensions, max_homological_degree)
+				for name in SixPack.module_names()
+			},
+		)
+
+		representatives = None
+		morphisms = None
+		if get_representatives:
+			representatives, morphisms = filter_representatives(
+				module_ensemble,
+				dimensions,
+				max_homological_degree,
+			)
+		return SixPack(
+			pairings=pairings,
 			entrance_times=entrance_times,
 			degrees=dimensions,
-		)
-		return result.filter(
-			lambda _module_name, degree, _birth_idx, _death_idx, birth_time, death_time: (
-				(max_homological_degree is None or degree <= max_homological_degree)
-				and (not discard_degenerate_intervals or death_time > birth_time)
-			),
+			representatives=representatives,
+			morphisms=morphisms,
 		)
 
 
@@ -357,6 +405,15 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 	method, and make sure that ``self.num_subfiltrations`` is initialized
 	before ``sixpack()`` is called.
 
+	Persistence computations are reduced to the case of a filtered inclusion
+	by constructing a mapping cylinder. The sixpack returned by this class
+	contains a ``metadata`` dictionary with the following keys:
+
+	#. ``domain_indices`` and ``codomain_indices``: dictionaries that map
+	domain codomain indices to their indices in the mapping cylinder.
+	#. ``domain_shift``: dictionary that maps each domain index to the index
+	of its degree-shifted copy in the mapping cylinder.
+
 	See Also:
 		:class:`SubChromaticQuotient`, :class:`KChromaticQuotient`.
 
@@ -383,29 +440,36 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 		self,
 		max_homological_degree: int | None = None,
 		*,
-		discard_degenerate_intervals: bool = True,
+		get_representatives: bool = False,
 	) -> SixPack:
 		filtration = self._filtration
 		num_subfiltrations = self._num_subfiltrations
 
-		# We do not need all the simplices.
-		# Let n = max_homological_degree, and f: L -> K be a cellular map.
-		# First notice that K is homotopy equivalent to cyl(f)
-		# H_n(K^{n+2}) -> H_n(K) and H_{n+1}(K^{n+2}) -> H_{n+1}(K) are isomorphisms.
-		# Similarly H_n(L^{n+2}) -> H_n(L) and H_{n+1}(L^{n+2}) - H_{n+1}(L) are isomorphisms.
-		# Therefore H_{n+1}(K^{n+2}, L^{n+2}) -> H_{n+1}(K, L) is an isomorphism by the 5-lemma.
-		# Consequently we also get the correct kernel, cokernel, and image.
-		# Therefore we only need the boundary matrix of simplices whose
-		# dimension is at most max_homological_degree + 2.
 		if max_homological_degree is not None and max_homological_degree < 0:
 			err = (
 				f"`max_homological_degree` must be non-negative, but got {max_homological_degree}."
 			)
 			raise ValueError(err)
+
+		# We do not need all the simplices.
+		# Let n = max_homological_degree.
+		# H_n(K^{n+2}) -> H_n(K) and H_{n+1}(K^{n+2}) -> H_{n+1}(K) are isomorphisms.
+		# Similarly H_n(L^{n+2}) -> H_n(L) and H_{n+1}(L^{n+2}) - H_{n+1}(L) are isomorphisms.
+		# Therefore H_{n+1}(K^{n+2}, L^{n+2}) -> H_{n+1}(K, L) is an isomorphism by the 5-lemma
+		# applied to the long exact sequence of homology of pairs.
+		# Consequently we also get the correct kernel, cokernel, and image.
+		# Therefore we only need the boundary matrix of simplices whose
+		# dimension is at most max_homological_degree + 2.
 		if max_homological_degree is None or max_homological_degree + 2 >= filtration.dimension:
-			max_simplex_dimension = -1  # fast path
+			max_simplex_dimension = -1  # need all simplices
 		else:
 			max_simplex_dimension = max_homological_degree + 2
+
+		# Feature degrees cannot exceed the dimension of the boundary matrix.
+		# Here the boundary matrix comes from the mapping cylinder, so it has dimension
+		# one higher than the dimension of the filtration.
+		if max_homological_degree is None:
+			max_homological_degree = filtration.dimension + 1
 
 		codomain_matrix: FiltrationQuotient.BoundaryMatrix = []
 		domain_matrix: FiltrationQuotient.BoundaryMatrix = []
@@ -443,28 +507,44 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 					offsets[codomain_idx, i] = domain_idx_counter
 					domain_idx_counter += 1
 
-		d, meta = sixpack(
+		module_ensemble, meta = pm.sixpack(
 			domain_matrix,
 			codomain_matrix,
 			mapping,
+			get_representatives=get_representatives,
+			num_threads=int(get_representatives),
+			slow=False,
 		)
 
-		result = SixPack(
-			domain=d.domain,
-			codomain=d.codomain,
-			kernel=d.kernel,
-			image=d.image,
-			cokernel=d.cokernel,
-			relative=d.relative,
+		pairings = SixPackPairings(
+			**{
+				name: filter_pairings(name, module_ensemble, meta.degrees, max_homological_degree)
+				for name in SixPack.module_names()
+			},
+		)
+
+		metadata = {
+			"domain_indices": meta.domain_indices,
+			"codomain_indices": meta.codomain_indices,
+			"domain_shift": meta.domain_shift,
+		}
+		representatives = None
+		morphisms = None
+		if get_representatives:
+			representatives, morphisms = filter_representatives(
+				module_ensemble,
+				meta.degrees,
+				max_homological_degree,
+			)
+		pack = SixPack(
+			pairings=pairings,
 			entrance_times=meta.times,
 			degrees=meta.degrees,
+			representatives=representatives,
+			morphisms=morphisms,
 		)
-		return result.filter(
-			lambda _module_name, degree, _birth_idx, _death_idx, birth_time, death_time: (
-				(max_homological_degree is None or degree <= max_homological_degree)
-				and (not discard_degenerate_intervals or death_time > birth_time)
-			),
-		)
+		pack.metadata = metadata
+		return pack
 
 
 class SubChromaticQuotient(FiltrationQuotient):
@@ -660,3 +740,46 @@ class KChromaticQuotient(FiltrationQuotient):
 	) -> bool:
 		r"""Check if a simplex is in the |ith| subfiltration."""
 		return frozenset(column[3]).issubset(self._tau[i])
+
+
+def filter_representatives(
+	ensemble: pm.DiagramEnsemble,
+	degrees: Sequence[int],
+	max_homological_degree: int,
+) -> tuple[SixPackRepresentatives, SixPackMorphisms]:
+	"""Restrict representative cycles and natural maps to the requested degrees."""
+	representatives_dict = {}
+	for name in SixPack.module_names():
+		reps = getattr(ensemble, f"{name}_representatives")
+		representatives_dict[name] = {
+			birth_idx: reps[birth_idx]
+			for birth_idx in reps
+			if degrees[birth_idx] - (name == "kernel") <= max_homological_degree
+		}
+	representatives = SixPackRepresentatives(**representatives_dict)
+	morphisms_dict = {}
+	for field in fields(SixPackMorphisms):
+		morphism_name = field.name
+		morph = getattr(ensemble, morphism_name)
+		morphisms_dict[morphism_name] = {
+			interval_birth_idx: morph[interval_birth_idx]
+			for interval_birth_idx in morph
+			if degrees[interval_birth_idx] - (morphism_name.startswith("kernel"))
+			<= max_homological_degree
+		}
+	morphisms = SixPackMorphisms(**morphisms_dict)
+	return representatives, morphisms
+
+
+def filter_pairings(
+	name: PersistenceModuleName,
+	ensemble: pm.DiagramEnsemble,
+	degrees: Sequence[int],
+	max_homological_degree: int,
+) -> dict[int, int | None]:
+	"""Restrict raw pairings, accounting for the kernel's degree shift."""
+	return {
+		b: d
+		for b, d in getattr(ensemble, name).items()
+		if degrees[b] - (name == "kernel") <= max_homological_degree
+	}
