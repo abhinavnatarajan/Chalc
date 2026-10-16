@@ -86,8 +86,8 @@ Filtration::Simplex::Simplex(
 	label_(label),
 	max_vertex_(max_vertex),
 	// Narrowing cast here is not a problem in 64-bit systems
-    // unless we are using a ridiculously large number of vertices,
-    // in which case we have other problems to worry about.
+	// unless we are using a ridiculously large number of vertices,
+	// in which case we have other problems to worry about.
 	filt_value_(value),
 	facets_(facets) {
 	assert(facets.size() < std::numeric_limits<index_t>::max);
@@ -138,7 +138,7 @@ Filtration::Filtration(const Index num_vertices, const Index max_dimension) :
 		num_vertices,
 		max_dimension + 1
 	),  // we want nCk for all 0 <= n <= num_vertices and 0 <= k <=
-        // max_num_verts_in_a_simplex = max_dim + 1
+	    // max_num_verts_in_a_simplex = max_dim + 1
 	simplices_map_(max_dimension + 1),
 	num_vertices_(num_vertices),
 	max_dimension_(max_dimension),
@@ -281,8 +281,8 @@ auto Filtration::add_simplex_unchecked(const vector<Index>& verts, const Value f
 		simplices_.push_back(Simplex::make_simplex(label, max_vertex, filt_value, facets));
 		new_simplex                = simplices_.back().get();
 		simplices_map_[dim][label] = new_simplex;
-		cur_dim_                   = max(cur_dim_,
-                       static_cast<Index>(verts.size() - 1));  // need verts to be valid
+		cur_dim_ = max(cur_dim_,
+		               static_cast<Index>(verts.size() - 1));  // need verts to be valid
 	}
 	return new_simplex;
 }

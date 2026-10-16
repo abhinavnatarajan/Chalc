@@ -37,15 +37,16 @@ Repository = "https://github.com/abhinavnatarajan/Chalc.git"
 
 [dependency-groups]
 dev = [
+	"clang-format~=23.1",
 	"ipympl~=0.9",
 	# Pybind11 headers for LSP
 	# Needs to be kept in sync with build-system.requires below
-	"lefthook>=2.2.2",
+	"lefthook~=2.2",
 	"pybind11~=3.1",
 	"pybind11-stubgen~=2.5",
-	"pyrefly>=1.4.0",
+	"pyrefly~=1.4",
 	"ruff>=0.17.1",
-	"tombi>=1.8.4",
+	"tombi~=1.8",
 ]
 docs = [
 	"furo>=2024.8.6",
@@ -58,7 +59,7 @@ docs = [
 	"tqdm~=4.67",
 ]
 test = ["pytest~=8.3"]
-test-gudhi = [{ include-group = "test" }, "gudhi~=3.11"]
+test-gudhi = ["gudhi~=3.11", { include-group = "test" }]
 
 [build-system]
 requires = ["pybind11~=3.1", "scikit-build-core~=0.11.4"]
@@ -69,8 +70,8 @@ preset = "default"
 
 [tool.pytest.ini_options]
 addopts = ["--import-mode=importlib"]
-testpaths = ["tests"]
 markers = ["gudhi: comparison tests requiring the optional test-gudhi dependency group"]
+testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 100
@@ -86,6 +87,7 @@ ignore = [
 	# General
 	"CPY",  # flake8-copyright/missing-copyright-notice: requires cpyright notices within each Python file
 	"ERA",  # eradicate: disallows commented code
+	"COM812",  # flake8-commas/missing-trailing-comma: requires trailing commas on multiline function calls
 	"W191",  # pycodestyle/tab-indentation: disallows tab indentation
 	"D206",  # pydocstyle/docstring-tab-indentation: disallows tab indentation in docstring
 	"E111",  # pycodestyle/indentation-with-invalid-multiple: forces indentation to be a multiple of 4 spaces

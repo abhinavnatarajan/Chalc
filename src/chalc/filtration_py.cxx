@@ -223,7 +223,7 @@ Returns true if each simplex has a filtration value at least as large as each of
 			[](const Filtration& self)
 				-> std::basic_string<char, std::char_traits<char>, std::allocator<char>> {
 				return "<" + to_string(self.dimension()) + "-dimensional simplicial complex with " +
-		               to_string(self.num_vertices()) + " vertices>";
+				       to_string(self.num_vertices()) + " vertices>";
 			}
 		);
 

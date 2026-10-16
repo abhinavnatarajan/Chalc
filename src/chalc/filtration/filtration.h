@@ -47,15 +47,14 @@ struct Filtration {
 	using SimplexHandle = std::unique_ptr<Simplex>;
 	class SimplicesIterator;
 
-
   private:
 	/* PRIVATE MEMBERS OF Filtration */
 
-	detail::BinomialCoeffTable            binomial_;   // binomial coefficients
+	detail::BinomialCoeffTable binomial_;   // binomial coefficients
 	std::vector<SimplexHandle> simplices_;  // container for the simplices
 	std::vector<std::unordered_map<Label, Simplex*>>
-		simplices_map_;      // std::vector whose kth element is a table of k-simplex handles,
-	                         // labelled by their lexicographic index
+		  simplices_map_;  // std::vector whose kth element is a table of k-simplex handles,
+		                   // labelled by their lexicographic index
 	Index cur_dim_;        // current maximum dimension of a maximal simplex
 	Index num_vertices_;   // number of vertices, labelled from 0 to n-1
 	Index max_dimension_;  // maximum dimension of any simplex in the filtration
@@ -80,8 +79,7 @@ struct Filtration {
 
 	// Get label of a simplex from the labels of its vertices.
 	[[nodiscard]]
-	auto get_label_from_vertex_labels(const std::vector<Index>& verts) const
-		-> Label;  // exported
+	auto get_label_from_vertex_labels(const std::vector<Index>& verts) const -> Label;  // exported
 
 	// Check if the filtration has a specific simplex.
 	[[nodiscard]]
@@ -93,8 +91,7 @@ struct Filtration {
 
 	// Add a new simplex to the filtration by its vertices.
 	// Returns true if the simplex was added, false if it already exists.
-	auto add_simplex(const std::vector<Index>& verts, const Value filt_value)
-		-> bool;  // exported
+	auto add_simplex(const std::vector<Index>& verts, const Value filt_value) -> bool;  // exported
 
 	// Propagate filtration values from start_dim.
 	void propagate_filt_values(const Index start_dim, const bool upwards);  // exported
@@ -179,8 +176,7 @@ struct Filtration {
 	auto has_simplex_unchecked(const std::vector<Index>& verts) const noexcept -> bool;
 
 	// Add a simplex to the filtration with the specified vertices and filtration value.
-	auto add_simplex_unchecked(const std::vector<Index>& verts, const Value filt_value)
-		-> Simplex*;
+	auto add_simplex_unchecked(const std::vector<Index>& verts, const Value filt_value) -> Simplex*;
 
 	// Min-fold filtration values downwards from start_dim.
 	// If start_dim > cur_dim, does nothing.
@@ -267,22 +263,22 @@ struct Filtration::Simplex {
 
 	/* PRIVATE MEMBERS OF Simplex */
   private:
-	Label               label_;       // label for the simplex
-	Index               max_vertex_;  // largest vertex label
-	Index               dim_;         // number of vertices minus 1
-	Value               filt_value_;  // filtration value
+	Label                 label_;       // label for the simplex
+	Index                 max_vertex_;  // largest vertex label
+	Index                 dim_;         // number of vertices minus 1
+	Value                 filt_value_;  // filtration value
 	std::vector<Simplex*> facets_;      // pointers to the [i]th facets of the simplex
 	std::vector<Simplex*> cofacets_;    // pointers to the cofacets of the simplex
-	Colours             colours_;     // bitmask representing the colours of its vertices
+	Colours               colours_;     // bitmask representing the colours of its vertices
 
 	// Constructor for internal use only.
 	Simplex(Label label, Index max_vertex, Value value, const std::vector<Simplex*>& facets);
 
 	// Factory method for internal use.
 	static auto make_simplex(
-		Label label,
-		Index max_vertex,
-		Value value                       = DEFAULT_FILT_VALUE,
+		Label                        label,
+		Index                        max_vertex,
+		Value                        value  = DEFAULT_FILT_VALUE,
 		const std::vector<Simplex*>& facets = std::vector<Simplex*>{}
 	) -> SimplexHandle;
 

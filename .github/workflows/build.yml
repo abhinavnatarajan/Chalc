@@ -142,7 +142,7 @@ jobs:
           CIBW_ENVIRONMENT_PASS_LINUX: CI VCPKG_BINARY_SOURCES
           CIBW_SKIP: pp* *-musllinux_*
           CIBW_TEST_COMMAND: pytest {package}/tests
-          CIBW_TEST_GROUPS: test
+          CIBW_TEST_GROUPS: test # don't use test-gudhi because it isn't available on all platforms
 
       - name: Upload artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

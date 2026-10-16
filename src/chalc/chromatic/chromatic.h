@@ -17,31 +17,29 @@ auto delaunay_rips(const Eigen::MatrixXd& points, const std::vector<Colour>& col
 
 // Compute the chromatic delrips complex with parallelisation
 auto delaunay_rips_parallel(
-	const Eigen::MatrixXd&       points,
+	const Eigen::MatrixXd&     points,
 	const std::vector<Colour>& colours,
-	const int                    max_num_threads
+	const int                  max_num_threads
 ) -> Filtration;
 
 // Compute the chromatic alpha complex
-auto alpha(const Eigen::MatrixXd& points, const std::vector<Colour>& colours)
-	-> Filtration;
+auto alpha(const Eigen::MatrixXd& points, const std::vector<Colour>& colours) -> Filtration;
 
 // Compute the chromatic alpha complex with parallelisation
 auto alpha_parallel(
-	const Eigen::MatrixXd&       points,
+	const Eigen::MatrixXd&     points,
 	const std::vector<Colour>& colours,
-	const int                    max_num_threads
+	const int                  max_num_threads
 ) -> Filtration;
 
 // Compute the chromatic Delaunay--Čech complex
-auto delaunay_cech(const Eigen::MatrixXd& points, const std::vector<Colour>& colours)
-	-> Filtration;
+auto delaunay_cech(const Eigen::MatrixXd& points, const std::vector<Colour>& colours) -> Filtration;
 
 // Compute the chromatic Delaunay--Čech complex with parallelisation
 auto delaunay_cech_parallel(
-	const Eigen::MatrixXd&       points,
+	const Eigen::MatrixXd&     points,
 	const std::vector<Colour>& colours,
-	const int                    max_num_threads
+	const int                  max_num_threads
 ) -> Filtration;
 }  // namespace chalc
 

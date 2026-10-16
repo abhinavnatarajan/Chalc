@@ -219,8 +219,8 @@ auto delaunay(const MatrixXd& X, const vector<Colour>& colours) -> Filtration {
 		for (auto&& [label_it, vert_it] =
 		         tuple{max_cell_vertex_labels.begin(), cell_it->vertices_begin()};
 		     // vert_it != cell_it->vertices_end();
-		     // vert_it++) { // BUG IN CGAL: vertices_end segfaults for cells with less vertices
-		     // than maximal_dimension
+			 // vert_it++) { // BUG IN CGAL: vertices_end segfaults for cells with less vertices
+			 // than maximal_dimension
 		     vert_it != cell_it->vertices_end() && label_it != max_cell_vertex_labels.end();
 		     label_it++, vert_it++) {
 			*label_it = (*vert_it)->data();
@@ -294,10 +294,10 @@ auto delaunay_rips_parallel(
 						auto&& edge      = edges[idx];
 						auto&& verts     = edge->vertex_labels();
 						edge->value()    = sqrt(to_double(
-                            (points_exact_q.col(verts[0]) - points_exact_q.col(verts[1]))
-                                .squaredNorm() *
-                            one_by_four
-                        ));
+							(points_exact_q.col(verts[0]) - points_exact_q.col(verts[1]))
+								.squaredNorm() *
+							one_by_four
+						));
 					}
 				}
 			);
@@ -397,7 +397,7 @@ auto alpha(const MatrixXd& points, const vector<Colour>& colours) -> Filtration 
 						// among all vertices in cofaces of this simplex.
 						auto squared_dist_to_nearest_pt_of_colour_j =
 							(points_exact_q(all, verts_by_colour_all_cofaces.at(j)).colwise() -
-						     centre)
+							 centre)
 								.colwise()
 								.squaredNorm()
 								.minCoeff();
@@ -479,8 +479,8 @@ auto alpha_parallel(
 							}
 
 							// Partition the vertices of all cofaces of the simplex by colour.
-						    // verts_by_colour_all_cofaces[j] will have duplicates but this
-						    // does not affect correctness.
+							// verts_by_colour_all_cofaces[j] will have duplicates but this
+							// does not affect correctness.
 							array<vector<Index>, MAX_NUM_COLOURS> verts_by_colour_all_cofaces;
 							for (auto&& cofacet: simplex->cofacets()) {
 								for (auto&& v: cofacet->vertex_labels()) {
@@ -489,13 +489,13 @@ auto alpha_parallel(
 							}
 
 							// For each colour j in the simplex, find the affine subspace
-						    // of points equidistant to the vertices of colour j in the simplex.
-						    // Suppose this subspace is E_j and is defined by a matrix equation:
-						    // E_j * x = b_j.
-						    // We append E_j and b_j to the bottom of a matrix E and a vector b.
-						    // Then the solution set E of the matrix equation
-						    // E * x = b
-						    // is the intersection over all j of the affine subspaces E_j.
+							// of points equidistant to the vertices of colour j in the simplex.
+							// Suppose this subspace is E_j and is defined by a matrix equation:
+							// E_j * x = b_j.
+							// We append E_j and b_j to the bottom of a matrix E and a vector b.
+							// Then the solution set E of the matrix equation
+							// E * x = b
+							// is the intersection over all j of the affine subspaces E_j.
 							MatrixX<Mpzf> E(0, points.rows());
 							VectorX<Mpzf> b;
 							for (auto&& verts_j: verts_by_colour_in_simplex) {
@@ -503,9 +503,9 @@ auto alpha_parallel(
 									continue;
 								}
 								// Each of these has size at least 1, so the -1 in the following is
-							    // safe. The narrowing cast is safe because verts_j.size() is always
-							    // at most the number of points, which is less than
-							    // Eigen::Index::max().
+								// safe. The narrowing cast is safe because verts_j.size() is always
+								// at most the number of points, which is less than
+								// Eigen::Index::max().
 								auto num_new_rows = static_cast<Eigen::Index>(verts_j.size() - 1);
 								E.conservativeResize(E.rows() + num_new_rows, Eigen::NoChange);
 								b.conservativeResize(b.rows() + num_new_rows);
@@ -517,9 +517,9 @@ auto alpha_parallel(
 							}
 
 							// Get the smallest bounding ball of the points
-						    // in the simplex, with the added constraint that
-						    // the centre x of the ball must satisfy the equation
-						    // E * x = b i.e., it lies in the affine subspace E.
+							// in the simplex, with the added constraint that
+							// the centre x of the ball must satisfy the equation
+							// E * x = b i.e., it lies in the affine subspace E.
 							auto&& [centre, sqRadius, success] =
 								constrained_miniball<SolutionPrecision::EXACT>(
 									points_exact(all, verts),
@@ -533,9 +533,9 @@ auto alpha_parallel(
 							} else {
 								// If the simplex is not maximal, check if the stack is empty
 								for (auto&& [j, verts_j] =
-							             tuple{0, verts_by_colour_in_simplex.cbegin()};
-							         verts_j != verts_by_colour_in_simplex.cend();
-							         j++, verts_j++) {
+								         tuple{0, verts_by_colour_in_simplex.cbegin()};
+								     verts_j != verts_by_colour_in_simplex.cend();
+								     j++, verts_j++) {
 									if (verts_j->empty()) {
 										continue;
 									}
@@ -543,16 +543,16 @@ auto alpha_parallel(
 									auto rj_squared =
 										(points_exact_q(all, (*verts_j)[0]) - centre).squaredNorm();
 									// Get the distance of the nearest point of colour j to the
-								    // centre, among all vertices in cofaces of this simplex.
+									// centre, among all vertices in cofaces of this simplex.
 									auto squared_dist_to_nearest_pt_of_colour_j =
 										(points_exact_q(all, verts_by_colour_all_cofaces.at(j))
-								             .colwise() -
-								         centre)
+										     .colwise() -
+										 centre)
 											.colwise()
 											.squaredNorm()
 											.minCoeff();
 									// Check if the nearest point is not in the interior of the
-								    // sphere.
+									// sphere.
 									stack_is_empty &=
 										(squared_dist_to_nearest_pt_of_colour_j >= rj_squared);
 								}
@@ -657,7 +657,7 @@ auto delaunay_cech_parallel(
 						} else {
 							simplex->value() = sqrt(to_double(
 								(points_exact_q.col(verts[0]).eval() -
-						         points_exact_q.col(verts[1]).eval())
+								 points_exact_q.col(verts[1]).eval())
 									.squaredNorm() *
 								one_by_four
 							));

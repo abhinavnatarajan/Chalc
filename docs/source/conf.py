@@ -85,6 +85,7 @@ autoapi_member_order = "alphabetical"
 autoapi_keep_files = True
 autoapi_ignore = ["*/.ipynb_checkpoints/*"]
 
+
 def autoapi_skip_member(
 	_app: Sphinx,
 	_what: str,
