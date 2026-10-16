@@ -41,6 +41,7 @@ Documentation index
 
     installation
     example
+    thread_safety
     API
     license
 
