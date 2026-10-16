@@ -1,22 +1,30 @@
 """Test various methods of inclusions in sixpack computation."""
 
+from __future__ import annotations
+
 import math
 from dataclasses import fields
 from itertools import combinations, product
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import h5py
 import numpy as np
 import pytest
-from gudhi.bottleneck import bottleneck_distance
 
 import chalc as ch
 from chalc.morphisms.types import SixPackMorphisms, SixPackRepresentatives
 
+if TYPE_CHECKING:
+	from collections.abc import Callable
+	from pathlib import Path
+
 random_seed = 44
 
 
-def test_kchromatic_inclusion_vs_quotient() -> None:
+@pytest.mark.gudhi
+def test_kchromatic_inclusion_vs_quotient(
+	bottleneck_distance: Callable[[np.ndarray, np.ndarray], float],
+) -> None:
 	"""Test that k-chromatic inclusion and k-chromatic gluing map yield same result when k=1."""
 	rng = np.random.default_rng(random_seed)
 	num_points = 500
@@ -46,7 +54,10 @@ def test_kchromatic_inclusion_vs_quotient() -> None:
 		assert math.isclose(max(dists), 0, abs_tol=1e-6)
 
 
-def test_kchromatic_vs_subchromatic_inclusion() -> None:
+@pytest.mark.gudhi
+def test_kchromatic_vs_subchromatic_inclusion(
+	bottleneck_distance: Callable[[np.ndarray, np.ndarray], float],
+) -> None:
 	"""Test that k-chromatic and subchromatic inclusions agree when appropriate."""
 	rng = np.random.default_rng(random_seed)
 	num_points = 500
@@ -82,7 +93,10 @@ def test_kchromatic_vs_subchromatic_inclusion() -> None:
 			assert math.isclose(max(dists), 0, abs_tol=1e-6)
 
 
-def test_kchromatic_vs_subchromatic_quotient() -> None:
+@pytest.mark.gudhi
+def test_kchromatic_vs_subchromatic_quotient(
+	bottleneck_distance: Callable[[np.ndarray, np.ndarray], float],
+) -> None:
 	"""Test that k-chromatic and subchromatic quotients agree when appropriate."""
 	rng = np.random.default_rng(random_seed)
 	num_points = 500
@@ -118,7 +132,10 @@ def test_kchromatic_vs_subchromatic_quotient() -> None:
 			assert math.isclose(max(dists), 0, abs_tol=1e-6)
 
 
-def test_subchromatic_inclusion_vs_quotient() -> None:
+@pytest.mark.gudhi
+def test_subchromatic_inclusion_vs_quotient(
+	bottleneck_distance: Callable[[np.ndarray, np.ndarray], float],
+) -> None:
 	"""Test that the subchromatic inclusion and quotient agree for a single subfiltration."""
 	rng = np.random.default_rng(random_seed)
 	num_points = 500

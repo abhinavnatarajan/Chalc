@@ -97,6 +97,10 @@ Changes since 14.2.0.
 
 ### Documentation and development
 
+- Make GUDHI comparisons optional through the `test-gudhi` dependency group.
+  The standard test group and development installs no longer require GUDHI;
+  only the five marked comparison tests skip when it is absent. Add
+  `make tests-gudhi` to run the complete suite with GUDHI installed.
 - Update the example notebook for the persistence API, representatives, natural
   maps, plotting, and HDF5. Upgrade it to notebook format 4.5 with cell IDs.
 - Update Sphinx API references, omit notebook checkpoints from API discovery,

@@ -1,11 +1,17 @@
 """Tests for the geometric computations in chalc."""
 
+from __future__ import annotations
+
 import math
+from typing import TYPE_CHECKING
 
 import numpy as np
-from gudhi.bottleneck import bottleneck_distance
+import pytest
 
 import chalc as ch
+
+if TYPE_CHECKING:
+	from collections.abc import Callable
 
 # pyrefly: ignore [missing-import]
 from .utils import assert_clique_complex
@@ -227,7 +233,10 @@ def test_delrips_vs_delcech_random() -> None:
 			)
 
 
-def test_alpha_delcech_homotopy_equivalent() -> None:
+@pytest.mark.gudhi
+def test_alpha_delcech_homotopy_equivalent(
+	bottleneck_distance: Callable[[np.ndarray, np.ndarray], float],
+) -> None:
 	"""Test that 6-packs from chromatic delcech and chromatic alpha filtrations are identical."""
 	rng = np.random.default_rng(random_seed)
 	dims = [1, 2]

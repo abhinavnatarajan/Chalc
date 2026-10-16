@@ -26,7 +26,7 @@ dependencies = [
 	"h5py~=3.12",
 	"matplotlib~=3.9",
 	"numpy~=2.0",
-	"pandas~=2.2",
+	"persim>=0.3.8",
 	"phimaker>=0.4.1",
 ]
 
@@ -38,11 +38,14 @@ Repository = "https://github.com/abhinavnatarajan/Chalc.git"
 [dependency-groups]
 dev = [
 	"ipympl~=0.9",
-	"marimo[lsp]>=0.24.2",
 	# Pybind11 headers for LSP
 	# Needs to be kept in sync with build-system.requires below
+	"lefthook>=2.2.2",
 	"pybind11~=3.1",
 	"pybind11-stubgen~=2.5",
+	"pyrefly>=1.4.0",
+	"ruff>=0.17.1",
+	"tombi>=1.8.4",
 ]
 docs = [
 	"furo>=2024.8.6",
@@ -54,7 +57,8 @@ docs = [
 	"sphinx-toolbox~=3.5",
 	"tqdm~=4.67",
 ]
-test = ["gudhi~=3.11", "pytest~=8.3"]
+test = ["pytest~=8.3"]
+test-gudhi = [{ include-group = "test" }, "gudhi~=3.11"]
 
 [build-system]
 requires = ["pybind11~=3.1", "scikit-build-core~=0.11.4"]
@@ -66,6 +70,7 @@ preset = "default"
 [tool.pytest.ini_options]
 addopts = ["--import-mode=importlib"]
 testpaths = ["tests"]
+markers = ["gudhi: comparison tests requiring the optional test-gudhi dependency group"]
 
 [tool.ruff]
 line-length = 100

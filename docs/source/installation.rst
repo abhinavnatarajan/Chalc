@@ -116,11 +116,28 @@ If you do not have vcpkg installed, the build process will automatically downloa
 
         .. code-block:: powershell
 
-            uv sync --verbose --all-groups --no-progress
+            uv sync --verbose --group dev --group docs --group test --no-progress
             uv run python -m pybind11_stubgen chalc.chromatic --numpy-array-use-type-var --output-dir ..\src
             uv run python -m pybind11_stubgen chalc.filtration --numpy-array-use-type-var --output-dir ..\src
             uv lock
-            uv export --format pylock.toml --all-groups -o pylock.toml --quiet
+            uv export --locked --format pylock.toml --group dev --group docs --group test -o pylock.toml --quiet
+
+Running tests
+-------------
+
+Install test dependencies and run the test suite::
+
+    uv run --group test pytest
+
+Some tests require the Python package GUDHI, which is not available for free-threaded Python as of 16 October 2026.
+To install GUDHI and run the complete suite on a Python version supported by GUDHI::
+
+    uv run --group test-gudhi pytest
+
+The equivalent Makefile targets are ``make tests`` and ``make tests-gudhi``.
+Tests that require GUDHI are marked with a pytest marker ``gudhi``, and can be skipped even with GUDHI installed::
+
+``uv run --group test pytest -m "not gudhi"``.
 
 Building the Documentation
 --------------------------
