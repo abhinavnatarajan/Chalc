@@ -395,7 +395,7 @@ auto Filtration::boundary_matrix(Index max_dimension) const
 			sort_by_val.push_back(s.second);
 		}
 	}
-	stable_sort(sort_by_val, [](const Simplex* s1, const Simplex* s2) {
+	stable_sort(sort_by_val, [](const Simplex* s1, const Simplex* s2) -> bool {
 		return (
 			s1->filt_value_ < s2->filt_value_ ||
 			(s1->filt_value_ == s2->filt_value_ && s1->dim_ < s2->dim_) ||

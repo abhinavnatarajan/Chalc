@@ -7,7 +7,7 @@ namespace {
 using chalc::Filtration;
 }  // namespace
 
-PYBIND11_MODULE(filtration, m) {  // NOLINT
+PYBIND11_MODULE(filtration, m, pybind11::mod_gil_not_used()) {  // NOLINT
 	using chalc::Index;
 	using chalc::MAX_NUM_COLOURS;
 	using chalc::standard_simplex;
@@ -20,8 +20,8 @@ PYBIND11_MODULE(filtration, m) {  // NOLINT
 		"Module containing utilities to store and manipulate abstract filtered simplicial complexes.";
 
 	// Forward declare our classes.
-	py::class_<Filtration> filtered_complex(m, "Filtration");
-	py::class_<Filtration::Simplex>                simplex(m, "Simplex");
+	py::class_<Filtration>          filtered_complex(m, "Filtration");
+	py::class_<Filtration::Simplex> simplex(m, "Simplex");
 
 	// Subclass Filtration from Sized, Iterable, and Container.
 	auto Sized     = py::module_::import("collections.abc").attr("Sized");
@@ -94,7 +94,7 @@ Args:
 		// Requirements from Iterable
 		.def(
 			"__iter__",
-			[](Filtration& self) {
+			[](Filtration& self) -> pybind11::typing::Iterator<const chalc::Filtration::Simplex&> {
 				return py::make_iterator(self.simplices_begin(), self.simplices_end());
 			},
 			R"docstring(Iterate over the simplices in the complex, ordered by dimension.
@@ -218,10 +218,14 @@ Returns true if each simplex has a filtration value at least as large as each of
 
 )docstring"
 		)
-		.def("__repr__", [](const Filtration& self) {
-			return "<" + to_string(self.dimension()) + "-dimensional simplicial complex with " +
-		           to_string(self.num_vertices()) + " vertices>";
-		});
+		.def(
+			"__repr__",
+			[](const Filtration& self)
+				-> std::basic_string<char, std::char_traits<char>, std::allocator<char>> {
+				return "<" + to_string(self.dimension()) + "-dimensional simplicial complex with " +
+		               to_string(self.num_vertices()) + " vertices>";
+			}
+		);
 
 	/* Simplex Interface */
 	simplex.doc() = "Class representing a simplex in a filtered simplicial complex.";
@@ -270,7 +274,7 @@ from the parent complex to ensure that filtration times remain monotonic.
 		)
 		.def(
 			"set_colour",
-			[](Filtration::Simplex* s_ptr, Index c) {
+			[](Filtration::Simplex* s_ptr, Index c) -> void {
 				if (s_ptr->dimension() == 0) {
 					if (c < MAX_NUM_COLOURS) {
 						s_ptr->set_colour(c);
@@ -297,15 +301,19 @@ Tip:
 		)
 		.def_property_readonly(
 			"facets",
-			[](const Filtration::Simplex* self) {
+			[](const Filtration::Simplex* self) -> std::vector<Filtration::Simplex*> {
 				return self->facets();
 			},
 			py::return_value_policy::reference_internal,
 			"Read-only list of handles to the facets of the simplex."
 		)
-		.def("__repr__", [](const Filtration::Simplex* s_ptr) {
-			return "<" + to_string(s_ptr->dimension()) + "-simplex>";
-		});
+		.def(
+			"__repr__",
+			[](const Filtration::Simplex* s_ptr)
+				-> std::basic_string<char, std::char_traits<char>, std::allocator<char>> {
+				return "<" + to_string(s_ptr->dimension()) + "-simplex>";
+			}
+		);
 
 	m.def(
 		"complete_complex",

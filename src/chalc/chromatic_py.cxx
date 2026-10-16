@@ -4,7 +4,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-PYBIND11_MODULE(chromatic, m) {  // NOLINT
+PYBIND11_MODULE(chromatic, m, pybind11::mod_gil_not_used()) {  // NOLINT
 	using chalc::alpha;
 	using chalc::alpha_parallel;
 	using chalc::Colour;
@@ -28,7 +28,7 @@ PYBIND11_MODULE(chromatic, m) {  // NOLINT
 		 "delaunay",
 		 [](const Eigen::MatrixXd&          points,
 	        const Eigen::VectorX<Colour>& colours_ndarray,
-	        bool                            parallel) {
+	        bool                            parallel) -> chalc::Filtration {
 			 const vector<Colour> colours(colours_ndarray.cbegin(), colours_ndarray.cend());
 			 if (parallel) {
 				 return delaunay<CGAL::Parallel_tag>(points, colours);
@@ -42,7 +42,7 @@ PYBIND11_MODULE(chromatic, m) {  // NOLINT
 	)
 		.def(
 			"delaunay",
-			[](const Eigen::MatrixXd& points, const vector<Colour>& colours, bool parallel) {
+			[](const Eigen::MatrixXd& points, const vector<Colour>& colours, bool parallel) -> chalc::Filtration {
 				if (parallel) {
 					return delaunay<CGAL::Parallel_tag>(points, colours);
 				} else {
@@ -77,7 +77,7 @@ Returns:
 			"delaunay_rips",
 			[](const Eigen::MatrixXd& points,
 	           const Eigen::VectorX<Colour>& colours_ndarray,
-	           const int max_num_threads) {
+	           const int max_num_threads) -> chalc::Filtration {
 				const vector<Colour> colours(colours_ndarray.cbegin(), colours_ndarray.cend());
 				if (max_num_threads == 1) {
 					return delaunay_rips(points, colours);
@@ -93,7 +93,7 @@ Returns:
 			"delaunay_rips",
 			[](const Eigen::MatrixXd& points,
 	           const vector<Colour>& colours,
-	           const int max_num_threads) {
+	           const int max_num_threads) -> chalc::Filtration {
 				if (max_num_threads == 1) {
 					return delaunay_rips(points, colours);
 				} else {
@@ -145,7 +145,7 @@ See Also:
 			"alpha",
 			[](const Eigen::MatrixXd& points,
 	           const Eigen::VectorX<Colour>& colours_ndarray,
-	           const int max_num_threads) {
+	           const int max_num_threads) -> chalc::Filtration {
 				const vector<Colour> colours(colours_ndarray.cbegin(), colours_ndarray.cend());
 				if (max_num_threads == 1) {
 					return alpha(points, colours);
@@ -161,7 +161,7 @@ See Also:
 			"alpha",
 			[](const Eigen::MatrixXd& points,
 	           const vector<Colour>& colours,
-	           const int max_num_threads) {
+	           const int max_num_threads) -> chalc::Filtration {
 				if (max_num_threads == 1) {
 					return alpha(points, colours);
 				} else {
@@ -207,7 +207,7 @@ See Also:
 			"delaunay_cech",
 			[](const Eigen::MatrixXd& points,
 	           const Eigen::VectorX<Colour>& colours_ndarray,
-	           const int max_num_threads) {
+	           const int max_num_threads) -> chalc::Filtration {
 				const vector<Colour> colours(colours_ndarray.cbegin(), colours_ndarray.cend());
 				if (max_num_threads == 1) {
 					return delaunay_cech(points, colours);
@@ -223,7 +223,7 @@ See Also:
 			"delaunay_cech",
 			[](const Eigen::MatrixXd& points,
 	           const vector<Colour>& colours,
-	           const int max_num_threads) {
+	           const int max_num_threads) -> chalc::Filtration {
 				if (max_num_threads == 1) {
 					return delaunay_cech(points, colours);
 				} else {
