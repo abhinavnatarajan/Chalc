@@ -48,8 +48,8 @@ class AugmentedPersistenceModule:
 	and distinct integer indices may correspond to elements that have the same entrance time.
 	"""
 
-	__slots__ = ("_degrees", "_entrance_times", "_intervals")
-	_intervals: dict[int, int | None]
+	__slots__ = ("_degrees", "_entrance_times", "_pairings")
+	_pairings: dict[int, int | None]
 	_degrees: dict[int, int]
 	_entrance_times: np.ndarray[tuple[int], np.dtype[np.float64]]
 
@@ -68,7 +68,7 @@ class AugmentedPersistenceModule:
 			degrees: A sequence associating each interval (identified by its generator index)
 				to its degree.
 		"""
-		self._intervals = dict(intervals) if intervals is not None else {}
+		self._pairings = dict(intervals) if intervals is not None else {}
 		self._degrees = dict(degrees) if degrees is not None else {}
 		self._entrance_times = np.array(entrance_times, dtype=np.float64, copy=True)
 		if (
@@ -78,10 +78,10 @@ class AugmentedPersistenceModule:
 		):
 			msg = "Endpoint entrance times must be a nondecreasing sequence without NaN."
 			raise ValueError(msg)
-		if self._degrees.keys() != self._intervals.keys():
+		if self._degrees.keys() != self._pairings.keys():
 			msg = "Degrees must be specified for exactly the interval generators."
 			raise ValueError(msg)
-		for birth, death in self._intervals.items():
+		for birth, death in self._pairings.items():
 			if (
 				not isinstance(birth, Integral)
 				or not 0 <= birth < len(self._entrance_times)
@@ -105,27 +105,32 @@ class AugmentedPersistenceModule:
 		if not isinstance(other, AugmentedPersistenceModule):
 			return NotImplemented
 		return (
-			self._intervals == other._intervals
+			self._pairings == other._pairings
 			and np.array_equal(self._entrance_times, other._entrance_times)
 			and self._degrees == other._degrees
 		)
 
 	def __bool__(self) -> bool:
 		"""Check if the persistence module is non-empty."""
-		return bool(self._intervals)
+		return bool(self._pairings)
 
 	def __hash__(self) -> int:  # noqa: D105
 		return hash(
 			(
 				tuple(self._entrance_times),
 				frozenset(self._degrees.items()),
-				frozenset(self._intervals.items()),
+				frozenset(self._pairings.items()),
 			),
 		)
 
 	def __len__(self) -> int:
 		"""Return the number of features in the module."""
-		return len(self._intervals)
+		return len(self._pairings)
+
+	@property
+	def degrees(self) -> MappingProxyType[int, int]:
+		"""Return the degrees of interval endpoints."""
+		return MappingProxyType(self._degrees)
 
 	def nonempty_degrees(self) -> IndexArray:
 		"""Return all inhabited degrees in the persistence module."""
@@ -134,7 +139,7 @@ class AugmentedPersistenceModule:
 	@property
 	def pairings(self) -> MappingProxyType[int, int | None]:
 		"""Get the birth-death pairing indices for this module."""
-		return MappingProxyType(self._intervals)
+		return MappingProxyType(self._pairings)
 
 	@property
 	def entrance_times(self) -> np.ndarray[tuple[int], np.dtype[np.float64]]:
@@ -144,15 +149,15 @@ class AugmentedPersistenceModule:
 		"""
 		return self._entrance_times
 
-	def interval(self, i: int | np.integer) -> tuple[float, float]:
-		"""Return the interval with birth index ``i``."""
-		if isinstance(i, np.integer):
-			i = int(i)
-		if i not in self._intervals:
+	def interval(self, birth_index: int | np.integer) -> tuple[float, float]:
+		"""Return the interval with the given birth index."""
+		if isinstance(birth_index, np.integer):
+			birth_index = int(birth_index)
+		if birth_index not in self._pairings:
 			raise KeyError
-		death_idx = self._intervals[i]
+		death_idx = self._pairings[birth_index]
 		return (
-			self._entrance_times[i],
+			self._entrance_times[birth_index],
 			self._entrance_times[death_idx] if death_idx is not None else float("inf"),
 		)
 
@@ -196,7 +201,7 @@ class AugmentedPersistenceModule:
 			return np.fromiter(
 				(
 					time
-					for b, d in sorted(self._intervals.items())
+					for b, d in sorted(self._pairings.items())
 					if self._degrees[b] == degrees
 					for time in (
 						self._entrance_times[b],
@@ -226,7 +231,7 @@ class AugmentedPersistenceModule:
 		By default, pairings use this module's endpoint indices. An enclosing 6-pack
 		can supply its original pairings instead, in the same interval order.
 		"""
-		stored_pairings = self._intervals if pairings is None else pairings
+		stored_pairings = self._pairings if pairings is None else pairings
 		file["pairings"] = np.fromiter(
 			(
 				index
@@ -238,9 +243,9 @@ class AugmentedPersistenceModule:
 		).reshape((-1, 2))
 		file["entrance_times"] = self._entrance_times
 		file["degrees"] = np.fromiter(
-			(self._degrees[birth] for birth in self._intervals),
+			(self._degrees[birth] for birth in self._pairings),
 			dtype=np.int64,
-			count=len(self._intervals),
+			count=len(self._pairings),
 		)
 
 
@@ -516,7 +521,12 @@ class SixPack:
 		if self._representatives is not None:
 			group = file.create_group("representatives")
 			for name in self._MODULE_NAMES:
-				_write_sparse_rows(group.create_group(name), getattr(self._representatives, name))
+				if name == "relative":
+					_write_relative_rows(group.create_group(name), self._representatives.relative)
+				else:
+					_write_sparse_rows(
+						group.create_group(name), getattr(self._representatives, name)
+					)
 		if self._morphisms is not None:
 			group = file.create_group("morphisms")
 			for morph_field in fields(self._morphisms):
@@ -537,10 +547,12 @@ class SixPack:
 			if "representatives" in file:
 				group = _read_group(file, "representatives")
 				representatives = SixPackRepresentatives(
-					**{
-						name: _read_sparse_rows(_read_group(group, name))
-						for name in cls._MODULE_NAMES
-					},
+					kernel=_read_sparse_rows(_read_group(group, "kernel")),
+					domain=_read_sparse_rows(_read_group(group, "domain")),
+					image=_read_sparse_rows(_read_group(group, "image")),
+					codomain=_read_sparse_rows(_read_group(group, "codomain")),
+					cokernel=_read_sparse_rows(_read_group(group, "cokernel")),
+					relative=_read_relative_rows(_read_group(group, "relative")),
 				)
 			morphisms = None
 			if "morphisms" in file:
@@ -639,8 +651,13 @@ class SixPackRepresentatives:
 	cokernel: dict[int, IndexArray] = field(kw_only=True)
 	"""Cokernel representatives."""
 
-	relative: dict[int, IndexArray] = field(kw_only=True)
-	"""Relative representatives."""
+	relative: dict[int, tuple[IndexArray, IndexArray]] = field(kw_only=True)
+	r"""Relative representatives.
+
+	A representative of an interval in the relative diagram of a map
+	:math:`f: A \to B` is a pair of chains :math:`(a, b)` such that
+	:math:`f(a) = db`.
+	"""
 
 	__hash__ = None
 
@@ -648,8 +665,18 @@ class SixPackRepresentatives:
 		"""Compare the sparse support arrays by value."""
 		if not isinstance(other, SixPackRepresentatives):
 			return NotImplemented
-		return all(
-			_sparse_rows_equal(getattr(self, f.name), getattr(other, f.name)) for f in fields(self)
+		return (
+			all(
+				_sparse_rows_equal(getattr(self, f.name), getattr(other, f.name))
+				for f in fields(self)
+				if f.name != "relative"
+			)
+			and self.relative.keys() == other.relative.keys()
+			and all(
+				np.array_equal(a, other.relative[birth][0])
+				and np.array_equal(b, other.relative[birth][1])
+				for birth, (a, b) in self.relative.items()
+			)
 		)
 
 
@@ -733,6 +760,23 @@ def _read_module(
 		msg = f"Degenerate intervals are not allowed in a SixPack: {group.name}"
 		raise ValueError(msg)
 	return module, {birth: index_map[birth] for birth in pairings}
+
+
+def _write_relative_rows(
+	group: h5py.Group,
+	rows: Mapping[int, tuple[IndexArray, IndexArray]],
+) -> None:
+	_write_sparse_rows(group.create_group("domain"), {birth: a for birth, (a, _) in rows.items()})
+	_write_sparse_rows(group.create_group("codomain"), {birth: b for birth, (_, b) in rows.items()})
+
+
+def _read_relative_rows(group: h5py.Group) -> dict[int, tuple[IndexArray, IndexArray]]:
+	domain = _read_sparse_rows(_read_group(group, "domain"))
+	codomain = _read_sparse_rows(_read_group(group, "codomain"))
+	if domain.keys() != codomain.keys():
+		msg = f"Relative chain pairs must have matching interval keys: {group.name}"
+		raise ValueError(msg)
+	return {birth: (a, codomain[birth]) for birth, a in domain.items()}
 
 
 def _write_sparse_rows(group: h5py.Group, rows: Mapping[int, IndexArray]) -> None:

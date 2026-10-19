@@ -12,6 +12,3 @@ You can find more details on the maths behind chromatic Delaunay filtrations in 
 
 
 For instructions on how to install and use chalc, read the [documentation](https://abhinavnatarajan.github.io/Chalc).
-
-> [!IMPORTANT]
-> Since the release of NumPy 2.0, versions of chalc older than 2.0.0 won't work correctly. This is due to a bug in these package versions related to dependency specification. If you are using an older version of chalc, please make sure to install a compatible version of NumPy (≥ 1.24.2 and < 2.0.0).

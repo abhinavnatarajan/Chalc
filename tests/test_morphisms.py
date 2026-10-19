@@ -242,7 +242,12 @@ def test_sixpack_representatives_and_maps(
 	for name, module in pack:
 		reps = getattr(representatives, name)
 		assert all(module.interval(b) for b in reps)
-		for support in reps.values():
+		supports = (
+			(chain for pair in reps.values() for chain in pair)
+			if name == "relative"
+			else reps.values()
+		)
+		for support in supports:
 			assert support.dtype == np.int64
 			assert support.ndim == 1
 			assert support.flags.c_contiguous
@@ -269,11 +274,40 @@ def test_sixpack_representatives_and_maps(
 	for data in (loaded.representatives, loaded.morphisms):
 		assert data is not None
 		for f in fields(data):
-			for support in getattr(data, f.name).values():
+			rows = getattr(data, f.name)
+			supports = (
+				(chain for pair in rows.values() for chain in pair)
+				if f.name == "relative"
+				else rows.values()
+			)
+			for support in supports:
 				assert support.dtype == np.int64
 				assert support.ndim == 1
 				assert support.flags.c_contiguous
 	assert loaded.metadata is None
+
+
+def test_inclusion_relative_chain_pair_roundtrip(tmp_path: Path) -> None:
+	class VerticesOnlyInclusion(ch.morphisms.FiltrationInclusion):
+		def simplex_in_domain(self, column: tuple[list[int], int, float, list[int]]) -> bool:
+			return not column[0]
+
+	pack = VerticesOnlyInclusion(ch.filtration.standard_simplex(1)).sixpack(
+		get_representatives=True,
+	)
+	assert pack.representatives is not None
+	assert pack.representatives.relative.keys() == {0}
+	a, b = pack.representatives.relative[0]
+	# Both chains use codomain indices, even though a is supported in the domain.
+	np.testing.assert_array_equal(a, [0, 1])
+	np.testing.assert_array_equal(b, [2])
+	with h5py.File(tmp_path / "inclusion_relative.h5", "w") as file:
+		pack.to_hdf5(file)
+	with h5py.File(tmp_path / "inclusion_relative.h5", "r") as file:
+		loaded = ch.morphisms.SixPack.from_hdf5(file)
+	assert loaded == pack
+	assert loaded.representatives == pack.representatives
+	assert loaded.morphisms == pack.morphisms
 
 
 def test_kernel_map_retained_at_degree_limit() -> None:

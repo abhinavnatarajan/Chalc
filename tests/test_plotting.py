@@ -239,10 +239,9 @@ def test_draw_kernel_representatives(*, quotient: bool) -> None:
 	matrix = filtration.boundary_matrix()
 	if quotient:
 		assert pack.metadata is not None
-		monochromatic_indices = [i for i, column in enumerate(matrix) if len(column[3]) == 1]
-		index_map = dict(zip(pack.metadata["domain_indices"], monochromatic_indices, strict=True))
+		index_map = pack.metadata["domain_index_to_codomain_index"]
 	else:
-		index_map = dict(enumerate(range(len(matrix))))
+		index_map = range(len(matrix))
 	cycles = [
 		{index_map[int(index)] for index in cycle}
 		for cycle in pack.representatives.kernel.values()

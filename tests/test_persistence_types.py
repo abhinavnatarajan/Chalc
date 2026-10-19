@@ -1,6 +1,8 @@
 """Regression tests for augmented persistence modules and 6-packs."""
 
+import copy
 import gc
+import pickle
 import weakref
 from collections.abc import Mapping
 from dataclasses import fields
@@ -125,6 +127,59 @@ def test_module_equality_and_input_copies(module: AugmentedPersistenceModule) ->
 	assert original != module
 	assert original != object()
 	assert original != AugmentedPersistenceModule({0: None}, [0.0], {0: 0})
+
+
+@pytest.mark.parametrize("deep", [False, True])
+def test_module_copy_preserves_read_only_mappings(
+	module: AugmentedPersistenceModule,
+	*,
+	deep: bool,
+) -> None:
+	clone = copy.deepcopy(module) if deep else copy.copy(module)
+	assert clone is not module
+	assert clone == module
+	assert hash(clone) == hash(module)
+	assert clone.pairings == module.pairings
+	assert clone.degrees == module.degrees
+	assert np.shares_memory(clone.entrance_times, module.entrance_times) == (not deep)
+	with pytest.raises(TypeError):
+		# pyrefly: ignore [unsupported-operation]
+		clone.pairings[0] = None
+	with pytest.raises(TypeError):
+		# pyrefly: ignore [unsupported-operation]
+		clone.degrees[0] = 1
+
+
+@pytest.mark.parametrize("protocol", [4, pickle.HIGHEST_PROTOCOL])
+def test_module_pickle_roundtrip(
+	module: AugmentedPersistenceModule,
+	protocol: int,
+) -> None:
+	clone = pickle.loads(pickle.dumps(module, protocol=protocol))  # noqa: S301
+	assert clone == module
+	assert clone.pairings == module.pairings
+	assert clone.degrees == module.degrees
+	assert not np.shares_memory(clone.entrance_times, module.entrance_times)
+
+
+def test_module_deepcopy_preserves_shared_references(module: AugmentedPersistenceModule) -> None:
+	clones = copy.deepcopy((module, module, module.entrance_times))
+	assert clones[0] is clones[1]
+	assert clones[0].entrance_times is clones[2]
+	assert clones[2] is not module.entrance_times
+
+
+def test_module_deepcopy_preserves_subclass_state() -> None:
+	class LabelledModule(AugmentedPersistenceModule):
+		label: list[str]
+
+	module = LabelledModule({0: None}, [0.0], {0: 0})
+	module.label = ["feature"]
+	clone = copy.deepcopy(module)
+	assert isinstance(clone, LabelledModule)
+	assert clone == module
+	assert clone.label == module.label
+	assert clone.label is not module.label
 
 
 @pytest.mark.parametrize(
@@ -267,7 +322,7 @@ def test_sixpack_takes_ownership_and_reindexes_representatives_and_maps() -> Non
 		image=_rows({4: [11]}),
 		codomain=_rows({3: [12]}),
 		cokernel=_rows({}),
-		relative=_rows({}),
+		relative={},
 	)
 	morphisms = SixPackMorphisms(
 		kernel_to_domain=_rows({5: [2, 4]}),
@@ -353,7 +408,7 @@ def sixpack_with_representatives() -> SixPack:
 			image=_rows({4: [11]}),
 			codomain=_rows({3: [12]}),
 			cokernel=_rows({}),
-			relative=_rows({}),
+			relative={},
 		),
 		morphisms=SixPackMorphisms(
 			kernel_to_domain=_rows({5: [2, 4]}),
@@ -384,6 +439,116 @@ def test_hdf5_representatives_and_maps_roundtrip(
 	np.testing.assert_equal(loaded.representatives.kernel, {0: [10, 11]})
 	np.testing.assert_equal(loaded.morphisms.kernel_to_domain, {0: [0, 1]})
 	np.testing.assert_equal(loaded.morphisms.domain_to_codomain, {0: [], 1: [0]})
+
+
+@pytest.fixture
+def sixpack_with_relative_representatives() -> SixPack:
+	return SixPack(
+		pairings=SixPackPairings(relative={8: None, 2: 4, 5: None, 6: 7, 1: 1}),
+		entrance_times=np.arange(9, dtype=np.float64),
+		degrees=[1] * 9,
+		representatives=SixPackRepresentatives(
+			kernel={},
+			domain={},
+			image={},
+			codomain={},
+			cokernel={},
+			relative={
+				birth: (np.array(a, dtype=np.int64), np.array(b, dtype=np.int64))
+				for birth, (a, b) in {
+					8: ([3, 12], [8]),
+					2: ([], [10, 11]),
+					5: ([4], []),
+					6: ([], []),
+					1: ([99], [99]),
+				}.items()
+			},
+		),
+	)
+
+
+def test_hdf5_relative_chain_pairs_roundtrip(
+	tmp_path: Path,
+	sixpack_with_relative_representatives: SixPack,
+) -> None:
+	original = sixpack_with_relative_representatives
+	with h5py.File(tmp_path / "relative.h5", "w") as file:
+		original.to_hdf5(file)
+		for component in ("domain", "codomain"):
+			group = file[f"representatives/relative/{component}"]
+			for name in ("keys", "offsets", "indices"):
+				assert group[name].dtype == np.int64
+	with h5py.File(tmp_path / "relative.h5", "r") as file:
+		loaded = SixPack.from_hdf5(file)
+	assert loaded == original
+	assert loaded.pairings == original.pairings
+	assert loaded._endpoint_relabelling == original._endpoint_relabelling  # noqa: SLF001
+	assert loaded.representatives == original.representatives
+	assert loaded.representatives is not None
+	relative = loaded.representatives.relative
+	assert relative.keys() == {0, 2, 3, 5}
+	for birth, (a, b) in {5: ([3, 12], [8]), 0: ([], [10, 11]), 2: ([4], []), 3: ([], [])}.items():
+		assert isinstance(relative[birth], tuple)
+		np.testing.assert_array_equal(relative[birth][0], a)
+		np.testing.assert_array_equal(relative[birth][1], b)
+		for support in relative[birth]:
+			assert support.dtype == np.int64
+			assert support.ndim == 1
+			assert support.flags.c_contiguous
+
+
+@pytest.mark.parametrize("damage", ["missing", "group", "keys", "offsets", "indices", "dtype"])
+@pytest.mark.parametrize("component", ["domain", "codomain"])
+def test_hdf5_rejects_invalid_relative_chain_pairs(
+	tmp_path: Path,
+	sixpack_with_relative_representatives: SixPack,
+	component: str,
+	damage: str,
+) -> None:
+	with h5py.File(tmp_path / "invalid_relative.h5", "w") as file:
+		sixpack_with_relative_representatives.to_hdf5(file)
+		relative = file["representatives/relative"]
+		group = relative[component]
+		if damage == "missing":
+			del relative[component]
+		elif damage == "group":
+			del relative[component]
+			relative[component] = np.empty(0, dtype=np.int64)
+		elif damage == "keys":
+			# This is valid sparse data, but the two components have different keys.
+			group["keys"][0] = 1
+		elif damage == "offsets":
+			group["offsets"][-1] += 1
+		elif damage == "indices":
+			group["indices"][0] = -1
+		else:
+			indices = group["indices"][:].astype(np.float64)
+			del group["indices"]
+			group["indices"] = indices
+		with pytest.raises(RuntimeError, match="Invalid HDF5 SixPack"):
+			SixPack.from_hdf5(file)
+
+
+@pytest.mark.parametrize("component", [0, 1])
+def test_relative_representatives_equality_compares_both_chains(component: int) -> None:
+	def representatives(a: list[int], b: list[int]) -> SixPackRepresentatives:
+		return SixPackRepresentatives(
+			kernel={},
+			domain={},
+			image={},
+			codomain={},
+			cokernel={},
+			relative={7: (np.array(a, dtype=np.int64), np.array(b, dtype=np.int64))},
+		)
+
+	first = representatives([0], [1, 2])
+	second = representatives([0], [1, 2])
+	assert first == second
+	second.relative[7][component][0] += 1
+	assert first != second
+	assert first != object()
+	second.relative.clear()
+	assert first != second
 
 
 def test_metadata_is_a_direct_consumer_attribute() -> None:
@@ -417,10 +582,7 @@ def test_hdf5_optional_empty_representatives_and_maps(
 ) -> None:
 	representatives = (
 		SixPackRepresentatives(
-			**{
-				name: _rows(rows)
-				for name, rows in ({name: {} for name in SixPack.module_names()}).items()
-			},
+			kernel={}, domain={}, image={}, codomain={}, cokernel={}, relative={}
 		)
 		if with_representatives
 		else None
@@ -495,16 +657,18 @@ def test_hdf5_rejects_invalid_contents(tmp_path: Path, sixpack: SixPack, damage:
 def test_sixpack_discards_degenerate_intervals_and_representatives(name: str) -> None:
 	pairings = SixPackPairings(**{name: {0: 1, 1: 2, 3: None, 4: 4}})
 	support = np.array([10, 11], dtype=np.int64)
+	rows = _rows({0: support, 1: [12], 3: [13], 4: [14]})
 	representatives = SixPackRepresentatives(
-		**{
-			name: _rows(rows)
-			for name, rows in (
-				{
-					module: ({0: support, 1: [12], 3: [13], 4: [14]} if module == name else {})
-					for module in SixPack.module_names()
-				}
-			).items()
-		},
+		kernel=rows if name == "kernel" else {},
+		domain=rows if name == "domain" else {},
+		image=rows if name == "image" else {},
+		codomain=rows if name == "codomain" else {},
+		cokernel=rows if name == "cokernel" else {},
+		relative=(
+			{birth: (row, np.empty(0, dtype=np.int64)) for birth, row in rows.items()}
+			if name == "relative"
+			else {}
+		),
 	)
 	pack = SixPack(
 		pairings=pairings,
@@ -517,8 +681,16 @@ def test_sixpack_discards_degenerate_intervals_and_representatives(name: str) ->
 	assert getattr(pairings, name) == {0: 1, 3: None}
 	assert dict(module.pairings) == {0: 1, 2: None}
 	np.testing.assert_array_equal(module.entrance_times, [0.0, 1.0, 2.0])
-	np.testing.assert_equal(getattr(representatives, name), {0: [10, 11], 2: [13]})
-	assert getattr(representatives, name)[0] is support
+	retained = getattr(representatives, name)
+	if name == "relative":
+		assert retained.keys() == {0, 2}
+		for birth, expected in {0: [10, 11], 2: [13]}.items():
+			np.testing.assert_array_equal(retained[birth][0], expected)
+			assert retained[birth][1].size == 0
+		assert retained[0][0] is support
+	else:
+		np.testing.assert_equal(retained, {0: [10, 11], 2: [13]})
+		assert retained[0] is support
 	np.testing.assert_equal(module.nonempty_degrees(), [0])
 	assert pack._endpoint_relabelling == {  # noqa: SLF001
 		module_name: ({0: 0, 3: 2} if module_name == name else {})
@@ -535,19 +707,12 @@ def test_sixpack_filters_morphism_sources_and_targets(
 	pairings = {4: 5, 3: None, 1: 2, 0: 1}
 	representatives = (
 		SixPackRepresentatives(
-			**{
-				name: _rows(rows)
-				for name, rows in (
-					{
-						name: (
-							{birth: [10 + birth] for birth in pairings}
-							if name in {"domain", "image", "codomain"}
-							else {}
-						)
-						for name in SixPack.module_names()
-					}
-				).items()
-			},
+			kernel={},
+			domain=_rows({birth: [10 + birth] for birth in pairings}),
+			image=_rows({birth: [10 + birth] for birth in pairings}),
+			codomain=_rows({birth: [10 + birth] for birth in pairings}),
+			cokernel={},
+			relative={},
 		)
 		if with_representatives
 		else None

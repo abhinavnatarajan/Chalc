@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Collection, Iterator, Sequence, Sized
 from dataclasses import fields
 from itertools import combinations
-from typing import Any, TypeIs
+from typing import TYPE_CHECKING, Any, TypeIs
 
 import numpy as np
 import phimaker as pm
@@ -115,12 +115,10 @@ class FiltrationMorphism(ABC):
 			:class:`SixPack <chalc.morphisms.types.SixPack>` has additional attributes:
 
 			#. ``representatives`` contains representative cycles for each module.
-			Each set is a dictionary mapping an interval in the module
-			(identified by its module-local birth index) to a one-dimensional int64 array
-			of column indices in the boundary matrix of the codomain filtration (or the mapping
-			cylinder, if
-			the map of filtrations is not an inclusion); the array represents simplices
-			whose sum is a representative cycle.
+			Each member corresponds to one module, and is a dictionary mapping an
+			interval in the module to a cycle representative. Intervals are identified
+			by the index of their birth among all interval endpoints in the module.
+
 			#. ``morphisms`` contains the natural maps between the persistence modules
 			in the 6-pack. Each persistence map is represented by a binary matrix with
 			respect to chosen interval bases of its source and target modules. The interval
@@ -143,11 +141,17 @@ class FiltrationInclusion(FiltrationMorphism, ABC):
 	This class constructs the inclusion of an arbitrary subfiltration
 	of a chromatic filtration.
 
-	This is an abstract class. To specify an inclusion map,
-	use one of its concrete subclasses or create your own.
-	To implement your own inclusion map, you need to implement
-	the membership test ``simplex_in_domain`` which checks if a simplex
-	is in the domain of the inclusion map.
+	This is an abstract class. To specify an inclusion map, use one of its concrete subclasses
+	or create your own. To implement your own inclusion map, you need to implement the membership
+	test ``simplex_in_domain`` which checks if a simplex is in the domain of the inclusion map.
+
+	Representative cycles, if requested in the call to
+	:meth:`sixpack <chalc.morphisms.FiltrationInclusion.sixpack>`, are given as numpy arrays
+	of int64 indices; each index identifies a simplex by its codomain boundary columns.
+	Representative cycles for the kernel, domain, and image are sums of simplices in the domain,
+	while cycle representatives for the codomain and cokernel are sums of codomain simplices.
+	The representative cycle for each interval in the relative module is given as a pair of
+	chains ``(a, b)`` where ``a=db``.
 
 	See Also:
 		:class:`SubChromaticInclusion`, :class:`KChromaticInclusion`.
@@ -406,16 +410,36 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 	of its concrete subclasses or create your own. To implement
 	a quotient map, you need to implement the ``simplex_in_filtration``
 	method, and make sure that ``self.num_subfiltrations`` is initialized
-	before ``sixpack()`` is called.
+	before :meth:`sixpack <chalc.morphisms.FiltrationQuotient.sixpack>` is called.
 
 	Persistence computations are reduced to the case of a filtered inclusion
-	by constructing a mapping cylinder. The sixpack returned by this class
-	contains a ``metadata`` dictionary with the following keys:
+	by constructing a mapping cylinder. Therefore, pairing indices in the
+	returned sixpack correspond to mapping cylinder indices, not original indices.
+
+	Representative cycles, if requested in the call to
+	:meth:``sixpack <chalc.morphisms.FiltrationInclusion.sixpack>``, are given as numpy arrays
+	of int64 indices. These indices identify simplices in either the domain or codomain
+	by their index in the corresponding boundary matrix. Representative cycles for the kernel
+	and domain are arrays of domain indices, while cycle representatives for the image, codomain
+	and cokernel are codomain simplices. The representative cycle for each interval in the relative
+	module is given as a pair of chains ``(a, b)`` where ``da= 0`` and ``f(a) = db`` (here ``f`` is
+	the quotient map). The indices for ``a`` and ``b`` are domain and codomain indices respectively.
+
+	The sixpack returned by this class contains a ``metadata`` dictionary with the
+	following keys:
 
 	#. ``domain_indices`` and ``codomain_indices``: dictionaries that map
-	domain codomain indices to their indices in the mapping cylinder.
+	domain and codomain indices to their indices in the mapping cylinder.
 	#. ``domain_shift``: dictionary that maps each domain index to the index
 	of its degree-shifted copy in the mapping cylinder.
+	#. ``domain_index_to_subfiltration_index``: a list that maps each
+	index in the boundary matrix of the domain of the quotient map to the
+	index of the subfiltration to which this column corresponds.
+	#. ``domain_index_to_codomain_index``: a list of integers that completely
+	describes the quotient map; the list entry at index ``i`` is the index of
+	the codomain simplex that is the image of the ``i``th domain simplex.
+	Multiple domain indices map to the same codomain index, one for each
+	subfiltration.
 
 	See Also:
 		:class:`SubChromaticQuotient`, :class:`KChromaticQuotient`.
@@ -480,12 +504,14 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 		mapping: list[list[int]] = []
 
 		# For a column with index i in the codomain matrix,
-		# offsets[i, j] is its index in the domain matrix
+		# offsets[j][i] is its index in the domain matrix
 		# corresponding to the copy of the associated simplex
 		# belonging to the jth subfiltration.
-		# Caution: only some values end up being initialized.
-		# We initialize with -1 to avoid silent bugs.
-		offsets = np.ones(shape=(len(filtration), num_subfiltrations), dtype=int) * -1
+		# offsets = np.ones(shape=(len(filtration), num_subfiltrations), dtype=int) * -1
+		offsets: dict[int, dict[int, int]] = {i: {} for i in range(num_subfiltrations)}
+
+		# Which subfiltration does the domain column belong to.
+		dom_to_subfilt_idx: list[int] = []
 
 		# Build the matrices
 		domain_idx_counter = 0
@@ -502,12 +528,13 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 					# we add it to the domain matrix
 					# while remembering that for the jth copy of this simplex i,
 					# the index in the domain matrix is 'counter'.
-					shifted_facet_idxs = [offsets[facet_idx, i] for facet_idx in facet_idxs]
+					shifted_facet_idxs = [offsets[i][facet_idx] for facet_idx in facet_idxs]
 					domain_matrix.append(
 						(entrance_time, dimension, shifted_facet_idxs),
 					)
 					mapping.append([codomain_idx])
-					offsets[codomain_idx, i] = domain_idx_counter
+					offsets[i][codomain_idx] = domain_idx_counter
+					dom_to_subfilt_idx.append(i)
 					domain_idx_counter += 1
 
 		module_ensemble, meta = pm.sixpack(
@@ -530,6 +557,8 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 			"domain_indices": meta.domain_indices,
 			"codomain_indices": meta.codomain_indices,
 			"domain_shift": meta.domain_shift,
+			"domain_index_to_subfiltration_index": dom_to_subfilt_idx,
+			"domain_index_to_codomain_index": [i[0] for i in mapping],
 		}
 		representatives = None
 		morphisms = None
@@ -539,15 +568,16 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 				meta.degrees,
 				max_homological_degree,
 			)
-		pack = SixPack(
+
+		sixpack = SixPack(
 			pairings=pairings,
 			entrance_times=meta.times,
 			degrees=meta.degrees,
 			representatives=representatives,
 			morphisms=morphisms,
 		)
-		pack.metadata = metadata
-		return pack
+		sixpack.metadata = metadata
+		return sixpack
 
 
 class SubChromaticQuotient(FiltrationQuotient):
@@ -751,14 +781,27 @@ def filter_representatives(
 	max_homological_degree: int,
 ) -> tuple[SixPackRepresentatives, SixPackMorphisms]:
 	"""Restrict representative cycles and natural maps to the requested degrees."""
-	representatives_dict = {}
+	representatives_dict: dict[PersistenceModuleName, Any] = {}
 	for name in SixPack.module_names():
+		if name == "relative":
+			continue
 		reps = getattr(ensemble, f"{name}_representatives")
 		representatives_dict[name] = {
 			birth_idx: np.asarray(reps[birth_idx], dtype=np.int64)
 			for birth_idx in reps
 			if degrees[birth_idx] - (name == "kernel") <= max_homological_degree
 		}
+	relative_reps = ensemble.relative_representatives
+	if TYPE_CHECKING:
+		assert relative_reps is not None
+	representatives_dict["relative"] = {
+		birth_idx: (
+			np.asarray(relative_reps[birth_idx][0], dtype=np.int64),
+			np.asarray(relative_reps[birth_idx][1], dtype=np.int64),
+		)
+		for birth_idx in relative_reps
+		if degrees[birth_idx] <= max_homological_degree
+	}
 	representatives = SixPackRepresentatives(**representatives_dict)
 	morphisms_dict = {}
 	for field in fields(SixPackMorphisms):
