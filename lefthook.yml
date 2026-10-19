@@ -44,11 +44,11 @@
 pre-commit:
   parallel: true
   jobs:
-    - run: uv run --no-sync tombi format
+    - run: uv run --no-sync --group dev tombi format
       stage_fixed: true
-    - run: uv run --no-sync ruff format
+    - run: uv run --no-sync --group dev ruff format
       stage_fixed: true
-    - run: uv run --no-sync clang-format src/chalc/**/*.{cxx,h} -i
+    - run: uv run --no-sync --group dev clang-format src/chalc/**/*.{cxx,h} -i
       stage_fixed: true
-    - run: uv run --no-sync jupyter nbconvert --clear-output --inplace docs/source/example.ipynb
+    - run: uv run --no-sync --group docs jupyter nbconvert --clear-output --inplace docs/source/example.ipynb
       stage_fixed: true
