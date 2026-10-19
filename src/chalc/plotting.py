@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Collection, Mapping, Sequence
+from collections.abc import Callable, Collection, Mapping, Sequence
 from numbers import Integral
 from typing import TYPE_CHECKING, Any, Literal
 
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 	from matplotlib.axes import Axes
 	from matplotlib.figure import Figure
 
-	from chalc.filtration import Filtration
+	from chalc.filtration import Filtration, Simplex
 	from chalc.morphisms import (
 		AugmentedPersistenceModule,
 		IndexArray,
@@ -66,6 +66,7 @@ def plot_sixpack(
 		figsize=[3.5 * 3, 3.5 * 2],
 		sharex=False,
 		sharey=False,
+		constrained_layout=True,
 	)
 
 	plot_pos: dict[PersistenceModuleName, tuple[int, int]] = {
@@ -238,11 +239,10 @@ def _scatter_options(colour: str, global_options: dict, degree_options: dict) ->
 
 
 def draw_filtration(
-	K: Filtration,  # noqa: N803
+	filtration: Filtration,
 	points: np.ndarray[tuple[Literal[2], int], np.dtype[np.floating]],
-	time: float,
+	select: Callable[[Simplex, int], bool] | None = None,
 	*,
-	include_colours: Collection[int] | None = None,
 	ax: Axes | None = None,
 	plot_colours: str | np.ndarray | None = None,
 	vertices_kwargs: dict | None = None,
@@ -250,15 +250,18 @@ def draw_filtration(
 	faces_kwargs: dict | None = None,
 ) -> Axes:
 	r"""
-	Visualise a 2D filtration at given time, optionally including only certain colours.
+	Draw selected vertices, edges, and triangles of a filtration in the plane.
 
 	Args:
-		K               : A filtered 2-dimensional simplicial complex.
-		points          : The vertices of ``K`` as a :math:`2\times N` numpy matrix.
-		time            : Filtration times for which to draw simplices.
-		include_colours :
-			Optional collection of colours to include.
-			If not specified then all colours will be drawn.
+		filtration      : A filtered simplicial complex. Only its 2-skeleton is drawn.
+		points          : The vertices of ``filtration`` as a :math:`2\times N` numpy matrix.
+		select          :
+			Optional callback ``select(simplex, index)`` returning ``True`` if the
+			simplex should be drawn. It receives a simplex handle and its zero-based
+			index in ``filtration.boundary_matrix()``. The callback is called once
+			for each simplex of dimension at most 2, in boundary-matrix order.
+			Simplices of higher dimension still count towards the indices. If omitted,
+			all vertices, edges, and triangles are drawn.
 		ax              :
 			A matplotlib axes object.
 			If provided then the filtration will be plotted on the given axes.
@@ -272,80 +275,85 @@ def draw_filtration(
 		faces_kwargs    :
 			Keyword arguments to pass to the matplotlib fill function for plotting faces.
 
+	Returns:
+		The axes on which the simplices were drawn.
+
+	Raises:
+		ValueError: If ``points`` does not have shape ``(2, filtration.num_vertices)``.
+
+	Notes:
+		Selecting a simplex does not automatically select its faces or vertices.
+		The callback must not modify ``filtration``.
+		Representative supports must use the indices of ``filtration.boundary_matrix()``.
+		For representatives computed from a dimension-limited boundary matrix,
+		pass the corresponding skeleton as ``filtration``.
+		Representatives from a quotient use mapping-cylinder indices and must
+		first be mapped to the plotted filtration's indices.
+
 	"""
-	if vertices_kwargs is None:
-		vertices_kwargs = {}
-	if edges_kwargs is None:
-		edges_kwargs = {}
-	if faces_kwargs is None:
-		faces_kwargs = {}
-	if len(points.shape) != 2:  # noqa: PLR2004
-		raise NotImplementedError
+	if points.shape != (2, filtration.num_vertices):
+		msg = "points must have shape (2, filtration.num_vertices)."
+		raise ValueError(msg)
 
-	all_colours = {vertex.colours[0] for vertex in K.simplices[0].values()}
-	colours_map = {old: new for new, old in enumerate(sorted(all_colours))}
-
-	include_colours = all_colours if include_colours is None else include_colours
-
-	ax1 = plt.subplots()[1] if ax is None else ax
+	simplex_handles = filtration.simplices
+	all_colours = sorted({vertex.colours[0] for vertex in simplex_handles[0].values()})
+	colours_map = {colour: index for index, colour in enumerate(all_colours)}
 
 	if isinstance(plot_colours, str):
-		num_colours = K.dimension - 1
-		colour_indices = np.arange(num_colours)
-		plot_colours = plt.get_cmap(plot_colours)(colour_indices)
-	if plot_colours is None:
-		plot_colours = np.array(plt.rcParams["axes.prop_cycle"].by_key()["color"])
+		plot_colours = plt.get_cmap(plot_colours)(np.arange(len(all_colours)))
+	elif plot_colours is None:
+		plot_colours = np.asarray(plt.rcParams["axes.prop_cycle"].by_key()["color"])
 
-	# Plot the vertices
+	ax1 = plt.subplots()[1] if ax is None else ax
 	vertex_plot_colours = []
 	vertices_to_plot = []
-	for idx in range(K.num_vertices):
-		vertex = K.simplices[0][idx]
-		if (set(vertex.colours).issubset(include_colours)) and vertex.filtration_value <= time:
-			vertex_plot_colours.append(plot_colours[colours_map[vertex.colours[0]]])
-			vertices_to_plot.append(idx)
+	style: dict[str, Any]
+	for index, (boundary, label, _, colours) in enumerate(filtration.boundary_matrix()):
+		dimension = len(boundary) - 1 if boundary else 0
+		simplex = simplex_handles[dimension][label]
+		if dimension > 2 or (select is not None and not select(simplex, index)):  # noqa: PLR2004
+			continue
 
-	vertices_kwargs = {"s": 10, **vertices_kwargs}
-	ax1.scatter(
-		points[0, vertices_to_plot],
-		points[1, vertices_to_plot],
-		c=list(vertex_plot_colours),
-		**vertices_kwargs,
-	)
-
-	# Plot the edges
-	edges_kwargs = {"linewidth": 1, **edges_kwargs}
-	for edge in K.simplices[1].values():
-		if set(edge.colours).issubset(include_colours) and edge.filtration_value <= time:
-			if len(edge.colours) == 1:
-				colour = plot_colours[colours_map[edge.colours[0]]]
-				alpha = 0.5
-			else:
-				colour = "black"
-				alpha = 0.3
+		vertices = simplex.vertices
+		monochromatic = len(colours) == 1
+		colour = plot_colours[colours_map[colours[0]]] if monochromatic else None
+		if dimension == 0:
+			vertices_to_plot.append(vertices[0])
+			vertex_plot_colours.append(colour)
+		elif dimension == 1:
+			style = {
+				"linewidth": 1,
+				"color": colour if monochromatic else "black",
+				"alpha": 0.5 if monochromatic else 0.3,
+				**(edges_kwargs or {}),
+			}
 			ax1.plot(
-				points[0, edge.vertices],
-				points[1, edge.vertices],
-				color=colour,
-				alpha=alpha,
-				**edges_kwargs,
+				points[0, vertices],
+				points[1, vertices],
+				**style,
+			)
+		else:
+			style = {
+				"edgecolor": None,
+				"facecolor": colour if monochromatic else "grey",
+				"alpha": 0.2,
+				**(faces_kwargs or {}),
+			}
+			ax1.fill(
+				points[0, vertices],
+				points[1, vertices],
+				**style,
 			)
 
-	faces_kwargs = {"alpha": 0.2, **faces_kwargs}
-	for triangle in K.simplices[2].values():
-		if set(triangle.colours).issubset(include_colours) and triangle.filtration_value <= time:
-			colour = (
-				plot_colours[colours_map[triangle.colours[0]]]
-				if len(triangle.colours) == 1
-				else "grey"
-			)
-			ax1.fill(
-				points[0, triangle.vertices],
-				points[1, triangle.vertices],
-				edgecolor=None,
-				facecolor=colour,
-				**faces_kwargs,
-			)
+	if vertices_to_plot:
+		style = {"s": 10, "c": vertex_plot_colours, **(vertices_kwargs or {})}
+		if "color" in style:
+			style.pop("c", None)
+		ax1.scatter(
+			points[0, vertices_to_plot],
+			points[1, vertices_to_plot],
+			**style,
+		)
 
 	ax1.set_aspect("equal")
 
@@ -353,7 +361,7 @@ def draw_filtration(
 
 
 def animate_filtration(
-	K: Filtration,  # noqa: N803
+	filtration: Filtration,
 	points: np.ndarray[tuple[Literal[2], int], np.dtype[np.floating]],
 	filtration_times: Sequence[float],
 	*,
@@ -367,8 +375,8 @@ def animate_filtration(
 	Create animation of 2-skeleton of filtered simplicial complex.
 
 	Args:
-		K                : A filtered complex.
-		points           : The vertices of ``K`` as a :math:`2\times N` numpy matrix.
+		filtration       : A filtered complex.
+		points           : The vertices of ``filtration`` as a :math:`2\times N` numpy matrix.
 		filtration_times : Sequence of filtration times for which to draw animation frames.
 		animation_length :
 			Total length of the animation in seconds, unrelated to the
@@ -397,18 +405,19 @@ def animate_filtration(
 	ax: Axes
 	fig, ax = plt.subplots()
 
-	all_colours = {vertex.colours[0] for vertex in K.simplices[0].values()}
+	all_colours = {vertex.colours[0] for vertex in filtration.simplices[0].values()}
 	colours_map = {old: new for new, old in enumerate(sorted(all_colours))}
 
 	if isinstance(plot_colours, str):
-		num_colours = K.dimension - 1
+		num_colours = filtration.dimension - 1
 		colour_indices = np.arange(num_colours)
 		plot_colours = plt.get_cmap(plot_colours)(colour_indices)
 	if plot_colours is None:
 		plot_colours = np.array(plt.rcParams["axes.prop_cycle"].by_key()["color"])
 
 	vertex_plot_colours = [
-		plot_colours[colours_map[K.simplices[0][i].colours[0]]] for i in range(K.num_vertices)
+		plot_colours[colours_map[filtration.simplices[0][i].colours[0]]]
+		for i in range(filtration.num_vertices)
 	]
 
 	vertices_kwargs = {"s": 10, **vertices_kwargs}
@@ -421,7 +430,7 @@ def animate_filtration(
 
 	edges_kwargs = {"linewidth": 1, **edges_kwargs}
 	lines = {}
-	for idx, edge in K.simplices[1].items():
+	for idx, edge in filtration.simplices[1].items():
 		if len(edge.colours) == 1:
 			colour = plot_colours[colours_map[edge.colours[0]]]
 			alpha = 0.5
@@ -438,7 +447,7 @@ def animate_filtration(
 
 	faces_kwargs = {"alpha": 0.2, **faces_kwargs}
 	patches = {}
-	for idx, triangle in K.simplices[2].items():
+	for idx, triangle in filtration.simplices[2].items():
 		colour = (
 			plot_colours[colours_map[triangle.colours[0]]] if len(triangle.colours) == 1 else "grey"
 		)
@@ -455,13 +464,13 @@ def animate_filtration(
 
 	def update(time: float) -> list[Artist]:
 		modified_artists: list[Artist] = []
-		for idx, edge in K.simplices[1].items():
+		for idx, edge in filtration.simplices[1].items():
 			if edge.filtration_value <= time:
 				lines[idx].set_xdata(points[0, edge.vertices])
 				lines[idx].set_ydata(points[1, edge.vertices])
 				modified_artists.append(lines[idx])
 
-		for idx, triangle in K.simplices[2].items():
+		for idx, triangle in filtration.simplices[2].items():
 			if triangle.filtration_value <= time:
 				patches[idx].set_xy(points[:, triangle.vertices].T)
 				modified_artists.append(patches[idx])

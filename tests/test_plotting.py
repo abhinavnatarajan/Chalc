@@ -5,9 +5,19 @@ from collections.abc import Iterator
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
+from matplotlib.collections import PathCollection
+from matplotlib.colors import to_rgba
 
-from chalc.morphisms import AugmentedPersistenceModule, SixPack, SixPackPairings
-from chalc.plotting import plot_persistence_diagram, plot_sixpack
+from chalc import chromatic
+from chalc.filtration import Filtration, Simplex, complete_complex
+from chalc.morphisms import (
+	AugmentedPersistenceModule,
+	KChromaticQuotient,
+	SixPack,
+	SixPackPairings,
+	SubChromaticInclusion,
+)
+from chalc.plotting import draw_filtration, plot_persistence_diagram, plot_sixpack
 
 
 @pytest.fixture(autouse=True)
@@ -109,3 +119,156 @@ def test_plotting_accepts_degree_arrays() -> None:
 	module = AugmentedPersistenceModule({0: 2, 1: None}, [0.0, 0.0, 2.0], {0: 0, 1: 12})
 	ax = plot_persistence_diagram(module, degrees=np.array([0, 12], dtype=np.int64))
 	assert len(ax.collections) == 2
+
+
+@pytest.fixture
+def drawing_filtration() -> tuple[Filtration, np.ndarray]:
+	filtration = Filtration(5, 3)
+	filtration.add_simplex([0, 1, 2, 3], 1.0)
+	filtration.add_simplex([3, 4], 2.0)
+	for label, vertex in filtration.simplices[0].items():
+		vertex.set_colour(label % 2)
+	filtration.propagate_colours()
+	points = np.array([[0.0, 1.0, 0.0, 1.0, 2.0], [0.0, 0.0, 1.0, 1.0, 0.0]])
+	return filtration, points
+
+
+def test_draw_callback_receives_full_boundary_indices(
+	drawing_filtration: tuple[Filtration, np.ndarray],
+) -> None:
+	filtration, points = drawing_filtration
+	matrix = filtration.boundary_matrix()
+	seen = []
+
+	def select(simplex: Simplex, index: int) -> bool:
+		boundary, label, time, colours = matrix[index]
+		assert simplex.dimension == max(0, len(boundary) - 1)
+		assert simplex.label == label
+		assert simplex.filtration_value == time
+		assert simplex.colours == colours
+		assert simplex is filtration.simplices[simplex.dimension][label]
+		seen.append(index)
+		return index == len(matrix) - 1
+
+	_, ax = plt.subplots()
+	assert draw_filtration(filtration, points, select, ax=ax) is ax
+	assert seen == [i for i, column in enumerate(matrix) if len(column[0]) <= 3]
+	assert len(matrix[-2][0]) == 4  # The tetrahedron precedes the selected edge.
+	assert len(ax.lines) == 1
+	np.testing.assert_array_equal(ax.lines[0].get_xydata(), points[:, [3, 4]].T)
+	assert not ax.collections
+	assert not ax.patches
+
+
+@pytest.mark.parametrize("dimension", [0, 1, 2, 3])
+def test_draw_default_selection_and_low_dimensions(dimension: int) -> None:
+	filtration = complete_complex(4, dimension)
+	points = np.array([[0.0, 1.0, 0.0, 1.0], [0.0, 0.0, 1.0, 1.0]])
+	ax = draw_filtration(filtration, points, plot_colours="tab10")
+	assert len(ax.collections) == 1
+	np.testing.assert_array_equal(ax.collections[0].get_offsets(), points.T)
+	assert len(ax.lines) == (6 if dimension >= 1 else 0)
+	assert len(ax.patches) == (4 if dimension >= 2 else 0)
+
+
+def test_draw_empty_selection(drawing_filtration: tuple[Filtration, np.ndarray]) -> None:
+	filtration, points = drawing_filtration
+	ax = draw_filtration(filtration, points, lambda _simplex, _index: False)
+	assert not ax.collections
+	assert not ax.lines
+	assert not ax.patches
+
+
+def test_draw_time_and_colour_selector(drawing_filtration: tuple[Filtration, np.ndarray]) -> None:
+	filtration, points = drawing_filtration
+	ax = draw_filtration(
+		filtration,
+		points,
+		lambda simplex, _: simplex.filtration_value <= 1.0 and set(simplex.colours) <= {0},
+	)
+	np.testing.assert_array_equal(ax.collections[0].get_offsets(), points[:, [0, 2, 4]].T)
+	assert len(ax.lines) == 1
+	np.testing.assert_array_equal(ax.lines[0].get_xydata(), points[:, [0, 2]].T)
+	assert not ax.patches
+
+
+def test_draw_style_overrides(drawing_filtration: tuple[Filtration, np.ndarray]) -> None:
+	filtration, points = drawing_filtration
+	vertices = {"color": "purple", "s": 30}
+	edges = {"color": "crimson", "alpha": 1.0, "linewidth": 3}
+	faces = {"facecolor": "lime", "alpha": 0.6}
+	ax = draw_filtration(
+		filtration,
+		points,
+		vertices_kwargs=vertices,
+		edges_kwargs=edges,
+		faces_kwargs=faces,
+	)
+	collection = ax.collections[0]
+	assert isinstance(collection, PathCollection)
+	np.testing.assert_allclose(np.asarray(collection.get_facecolor()), [to_rgba("purple")])
+	assert collection.get_sizes().tolist() == [30]
+	assert all(line.get_color() == "crimson" for line in ax.lines)
+	assert all(line.get_alpha() == 1.0 and line.get_linewidth() == 3 for line in ax.lines)
+	assert all(patch.get_facecolor() == to_rgba("lime", 0.6) for patch in ax.patches)
+	assert vertices == {"color": "purple", "s": 30}
+	assert edges == {"color": "crimson", "alpha": 1.0, "linewidth": 3}
+	assert faces == {"facecolor": "lime", "alpha": 0.6}
+
+
+@pytest.mark.parametrize("shape", [(3, 5), (2, 4), (5,), (2, 5, 1)])
+def test_draw_requires_one_2d_point_per_vertex(
+	drawing_filtration: tuple[Filtration, np.ndarray],
+	shape: tuple[int, ...],
+) -> None:
+	filtration, _ = drawing_filtration
+	with pytest.raises(ValueError, match="points must have shape"):
+		# pyrefly: ignore [bad-argument-type]
+		draw_filtration(filtration, np.zeros(shape))
+
+
+@pytest.mark.parametrize("quotient", [False, True])
+def test_draw_kernel_representatives(*, quotient: bool) -> None:
+	points = np.array([[0.0, 1.0, 1.0, 0.0, 0.5], [0.0, 0.0, 1.0, 1.0, 0.5]])
+	filtration = chromatic.alpha(points, [0, 0, 0, 0, 1], max_num_threads=1)
+	morphism = (
+		KChromaticQuotient(filtration, 1) if quotient else SubChromaticInclusion(filtration, {0})
+	)
+	pack = morphism.sixpack(get_representatives=True)
+	assert pack.representatives is not None
+	matrix = filtration.boundary_matrix()
+	if quotient:
+		assert pack.metadata is not None
+		monochromatic_indices = [i for i, column in enumerate(matrix) if len(column[3]) == 1]
+		index_map = dict(zip(pack.metadata["domain_indices"], monochromatic_indices, strict=True))
+	else:
+		index_map = dict(enumerate(range(len(matrix))))
+	cycles = [
+		{index_map[int(index)] for index in cycle}
+		for cycle in pack.representatives.kernel.values()
+		if len(matrix[index_map[int(cycle[0])]][0]) == 2
+	]
+	assert len(cycles) == 1
+	support = cycles[0]
+	assert len(support) == 4
+	boundary = set()
+	for index in support:
+		boundary ^= set(matrix[index][0])
+	assert not boundary
+
+	ax = draw_filtration(
+		filtration,
+		points,
+		lambda _, index: index in support,
+		edges_kwargs={"color": "crimson", "alpha": 1.0},
+	)
+	expected_edges = {frozenset(edge) for edge in ((0, 1), (1, 2), (2, 3), (3, 0))}
+	assert {
+		frozenset(filtration.simplices[1][matrix[index][1]].vertices) for index in support
+	} == expected_edges
+	assert len(ax.lines) == 4
+	for line, index in zip(ax.lines, sorted(support), strict=True):
+		vertices = filtration.simplices[1][matrix[index][1]].vertices
+		np.testing.assert_array_equal(line.get_xydata(), points[:, vertices].T)
+	assert not ax.collections
+	assert not ax.patches
