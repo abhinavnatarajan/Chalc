@@ -3,12 +3,12 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="chalc" href="autoapi/chalc/index.html"><link rel="prev" title="Example Usage" href="example.html">
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="chalc" href="autoapi/chalc/index.html"><link rel="prev" title="Thread safety" href="thread_safety.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>API Reference - chalc 14.2.0 documentation</title>
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+        <title>API Reference - chalc 15.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=580074bf" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -164,7 +164,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">chalc 14.2.0 documentation</div></a>
+      <a href="index.html"><div class="brand">chalc 15.0.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -185,7 +185,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
-  <span class="sidebar-brand-text">chalc 14.2.0 documentation</span>
+  <span class="sidebar-brand-text">chalc 15.0.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -196,16 +196,17 @@
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="example.html">Example Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="thread_safety.html">Thread safety</a></li>
 <li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">API Reference</a><input aria-label="Toggle navigation of API Reference" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/chalc/index.html">chalc</a><input aria-label="Toggle navigation of chalc" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/chalc/chromatic/index.html">chalc.chromatic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/chalc/filtration/index.html">chalc.filtration</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/chalc/plotting/index.html">chalc.plotting</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/chalc/sixpack/index.html">chalc.sixpack</a><input aria-label="Toggle navigation of chalc.sixpack" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/chalc/sixpack/morphisms/index.html">chalc.sixpack.morphisms</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html">chalc.sixpack.types</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/chalc/morphisms/index.html">chalc.morphisms</a><input aria-label="Toggle navigation of chalc.morphisms" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/chalc/morphisms/sheaf/index.html">chalc.morphisms.sheaf</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html">chalc.morphisms.types</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/chalc/plotting/index.html">chalc.plotting</a></li>
 </ul>
 </li>
 </ul>
@@ -312,167 +313,212 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/chalc/morphisms/index.html">chalc.morphisms</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/morphisms/sheaf/index.html">chalc.morphisms.sheaf</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/sheaf/index.html#classes">Classes</a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/sheaf/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="autoapi/chalc/morphisms/sheaf/index.html#chalc.morphisms.sheaf.ChromaticSheaf"><code class="docutils literal notranslate"><span class="pre">ChromaticSheaf</span></code></a><ul>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/sheaf/index.html#chalc.morphisms.sheaf.ChromaticSheaf.colours"><code class="docutils literal notranslate"><span class="pre">colours</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/sheaf/index.html#chalc.morphisms.sheaf.ChromaticSheaf.from_chromatic_points"><code class="docutils literal notranslate"><span class="pre">from_chromatic_points()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/sheaf/index.html#chalc.morphisms.sheaf.ChromaticSheaf.max_num_colours"><code class="docutils literal notranslate"><span class="pre">max_num_colours</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/sheaf/index.html#chalc.morphisms.sheaf.ChromaticSheaf.morphism"><code class="docutils literal notranslate"><span class="pre">morphism()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/sheaf/index.html#chalc.morphisms.sheaf.ChromaticSheaf.stalk"><code class="docutils literal notranslate"><span class="pre">stalk()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l7"><a class="reference internal" href="autoapi/chalc/morphisms/sheaf/index.html#chalc.morphisms.sheaf.PersistenceModuleMorphism"><code class="docutils literal notranslate"><span class="pre">PersistenceModuleMorphism</span></code></a><ul>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/sheaf/index.html#chalc.morphisms.sheaf.PersistenceModuleMorphism.__eq__"><code class="docutils literal notranslate"><span class="pre">__eq__()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/sheaf/index.html#chalc.morphisms.sheaf.PersistenceModuleMorphism.__matmul__"><code class="docutils literal notranslate"><span class="pre">__matmul__()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/sheaf/index.html#chalc.morphisms.sheaf.PersistenceModuleMorphism.__post_init__"><code class="docutils literal notranslate"><span class="pre">__post_init__()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/sheaf/index.html#chalc.morphisms.sheaf.PersistenceModuleMorphism.identity"><code class="docutils literal notranslate"><span class="pre">identity()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/sheaf/index.html#chalc.morphisms.sheaf.PersistenceModuleMorphism.zero"><code class="docutils literal notranslate"><span class="pre">zero()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l7"><a class="reference internal" href="autoapi/chalc/morphisms/sheaf/index.html#chalc.morphisms.sheaf.SubfiltrationInclusion"><code class="docutils literal notranslate"><span class="pre">SubfiltrationInclusion</span></code></a><ul>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/sheaf/index.html#chalc.morphisms.sheaf.SubfiltrationInclusion.simplex_in_domain"><code class="docutils literal notranslate"><span class="pre">simplex_in_domain()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html">chalc.morphisms.types</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#classes">Classes</a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.AugmentedPersistenceModule"><code class="docutils literal notranslate"><span class="pre">AugmentedPersistenceModule</span></code></a><ul>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.AugmentedPersistenceModule.__bool__"><code class="docutils literal notranslate"><span class="pre">__bool__()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.AugmentedPersistenceModule.__eq__"><code class="docutils literal notranslate"><span class="pre">__eq__()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.AugmentedPersistenceModule.__len__"><code class="docutils literal notranslate"><span class="pre">__len__()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.AugmentedPersistenceModule.degrees"><code class="docutils literal notranslate"><span class="pre">degrees</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.AugmentedPersistenceModule.entrance_times"><code class="docutils literal notranslate"><span class="pre">entrance_times</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.AugmentedPersistenceModule.interval"><code class="docutils literal notranslate"><span class="pre">interval()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.AugmentedPersistenceModule.intervals"><code class="docutils literal notranslate"><span class="pre">intervals()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.AugmentedPersistenceModule.nonempty_degrees"><code class="docutils literal notranslate"><span class="pre">nonempty_degrees()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.AugmentedPersistenceModule.pairings"><code class="docutils literal notranslate"><span class="pre">pairings</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.AugmentedPersistenceModule.to_hdf5"><code class="docutils literal notranslate"><span class="pre">to_hdf5()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l7"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPack"><code class="docutils literal notranslate"><span class="pre">SixPack</span></code></a><ul>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPack.__bool__"><code class="docutils literal notranslate"><span class="pre">__bool__()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPack.__eq__"><code class="docutils literal notranslate"><span class="pre">__eq__()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPack.__iter__"><code class="docutils literal notranslate"><span class="pre">__iter__()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPack.codomain"><code class="docutils literal notranslate"><span class="pre">codomain</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPack.cokernel"><code class="docutils literal notranslate"><span class="pre">cokernel</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPack.domain"><code class="docutils literal notranslate"><span class="pre">domain</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPack.from_hdf5"><code class="docutils literal notranslate"><span class="pre">from_hdf5()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPack.image"><code class="docutils literal notranslate"><span class="pre">image</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPack.kernel"><code class="docutils literal notranslate"><span class="pre">kernel</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPack.max_nonempty_degree"><code class="docutils literal notranslate"><span class="pre">max_nonempty_degree()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPack.module_names"><code class="docutils literal notranslate"><span class="pre">module_names()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPack.morphisms"><code class="docutils literal notranslate"><span class="pre">morphisms</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPack.pairings"><code class="docutils literal notranslate"><span class="pre">pairings</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPack.relative"><code class="docutils literal notranslate"><span class="pre">relative</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPack.representatives"><code class="docutils literal notranslate"><span class="pre">representatives</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPack.to_hdf5"><code class="docutils literal notranslate"><span class="pre">to_hdf5()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l7"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPackMorphisms"><code class="docutils literal notranslate"><span class="pre">SixPackMorphisms</span></code></a><ul>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPackMorphisms.__eq__"><code class="docutils literal notranslate"><span class="pre">__eq__()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPackMorphisms.codomain_to_cokernel"><code class="docutils literal notranslate"><span class="pre">codomain_to_cokernel</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPackMorphisms.domain_to_codomain"><code class="docutils literal notranslate"><span class="pre">domain_to_codomain</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPackMorphisms.domain_to_image"><code class="docutils literal notranslate"><span class="pre">domain_to_image</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPackMorphisms.image_to_codomain"><code class="docutils literal notranslate"><span class="pre">image_to_codomain</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPackMorphisms.kernel_to_domain"><code class="docutils literal notranslate"><span class="pre">kernel_to_domain</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l7"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPackPairings"><code class="docutils literal notranslate"><span class="pre">SixPackPairings</span></code></a><ul>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPackPairings.codomain"><code class="docutils literal notranslate"><span class="pre">codomain</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPackPairings.cokernel"><code class="docutils literal notranslate"><span class="pre">cokernel</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPackPairings.domain"><code class="docutils literal notranslate"><span class="pre">domain</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPackPairings.image"><code class="docutils literal notranslate"><span class="pre">image</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPackPairings.kernel"><code class="docutils literal notranslate"><span class="pre">kernel</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPackPairings.relative"><code class="docutils literal notranslate"><span class="pre">relative</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l7"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPackRepresentatives"><code class="docutils literal notranslate"><span class="pre">SixPackRepresentatives</span></code></a><ul>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPackRepresentatives.__eq__"><code class="docutils literal notranslate"><span class="pre">__eq__()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPackRepresentatives.codomain"><code class="docutils literal notranslate"><span class="pre">codomain</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPackRepresentatives.cokernel"><code class="docutils literal notranslate"><span class="pre">cokernel</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPackRepresentatives.domain"><code class="docutils literal notranslate"><span class="pre">domain</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPackRepresentatives.image"><code class="docutils literal notranslate"><span class="pre">image</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPackRepresentatives.kernel"><code class="docutils literal notranslate"><span class="pre">kernel</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html#chalc.morphisms.types.SixPackRepresentatives.relative"><code class="docutils literal notranslate"><span class="pre">relative</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#attributes">Attributes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#classes">Classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.AugmentedPersistenceModule"><code class="docutils literal notranslate"><span class="pre">AugmentedPersistenceModule</span></code></a><ul>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.AugmentedPersistenceModule.__bool__"><code class="docutils literal notranslate"><span class="pre">__bool__()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.AugmentedPersistenceModule.__eq__"><code class="docutils literal notranslate"><span class="pre">__eq__()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.AugmentedPersistenceModule.__len__"><code class="docutils literal notranslate"><span class="pre">__len__()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.AugmentedPersistenceModule.degrees"><code class="docutils literal notranslate"><span class="pre">degrees</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.AugmentedPersistenceModule.entrance_times"><code class="docutils literal notranslate"><span class="pre">entrance_times</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.AugmentedPersistenceModule.interval"><code class="docutils literal notranslate"><span class="pre">interval()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.AugmentedPersistenceModule.intervals"><code class="docutils literal notranslate"><span class="pre">intervals()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.AugmentedPersistenceModule.nonempty_degrees"><code class="docutils literal notranslate"><span class="pre">nonempty_degrees()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.AugmentedPersistenceModule.pairings"><code class="docutils literal notranslate"><span class="pre">pairings</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.AugmentedPersistenceModule.to_hdf5"><code class="docutils literal notranslate"><span class="pre">to_hdf5()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.FiltrationGluing"><code class="docutils literal notranslate"><span class="pre">FiltrationGluing</span></code></a><ul>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.FiltrationGluing.simplex_in_filtration"><code class="docutils literal notranslate"><span class="pre">simplex_in_filtration()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.FiltrationGluing.sixpack"><code class="docutils literal notranslate"><span class="pre">sixpack()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.FiltrationInclusion"><code class="docutils literal notranslate"><span class="pre">FiltrationInclusion</span></code></a><ul>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.FiltrationInclusion.simplex_in_domain"><code class="docutils literal notranslate"><span class="pre">simplex_in_domain()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.FiltrationInclusion.sixpack"><code class="docutils literal notranslate"><span class="pre">sixpack()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.FiltrationMorphism"><code class="docutils literal notranslate"><span class="pre">FiltrationMorphism</span></code></a><ul>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.FiltrationMorphism.sixpack"><code class="docutils literal notranslate"><span class="pre">sixpack()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.IndexArray"><code class="docutils literal notranslate"><span class="pre">IndexArray</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.KChromaticGluing"><code class="docutils literal notranslate"><span class="pre">KChromaticGluing</span></code></a><ul>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.KChromaticGluing.k"><code class="docutils literal notranslate"><span class="pre">k</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.KChromaticGluing.simplex_in_filtration"><code class="docutils literal notranslate"><span class="pre">simplex_in_filtration()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.KChromaticInclusion"><code class="docutils literal notranslate"><span class="pre">KChromaticInclusion</span></code></a><ul>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.KChromaticInclusion.k"><code class="docutils literal notranslate"><span class="pre">k</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.KChromaticInclusion.simplex_in_domain"><code class="docutils literal notranslate"><span class="pre">simplex_in_domain()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.PersistenceModuleName"><code class="docutils literal notranslate"><span class="pre">PersistenceModuleName</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPack"><code class="docutils literal notranslate"><span class="pre">SixPack</span></code></a><ul>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPack.__bool__"><code class="docutils literal notranslate"><span class="pre">__bool__()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPack.__eq__"><code class="docutils literal notranslate"><span class="pre">__eq__()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPack.__iter__"><code class="docutils literal notranslate"><span class="pre">__iter__()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPack.codomain"><code class="docutils literal notranslate"><span class="pre">codomain</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPack.cokernel"><code class="docutils literal notranslate"><span class="pre">cokernel</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPack.domain"><code class="docutils literal notranslate"><span class="pre">domain</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPack.from_hdf5"><code class="docutils literal notranslate"><span class="pre">from_hdf5()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPack.image"><code class="docutils literal notranslate"><span class="pre">image</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPack.kernel"><code class="docutils literal notranslate"><span class="pre">kernel</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPack.max_nonempty_degree"><code class="docutils literal notranslate"><span class="pre">max_nonempty_degree()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPack.module_names"><code class="docutils literal notranslate"><span class="pre">module_names()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPack.morphisms"><code class="docutils literal notranslate"><span class="pre">morphisms</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPack.pairings"><code class="docutils literal notranslate"><span class="pre">pairings</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPack.relative"><code class="docutils literal notranslate"><span class="pre">relative</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPack.representatives"><code class="docutils literal notranslate"><span class="pre">representatives</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPack.to_hdf5"><code class="docutils literal notranslate"><span class="pre">to_hdf5()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPackMorphisms"><code class="docutils literal notranslate"><span class="pre">SixPackMorphisms</span></code></a><ul>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPackMorphisms.__eq__"><code class="docutils literal notranslate"><span class="pre">__eq__()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPackMorphisms.codomain_to_cokernel"><code class="docutils literal notranslate"><span class="pre">codomain_to_cokernel</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPackMorphisms.domain_to_codomain"><code class="docutils literal notranslate"><span class="pre">domain_to_codomain</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPackMorphisms.domain_to_image"><code class="docutils literal notranslate"><span class="pre">domain_to_image</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPackMorphisms.image_to_codomain"><code class="docutils literal notranslate"><span class="pre">image_to_codomain</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPackMorphisms.kernel_to_domain"><code class="docutils literal notranslate"><span class="pre">kernel_to_domain</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPackPairings"><code class="docutils literal notranslate"><span class="pre">SixPackPairings</span></code></a><ul>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPackPairings.codomain"><code class="docutils literal notranslate"><span class="pre">codomain</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPackPairings.cokernel"><code class="docutils literal notranslate"><span class="pre">cokernel</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPackPairings.domain"><code class="docutils literal notranslate"><span class="pre">domain</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPackPairings.image"><code class="docutils literal notranslate"><span class="pre">image</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPackPairings.kernel"><code class="docutils literal notranslate"><span class="pre">kernel</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPackPairings.relative"><code class="docutils literal notranslate"><span class="pre">relative</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPackRepresentatives"><code class="docutils literal notranslate"><span class="pre">SixPackRepresentatives</span></code></a><ul>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPackRepresentatives.__eq__"><code class="docutils literal notranslate"><span class="pre">__eq__()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPackRepresentatives.codomain"><code class="docutils literal notranslate"><span class="pre">codomain</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPackRepresentatives.cokernel"><code class="docutils literal notranslate"><span class="pre">cokernel</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPackRepresentatives.domain"><code class="docutils literal notranslate"><span class="pre">domain</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPackRepresentatives.image"><code class="docutils literal notranslate"><span class="pre">image</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPackRepresentatives.kernel"><code class="docutils literal notranslate"><span class="pre">kernel</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SixPackRepresentatives.relative"><code class="docutils literal notranslate"><span class="pre">relative</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SubChromaticGluing"><code class="docutils literal notranslate"><span class="pre">SubChromaticGluing</span></code></a><ul>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SubChromaticGluing.simplex_in_filtration"><code class="docutils literal notranslate"><span class="pre">simplex_in_filtration()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SubChromaticInclusion"><code class="docutils literal notranslate"><span class="pre">SubChromaticInclusion</span></code></a><ul>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/morphisms/index.html#chalc.morphisms.SubChromaticInclusion.simplex_in_domain"><code class="docutils literal notranslate"><span class="pre">simplex_in_domain()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/chalc/plotting/index.html">chalc.plotting</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/chalc/plotting/index.html#functions">Functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/chalc/plotting/index.html#module-contents">Module Contents</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/plotting/index.html#chalc.plotting.animate_filtration"><code class="docutils literal notranslate"><span class="pre">animate_filtration()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/plotting/index.html#chalc.plotting.draw_filtration"><code class="docutils literal notranslate"><span class="pre">draw_filtration()</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/plotting/index.html#chalc.plotting.plot_diagram"><code class="docutils literal notranslate"><span class="pre">plot_diagram()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/plotting/index.html#chalc.plotting.plot_persistence_diagram"><code class="docutils literal notranslate"><span class="pre">plot_persistence_diagram()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/plotting/index.html#chalc.plotting.plot_sixpack"><code class="docutils literal notranslate"><span class="pre">plot_sixpack()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/chalc/sixpack/index.html">chalc.sixpack</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#submodules">Submodules</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/sixpack/morphisms/index.html">chalc.sixpack.morphisms</a><ul>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/morphisms/index.html#classes">Classes</a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/morphisms/index.html#module-contents">Module Contents</a><ul>
-<li class="toctree-l7"><a class="reference internal" href="autoapi/chalc/sixpack/morphisms/index.html#chalc.sixpack.morphisms.FiltrationInclusion"><code class="docutils literal notranslate"><span class="pre">FiltrationInclusion</span></code></a><ul>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/morphisms/index.html#chalc.sixpack.morphisms.FiltrationInclusion.simplex_in_domain"><code class="docutils literal notranslate"><span class="pre">simplex_in_domain()</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/morphisms/index.html#chalc.sixpack.morphisms.FiltrationInclusion.sixpack"><code class="docutils literal notranslate"><span class="pre">sixpack()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l7"><a class="reference internal" href="autoapi/chalc/sixpack/morphisms/index.html#chalc.sixpack.morphisms.FiltrationMorphism"><code class="docutils literal notranslate"><span class="pre">FiltrationMorphism</span></code></a><ul>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/morphisms/index.html#chalc.sixpack.morphisms.FiltrationMorphism.sixpack"><code class="docutils literal notranslate"><span class="pre">sixpack()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l7"><a class="reference internal" href="autoapi/chalc/sixpack/morphisms/index.html#chalc.sixpack.morphisms.FiltrationQuotient"><code class="docutils literal notranslate"><span class="pre">FiltrationQuotient</span></code></a><ul>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/morphisms/index.html#chalc.sixpack.morphisms.FiltrationQuotient.num_subfiltrations"><code class="docutils literal notranslate"><span class="pre">num_subfiltrations</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/morphisms/index.html#chalc.sixpack.morphisms.FiltrationQuotient.simplex_in_filtration"><code class="docutils literal notranslate"><span class="pre">simplex_in_filtration()</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/morphisms/index.html#chalc.sixpack.morphisms.FiltrationQuotient.sixpack"><code class="docutils literal notranslate"><span class="pre">sixpack()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l7"><a class="reference internal" href="autoapi/chalc/sixpack/morphisms/index.html#chalc.sixpack.morphisms.KChromaticInclusion"><code class="docutils literal notranslate"><span class="pre">KChromaticInclusion</span></code></a><ul>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/morphisms/index.html#chalc.sixpack.morphisms.KChromaticInclusion.k"><code class="docutils literal notranslate"><span class="pre">k</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/morphisms/index.html#chalc.sixpack.morphisms.KChromaticInclusion.simplex_in_domain"><code class="docutils literal notranslate"><span class="pre">simplex_in_domain()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l7"><a class="reference internal" href="autoapi/chalc/sixpack/morphisms/index.html#chalc.sixpack.morphisms.KChromaticQuotient"><code class="docutils literal notranslate"><span class="pre">KChromaticQuotient</span></code></a><ul>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/morphisms/index.html#chalc.sixpack.morphisms.KChromaticQuotient.k"><code class="docutils literal notranslate"><span class="pre">k</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/morphisms/index.html#chalc.sixpack.morphisms.KChromaticQuotient.simplex_in_filtration"><code class="docutils literal notranslate"><span class="pre">simplex_in_filtration()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l7"><a class="reference internal" href="autoapi/chalc/sixpack/morphisms/index.html#chalc.sixpack.morphisms.SubChromaticInclusion"><code class="docutils literal notranslate"><span class="pre">SubChromaticInclusion</span></code></a><ul>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/morphisms/index.html#chalc.sixpack.morphisms.SubChromaticInclusion.simplex_in_domain"><code class="docutils literal notranslate"><span class="pre">simplex_in_domain()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l7"><a class="reference internal" href="autoapi/chalc/sixpack/morphisms/index.html#chalc.sixpack.morphisms.SubChromaticQuotient"><code class="docutils literal notranslate"><span class="pre">SubChromaticQuotient</span></code></a><ul>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/morphisms/index.html#chalc.sixpack.morphisms.SubChromaticQuotient.simplex_in_filtration"><code class="docutils literal notranslate"><span class="pre">simplex_in_filtration()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html">chalc.sixpack.types</a><ul>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#classes">Classes</a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#module-contents">Module Contents</a><ul>
-<li class="toctree-l7"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#chalc.sixpack.types.SimplexPairings"><code class="docutils literal notranslate"><span class="pre">SimplexPairings</span></code></a><ul>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#chalc.sixpack.types.SimplexPairings.__bool__"><code class="docutils literal notranslate"><span class="pre">__bool__()</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#chalc.sixpack.types.SimplexPairings.__contains__"><code class="docutils literal notranslate"><span class="pre">__contains__()</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#chalc.sixpack.types.SimplexPairings.__eq__"><code class="docutils literal notranslate"><span class="pre">__eq__()</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#chalc.sixpack.types.SimplexPairings.__hash__"><code class="docutils literal notranslate"><span class="pre">__hash__()</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#chalc.sixpack.types.SimplexPairings.__iter__"><code class="docutils literal notranslate"><span class="pre">__iter__()</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#chalc.sixpack.types.SimplexPairings.__len__"><code class="docutils literal notranslate"><span class="pre">__len__()</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#chalc.sixpack.types.SimplexPairings.__str__"><code class="docutils literal notranslate"><span class="pre">__str__()</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#chalc.sixpack.types.SimplexPairings.paired"><code class="docutils literal notranslate"><span class="pre">paired</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#chalc.sixpack.types.SimplexPairings.unpaired"><code class="docutils literal notranslate"><span class="pre">unpaired</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l7"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#chalc.sixpack.types.SixPack"><code class="docutils literal notranslate"><span class="pre">SixPack</span></code></a><ul>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#chalc.sixpack.types.SixPack.__bool__"><code class="docutils literal notranslate"><span class="pre">__bool__()</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#chalc.sixpack.types.SixPack.__contains__"><code class="docutils literal notranslate"><span class="pre">__contains__()</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#chalc.sixpack.types.SixPack.__eq__"><code class="docutils literal notranslate"><span class="pre">__eq__()</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#chalc.sixpack.types.SixPack.__getitem__"><code class="docutils literal notranslate"><span class="pre">__getitem__()</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#chalc.sixpack.types.SixPack.__hash__"><code class="docutils literal notranslate"><span class="pre">__hash__()</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#chalc.sixpack.types.SixPack.__iter__"><code class="docutils literal notranslate"><span class="pre">__iter__()</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#chalc.sixpack.types.SixPack.__len__"><code class="docutils literal notranslate"><span class="pre">__len__()</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#chalc.sixpack.types.SixPack.dimensions"><code class="docutils literal notranslate"><span class="pre">dimensions</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#chalc.sixpack.types.SixPack.entrance_times"><code class="docutils literal notranslate"><span class="pre">entrance_times</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#chalc.sixpack.types.SixPack.filter"><code class="docutils literal notranslate"><span class="pre">filter()</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#chalc.sixpack.types.SixPack.from_file"><code class="docutils literal notranslate"><span class="pre">from_file()</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#chalc.sixpack.types.SixPack.get_matrix"><code class="docutils literal notranslate"><span class="pre">get_matrix()</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#chalc.sixpack.types.SixPack.items"><code class="docutils literal notranslate"><span class="pre">items()</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#chalc.sixpack.types.SixPack.keys"><code class="docutils literal notranslate"><span class="pre">keys()</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#chalc.sixpack.types.SixPack.max_nonempty_dimension"><code class="docutils literal notranslate"><span class="pre">max_nonempty_dimension()</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#chalc.sixpack.types.SixPack.names"><code class="docutils literal notranslate"><span class="pre">names()</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#chalc.sixpack.types.SixPack.num_features"><code class="docutils literal notranslate"><span class="pre">num_features()</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#chalc.sixpack.types.SixPack.save"><code class="docutils literal notranslate"><span class="pre">save()</span></code></a></li>
-<li class="toctree-l8"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html#chalc.sixpack.types.SixPack.values"><code class="docutils literal notranslate"><span class="pre">values()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#attributes">Attributes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#classes">Classes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#package-contents">Package Contents</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.DiagramName"><code class="docutils literal notranslate"><span class="pre">DiagramName</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.FiltrationInclusion"><code class="docutils literal notranslate"><span class="pre">FiltrationInclusion</span></code></a><ul>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.FiltrationInclusion.simplex_in_domain"><code class="docutils literal notranslate"><span class="pre">simplex_in_domain()</span></code></a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.FiltrationInclusion.sixpack"><code class="docutils literal notranslate"><span class="pre">sixpack()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.FiltrationMorphism"><code class="docutils literal notranslate"><span class="pre">FiltrationMorphism</span></code></a><ul>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.FiltrationMorphism.sixpack"><code class="docutils literal notranslate"><span class="pre">sixpack()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.KChromaticInclusion"><code class="docutils literal notranslate"><span class="pre">KChromaticInclusion</span></code></a><ul>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.KChromaticInclusion.k"><code class="docutils literal notranslate"><span class="pre">k</span></code></a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.KChromaticInclusion.simplex_in_domain"><code class="docutils literal notranslate"><span class="pre">simplex_in_domain()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.KChromaticQuotient"><code class="docutils literal notranslate"><span class="pre">KChromaticQuotient</span></code></a><ul>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.KChromaticQuotient.k"><code class="docutils literal notranslate"><span class="pre">k</span></code></a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.KChromaticQuotient.simplex_in_filtration"><code class="docutils literal notranslate"><span class="pre">simplex_in_filtration()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SimplexPairings"><code class="docutils literal notranslate"><span class="pre">SimplexPairings</span></code></a><ul>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SimplexPairings.__bool__"><code class="docutils literal notranslate"><span class="pre">__bool__()</span></code></a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SimplexPairings.__contains__"><code class="docutils literal notranslate"><span class="pre">__contains__()</span></code></a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SimplexPairings.__eq__"><code class="docutils literal notranslate"><span class="pre">__eq__()</span></code></a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SimplexPairings.__hash__"><code class="docutils literal notranslate"><span class="pre">__hash__()</span></code></a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SimplexPairings.__iter__"><code class="docutils literal notranslate"><span class="pre">__iter__()</span></code></a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SimplexPairings.__len__"><code class="docutils literal notranslate"><span class="pre">__len__()</span></code></a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SimplexPairings.__str__"><code class="docutils literal notranslate"><span class="pre">__str__()</span></code></a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SimplexPairings.paired"><code class="docutils literal notranslate"><span class="pre">paired</span></code></a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SimplexPairings.unpaired"><code class="docutils literal notranslate"><span class="pre">unpaired</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SixPack"><code class="docutils literal notranslate"><span class="pre">SixPack</span></code></a><ul>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SixPack.__bool__"><code class="docutils literal notranslate"><span class="pre">__bool__()</span></code></a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SixPack.__contains__"><code class="docutils literal notranslate"><span class="pre">__contains__()</span></code></a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SixPack.__eq__"><code class="docutils literal notranslate"><span class="pre">__eq__()</span></code></a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SixPack.__getitem__"><code class="docutils literal notranslate"><span class="pre">__getitem__()</span></code></a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SixPack.__hash__"><code class="docutils literal notranslate"><span class="pre">__hash__()</span></code></a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SixPack.__iter__"><code class="docutils literal notranslate"><span class="pre">__iter__()</span></code></a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SixPack.__len__"><code class="docutils literal notranslate"><span class="pre">__len__()</span></code></a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SixPack.dimensions"><code class="docutils literal notranslate"><span class="pre">dimensions</span></code></a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SixPack.entrance_times"><code class="docutils literal notranslate"><span class="pre">entrance_times</span></code></a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SixPack.filter"><code class="docutils literal notranslate"><span class="pre">filter()</span></code></a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SixPack.from_file"><code class="docutils literal notranslate"><span class="pre">from_file()</span></code></a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SixPack.get_matrix"><code class="docutils literal notranslate"><span class="pre">get_matrix()</span></code></a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SixPack.items"><code class="docutils literal notranslate"><span class="pre">items()</span></code></a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SixPack.keys"><code class="docutils literal notranslate"><span class="pre">keys()</span></code></a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SixPack.max_nonempty_dimension"><code class="docutils literal notranslate"><span class="pre">max_nonempty_dimension()</span></code></a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SixPack.names"><code class="docutils literal notranslate"><span class="pre">names()</span></code></a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SixPack.num_features"><code class="docutils literal notranslate"><span class="pre">num_features()</span></code></a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SixPack.save"><code class="docutils literal notranslate"><span class="pre">save()</span></code></a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SixPack.values"><code class="docutils literal notranslate"><span class="pre">values()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SubChromaticInclusion"><code class="docutils literal notranslate"><span class="pre">SubChromaticInclusion</span></code></a><ul>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SubChromaticInclusion.simplex_in_domain"><code class="docutils literal notranslate"><span class="pre">simplex_in_domain()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l5"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SubChromaticQuotient"><code class="docutils literal notranslate"><span class="pre">SubChromaticQuotient</span></code></a><ul>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/chalc/sixpack/index.html#chalc.sixpack.SubChromaticQuotient.simplex_in_filtration"><code class="docutils literal notranslate"><span class="pre">simplex_in_filtration()</span></code></a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
@@ -499,14 +545,14 @@
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="example.html">
+          <a class="prev-page" href="thread_safety.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Example Usage</div>
+                <div class="title">Thread safety</div>
                 
               </div>
             </a>
@@ -534,7 +580,7 @@
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=93d1edcc"></script>
+</div><script src="_static/documentation_options.js?v=8d0b4638"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

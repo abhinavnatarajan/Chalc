@@ -23,8 +23,8 @@ Functions
 Module Contents
 ---------------
 
-.. py:function:: alpha(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, Literal[1]], numpy.dtype[numpy.uint16]], max_num_threads: int = 0) -> chalc.filtration.Filtration
-                 alpha(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 0) -> chalc.filtration.Filtration
+.. py:function:: alpha(points: Annotated[numpy.typing.ArrayLike, numpy.float64, [m, n]], colours: Annotated[numpy.typing.ArrayLike, numpy.uint16, [m, 1]], max_num_threads: SupportsInt | SupportsIndex = 0) -> chalc.filtration.Filtration
+                 alpha(points: Annotated[numpy.typing.ArrayLike, numpy.float64, [m, n]], colours: collections.abc.Sequence[SupportsInt | SupportsIndex], max_num_threads: SupportsInt | SupportsIndex = 0) -> chalc.filtration.Filtration
 
    Compute the chromatic alpha filtration of a coloured point cloud.
 
@@ -52,8 +52,8 @@ Module Contents
    .. seealso:: :func:`delaunay_rips`, :func:`delaunay_cech`
 
 
-.. py:function:: delaunay(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, Literal[1]], numpy.dtype[numpy.uint16]], parallel: bool = True) -> chalc.filtration.Filtration
-                 delaunay(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], parallel: bool = True) -> chalc.filtration.Filtration
+.. py:function:: delaunay(points: Annotated[numpy.typing.ArrayLike, numpy.float64, [m, n]], colours: Annotated[numpy.typing.ArrayLike, numpy.uint16, [m, 1]], parallel: bool = True) -> chalc.filtration.Filtration
+                 delaunay(points: Annotated[numpy.typing.ArrayLike, numpy.float64, [m, n]], colours: collections.abc.Sequence[SupportsInt | SupportsIndex], parallel: bool = True) -> chalc.filtration.Filtration
 
    Compute the chromatic Delaunay triangulation of a coloured point cloud in Euclidean space.
 
@@ -70,8 +70,8 @@ Module Contents
    :returns: The Delaunay triangulation.
 
 
-.. py:function:: delaunay_cech(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, Literal[1]], numpy.dtype[numpy.uint16]], max_num_threads: int = 0) -> chalc.filtration.Filtration
-                 delaunay_cech(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 0) -> chalc.filtration.Filtration
+.. py:function:: delaunay_cech(points: Annotated[numpy.typing.ArrayLike, numpy.float64, [m, n]], colours: Annotated[numpy.typing.ArrayLike, numpy.uint16, [m, 1]], max_num_threads: SupportsInt | SupportsIndex = 0) -> chalc.filtration.Filtration
+                 delaunay_cech(points: Annotated[numpy.typing.ArrayLike, numpy.float64, [m, n]], colours: collections.abc.Sequence[SupportsInt | SupportsIndex], max_num_threads: SupportsInt | SupportsIndex = 0) -> chalc.filtration.Filtration
 
    Compute the chromatic Delaunay--Čech filtration of a coloured point cloud.
 
@@ -101,8 +101,8 @@ Module Contents
    .. seealso:: :func:`alpha`, :func:`delaunay_rips`
 
 
-.. py:function:: delaunay_rips(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: numpy.ndarray[tuple[M, Literal[1]], numpy.dtype[numpy.uint16]], max_num_threads: int = 0) -> chalc.filtration.Filtration
-                 delaunay_rips(points: numpy.ndarray[tuple[M, N], numpy.dtype[numpy.float64]], colours: list[int], max_num_threads: int = 0) -> chalc.filtration.Filtration
+.. py:function:: delaunay_rips(points: Annotated[numpy.typing.ArrayLike, numpy.float64, [m, n]], colours: Annotated[numpy.typing.ArrayLike, numpy.uint16, [m, 1]], max_num_threads: SupportsInt | SupportsIndex = 0) -> chalc.filtration.Filtration
+                 delaunay_rips(points: Annotated[numpy.typing.ArrayLike, numpy.float64, [m, n]], colours: collections.abc.Sequence[SupportsInt | SupportsIndex], max_num_threads: SupportsInt | SupportsIndex = 0) -> chalc.filtration.Filtration
 
    Compute the chromatic Delaunay--Rips filtration of a coloured point cloud.
 

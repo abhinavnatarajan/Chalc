@@ -30,12 +30,12 @@ Functions
 Module Contents
 ---------------
 
-.. py:class:: Filtration(n: int, k: int)
+.. py:class:: Filtration(n: SupportsInt | SupportsIndex, k: SupportsInt | SupportsIndex)
 
    Class representing a filtered simplicial complex.
 
 
-   .. py:method:: __contains__(vertices: list[int]) -> bool
+   .. py:method:: __contains__(vertices: collections.abc.Sequence[SupportsInt | SupportsIndex]) -> bool
 
       Check for membership of a simplex in the complex.
 
@@ -43,7 +43,7 @@ Module Contents
 
 
 
-   .. py:method:: __iter__() -> Iterator[Simplex]
+   .. py:method:: __iter__() -> collections.abc.Iterator[Simplex]
 
       Iterate over the simplices in the complex, ordered by dimension.
 
@@ -58,7 +58,7 @@ Module Contents
 
 
 
-   .. py:method:: add_simplex(vertices: list[int], filt_value: float) -> bool
+   .. py:method:: add_simplex(vertices: collections.abc.Sequence[SupportsInt | SupportsIndex], filt_value: SupportsFloat | SupportsIndex) -> bool
 
       Add a simplex to a filtered simplicial complex.
 
@@ -72,7 +72,7 @@ Module Contents
 
 
 
-   .. py:method:: boundary_matrix(max_dimension: int = -1) -> list[tuple[list[int], int, float, list[int]]]
+   .. py:method:: boundary_matrix(max_dimension: SupportsInt | SupportsIndex = -1) -> list[tuple[list[int], int, float, list[int]]]
 
       Compute the boundary matrix of the filtration.
 
@@ -97,7 +97,7 @@ Module Contents
       Current maximum dimension of a maximal simplex in the complex.
 
 
-   .. py:method:: get_label_from_vertex_labels(vertices: list[int]) -> int
+   .. py:method:: get_label_from_vertex_labels(vertices: collections.abc.Sequence[SupportsInt | SupportsIndex]) -> int
 
       Get the dictionary key of a simplex.
 
@@ -146,7 +146,7 @@ Module Contents
 
 
 
-   .. py:method:: propagate_filt_values(start_dim: int, upwards: bool = True) -> None
+   .. py:method:: propagate_filt_values(start_dim: SupportsInt | SupportsIndex, upwards: bool = True) -> None
 
       Propagate filtration values upwards or downwards.
 
@@ -174,7 +174,7 @@ Module Contents
       counting all possible sorted subsequences of :math:`(0, ..., N-1)` of length :math:`k`.
 
 
-   .. py:method:: skeleton(k: int) -> Filtration
+   .. py:method:: skeleton(k: SupportsInt | SupportsIndex) -> Filtration
 
       Get a copy of the k-skeleton of the filtration.
 
@@ -230,7 +230,7 @@ Module Contents
       counting all possible sorted subsequences of :math:`(0, ..., N-1)` of length :math:`k`.
 
 
-   .. py:method:: set_colour(colour: int) -> None
+   .. py:method:: set_colour(colour: SupportsInt | SupportsIndex) -> None
 
       Change the colour of a vertex.
 
@@ -252,7 +252,7 @@ Module Contents
       List of (sorted, ascending) vertex labels of the simplex.
 
 
-.. py:function:: complete_complex(n: int, k: int) -> Filtration
+.. py:function:: complete_complex(n: SupportsInt | SupportsIndex, k: SupportsInt | SupportsIndex) -> Filtration
 
    Compute the :math:`k`-skeleton of the complete simplicial complex on :math:`n` vertices.
 
@@ -261,7 +261,7 @@ Module Contents
    :raises RuntimeError: If ``n<= 0`` or ``k >= n`` or ``k < 0``.
 
 
-.. py:function:: standard_simplex(n: int) -> Filtration
+.. py:function:: standard_simplex(n: SupportsInt | SupportsIndex) -> Filtration
 
    Compute the filtered simplicial complex corresponding to the standard abstract :math:`n`-simplex.
 

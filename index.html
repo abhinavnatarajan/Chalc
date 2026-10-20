@@ -5,10 +5,10 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Installation" href="installation.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>chalc 14.2.0 documentation</title>
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+        <title>chalc 15.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=580074bf" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -164,7 +164,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="#"><div class="brand">chalc 14.2.0 documentation</div></a>
+      <a href="#"><div class="brand">chalc 15.0.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -185,7 +185,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="#">
   
-  <span class="sidebar-brand-text">chalc 14.2.0 documentation</span>
+  <span class="sidebar-brand-text">chalc 15.0.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -196,16 +196,17 @@
   <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="example.html">Example Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="thread_safety.html">Thread safety</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="API.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/chalc/index.html">chalc</a><input aria-label="Toggle navigation of chalc" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/chalc/chromatic/index.html">chalc.chromatic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/chalc/filtration/index.html">chalc.filtration</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/chalc/plotting/index.html">chalc.plotting</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/chalc/sixpack/index.html">chalc.sixpack</a><input aria-label="Toggle navigation of chalc.sixpack" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/chalc/sixpack/morphisms/index.html">chalc.sixpack.morphisms</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html">chalc.sixpack.types</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/chalc/morphisms/index.html">chalc.morphisms</a><input aria-label="Toggle navigation of chalc.morphisms" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/chalc/morphisms/sheaf/index.html">chalc.morphisms.sheaf</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html">chalc.morphisms.types</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/chalc/plotting/index.html">chalc.plotting</a></li>
 </ul>
 </li>
 </ul>
@@ -260,7 +261,7 @@
         <article role="main" id="furo-main-content">
           <section id="chalc-documentation">
 <h1>Chalc Documentation<a class="headerlink" href="#chalc-documentation" title="Link to this heading">¶</a></h1>
-<p>Chalc is a Python package for computing chromatic Delaunay filtrations of labelled point clouds in Euclidean space, and the associated 6-packs of persistent homology diagrams.
+<p>Chalc is a Python package for computing chromatic Delaunay filtrations of labelled point clouds in Euclidean space, the associated 6-packs of persistent homology modules, and representative cycles for the homological features in these modules.
 6-packs are algebraic structures which can be used to quantify spatial relationships between various classes of points in a labelled point cloud, and chromatic Delaunay filtrations are a computational tool that make it feasible to compute 6-packs for low-dimensional labelled datasets.
 Chalc is named for <span class="underline">ch</span>romatic <span class="underline">al</span>pha <span class="underline">c</span>omplexes, which were defined in <a class="reference internal" href="#id2"><span class="std std-ref">[1]</span></a>, but the package can also compute chromatic Delaunay–Čech and chromatic Delaunay–Rips filtrations, which are computationally simpler and are based on the ideas in <a class="reference internal" href="#id4"><span class="std std-ref">[2]</span></a>.
 Chalc is written in C++ and relies on the <a class="reference external" href="https://www.cgal.org">Computational Geometry Algorithms Library (CGAL)</a> for geometric computations, <a class="reference external" href="https://github.com/tomchaplin/phimaker">Phimaker</a> for persistent homology calculations, and <a class="reference external" href="https://www.threadingbuildingblocks.org">Intel OneAPI Threading Building Blocks (TBB)</a> for parallelism.</p>
@@ -268,7 +269,7 @@ Chalc is written in C++ and relies on the <a class="reference external" href="ht
 <ol class="arabic simple">
 <li><p>Internal computations are performed with multiple precision exact arithmetic.</p></li>
 <li><p>Chalc will try to produce reasonable results even when the input points are degenerate.</p></li>
-<li><p>Lock-free computation of persistence diagrams using the algorithm of <a class="reference internal" href="#id6"><span class="std std-ref">[3]</span></a>, along with the clearing optimisation from <a class="reference internal" href="#id7"><span class="std std-ref">[4]</span></a>.</p></li>
+<li><p>Lock-free computation of persistence modules using the algorithm of <a class="reference internal" href="#id6"><span class="std std-ref">[3]</span></a>, along with the clearing optimisation from <a class="reference internal" href="#id7"><span class="std std-ref">[4]</span></a>.</p></li>
 <li><p>Parallelism is used wherever possible to speed up computations (unless explicitly disabled).</p></li>
 </ol>
 <p>There are no constraints on the dimensionality of the point clouds that Chalc can handle, and up to 16 colours are supported.
@@ -281,7 +282,7 @@ On a laptop, even 2 threads might be sufficient to saturate the memory bus.</p>
 </div></blockquote>
 <section id="contributing">
 <h2>Contributing<a class="headerlink" href="#contributing" title="Link to this heading">¶</a></h2>
-<p>Writing a mathematical library that is performant, bug-free, composable, and well-documented is a considerable task, and we welcome contributions from users of this package.
+<p>Writing a mathematical library that is performant, bug-free, composable, and well-documented is a considerable task, and we encourage contributions from users of this package.
 If you find a bug, or an error in the documentation, or have a feature request, or would like to contribute, please open an <a class="reference external" href="https://github.com/abhinavnatarajan/Chalc/issues">issue on the GitHub repository</a>.
 If you have a question about how to use the package, please open a <a class="reference external" href="https://github.com/abhinavnatarajan/Chalc/discussions">discussion on the GitHub repository</a>.</p>
 </section>
@@ -292,16 +293,29 @@ If you have a question about how to use the package, please open a <a class="ref
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#using-pip">Using pip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#build-from-source">Build from source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#running-tests">Running tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#building-the-documentation">Building the Documentation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="example.html">Example Usage</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="example.html#Computing-chromatic-filtrations">Computing chromatic filtrations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example.html#Computing-6-packs-of-persistence-diagrams">Computing 6-packs of persistence diagrams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example.html#Computing-6-packs-of-persistence-modules">Computing 6-packs of persistence modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example.html#Extracting-persistence-modules-from-the-6-pack">Extracting persistence modules from the 6-pack</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example.html#Plotting-6-packs-of-persistence-diagrams">Plotting 6-packs of persistence diagrams</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example.html#Saving-diagrams-to-file">Saving diagrams to file</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example.html#Other-mapping-methods">Other mapping methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example.html#Representative-cycles-and-persistent-morphisms">Representative cycles and persistent morphisms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example.html#Plotting-representative-cycles">Plotting representative cycles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example.html#Animating-the-filtration">Animating the filtration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example.html#Other-mapping-methods">Other mapping methods</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="thread_safety.html">Thread safety</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="thread_safety.html#independent-computations">Independent computations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="thread_safety.html#sharing-a-filtration">Sharing a filtration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="thread_safety.html#filtration-morphisms">Filtration morphisms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="thread_safety.html#persistence-modules-and-six-packs">Persistence modules and six-packs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="thread_safety.html#plotting-and-hdf5-files">Plotting and HDF5 files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="thread_safety.html#free-threaded-python">Free-threaded Python</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="API.html">API Reference</a><ul>
@@ -346,14 +360,10 @@ BibTex</label><div class="sd-tab-content docutils">
 <section id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading">¶</a></h2>
 <p>The Python package <a class="reference external" href="https://pypi.org/project/chromatic-tda/">chromatic-tda</a> is written and maintained by the authors of <a class="reference internal" href="#id2"><span class="std std-ref">[1]</span></a>, the original creators of chromatic alpha filtrations, and we are indebted to them for their work.
-Chromatic-tda can compute chromatic alpha filtrations and their six-packs of persistence diagrams.
+Chromatic-tda can compute chromatic alpha filtrations and their six-packs of persistence modules.
 It can also compute cycle representatives for persistent features, which chalc does not currently provide (although this is planned for a future release).</p>
 <p>On the other hand, chalc can compute chromatic Delaunay–Čech or chromatic Delaunay–Rips filtrations, which chromatic-tda does not currently support.
-Chalc is generally faster than chromatic-tda due to its lower-level implementation and the use of parallelism, and you may find this useful if you are working with a large number of datasets or datasets with a large number of points.
-The following is a chart comparing the runtime performance of chalc v14.2.0 and chromatic-tda v1.1.8 on randomly generated 2-dimensional point clouds with two and three colours.
-These tests were run on a laptop with an AMD Ryzen 7 6800U processor (8 cores &#64;2.7Ghz, x86-64 ISA) and 16 GB of RAM, running Ubuntu 24.04 (kernel 6.12.10-76061203-generic) and using Python 3.13.2.
-The code used to run these tests and generate the charts are available in the <code class="docutils literal notranslate"><span class="pre">docs/source</span></code> folder of the chalc repository, and the raw results are available as a JSON file in the same folder.</p>
-<img alt="_images/timing_results.png" src="_images/timing_results.png" />
+Chalc is generally faster than chromatic-tda due to its lower-level implementation and the use of parallelism, and you may find this useful if you are working with a large number of datasets or datasets with a large number of points.</p>
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
@@ -434,7 +444,7 @@ The code used to run these tests and generate the charts are available in the <c
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=93d1edcc"></script>
+</div><script src="_static/documentation_options.js?v=8d0b4638"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

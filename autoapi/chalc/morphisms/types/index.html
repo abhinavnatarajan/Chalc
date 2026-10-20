@@ -1,0 +1,790 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../../../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../../../../genindex.html"><link rel="search" title="Search" href="../../../../search.html"><link rel="next" title="chalc.plotting" href="../../plotting/index.html"><link rel="prev" title="chalc.morphisms.sheaf" href="../sheaf/index.html">
+
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+        <title>chalc.morphisms.types - chalc 15.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=02efb1e5" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../../index.html"><div class="brand">chalc 15.0.0 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../../index.html">
+  
+  <span class="sidebar-brand-text">chalc 15.0.0 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../example.html">Example Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../thread_safety.html">Thread safety</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../../../../API.html">API Reference</a><input aria-label="Toggle navigation of API Reference" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2 current has-children"><a class="reference internal" href="../../index.html">chalc</a><input aria-label="Toggle navigation of chalc" checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../chromatic/index.html">chalc.chromatic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../filtration/index.html">chalc.filtration</a></li>
+<li class="toctree-l3 current has-children"><a class="reference internal" href="../index.html">chalc.morphisms</a><input aria-label="Toggle navigation of chalc.morphisms" checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../sheaf/index.html">chalc.morphisms.sheaf</a></li>
+<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">chalc.morphisms.types</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../plotting/index.html">chalc.plotting</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../license.html">License</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/abhinavnatarajan/chalc">GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/chalc">PyPI</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/abhinavnatarajan/chalc/blob/master/docs/autoapi/chalc/morphisms/types/index.rst?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/abhinavnatarajan/chalc/edit/master/docs/autoapi/chalc/morphisms/types/index.rst" rel="edit" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="module-chalc.morphisms.types">
+<span id="chalc-morphisms-types"></span><h1>chalc.morphisms.types<a class="headerlink" href="#module-chalc.morphisms.types" title="Link to this heading">¶</a></h1>
+<p>Augmented persistence modules and 6-packs of persistence modules.</p>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#chalc.morphisms.types.AugmentedPersistenceModule" title="chalc.morphisms.types.AugmentedPersistenceModule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AugmentedPersistenceModule</span></code></a></p></td>
+<td><p>An <span class="math notranslate nohighlight">\(\mathbb{R}\)</span>-indexed persistence module of <span class="math notranslate nohighlight">\(\mathbb{N}\)</span>-graded vector spaces.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#chalc.morphisms.types.SixPack" title="chalc.morphisms.types.SixPack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SixPack</span></code></a></p></td>
+<td><p>6-pack of persistence modules.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#chalc.morphisms.types.SixPackMorphisms" title="chalc.morphisms.types.SixPackMorphisms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SixPackMorphisms</span></code></a></p></td>
+<td><p>Natural maps between persistence modules, with one-dimensional int64 support arrays.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#chalc.morphisms.types.SixPackPairings" title="chalc.morphisms.types.SixPackPairings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SixPackPairings</span></code></a></p></td>
+<td><p>Birth-death pairings for persistence modules in a 6-pack.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#chalc.morphisms.types.SixPackRepresentatives" title="chalc.morphisms.types.SixPackRepresentatives"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SixPackRepresentatives</span></code></a></p></td>
+<td><p>Representative cycles for persistence modules, with one-dimensional int64 support arrays.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="chalc.morphisms.types.AugmentedPersistenceModule">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AugmentedPersistenceModule</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">intervals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(in Python v3.15)"><span class="pre">collections.abc.Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">entrance_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.15)"><span class="pre">collections.abc.Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.5)"><span class="pre">numpy.dtype</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.floating" title="(in NumPy v2.5)"><span class="pre">numpy.floating</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">degrees</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(in Python v3.15)"><span class="pre">collections.abc.Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#chalc.morphisms.types.AugmentedPersistenceModule" title="Link to this definition">¶</a></dt>
+<dd><p>An <span class="math notranslate nohighlight">\(\mathbb{R}\)</span>-indexed persistence module of <span class="math notranslate nohighlight">\(\mathbb{N}\)</span>-graded vector spaces.</p>
+<p>The module is augmented with (1) a choice of interval basis, where each interval is a pairing
+between a generator and a relation, (2) a strict linear ordering of the set of all
+generators and relations, which is compatible with their entrance times.</p>
+<p>In particular, each interval is uniquely identified by the integer index of its generator,
+and distinct integer indices may correspond to elements that have the same entrance time.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="chalc.morphisms.types.AugmentedPersistenceModule.__bool__">
+<span class="sig-name descname"><span class="pre">__bool__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#chalc.morphisms.types.AugmentedPersistenceModule.__bool__" title="Link to this definition">¶</a></dt>
+<dd><p>Check if the persistence module is non-empty.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chalc.morphisms.types.AugmentedPersistenceModule.__eq__">
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#chalc.morphisms.types.AugmentedPersistenceModule.__eq__" title="Link to this definition">¶</a></dt>
+<dd><p>Check if two persistence modules are equal.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chalc.morphisms.types.AugmentedPersistenceModule.__len__">
+<span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#chalc.morphisms.types.AugmentedPersistenceModule.__len__" title="Link to this definition">¶</a></dt>
+<dd><p>Return the number of features in the module.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="chalc.morphisms.types.AugmentedPersistenceModule.degrees">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">degrees</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/types.html#types.MappingProxyType" title="(in Python v3.15)"><span class="pre">types.MappingProxyType</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.morphisms.types.AugmentedPersistenceModule.degrees" title="Link to this definition">¶</a></dt>
+<dd><p>Return the degrees of interval endpoints.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="chalc.morphisms.types.AugmentedPersistenceModule.entrance_times">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">entrance_times</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.5)"><span class="pre">numpy.dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.morphisms.types.AugmentedPersistenceModule.entrance_times" title="Link to this definition">¶</a></dt>
+<dd><p>Return all entrance times of generators/relations in the persistence module.</p>
+<p>The entrance times are sorted by generator/relation index.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chalc.morphisms.types.AugmentedPersistenceModule.interval">
+<span class="sig-name descname"><span class="pre">interval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">birth_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.integer" title="(in NumPy v2.5)"><span class="pre">numpy.integer</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#chalc.morphisms.types.AugmentedPersistenceModule.interval" title="Link to this definition">¶</a></dt>
+<dd><p>Return the interval with the given birth index.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chalc.morphisms.types.AugmentedPersistenceModule.intervals">
+<span class="sig-name descname"><span class="pre">intervals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">degrees</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.integer" title="(in NumPy v2.5)"><span class="pre">numpy.integer</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.5)"><span class="pre">numpy.dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#chalc.morphisms.types.AugmentedPersistenceModule.intervals" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">intervals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">degrees</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.15)"><span class="pre">collections.abc.Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">IndexArray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">...</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.5)"><span class="pre">numpy.dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span></dt>
+<dd><p>Get the interval decomposition of the persistence module.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>degrees</strong> – Degrees in which the intervals are desired.
+If a list is provided then a list of matrices is returned,
+with the order of matrices respecting the order of entries of <cite>degree</cite>.
+If <cite>degree</cite> is not provided then the returned matrix will contain
+intervals features from all degrees from zero to <code class="docutils literal notranslate"><span class="pre">max(self.degrees)</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An <span class="math notranslate nohighlight">\(m \times 2\)</span> matrix whose rows are the endpoints of intervals in the
+interval decomposition, or a dictionary of such matrices indexed by degree.
+The rows are sorted by generator index.
+Degenerate intervals (having zero persistence) are not removed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chalc.morphisms.types.AugmentedPersistenceModule.nonempty_degrees">
+<span class="sig-name descname"><span class="pre">nonempty_degrees</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">IndexArray</span></span></span><a class="headerlink" href="#chalc.morphisms.types.AugmentedPersistenceModule.nonempty_degrees" title="Link to this definition">¶</a></dt>
+<dd><p>Return all inhabited degrees in the persistence module.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="chalc.morphisms.types.AugmentedPersistenceModule.pairings">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pairings</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/types.html#types.MappingProxyType" title="(in Python v3.15)"><span class="pre">types.MappingProxyType</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.morphisms.types.AugmentedPersistenceModule.pairings" title="Link to this definition">¶</a></dt>
+<dd><p>Get the birth-death pairing indices for this module.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chalc.morphisms.types.AugmentedPersistenceModule.to_hdf5">
+<span class="sig-name descname"><span class="pre">to_hdf5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.h5py.org/en/stable/high/group.html#h5py.Group" title="(in h5py v3.16)"><span class="pre">h5py.Group</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">pairings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(in Python v3.15)"><span class="pre">collections.abc.Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#chalc.morphisms.types.AugmentedPersistenceModule.to_hdf5" title="Link to this definition">¶</a></dt>
+<dd><p>Save interval pairings, endpoint entrance times, and interval degrees.</p>
+<p>Infinite deaths are stored as <code class="docutils literal notranslate"><span class="pre">-1</span></code>. Degrees are stored in pairing row order.
+By default, pairings use this module’s endpoint indices. An enclosing 6-pack
+can supply its original pairings instead, in the same interval order.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPack">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SixPack</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">pairings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#chalc.morphisms.types.SixPackPairings" title="chalc.morphisms.types.SixPackPairings"><span class="pre">SixPackPairings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">entrance_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.15)"><span class="pre">collections.abc.Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.5)"><span class="pre">numpy.dtype</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.floating" title="(in NumPy v2.5)"><span class="pre">numpy.floating</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">degrees</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.15)"><span class="pre">collections.abc.Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.5)"><span class="pre">numpy.dtype</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.integer" title="(in NumPy v2.5)"><span class="pre">numpy.integer</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">representatives</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#chalc.morphisms.types.SixPackRepresentatives" title="chalc.morphisms.types.SixPackRepresentatives"><span class="pre">SixPackRepresentatives</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">morphisms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#chalc.morphisms.types.SixPackMorphisms" title="chalc.morphisms.types.SixPackMorphisms"><span class="pre">SixPackMorphisms</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#chalc.morphisms.types.SixPack" title="Link to this definition">¶</a></dt>
+<dd><p>6-pack of persistence modules.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPack.__bool__">
+<span class="sig-name descname"><span class="pre">__bool__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#chalc.morphisms.types.SixPack.__bool__" title="Link to this definition">¶</a></dt>
+<dd><p>Check whether any persistence module in the 6-pack is non-trivial.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPack.__eq__">
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#chalc.morphisms.types.SixPack.__eq__" title="Link to this definition">¶</a></dt>
+<dd><p>Check equality of 6-packs.</p>
+<p>Checks if all the persistence modules in the 6-packs are equal,
+with identical interval endpoint metadata.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPack.__iter__">
+<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterator" title="(in Python v3.15)"><span class="pre">collections.abc.Iterator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">PersistenceModuleName</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#chalc.morphisms.types.AugmentedPersistenceModule" title="chalc.morphisms.types.AugmentedPersistenceModule"><span class="pre">AugmentedPersistenceModule</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#chalc.morphisms.types.SixPack.__iter__" title="Link to this definition">¶</a></dt>
+<dd><p>Iterate over the persistence modules in the 6-pack.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPack.codomain">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">codomain</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#chalc.morphisms.types.AugmentedPersistenceModule" title="chalc.morphisms.types.AugmentedPersistenceModule"><span class="pre">AugmentedPersistenceModule</span></a></em><a class="headerlink" href="#chalc.morphisms.types.SixPack.codomain" title="Link to this definition">¶</a></dt>
+<dd><p>Codomain persistence module.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPack.cokernel">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cokernel</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#chalc.morphisms.types.AugmentedPersistenceModule" title="chalc.morphisms.types.AugmentedPersistenceModule"><span class="pre">AugmentedPersistenceModule</span></a></em><a class="headerlink" href="#chalc.morphisms.types.SixPack.cokernel" title="Link to this definition">¶</a></dt>
+<dd><p>Cokernel persistence module.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPack.domain">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">domain</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#chalc.morphisms.types.AugmentedPersistenceModule" title="chalc.morphisms.types.AugmentedPersistenceModule"><span class="pre">AugmentedPersistenceModule</span></a></em><a class="headerlink" href="#chalc.morphisms.types.SixPack.domain" title="Link to this definition">¶</a></dt>
+<dd><p>Domain persistence module.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPack.from_hdf5">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_hdf5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.h5py.org/en/stable/high/group.html#h5py.Group" title="(in h5py v3.16)"><span class="pre">h5py.Group</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#chalc.morphisms.types.SixPack" title="chalc.morphisms.types.SixPack"><span class="pre">SixPack</span></a></span></span><a class="headerlink" href="#chalc.morphisms.types.SixPack.from_hdf5" title="Link to this definition">¶</a></dt>
+<dd><p>Load modules, raw pairings, and optional representatives and maps.</p>
+<p>Consumer metadata is ignored and initialized to <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+Malformed datasets raise <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPack.image">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">image</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#chalc.morphisms.types.AugmentedPersistenceModule" title="chalc.morphisms.types.AugmentedPersistenceModule"><span class="pre">AugmentedPersistenceModule</span></a></em><a class="headerlink" href="#chalc.morphisms.types.SixPack.image" title="Link to this definition">¶</a></dt>
+<dd><p>Image persistence module.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPack.kernel">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kernel</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#chalc.morphisms.types.AugmentedPersistenceModule" title="chalc.morphisms.types.AugmentedPersistenceModule"><span class="pre">AugmentedPersistenceModule</span></a></em><a class="headerlink" href="#chalc.morphisms.types.SixPack.kernel" title="Link to this definition">¶</a></dt>
+<dd><p>Kernel persistence module.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPack.max_nonempty_degree">
+<span class="sig-name descname"><span class="pre">max_nonempty_degree</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#chalc.morphisms.types.SixPack.max_nonempty_degree" title="Link to this definition">¶</a></dt>
+<dd><p>Get the maximum degree of all features in all persistence modules in the 6-pack.</p>
+<p>Returns -1 if all persistence modules in the 6-pack are trivial.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPack.module_names">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">module_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">PersistenceModuleName</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#chalc.morphisms.types.SixPack.module_names" title="Link to this definition">¶</a></dt>
+<dd><p>Return all six persistence module names in iteration order.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPack.morphisms">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">morphisms</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#chalc.morphisms.types.SixPackMorphisms" title="chalc.morphisms.types.SixPackMorphisms"><span class="pre">SixPackMorphisms</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></em><a class="headerlink" href="#chalc.morphisms.types.SixPack.morphisms" title="Link to this definition">¶</a></dt>
+<dd><p>Natural morphisms between modules in the 6-pack.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPack.pairings">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pairings</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#chalc.morphisms.types.SixPackPairings" title="chalc.morphisms.types.SixPackPairings"><span class="pre">SixPackPairings</span></a></em><a class="headerlink" href="#chalc.morphisms.types.SixPack.pairings" title="Link to this definition">¶</a></dt>
+<dd><p>Birth-death pairings defining the 6-pack.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPack.relative">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">relative</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#chalc.morphisms.types.AugmentedPersistenceModule" title="chalc.morphisms.types.AugmentedPersistenceModule"><span class="pre">AugmentedPersistenceModule</span></a></em><a class="headerlink" href="#chalc.morphisms.types.SixPack.relative" title="Link to this definition">¶</a></dt>
+<dd><p>Relative persistence module.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPack.representatives">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">representatives</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#chalc.morphisms.types.SixPackRepresentatives" title="chalc.morphisms.types.SixPackRepresentatives"><span class="pre">SixPackRepresentatives</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></em><a class="headerlink" href="#chalc.morphisms.types.SixPack.representatives" title="Link to this definition">¶</a></dt>
+<dd><p>Representative cycles for intervals in the modules in the 6-pack.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPack.to_hdf5">
+<span class="sig-name descname"><span class="pre">to_hdf5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.h5py.org/en/stable/high/group.html#h5py.Group" title="(in h5py v3.16)"><span class="pre">h5py.Group</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#chalc.morphisms.types.SixPack.to_hdf5" title="Link to this definition">¶</a></dt>
+<dd><p>Save modules, raw pairings, and optional representatives and maps.</p>
+<p>Each module stores its own endpoint times and interval degrees. Representatives
+and maps use the same module-local indices as in memory. Consumer metadata is
+not serialized; consumers may store it separately in the same file or group.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPackMorphisms">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SixPackMorphisms</span></span><a class="headerlink" href="#chalc.morphisms.types.SixPackMorphisms" title="Link to this definition">¶</a></dt>
+<dd><p>Natural maps between persistence modules, with one-dimensional int64 support arrays.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPackMorphisms.__eq__">
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#chalc.morphisms.types.SixPackMorphisms.__eq__" title="Link to this definition">¶</a></dt>
+<dd><p>Compare the sparse support arrays by value.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPackMorphisms.codomain_to_cokernel">
+<span class="sig-name descname"><span class="pre">codomain_to_cokernel</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IndexArray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.morphisms.types.SixPackMorphisms.codomain_to_cokernel" title="Link to this definition">¶</a></dt>
+<dd><p>Epimorphism of codomain onto cokernel.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPackMorphisms.domain_to_codomain">
+<span class="sig-name descname"><span class="pre">domain_to_codomain</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IndexArray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.morphisms.types.SixPackMorphisms.domain_to_codomain" title="Link to this definition">¶</a></dt>
+<dd><p>Domain to codomain map.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPackMorphisms.domain_to_image">
+<span class="sig-name descname"><span class="pre">domain_to_image</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IndexArray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.morphisms.types.SixPackMorphisms.domain_to_image" title="Link to this definition">¶</a></dt>
+<dd><p>Epimorphism of domain onto image.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPackMorphisms.image_to_codomain">
+<span class="sig-name descname"><span class="pre">image_to_codomain</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IndexArray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.morphisms.types.SixPackMorphisms.image_to_codomain" title="Link to this definition">¶</a></dt>
+<dd><p>Monomorphism of the image into the codomain.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPackMorphisms.kernel_to_domain">
+<span class="sig-name descname"><span class="pre">kernel_to_domain</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IndexArray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.morphisms.types.SixPackMorphisms.kernel_to_domain" title="Link to this definition">¶</a></dt>
+<dd><p>Monomorphism of kernel into the domain.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPackPairings">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SixPackPairings</span></span><a class="headerlink" href="#chalc.morphisms.types.SixPackPairings" title="Link to this definition">¶</a></dt>
+<dd><p>Birth-death pairings for persistence modules in a 6-pack.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPackPairings.codomain">
+<span class="sig-name descname"><span class="pre">codomain</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.morphisms.types.SixPackPairings.codomain" title="Link to this definition">¶</a></dt>
+<dd><p>Codomain pairings.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPackPairings.cokernel">
+<span class="sig-name descname"><span class="pre">cokernel</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.morphisms.types.SixPackPairings.cokernel" title="Link to this definition">¶</a></dt>
+<dd><p>Cokernel pairings.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPackPairings.domain">
+<span class="sig-name descname"><span class="pre">domain</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.morphisms.types.SixPackPairings.domain" title="Link to this definition">¶</a></dt>
+<dd><p>Domain pairings.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPackPairings.image">
+<span class="sig-name descname"><span class="pre">image</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.morphisms.types.SixPackPairings.image" title="Link to this definition">¶</a></dt>
+<dd><p>Image pairings.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPackPairings.kernel">
+<span class="sig-name descname"><span class="pre">kernel</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.morphisms.types.SixPackPairings.kernel" title="Link to this definition">¶</a></dt>
+<dd><p>Kernel pairings.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPackPairings.relative">
+<span class="sig-name descname"><span class="pre">relative</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.morphisms.types.SixPackPairings.relative" title="Link to this definition">¶</a></dt>
+<dd><p>Relative pairings.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPackRepresentatives">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SixPackRepresentatives</span></span><a class="headerlink" href="#chalc.morphisms.types.SixPackRepresentatives" title="Link to this definition">¶</a></dt>
+<dd><p>Representative cycles for persistence modules, with one-dimensional int64 support arrays.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPackRepresentatives.__eq__">
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#chalc.morphisms.types.SixPackRepresentatives.__eq__" title="Link to this definition">¶</a></dt>
+<dd><p>Compare the sparse support arrays by value.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPackRepresentatives.codomain">
+<span class="sig-name descname"><span class="pre">codomain</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IndexArray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.morphisms.types.SixPackRepresentatives.codomain" title="Link to this definition">¶</a></dt>
+<dd><p>Codomain representatives.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPackRepresentatives.cokernel">
+<span class="sig-name descname"><span class="pre">cokernel</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IndexArray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.morphisms.types.SixPackRepresentatives.cokernel" title="Link to this definition">¶</a></dt>
+<dd><p>Cokernel representatives.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPackRepresentatives.domain">
+<span class="sig-name descname"><span class="pre">domain</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IndexArray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.morphisms.types.SixPackRepresentatives.domain" title="Link to this definition">¶</a></dt>
+<dd><p>Domain representatives.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPackRepresentatives.image">
+<span class="sig-name descname"><span class="pre">image</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IndexArray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.morphisms.types.SixPackRepresentatives.image" title="Link to this definition">¶</a></dt>
+<dd><p>Image representatives.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPackRepresentatives.kernel">
+<span class="sig-name descname"><span class="pre">kernel</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IndexArray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.morphisms.types.SixPackRepresentatives.kernel" title="Link to this definition">¶</a></dt>
+<dd><p>Kernel representatives.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chalc.morphisms.types.SixPackRepresentatives.relative">
+<span class="sig-name descname"><span class="pre">relative</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">IndexArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IndexArray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#chalc.morphisms.types.SixPackRepresentatives.relative" title="Link to this definition">¶</a></dt>
+<dd><p>Relative representatives.</p>
+<p>A representative of an interval in the relative diagram of a map
+<span class="math notranslate nohighlight">\(f: A \to B\)</span> is a pair of chains <span class="math notranslate nohighlight">\((a, b)\)</span> such that
+<span class="math notranslate nohighlight">\(f(a) = db\)</span>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../../plotting/index.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">chalc.plotting</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../sheaf/index.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">chalc.morphisms.sheaf</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023, Abhinav Natarajan
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">chalc.morphisms.types</a><ul>
+<li><a class="reference internal" href="#classes">Classes</a></li>
+<li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
+<li><a class="reference internal" href="#chalc.morphisms.types.AugmentedPersistenceModule"><code class="docutils literal notranslate"><span class="pre">AugmentedPersistenceModule</span></code></a><ul>
+<li><a class="reference internal" href="#chalc.morphisms.types.AugmentedPersistenceModule.__bool__"><code class="docutils literal notranslate"><span class="pre">__bool__()</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.AugmentedPersistenceModule.__eq__"><code class="docutils literal notranslate"><span class="pre">__eq__()</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.AugmentedPersistenceModule.__len__"><code class="docutils literal notranslate"><span class="pre">__len__()</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.AugmentedPersistenceModule.degrees"><code class="docutils literal notranslate"><span class="pre">degrees</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.AugmentedPersistenceModule.entrance_times"><code class="docutils literal notranslate"><span class="pre">entrance_times</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.AugmentedPersistenceModule.interval"><code class="docutils literal notranslate"><span class="pre">interval()</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.AugmentedPersistenceModule.intervals"><code class="docutils literal notranslate"><span class="pre">intervals()</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.AugmentedPersistenceModule.nonempty_degrees"><code class="docutils literal notranslate"><span class="pre">nonempty_degrees()</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.AugmentedPersistenceModule.pairings"><code class="docutils literal notranslate"><span class="pre">pairings</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.AugmentedPersistenceModule.to_hdf5"><code class="docutils literal notranslate"><span class="pre">to_hdf5()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPack"><code class="docutils literal notranslate"><span class="pre">SixPack</span></code></a><ul>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPack.__bool__"><code class="docutils literal notranslate"><span class="pre">__bool__()</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPack.__eq__"><code class="docutils literal notranslate"><span class="pre">__eq__()</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPack.__iter__"><code class="docutils literal notranslate"><span class="pre">__iter__()</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPack.codomain"><code class="docutils literal notranslate"><span class="pre">codomain</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPack.cokernel"><code class="docutils literal notranslate"><span class="pre">cokernel</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPack.domain"><code class="docutils literal notranslate"><span class="pre">domain</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPack.from_hdf5"><code class="docutils literal notranslate"><span class="pre">from_hdf5()</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPack.image"><code class="docutils literal notranslate"><span class="pre">image</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPack.kernel"><code class="docutils literal notranslate"><span class="pre">kernel</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPack.max_nonempty_degree"><code class="docutils literal notranslate"><span class="pre">max_nonempty_degree()</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPack.module_names"><code class="docutils literal notranslate"><span class="pre">module_names()</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPack.morphisms"><code class="docutils literal notranslate"><span class="pre">morphisms</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPack.pairings"><code class="docutils literal notranslate"><span class="pre">pairings</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPack.relative"><code class="docutils literal notranslate"><span class="pre">relative</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPack.representatives"><code class="docutils literal notranslate"><span class="pre">representatives</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPack.to_hdf5"><code class="docutils literal notranslate"><span class="pre">to_hdf5()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPackMorphisms"><code class="docutils literal notranslate"><span class="pre">SixPackMorphisms</span></code></a><ul>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPackMorphisms.__eq__"><code class="docutils literal notranslate"><span class="pre">__eq__()</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPackMorphisms.codomain_to_cokernel"><code class="docutils literal notranslate"><span class="pre">codomain_to_cokernel</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPackMorphisms.domain_to_codomain"><code class="docutils literal notranslate"><span class="pre">domain_to_codomain</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPackMorphisms.domain_to_image"><code class="docutils literal notranslate"><span class="pre">domain_to_image</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPackMorphisms.image_to_codomain"><code class="docutils literal notranslate"><span class="pre">image_to_codomain</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPackMorphisms.kernel_to_domain"><code class="docutils literal notranslate"><span class="pre">kernel_to_domain</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPackPairings"><code class="docutils literal notranslate"><span class="pre">SixPackPairings</span></code></a><ul>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPackPairings.codomain"><code class="docutils literal notranslate"><span class="pre">codomain</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPackPairings.cokernel"><code class="docutils literal notranslate"><span class="pre">cokernel</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPackPairings.domain"><code class="docutils literal notranslate"><span class="pre">domain</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPackPairings.image"><code class="docutils literal notranslate"><span class="pre">image</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPackPairings.kernel"><code class="docutils literal notranslate"><span class="pre">kernel</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPackPairings.relative"><code class="docutils literal notranslate"><span class="pre">relative</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPackRepresentatives"><code class="docutils literal notranslate"><span class="pre">SixPackRepresentatives</span></code></a><ul>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPackRepresentatives.__eq__"><code class="docutils literal notranslate"><span class="pre">__eq__()</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPackRepresentatives.codomain"><code class="docutils literal notranslate"><span class="pre">codomain</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPackRepresentatives.cokernel"><code class="docutils literal notranslate"><span class="pre">cokernel</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPackRepresentatives.domain"><code class="docutils literal notranslate"><span class="pre">domain</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPackRepresentatives.image"><code class="docutils literal notranslate"><span class="pre">image</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPackRepresentatives.kernel"><code class="docutils literal notranslate"><span class="pre">kernel</span></code></a></li>
+<li><a class="reference internal" href="#chalc.morphisms.types.SixPackRepresentatives.relative"><code class="docutils literal notranslate"><span class="pre">relative</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../../../../_static/documentation_options.js?v=8d0b4638"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

@@ -1,0 +1,483 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="API Reference" href="API.html"><link rel="prev" title="Example Usage" href="example.html">
+
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+        <title>Thread safety - chalc 15.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=02efb1e5" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">chalc 15.0.0 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  <span class="sidebar-brand-text">chalc 15.0.0 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example.html">Example Usage</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Thread safety</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="API.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/chalc/index.html">chalc</a><input aria-label="Toggle navigation of chalc" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/chalc/chromatic/index.html">chalc.chromatic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/chalc/filtration/index.html">chalc.filtration</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/chalc/morphisms/index.html">chalc.morphisms</a><input aria-label="Toggle navigation of chalc.morphisms" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/chalc/morphisms/sheaf/index.html">chalc.morphisms.sheaf</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html">chalc.morphisms.types</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/chalc/plotting/index.html">chalc.plotting</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/abhinavnatarajan/chalc">GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/chalc">PyPI</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/abhinavnatarajan/chalc/blob/master/docs/thread_safety.rst?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/abhinavnatarajan/chalc/edit/master/docs/thread_safety.rst" rel="edit" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="thread-safety">
+<h1>Thread safety<a class="headerlink" href="#thread-safety" title="Link to this heading">¶</a></h1>
+<p>Chalc supports concurrent computations on independent data, and concurrent reads
+of shared data that stays unchanged. Chalc does not lock its computational objects
+for you. If one thread may change shared data while another reads or changes it,
+both threads must use the same lock.
+Unsynchronized reads and writes to native filtration data can produce incorrect
+results or crash Python.</p>
+<p>These rules apply with or without Python’s global interpreter lock (GIL). A
+free-threaded Python build lets Python threads run at the same time; it does not
+make changes to shared objects safe automatically.</p>
+<section id="independent-computations">
+<h2>Independent computations<a class="headerlink" href="#independent-computations" title="Link to this heading">¶</a></h2>
+<p>Each worker can create and change its own inputs and filtration without a lock:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ThreadPoolExecutor</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">chalc</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">analyse</span><span class="p">(</span><span class="n">seed</span><span class="p">):</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+    <span class="n">colours</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">)</span>
+    <span class="n">filtration</span> <span class="o">=</span> <span class="n">ch</span><span class="o">.</span><span class="n">chromatic</span><span class="o">.</span><span class="n">alpha</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">colours</span><span class="p">,</span> <span class="n">max_num_threads</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">filtration</span><span class="o">.</span><span class="n">boundary_matrix</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+    <span class="n">matrices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">analyse</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">)))</span>
+</pre></div>
+</div>
+<p>Here each worker has its own arrays and filtration. <code class="docutils literal notranslate"><span class="pre">max_num_threads=1</span></code> keeps
+each geometry call serial internally while the workers run separate calls.
+Chalc can also use multiple threads within each call. When using a thread pool,
+consider limiting the threads within each call to avoid creating more work than
+your machine can run at once.</p>
+<p>Geometry functions can share input arrays if those arrays stay unchanged. Do not
+write to or resize points or colours during a call. This includes changes through
+another view of the same NumPy array. Chalc copies the inputs into C++ storage,
+but another thread must not change them while that copy is being made.</p>
+</section>
+<section id="sharing-a-filtration">
+<h2>Sharing a filtration<a class="headerlink" href="#sharing-a-filtration" title="Link to this heading">¶</a></h2>
+<p>Several threads may read the same <code class="docutils literal notranslate"><span class="pre">Filtration</span></code> if no thread changes its
+structure, filtration values, or colours. Each thread should create its own
+iterator; do not advance the same iterator from several threads.</p>
+<p>If the filtration may change, protect both readers and writers with one lock:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">threading</span><span class="w"> </span><span class="kn">import</span> <span class="n">Lock</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">chalc</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ch</span>
+
+<span class="n">filtration</span> <span class="o">=</span> <span class="n">ch</span><span class="o">.</span><span class="n">filtration</span><span class="o">.</span><span class="n">complete_complex</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">lock</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">()</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">set_vertex_colour</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">colour</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
+        <span class="n">vertex</span> <span class="o">=</span> <span class="n">filtration</span><span class="o">.</span><span class="n">simplices</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">label</span><span class="p">]</span>
+        <span class="n">vertex</span><span class="o">.</span><span class="n">set_colour</span><span class="p">(</span><span class="n">colour</span><span class="p">)</span>
+        <span class="n">filtration</span><span class="o">.</span><span class="n">propagate_colours</span><span class="p">()</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_boundary_matrix</span><span class="p">():</span>
+    <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">filtration</span><span class="o">.</span><span class="n">boundary_matrix</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The lock covers the colour change and its propagation together, so a reader
+cannot see the filtration between those two steps. Locking only the writer would
+leave readers unprotected. Changes to an object used by just one thread do not
+need a lock.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Simplex</span></code> objects obtained from a filtration refer to its existing simplices.
+The same is true of handles obtained through <code class="docutils literal notranslate"><span class="pre">simplices</span></code> or <code class="docutils literal notranslate"><span class="pre">facets</span></code>.
+Reading or changing a simplex must follow the locking rule for its parent
+filtration, even if the handle was obtained earlier.</p>
+<p>If another thread may add simplices, hold the lock for the whole iteration.
+Adding simplices during iteration can invalidate the iterator. Copying the
+handles with <code class="docutils literal notranslate"><span class="pre">list(filtration)</span></code> does not copy the simplices. Copy the values
+you need while holding the lock if you want to use them independently later.</p>
+</section>
+<section id="filtration-morphisms">
+<h2>Filtration morphisms<a class="headerlink" href="#filtration-morphisms" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">SubChromaticInclusion</span></code>, <code class="docutils literal notranslate"><span class="pre">KChromaticInclusion</span></code>, <code class="docutils literal notranslate"><span class="pre">SubChromaticGluing</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">KChromaticGluing</span></code> retain the filtration supplied to their constructor.
+Creating two morphisms from the same filtration does not make two independent
+filtrations.</p>
+<p>Concurrent <code class="docutils literal notranslate"><span class="pre">sixpack()</span></code> calls may safely share a morphism object if its parameters
+and underlying filtration stay unchanged. If either may change, use the same lock
+for changing them and for the whole <code class="docutils literal notranslate"><span class="pre">sixpack()</span></code> call. Custom subclasses must also
+ensure that their own methods and state allow concurrent calls.</p>
+</section>
+<section id="persistence-modules-and-six-packs">
+<h2>Persistence modules and six-packs<a class="headerlink" href="#persistence-modules-and-six-packs" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">AugmentedPersistenceModule</span></code> exposes its pairings and entrance times for
+reading. Its queries may run concurrently. Do not change its private attributes
+or make its entrance-time array writable while other threads use it.</p>
+<p>Several threads may read a <code class="docutils literal notranslate"><span class="pre">SixPack</span></code> if its data stays unchanged. Its
+<code class="docutils literal notranslate"><span class="pre">SixPackPairings</span></code>, <code class="docutils literal notranslate"><span class="pre">SixPackRepresentatives</span></code>, and <code class="docutils literal notranslate"><span class="pre">SixPackMorphisms</span></code> containers
+are frozen dataclasses, but their dictionaries and NumPy arrays can still be
+changed. <code class="docutils literal notranslate"><span class="pre">metadata</span></code> can also be changed, and may contain user objects with
+their own threading restrictions. Protect conflicting reads and writes with
+the same lock.</p>
+<p><code class="docutils literal notranslate"><span class="pre">SixPack</span></code> takes ownership of the dataclasses passed to its constructor and
+reindexes their contents during construction. Do not use those dataclasses in
+another thread while construction is in progress. Passing the same dataclasses
+to separate constructors does not create independent data. Make copies first
+if you need independent inputs.</p>
+</section>
+<section id="plotting-and-hdf5-files">
+<h2>Plotting and HDF5 files<a class="headerlink" href="#plotting-and-hdf5-files" title="Link to this heading">¶</a></h2>
+<p>Use chalc’s plotting and animation functions on the main thread. They use
+Matplotlib, whose GUI backends generally require the main thread and whose
+objects are not generally safe to access concurrently. See
+<a class="reference external" href="https://matplotlib.org/stable/users/faq.html#work-with-threads">Matplotlib’s threading guidance</a>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">to_hdf5()</span></code> reads the object being saved, so that object must remain unchanged
+throughout the call. Separate threads can save to separate files. If threads
+share a file or group, use a common lock around each complete save or load,
+including opening and closing the file when applicable. A save or load involves
+several dataset operations; h5py’s internal lock does not make the whole sequence
+indivisible. Also prevent changes to a file while another thread is loading it.
+See <a class="reference external" href="https://docs.h5py.org/en/stable/threads.html">h5py’s threading documentation</a>.</p>
+</section>
+<section id="free-threaded-python">
+<h2>Free-threaded Python<a class="headerlink" href="#free-threaded-python" title="Link to this heading">¶</a></h2>
+<p>Install chalc and its dependencies for the free-threaded interpreter you use.
+An extension that does not declare support may turn the GIL back on when it is
+imported. Check after importing chalc and any other libraries your program uses:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sysconfig</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">chalc</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">sysconfig</span><span class="o">.</span><span class="n">get_config_var</span><span class="p">(</span><span class="s2">"Py_GIL_DISABLED"</span><span class="p">))</span>  <span class="c1"># 1 for a free-threaded build</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">_is_gil_enabled</span><span class="p">())</span>  <span class="c1"># False when the GIL is disabled</span>
+</pre></div>
+</div>
+<p>The tests in <code class="docutils literal notranslate"><span class="pre">tests/test_thread_safety.py</span></code> exercise independent computations,
+shared reads, and updates protected by caller locks. They run on regular Python
+too. On a free-threaded build they also check that importing chalc leaves the GIL
+disabled. These tests cover the supported usage discussed above; they do not make
+unsynchronized changes to shared objects safe.</p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="API.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">API Reference</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="example.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Example Usage</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023, Abhinav Natarajan
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Thread safety</a><ul>
+<li><a class="reference internal" href="#independent-computations">Independent computations</a></li>
+<li><a class="reference internal" href="#sharing-a-filtration">Sharing a filtration</a></li>
+<li><a class="reference internal" href="#filtration-morphisms">Filtration morphisms</a></li>
+<li><a class="reference internal" href="#persistence-modules-and-six-packs">Persistence modules and six-packs</a></li>
+<li><a class="reference internal" href="#plotting-and-hdf5-files">Plotting and HDF5 files</a></li>
+<li><a class="reference internal" href="#free-threaded-python">Free-threaded Python</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=8d0b4638"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/furo.js?v=46bd48cc"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    </body>
+</html>

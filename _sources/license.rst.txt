@@ -1,7 +1,7 @@
 License
 =======
 
-``chalc`` is licensed under the GNU General Public License version 3. 
+``chalc`` is licensed under the GNU General Public License version 3.
 
 GNU General Public License ("GPL") copyright permissions statement:
 -------------------------------------------------------------------

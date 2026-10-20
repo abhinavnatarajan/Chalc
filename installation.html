@@ -5,10 +5,10 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Example Usage" href="example.html"><link rel="prev" title="Chalc Documentation" href="index.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>Installation - chalc 14.2.0 documentation</title>
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+        <title>Installation - chalc 15.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=580074bf" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -164,7 +164,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">chalc 14.2.0 documentation</div></a>
+      <a href="index.html"><div class="brand">chalc 15.0.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -185,7 +185,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
-  <span class="sidebar-brand-text">chalc 14.2.0 documentation</span>
+  <span class="sidebar-brand-text">chalc 15.0.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -196,16 +196,17 @@
   <ul class="current">
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="example.html">Example Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="thread_safety.html">Thread safety</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="API.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/chalc/index.html">chalc</a><input aria-label="Toggle navigation of chalc" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/chalc/chromatic/index.html">chalc.chromatic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/chalc/filtration/index.html">chalc.filtration</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/chalc/plotting/index.html">chalc.plotting</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/chalc/sixpack/index.html">chalc.sixpack</a><input aria-label="Toggle navigation of chalc.sixpack" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/chalc/sixpack/morphisms/index.html">chalc.sixpack.morphisms</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/chalc/sixpack/types/index.html">chalc.sixpack.types</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/chalc/morphisms/index.html">chalc.morphisms</a><input aria-label="Toggle navigation of chalc.morphisms" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/chalc/morphisms/sheaf/index.html">chalc.morphisms.sheaf</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/chalc/morphisms/types/index.html">chalc.morphisms.types</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/chalc/plotting/index.html">chalc.plotting</a></li>
 </ul>
 </li>
 </ul>
@@ -262,7 +263,7 @@
 <h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h1>
 <section id="using-pip">
 <h2>Using pip<a class="headerlink" href="#using-pip" title="Link to this heading">¶</a></h2>
-<p>The recommended way to download and install chalc is from the <a class="reference external" href="https://pypi.org/project/chalc/">PyPI repository</a> using pip. Pre-packaged binary distributions are available for Windows and Linux (x86_64), and macOS (x86_64 and aarch64). Chalc works with CPython and PyPy ≥ 3.12.</p>
+<p>The recommended way to download and install chalc is from the <a class="reference external" href="https://pypi.org/project/chalc/">PyPI repository</a> using pip. Pre-packaged binary distributions are available for Windows and Linux with x86_64 CPUs, and MacOS with M-series CPUs.</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="uv" for="sd-tab-item-0">
@@ -295,20 +296,22 @@ pip<span class="w"> </span>install<span class="w"> </span>chalc
 <li><p><a class="reference external" href="https://www.boost.org/">Boost C++ libraries</a> (transitive dependency through CGAL).</p></li>
 <li><p><a class="reference external" href="https://www.threadingbuildingblocks.org/">Intel OneAPI Threading Building Blocks (TBB)</a> (tested with version 2022.1.0).</p></li>
 </ol>
-<p>The recommended way to obtain and manage these dependencies is using vcpkg (see the build dependencies section) . It is also recommended to use a <a class="reference external" href="https://docs.python.org/3/tutorial/venv.html">Python virtual environment</a> for the build process to avoid polluting the package namespace.</p>
+<p>The recommended way to obtain and manage these dependencies is using vcpkg (see the build dependencies section).</p>
 </section>
 <section id="build-dependencies">
 <h3>Build dependencies<a class="headerlink" href="#build-dependencies" title="Link to this heading">¶</a></h3>
 <ol class="arabic simple">
-<li><p>CMake (version 3.23 or later).</p></li>
+<li><p>CMake (version 4.0.0 or later).</p></li>
 <li><dl class="simple">
 <dt>On Windows: Visual Studio 2019 or later.</dt><dd><p>On Linux: GCC11 or later.
 On MacOS: Clang 14 or later.</p>
 </dd>
 </dl>
 </li>
+<li><p>On Linux and MacOS, the build tools automake, autoconf, autoconf-archive, and libtool. Install them with <code class="docutils literal notranslate"><span class="pre">apt</span> <span class="pre">install</span> <span class="pre">autoconf</span> <span class="pre">autoconf-archive</span> <span class="pre">automake</span> <span class="pre">libtool</span></code>, <code class="docutils literal notranslate"><span class="pre">dnf</span> <span class="pre">install</span> <span class="pre">autoconf</span> <span class="pre">autoconf-archive</span> <span class="pre">automake</span> <span class="pre">libtool</span></code>, <code class="docutils literal notranslate"><span class="pre">pacman</span> <span class="pre">-S</span> <span class="pre">autoconf</span> <span class="pre">autoconf-archive</span> <span class="pre">automake</span> <span class="pre">libtool</span></code>, or <code class="docutils literal notranslate"><span class="pre">brew</span> <span class="pre">install</span> <span class="pre">autoconf</span> <span class="pre">autoconf-archive</span> <span class="pre">automake</span> <span class="pre">libtool</span></code>.</p></li>
+<li><p>The Python project tool <a class="reference external" href="https://astral.sh/uv">uv</a>.</p></li>
 <li><p>(Recommended) <a class="reference external" href="https://vcpkg.io/">Microsoft vcpkg</a> C++ dependency manager.</p></li>
-<li><p>(MacOS only) The build tools automake, autoconf, and libtool. You can install these with <code class="docutils literal notranslate"><span class="pre">brew</span> <span class="pre">install</span> <span class="pre">automake</span> <span class="pre">autoconf</span> <span class="pre">libtool</span></code>.</p></li>
+<li><p>(Recommended) <a class="reference external" href="https://www.gnu.org/software/make/">GNU Make</a>.</p></li>
 </ol>
 </section>
 <section id="build-steps">
@@ -334,7 +337,7 @@ Bash</label><div class="sd-tab-content docutils">
 <input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="powershell" for="sd-tab-item-3">
 Powershell</label><div class="sd-tab-content docutils">
-<div class="highlight-powershell notranslate"><div class="highlight"><pre><span></span><span class="nv">$Env:VCPKG_ROOT</span> <span class="p">=</span> <span class="s1">&#39;C:\path\to\vcpkg\dir&#39;</span>
+<div class="highlight-powershell notranslate"><div class="highlight"><pre><span></span><span class="nv">$Env:VCPKG_ROOT</span> <span class="p">=</span> <span class="s1">'C:\path\to\vcpkg\dir'</span>
 </pre></div>
 </div>
 </div>
@@ -361,41 +364,51 @@ Powershell</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <ol class="arabic simple" start="3">
-<li><p>Build the package using your build tool of choice.</p></li>
+<li><p>Install the project as an editable package, along with the development dependencies.</p></li>
 </ol>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="uv" for="sd-tab-item-6">
-uv</label><div class="sd-tab-content docutils">
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># To build chalc as an editable package in a new virtual environment.</span>
-<span class="c1"># This will also install the dependencies for testing and building documentation.</span>
-uv<span class="w"> </span>sync<span class="w"> </span>--locked<span class="w"> </span>--all-groups<span class="w"> </span>--exact<span class="w"> </span>--verbose
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="bash" for="sd-tab-item-6">
+Bash</label><div class="sd-tab-content docutils">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>install
 </pre></div>
 </div>
 </div>
 <input id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="pip" for="sd-tab-item-7">
-pip</label><div class="sd-tab-content docutils">
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># To install chalc into the current Python environment from the package lock file.</span>
-<span class="c1"># This will also install the dependencies for testing and building documentation.</span>
-pip<span class="w"> </span>lock<span class="w"> </span>-r<span class="w"> </span>pylock.toml
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="powershell" for="sd-tab-item-7">
+Windows Powershell</label><div class="sd-tab-content docutils">
+<div class="highlight-powershell notranslate"><div class="highlight"><pre><span></span><span class="n">uv</span> <span class="n">sync</span> <span class="p">-</span><span class="n">-verbose</span> <span class="p">-</span><span class="n">-group</span> <span class="n">dev</span> <span class="p">-</span><span class="n">-group</span> <span class="n">docs</span> <span class="p">-</span><span class="n">-group</span> <span class="n">test</span> <span class="p">-</span><span class="n">-no-progress</span>
+<span class="n">uv</span> <span class="n">run</span> <span class="n">python</span> <span class="n">-m</span> <span class="n">pybind11_stubgen</span> <span class="n">chalc</span><span class="p">.</span><span class="n">chromatic</span> <span class="p">-</span><span class="n">-numpy-array-use-type-var</span> <span class="p">-</span><span class="n">-output-dir</span> <span class="p">..\</span><span class="n">src</span>
+<span class="n">uv</span> <span class="n">run</span> <span class="n">python</span> <span class="n">-m</span> <span class="n">pybind11_stubgen</span> <span class="n">chalc</span><span class="p">.</span><span class="n">filtration</span> <span class="p">-</span><span class="n">-numpy-array-use-type-var</span> <span class="p">-</span><span class="n">-output-dir</span> <span class="p">..\</span><span class="n">src</span>
+<span class="n">uv</span> <span class="n">lock</span>
+<span class="n">uv</span> <span class="n">export</span> <span class="p">-</span><span class="n">-locked</span> <span class="p">-</span><span class="n">-format</span> <span class="n">pylock</span><span class="p">.</span><span class="n">toml</span> <span class="p">-</span><span class="n">-group</span> <span class="n">dev</span> <span class="p">-</span><span class="n">-group</span> <span class="n">docs</span> <span class="p">-</span><span class="n">-group</span> <span class="n">test</span> <span class="n">-o</span> <span class="n">pylock</span><span class="p">.</span><span class="n">toml</span> <span class="p">-</span><span class="n">-quiet</span>
 </pre></div>
 </div>
 </div>
 </div>
-<ol class="arabic" start="4">
-<li><p>(Optional) If you have GNU Make installed, you can generate type stubs for the package by running <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">stubs</span></code> in the package root directory. If you do not have GNU Make installed, you can run the following commands:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pybind11_stubgen<span class="w"> </span>chalc.chromatic<span class="w"> </span>--numpy-array-use-type-var<span class="w"> </span>--output-dir<span class="w"> </span>./src
-python<span class="w"> </span>-m<span class="w"> </span>pybind11_stubgen<span class="w"> </span>chalc.filtration<span class="w"> </span>--numpy-array-use-type-var<span class="w"> </span>--output-dir<span class="w"> </span>./src
-</pre></div>
-</div>
-</li>
-</ol>
 </section>
+</section>
+<section id="running-tests">
+<h2>Running tests<a class="headerlink" href="#running-tests" title="Link to this heading">¶</a></h2>
+<p>Install test dependencies and run the test suite:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uv</span> <span class="n">run</span> <span class="o">--</span><span class="n">group</span> <span class="n">test</span> <span class="n">pytest</span>
+</pre></div>
+</div>
+<p>Some tests require the Python package GUDHI, which is not available for free-threaded Python as of 16 October 2026.
+To install GUDHI and run the complete suite on a Python version supported by GUDHI:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uv</span> <span class="n">run</span> <span class="o">--</span><span class="n">group</span> <span class="n">test</span><span class="o">-</span><span class="n">gudhi</span> <span class="n">pytest</span>
+</pre></div>
+</div>
+<p>The equivalent Makefile targets are <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">tests</span></code> and <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">tests-gudhi</span></code>.
+Tests that require GUDHI are marked with a pytest marker <code class="docutils literal notranslate"><span class="pre">gudhi</span></code>, and can be skipped even with GUDHI installed:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>``uv run --group test pytest -m "not gudhi"``.
+</pre></div>
+</div>
 </section>
 <section id="building-the-documentation">
 <h2>Building the Documentation<a class="headerlink" href="#building-the-documentation" title="Link to this heading">¶</a></h2>
 <p>To build the documentation, the development dependencies of the project need to be installed into the current environment.
+You also need to have <a class="reference external" href="https://graphviz.org/download/">GraphViz</a> installed.
 Then run the following commands from the project root directory to build the documentation files.</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
@@ -409,9 +422,7 @@ Bash</label><div class="sd-tab-content docutils">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="powershell" for="sd-tab-item-9">
 Windows Powershell</label><div class="sd-tab-content docutils">
 <div class="highlight-powershell notranslate"><div class="highlight"><pre><span></span><span class="nb">Set-Location</span> <span class="n">docs</span>
-<span class="n">python</span> <span class="n">-m</span> <span class="n">pybind11_stubgen</span> <span class="n">chalc</span><span class="p">.</span><span class="n">chromatic</span> <span class="p">-</span><span class="n">-numpy-array-use-type-var</span> <span class="p">-</span><span class="n">-output-dir</span> <span class="p">..\</span><span class="n">src</span>
-<span class="n">python</span> <span class="n">-m</span> <span class="n">pybind11_stubgen</span> <span class="n">chalc</span><span class="p">.</span><span class="n">filtration</span> <span class="p">-</span><span class="n">-numpy-array-use-type-var</span> <span class="p">-</span><span class="n">-output-dir</span> <span class="p">..\</span><span class="n">src</span>
-<span class="n">sphinx-build</span> <span class="n">-M</span> <span class="n">html</span> <span class="n">source</span> <span class="n">build</span>
+<span class="n">uv</span> <span class="n">run</span> <span class="n">sphinx-build</span> <span class="n">-M</span> <span class="n">html</span> <span class="n">source</span> <span class="n">build</span>
 </pre></div>
 </div>
 </div>
@@ -483,6 +494,7 @@ Windows Powershell</label><div class="sd-tab-content docutils">
 <li><a class="reference internal" href="#build-steps">Build steps</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#running-tests">Running tests</a></li>
 <li><a class="reference internal" href="#building-the-documentation">Building the Documentation</a></li>
 </ul>
 </li>
@@ -495,7 +507,7 @@ Windows Powershell</label><div class="sd-tab-content docutils">
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=93d1edcc"></script>
+</div><script src="_static/documentation_options.js?v=8d0b4638"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

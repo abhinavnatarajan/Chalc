@@ -1,0 +1,138 @@
+chalc.morphisms.sheaf
+=====================
+
+.. py:module:: chalc.morphisms.sheaf
+
+.. autoapi-nested-parse::
+
+   Utilities to compute sheaves of persistence modules from chromatic point clouds.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   chalc.morphisms.sheaf.ChromaticSheaf
+   chalc.morphisms.sheaf.PersistenceModuleMorphism
+   chalc.morphisms.sheaf.SubfiltrationInclusion
+
+
+Module Contents
+---------------
+
+.. py:class:: ChromaticSheaf
+
+   Sheaf of persistence modules arising from a coloured point cloud.
+
+
+   .. py:property:: colours
+      :type: ColourSet
+
+
+      Return all colours in the indexing colour poset.
+
+
+   .. py:method:: from_chromatic_points(points: numpy.ndarray[tuple[int, int], numpy.dtype[numpy.floating]], colours: collections.abc.Sequence[int], max_num_colours: int) -> ChromaticSheaf
+      :classmethod:
+
+
+      Construct a chromatic sheaf from a coloured point cloud.
+
+
+
+   .. py:property:: max_num_colours
+      :type: int
+
+
+      Maximum number of colours to consider at a time.
+
+      This determines the height to which we restrict the colour poset.
+
+
+   .. py:method:: morphism(source: ColourSet, target: ColourSet) -> PersistenceModuleMorphism
+
+      Return the morphism of persistence modules between two sets of colours.
+
+      The first time a morphism is requested, it has to be constructed by composing
+      morphisms across edges in the Hasse diagram. Intermediate compositions are
+      cached, so future calls to this function are faster.
+
+
+
+   .. py:method:: stalk(colours: ColourSet) -> chalc.morphisms.AugmentedPersistenceModule
+
+      Return the stalk persistence module over a set of colours.
+
+
+
+.. py:class:: PersistenceModuleMorphism
+
+   Sparse map in the interval bases of ``domain`` and ``codomain``.
+
+   ``map`` sends module-local source birth indices to one-dimensional int64 arrays of module-local
+   target birth indices, with coefficients in F2. Zero columns are omitted.
+   At a given time, restrict to source and target intervals alive at that time.
+   Nonzero coefficients preserve homological degree and, for source interval
+   ``[b_s, d_s)`` and target interval ``[b_t, d_t)``, require ``b_t <= b_s < d_t <= d_s``.
+
+
+   .. py:method:: __eq__(other: object) -> bool
+
+      Compare the modules and sparse support arrays by value.
+
+
+
+   .. py:method:: __matmul__(other: PersistenceModuleMorphism) -> PersistenceModuleMorphism
+
+      Return the composition of composable maps of persistence modules.
+
+
+
+   .. py:method:: __post_init__() -> None
+
+      Validate generator indices, homological degrees, and interval compatibility.
+
+
+
+   .. py:method:: identity(module: chalc.morphisms.AugmentedPersistenceModule) -> PersistenceModuleMorphism
+      :classmethod:
+
+
+      Identity morphism on a given module.
+
+
+
+   .. py:method:: zero(source: chalc.morphisms.AugmentedPersistenceModule, target: chalc.morphisms.AugmentedPersistenceModule) -> PersistenceModuleMorphism
+      :classmethod:
+
+
+      Return the zero morphism.
+
+
+
+.. py:class:: SubfiltrationInclusion(subfiltration: chalc.filtration.Filtration, filtration: chalc.filtration.Filtration)
+
+   Bases: :py:obj:`chalc.morphisms.FiltrationInclusion`
+
+   .. autoapi-inheritance-diagram:: chalc.morphisms.sheaf.SubfiltrationInclusion
+      :parts: 1
+
+
+   Inclusion of a subfiltration with the same vertex set as its parent.
+
+   Both filtrations must use the same vertex labels ``0, ..., num_vertices - 1``.
+   Filtration times on the subfiltration must agree with those of the parent filtration.
+
+
+   .. py:method:: simplex_in_domain(column: tuple[list[int], int, float, list[int]]) -> bool
+
+      Check if a simplex is in the domain of the inclusion map.
+
+      A simplex is identified by its column in the boundary matrix of the filtration.
+      This column has the same format as the columns returned by
+      :func:`chalc.filtration.Filtration.boundary_matrix`.
+
+
+

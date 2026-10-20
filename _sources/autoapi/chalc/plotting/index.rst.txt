@@ -16,19 +16,19 @@ Functions
 
    chalc.plotting.animate_filtration
    chalc.plotting.draw_filtration
-   chalc.plotting.plot_diagram
+   chalc.plotting.plot_persistence_diagram
    chalc.plotting.plot_sixpack
 
 
 Module Contents
 ---------------
 
-.. py:function:: animate_filtration(K: chalc.filtration.Filtration, points: numpy.ndarray[tuple[Literal[2], int], numpy.dtype[numpy.floating]], filtration_times: collections.abc.Sequence[float], animation_length: float, plot_colours: str | numpy.ndarray | None = None, vertices_kwargs: dict | None = None, edges_kwargs: dict | None = None, faces_kwargs: dict | None = None) -> matplotlib.animation.FuncAnimation
+.. py:function:: animate_filtration(filtration: chalc.filtration.Filtration, points: numpy.ndarray[tuple[Literal[2], int], numpy.dtype[numpy.floating]], filtration_times: collections.abc.Sequence[float], *, animation_length: float, plot_colours: str | numpy.ndarray | None = None, vertices_kwargs: dict | None = None, edges_kwargs: dict | None = None, faces_kwargs: dict | None = None) -> matplotlib.animation.FuncAnimation
 
    Create animation of 2-skeleton of filtered simplicial complex.
 
-   :param K: A filtered complex.
-   :param points: The vertices of ``K`` as a :math:`2\times N` numpy matrix.
+   :param filtration: A filtered complex.
+   :param points: The vertices of ``filtration`` as a :math:`2\times N` numpy matrix.
    :param filtration_times: Sequence of filtration times for which to draw animation frames.
    :param animation_length: Total length of the animation in seconds, unrelated to the
                             filtration times.
@@ -39,53 +39,77 @@ Module Contents
    :param faces_kwargs: Keyword arguments to pass to the matplotlib fill function for plotting faces.
 
 
-.. py:function:: draw_filtration(K: chalc.filtration.Filtration, points: numpy.ndarray[tuple[Literal[2], int], numpy.dtype[numpy.floating]], time: float, include_colours: collections.abc.Collection[int] | None = None, ax: matplotlib.axes.Axes | None = None, plot_colours: str | numpy.ndarray | None = None, vertices_kwargs: dict | None = None, edges_kwargs: dict | None = None, faces_kwargs: dict | None = None) -> matplotlib.axes.Axes
+.. py:function:: draw_filtration(filtration: chalc.filtration.Filtration, points: numpy.ndarray[tuple[Literal[2], int], numpy.dtype[numpy.floating]], select: collections.abc.Callable[[chalc.filtration.Simplex, int], bool] | None = None, *, include_faces: bool = True, ax: matplotlib.axes.Axes | None = None, plot_colours: str | numpy.ndarray | None = None, vertices_kwargs: dict | None = None, edges_kwargs: dict | None = None, faces_kwargs: dict | None = None) -> matplotlib.axes.Axes
 
-   Visualise a 2D filtration at given time, optionally including only certain colours.
+   Draw selected vertices, edges, and triangles of a filtration in the plane.
 
-   :param K: A filtered 2-dimensional simplicial complex.
-   :param points: The vertices of ``K`` as a :math:`2\times N` numpy matrix.
-   :param time: Filtration times for which to draw simplices.
-   :param include_colours: Optional collection of colours to include.
-                           If not specified then all colours will be drawn.
+   :param filtration: A filtered simplicial complex. Only its 2-skeleton is drawn.
+   :param points: The vertices of ``filtration`` as a :math:`2\times N` numpy matrix.
+   :param select: Optional callback ``select(simplex, index)`` returning ``True`` if the
+                  simplex should be drawn. It receives a simplex handle and its zero-based
+                  index in ``filtration.boundary_matrix()``. The callback is called once
+                  for each simplex of dimension at most 2, in boundary-matrix order.
+                  Simplices of higher dimension still count towards the indices. If omitted,
+                  all vertices, edges, and triangles are drawn.
+
+   :keyword include_faces: Whether to select all faces of selected simplices.
+   :keyword ax: A matplotlib axes object.
+                If provided then the filtration will be plotted on the given axes.
+   :keyword plot_colours: Either the name of a matplotlib qualitative colour map, or a list of colours.
+                          If not provided, the current matplotlib colour cycle will be used.
+   :keyword vertices_kwargs: Keyword arguments to pass to the matplotlib scatter function for plotting points.
+   :keyword edges_kwargs: Keyword arguments to pass to the matplotlib plot function for plotting edges.
+   :keyword faces_kwargs: Keyword arguments to pass to the matplotlib fill function for plotting faces.
+
+   :returns: The axes on which the simplices were drawn.
+
+   :raises ValueError: If ``points`` does not have shape ``(2, filtration.num_vertices)``.
+
+   .. rubric:: Notes
+
+   The callback must not modify ``filtration``.
+   Representative supports must use the indices of ``filtration.boundary_matrix()``.
+   For representatives computed from a dimension-limited boundary matrix,
+   pass the corresponding skeleton as ``filtration``.
+
+
+.. py:function:: plot_persistence_diagram(persistence_module: chalc.morphisms.AugmentedPersistenceModule, *, truncation: float | None = None, degrees: collections.abc.Collection[int] | chalc.morphisms.IndexArray | int | numpy.integer | None = None, ax: matplotlib.axes.Axes | None = None, threshold: float = 0, kwargs_per_dim: collections.abc.Mapping[int, dict] | None = None, points_legend: bool = True, lines_legend: bool = True, **kwargs) -> matplotlib.axes.Axes
+
+   Plot the persistence diagram for a persistence module.
+
+   :param persistence_module: The augmented persistence module.
+   :param truncation: The maximum entrance time for which the persistence module is plotted.
+                      A positive finite default is calculated from the retained intervals.
+   :param degrees: The homological degrees in which to plot features.
+                   If not provided, all degrees will be included in the plots.
    :param ax: A matplotlib axes object.
-              If provided then the diagram will be plotted on the given axes.
-   :param plot_colours: Either the name of a matplotlib qualitative colour map, or a list of colours.
-                        If not provided, the current matplotlib colour cycle will be used.
-   :param vertices_kwargs: Keyword arguments to pass to the matplotlib scatter function for plotting points.
-   :param edges_kwargs: Keyword arguments to pass to the matplotlib plot function for plotting edges.
-   :param faces_kwargs: Keyword arguments to pass to the matplotlib fill function for plotting faces.
-
-
-.. py:function:: plot_diagram(dgms: chalc.sixpack.SixPack, diagram_name: chalc.sixpack.DiagramName, truncation: float | None = None, dimensions: collections.abc.Collection[int] | int | None = None, ax: matplotlib.axes.Axes | None = None, threshold: float = 0, kwargs_per_dim: collections.abc.Mapping[int, dict] | None = None, **kwargs) -> matplotlib.axes.Axes | None
-
-   Plot a specific diagram from a 6-pack.
-
-   :param dgms: The 6-pack of persistence diagrams.
-   :param diagram_name: One of ``'ker'``, ``'cok'``, ``'dom'``, ``'cod'``, ``'im'``, or ``'rel'``.
-   :param truncation: The maximum entrance time for which the diagrams are plotted.
-                      A sensible default will be calculated if not provided.
-   :param dimensions: The homological dimensions for which to plot features.
-                      If not provided, all dimensions will be included in the plots.
-   :param ax: A matplotlib axes object.
-              If provided then the diagram will be plotted on the given axes.
+              If provided then the persistence diagram will be plotted on the given axes.
    :param threshold: Only features with persistence greater than this value will be plotted.
-   :param kwargs_per_dim: Keyword arguments for each dimension,
-                          as a mapping { dimension: dictionary of kwargs }.
-                          These will be passed to the matplotlib scatter function.
+                     The threshold is applied before truncating their displayed coordinates.
+   :param kwargs_per_dim: Keyword arguments for each degree, as a mapping `{ degree : dictionary of kwargs }`.
+                          These will be passed to the matplotlib scatter function, and take precedence over
+                          any other keyword arguments.
+   :param points_legend: Whether to show a legend for the feature degrees.
+   :param lines_legend: Whether to show a legend for the truncation lines.
    :param \*\*kwargs: Additional keyword arguments to pass to the matplotlib scatter function.
 
+   :returns: The axes containing the diagram, creating a new figure if ``ax`` is omitted.
 
-.. py:function:: plot_sixpack(dgms: chalc.sixpack.SixPack, truncations: collections.abc.Mapping[chalc.sixpack.DiagramName, float] | float | None = None, dimensions: collections.abc.Collection[int] | int | None = None, threshold: float = 0) -> tuple[matplotlib.figure.Figure, numpy.ndarray[tuple[Literal[2], Literal[3]], numpy.dtype[Any]]]
 
-   Plot the 6-pack of persistence diagrams returned by :func:`compute <.sixpack.compute>`.
+.. py:function:: plot_sixpack(sixpack: chalc.morphisms.SixPack, truncations: collections.abc.Mapping[chalc.morphisms.PersistenceModuleName, float | None] | float | None = None, degrees: collections.abc.Collection[int] | chalc.morphisms.IndexArray | int | numpy.integer | None = None, threshold: float = 0) -> tuple[matplotlib.figure.Figure, numpy.ndarray[tuple[Literal[2], Literal[3]], numpy.dtype[Any]]]
 
-   :param dgms: The 6-pack of persistence diagrams.
-   :param truncations: The maximum entrance time upto which features are plotted.
-                       Can be either a single value, or a mapping from diagram names to values.
-                       A sensible default will be calculated (for each individual diagram) if not provided.
-   :param dimensions: The homological dimensions for which to plot features.
-                      If not provided, all dimensions will be included in the plots.
+   Plot the persistence diagrams for a :meth:`chalc.morphisms.FiltrationMorphism.sixpack`.
+
+   :param sixpack: The 6-pack of persistence modules.
+   :param truncations: The maximum entrance time up to which features are plotted.
+                       Can be either a single value, or a mapping from persistence module
+                       names to values. A sensible default is calculated for module names
+                       omitted from the mapping.
+   :param degrees: The homological degrees for which to plot features.
+                   If not provided, all degrees will be included in the plots.
    :param threshold: Only features with persistence greater than this value will be plotted.
+
+   :returns: The figure and a ``(2, 3)`` array of axes. The top row contains domain,
+             codomain, and image; the bottom row contains kernel, cokernel, and relative.
 
 

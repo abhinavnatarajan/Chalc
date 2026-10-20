@@ -17,7 +17,7 @@ Submodules
 
    /autoapi/chalc/chromatic/index
    /autoapi/chalc/filtration/index
+   /autoapi/chalc/morphisms/index
    /autoapi/chalc/plotting/index
-   /autoapi/chalc/sixpack/index
 
 

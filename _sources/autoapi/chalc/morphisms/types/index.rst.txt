@@ -1,0 +1,378 @@
+chalc.morphisms.types
+=====================
+
+.. py:module:: chalc.morphisms.types
+
+.. autoapi-nested-parse::
+
+   Augmented persistence modules and 6-packs of persistence modules.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   chalc.morphisms.types.AugmentedPersistenceModule
+   chalc.morphisms.types.SixPack
+   chalc.morphisms.types.SixPackMorphisms
+   chalc.morphisms.types.SixPackPairings
+   chalc.morphisms.types.SixPackRepresentatives
+
+
+Module Contents
+---------------
+
+.. py:class:: AugmentedPersistenceModule(intervals: collections.abc.Mapping[int, int | None] | None = None, entrance_times: collections.abc.Sequence[float] | numpy.ndarray[tuple[int], numpy.dtype[numpy.floating]] = (), degrees: collections.abc.Mapping[int, int] | None = None)
+
+   An :math:`\mathbb{R}`-indexed persistence module of :math:`\mathbb{N}`-graded vector spaces.
+
+   The module is augmented with (1) a choice of interval basis, where each interval is a pairing
+   between a generator and a relation, (2) a strict linear ordering of the set of all
+   generators and relations, which is compatible with their entrance times.
+
+   In particular, each interval is uniquely identified by the integer index of its generator,
+   and distinct integer indices may correspond to elements that have the same entrance time.
+
+
+   .. py:method:: __bool__() -> bool
+
+      Check if the persistence module is non-empty.
+
+
+
+   .. py:method:: __eq__(other: object) -> bool
+
+      Check if two persistence modules are equal.
+
+
+
+   .. py:method:: __len__() -> int
+
+      Return the number of features in the module.
+
+
+
+   .. py:property:: degrees
+      :type: types.MappingProxyType[int, int]
+
+
+      Return the degrees of interval endpoints.
+
+
+   .. py:property:: entrance_times
+      :type: numpy.ndarray[tuple[int], numpy.dtype[numpy.float64]]
+
+
+      Return all entrance times of generators/relations in the persistence module.
+
+      The entrance times are sorted by generator/relation index.
+
+
+   .. py:method:: interval(birth_index: int | numpy.integer) -> tuple[float, float]
+
+      Return the interval with the given birth index.
+
+
+
+   .. py:method:: intervals(degrees: int | numpy.integer) -> numpy.ndarray[tuple[int, Literal[2]], numpy.dtype[numpy.float64]]
+                  intervals(degrees: collections.abc.Sequence[int] | IndexArray | None = ...) -> dict[int, numpy.ndarray[tuple[int, Literal[2]], numpy.dtype[numpy.float64]]]
+
+      Get the interval decomposition of the persistence module.
+
+      :param degrees: Degrees in which the intervals are desired.
+                      If a list is provided then a list of matrices is returned,
+                      with the order of matrices respecting the order of entries of `degree`.
+                      If `degree` is not provided then the returned matrix will contain
+                      intervals features from all degrees from zero to ``max(self.degrees)``.
+
+      :returns: An :math:`m \times 2` matrix whose rows are the endpoints of intervals in the
+                interval decomposition, or a dictionary of such matrices indexed by degree.
+                The rows are sorted by generator index.
+                Degenerate intervals (having zero persistence) are not removed.
+
+
+
+   .. py:method:: nonempty_degrees() -> IndexArray
+
+      Return all inhabited degrees in the persistence module.
+
+
+
+   .. py:property:: pairings
+      :type: types.MappingProxyType[int, int | None]
+
+
+      Get the birth-death pairing indices for this module.
+
+
+   .. py:method:: to_hdf5(file: h5py.Group, *, pairings: collections.abc.Mapping[int, int | None] | None = None) -> None
+
+      Save interval pairings, endpoint entrance times, and interval degrees.
+
+      Infinite deaths are stored as ``-1``. Degrees are stored in pairing row order.
+      By default, pairings use this module's endpoint indices. An enclosing 6-pack
+      can supply its original pairings instead, in the same interval order.
+
+
+
+.. py:class:: SixPack(*, pairings: SixPackPairings | None = None, entrance_times: collections.abc.Sequence[float] | numpy.ndarray[tuple[int], numpy.dtype[numpy.floating]] = (), degrees: collections.abc.Sequence[int] | numpy.ndarray[tuple[int], numpy.dtype[numpy.integer]] = (), representatives: SixPackRepresentatives | None = None, morphisms: SixPackMorphisms | None = None)
+
+   6-pack of persistence modules.
+
+
+   .. py:method:: __bool__() -> bool
+
+      Check whether any persistence module in the 6-pack is non-trivial.
+
+
+
+   .. py:method:: __eq__(other: object) -> bool
+
+      Check equality of 6-packs.
+
+      Checks if all the persistence modules in the 6-packs are equal,
+      with identical interval endpoint metadata.
+
+
+
+   .. py:method:: __iter__() -> collections.abc.Iterator[tuple[PersistenceModuleName, AugmentedPersistenceModule]]
+
+      Iterate over the persistence modules in the 6-pack.
+
+
+
+   .. py:property:: codomain
+      :type: AugmentedPersistenceModule
+
+
+      Codomain persistence module.
+
+
+   .. py:property:: cokernel
+      :type: AugmentedPersistenceModule
+
+
+      Cokernel persistence module.
+
+
+   .. py:property:: domain
+      :type: AugmentedPersistenceModule
+
+
+      Domain persistence module.
+
+
+   .. py:method:: from_hdf5(file: h5py.Group) -> SixPack
+      :classmethod:
+
+
+      Load modules, raw pairings, and optional representatives and maps.
+
+      Consumer metadata is ignored and initialized to ``None``.
+      Malformed datasets raise ``RuntimeError``.
+
+
+
+   .. py:property:: image
+      :type: AugmentedPersistenceModule
+
+
+      Image persistence module.
+
+
+   .. py:property:: kernel
+      :type: AugmentedPersistenceModule
+
+
+      Kernel persistence module.
+
+
+   .. py:method:: max_nonempty_degree() -> int
+
+      Get the maximum degree of all features in all persistence modules in the 6-pack.
+
+      Returns -1 if all persistence modules in the 6-pack are trivial.
+
+
+
+   .. py:method:: module_names() -> tuple[PersistenceModuleName, ...]
+      :classmethod:
+
+
+      Return all six persistence module names in iteration order.
+
+
+
+   .. py:property:: morphisms
+      :type: SixPackMorphisms | None
+
+
+      Natural morphisms between modules in the 6-pack.
+
+
+   .. py:property:: pairings
+      :type: SixPackPairings
+
+
+      Birth-death pairings defining the 6-pack.
+
+
+   .. py:property:: relative
+      :type: AugmentedPersistenceModule
+
+
+      Relative persistence module.
+
+
+   .. py:property:: representatives
+      :type: SixPackRepresentatives | None
+
+
+      Representative cycles for intervals in the modules in the 6-pack.
+
+
+   .. py:method:: to_hdf5(file: h5py.Group) -> None
+
+      Save modules, raw pairings, and optional representatives and maps.
+
+      Each module stores its own endpoint times and interval degrees. Representatives
+      and maps use the same module-local indices as in memory. Consumer metadata is
+      not serialized; consumers may store it separately in the same file or group.
+
+
+
+.. py:class:: SixPackMorphisms
+
+   Natural maps between persistence modules, with one-dimensional int64 support arrays.
+
+
+   .. py:method:: __eq__(other: object) -> bool
+
+      Compare the sparse support arrays by value.
+
+
+
+   .. py:attribute:: codomain_to_cokernel
+      :type:  dict[int, IndexArray]
+
+      Epimorphism of codomain onto cokernel.
+
+
+   .. py:attribute:: domain_to_codomain
+      :type:  dict[int, IndexArray]
+
+      Domain to codomain map.
+
+
+   .. py:attribute:: domain_to_image
+      :type:  dict[int, IndexArray]
+
+      Epimorphism of domain onto image.
+
+
+   .. py:attribute:: image_to_codomain
+      :type:  dict[int, IndexArray]
+
+      Monomorphism of the image into the codomain.
+
+
+   .. py:attribute:: kernel_to_domain
+      :type:  dict[int, IndexArray]
+
+      Monomorphism of kernel into the domain.
+
+
+.. py:class:: SixPackPairings
+
+   Birth-death pairings for persistence modules in a 6-pack.
+
+
+   .. py:attribute:: codomain
+      :type:  dict[int, int | None]
+
+      Codomain pairings.
+
+
+   .. py:attribute:: cokernel
+      :type:  dict[int, int | None]
+
+      Cokernel pairings.
+
+
+   .. py:attribute:: domain
+      :type:  dict[int, int | None]
+
+      Domain pairings.
+
+
+   .. py:attribute:: image
+      :type:  dict[int, int | None]
+
+      Image pairings.
+
+
+   .. py:attribute:: kernel
+      :type:  dict[int, int | None]
+
+      Kernel pairings.
+
+
+   .. py:attribute:: relative
+      :type:  dict[int, int | None]
+
+      Relative pairings.
+
+
+.. py:class:: SixPackRepresentatives
+
+   Representative cycles for persistence modules, with one-dimensional int64 support arrays.
+
+
+   .. py:method:: __eq__(other: object) -> bool
+
+      Compare the sparse support arrays by value.
+
+
+
+   .. py:attribute:: codomain
+      :type:  dict[int, IndexArray]
+
+      Codomain representatives.
+
+
+   .. py:attribute:: cokernel
+      :type:  dict[int, IndexArray]
+
+      Cokernel representatives.
+
+
+   .. py:attribute:: domain
+      :type:  dict[int, IndexArray]
+
+      Domain representatives.
+
+
+   .. py:attribute:: image
+      :type:  dict[int, IndexArray]
+
+      Image representatives.
+
+
+   .. py:attribute:: kernel
+      :type:  dict[int, IndexArray]
+
+      Kernel representatives.
+
+
+   .. py:attribute:: relative
+      :type:  dict[int, tuple[IndexArray, IndexArray]]
+
+      Relative representatives.
+
+      A representative of an interval in the relative diagram of a map
+      :math:`f: A \to B` is a pair of chains :math:`(a, b)` such that
+      :math:`f(a) = db`.
+
+
