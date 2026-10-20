@@ -7,6 +7,7 @@ import numpy as np
 import pytest
 from matplotlib.collections import PathCollection
 from matplotlib.colors import to_rgba
+from matplotlib.patches import Polygon
 
 from chalc import chromatic
 from chalc.filtration import Filtration, Simplex, complete_complex
@@ -133,8 +134,11 @@ def drawing_filtration() -> tuple[Filtration, np.ndarray]:
 	return filtration, points
 
 
+@pytest.mark.parametrize("include_faces", [False, True])
 def test_draw_callback_receives_full_boundary_indices(
 	drawing_filtration: tuple[Filtration, np.ndarray],
+	*,
+	include_faces: bool,
 ) -> None:
 	filtration, points = drawing_filtration
 	matrix = filtration.boundary_matrix()
@@ -151,32 +155,73 @@ def test_draw_callback_receives_full_boundary_indices(
 		return index == len(matrix) - 1
 
 	_, ax = plt.subplots()
-	assert draw_filtration(filtration, points, select, ax=ax) is ax
+	assert draw_filtration(filtration, points, select, include_faces=include_faces, ax=ax) is ax
 	assert seen == [i for i, column in enumerate(matrix) if len(column[0]) <= 3]
 	assert len(matrix[-2][0]) == 4  # The tetrahedron precedes the selected edge.
 	assert len(ax.lines) == 1
 	np.testing.assert_array_equal(ax.lines[0].get_xydata(), points[:, [3, 4]].T)
-	assert not ax.collections
+	if include_faces:
+		assert len(ax.collections) == 1
+		np.testing.assert_array_equal(ax.collections[0].get_offsets(), points[:, [3, 4]].T)
+	else:
+		assert not ax.collections
 	assert not ax.patches
 
 
 @pytest.mark.parametrize("dimension", [0, 1, 2, 3])
-def test_draw_default_selection_and_low_dimensions(dimension: int) -> None:
+@pytest.mark.parametrize("include_faces", [False, True])
+def test_draw_default_selection_and_low_dimensions(dimension: int, *, include_faces: bool) -> None:
 	filtration = complete_complex(4, dimension)
 	points = np.array([[0.0, 1.0, 0.0, 1.0], [0.0, 0.0, 1.0, 1.0]])
-	ax = draw_filtration(filtration, points, plot_colours="tab10")
+	ax = draw_filtration(filtration, points, include_faces=include_faces, plot_colours="tab10")
 	assert len(ax.collections) == 1
 	np.testing.assert_array_equal(ax.collections[0].get_offsets(), points.T)
 	assert len(ax.lines) == (6 if dimension >= 1 else 0)
 	assert len(ax.patches) == (4 if dimension >= 2 else 0)
 
 
-def test_draw_empty_selection(drawing_filtration: tuple[Filtration, np.ndarray]) -> None:
+@pytest.mark.parametrize("include_faces", [False, True])
+def test_draw_empty_selection(
+	drawing_filtration: tuple[Filtration, np.ndarray],
+	*,
+	include_faces: bool,
+) -> None:
 	filtration, points = drawing_filtration
-	ax = draw_filtration(filtration, points, lambda _simplex, _index: False)
+	ax = draw_filtration(
+		filtration, points, lambda _simplex, _index: False, include_faces=include_faces
+	)
 	assert not ax.collections
 	assert not ax.lines
 	assert not ax.patches
+
+
+@pytest.mark.parametrize("include_faces", [False, True])
+def test_draw_selected_triangle_and_its_faces(*, include_faces: bool) -> None:
+	filtration = Filtration(6, 2)
+	filtration.add_simplex([0, 1, 2], 1.0)
+	# A later, distant triangle catches reuse of the last simplex's geometry.
+	filtration.add_simplex([3, 4, 5], 2.0)
+	points = np.array([[0.0, 1.0, 0.0, 10.0, 0.0, 10.0], [0.0, 0.0, 1.0, 0.0, 10.0, 10.0]])
+	ax = draw_filtration(
+		filtration,
+		points,
+		lambda simplex, _: simplex.vertices == [0, 1, 2],
+		include_faces=include_faces,
+	)
+	assert len(ax.patches) == 1
+	triangle = ax.patches[0]
+	assert isinstance(triangle, Polygon)
+	np.testing.assert_array_equal(triangle.get_xy(), points[:, [0, 1, 2, 0]].T)
+	if include_faces:
+		assert len(ax.lines) == 3
+		assert {frozenset(map(tuple, np.asarray(line.get_xydata()))) for line in ax.lines} == {
+			frozenset(map(tuple, points[:, vertices].T)) for vertices in ([0, 1], [0, 2], [1, 2])
+		}
+		assert len(ax.collections) == 1
+		np.testing.assert_array_equal(ax.collections[0].get_offsets(), points[:, [0, 1, 2]].T)
+	else:
+		assert not ax.lines
+		assert not ax.collections
 
 
 def test_draw_time_and_colour_selector(drawing_filtration: tuple[Filtration, np.ndarray]) -> None:
@@ -269,5 +314,6 @@ def test_draw_kernel_representatives(*, quotient: bool) -> None:
 	for line, index in zip(ax.lines, sorted(support), strict=True):
 		vertices = filtration.simplices[1][matrix[index][1]].vertices
 		np.testing.assert_array_equal(line.get_xydata(), points[:, vertices].T)
-	assert not ax.collections
+	assert len(ax.collections) == 1
+	np.testing.assert_array_equal(ax.collections[0].get_offsets(), points[:, [0, 1, 2, 3]].T)
 	assert not ax.patches

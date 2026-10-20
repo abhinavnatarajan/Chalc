@@ -66,7 +66,7 @@ def plot_sixpack(
 		figsize=[3.5 * 3, 3.5 * 2],
 		sharex=False,
 		sharey=False,
-		constrained_layout=True,
+		layout="compressed",
 	)
 
 	plot_pos: dict[PersistenceModuleName, tuple[int, int]] = {
@@ -243,6 +243,7 @@ def draw_filtration(
 	points: np.ndarray[tuple[Literal[2], int], np.dtype[np.floating]],
 	select: Callable[[Simplex, int], bool] | None = None,
 	*,
+	include_faces: bool = True,
 	ax: Axes | None = None,
 	plot_colours: str | np.ndarray | None = None,
 	vertices_kwargs: dict | None = None,
@@ -262,6 +263,9 @@ def draw_filtration(
 			for each simplex of dimension at most 2, in boundary-matrix order.
 			Simplices of higher dimension still count towards the indices. If omitted,
 			all vertices, edges, and triangles are drawn.
+
+	Keyword args:
+		include_faces   : Whether to select all faces of selected simplices.
 		ax              :
 			A matplotlib axes object.
 			If provided then the filtration will be plotted on the given axes.
@@ -282,13 +286,10 @@ def draw_filtration(
 		ValueError: If ``points`` does not have shape ``(2, filtration.num_vertices)``.
 
 	Notes:
-		Selecting a simplex does not automatically select its faces or vertices.
 		The callback must not modify ``filtration``.
 		Representative supports must use the indices of ``filtration.boundary_matrix()``.
 		For representatives computed from a dimension-limited boundary matrix,
 		pass the corresponding skeleton as ``filtration``.
-		Representatives from a quotient use mapping-cylinder indices and must
-		first be mapped to the plotted filtration's indices.
 
 	"""
 	if points.shape != (2, filtration.num_vertices):
@@ -308,10 +309,15 @@ def draw_filtration(
 	vertex_plot_colours = []
 	vertices_to_plot = []
 	style: dict[str, Any]
-	for index, (boundary, label, _, colours) in enumerate(filtration.boundary_matrix()):
+	matrix = filtration.boundary_matrix()
+	selected = _get_subfiltration_indices(
+		matrix, simplex_handles, select, include_faces=include_faces
+	)
+
+	for index, (boundary, label, _, colours) in enumerate(matrix):
 		dimension = len(boundary) - 1 if boundary else 0
 		simplex = simplex_handles[dimension][label]
-		if dimension > 2 or (select is not None and not select(simplex, index)):  # noqa: PLR2004
+		if dimension > 2 or (index not in selected):  # noqa: PLR2004
 			continue
 
 		vertices = simplex.vertices
@@ -496,3 +502,24 @@ def _get_truncation(births: _1DArrayFloat, deaths: _1DArrayFloat) -> float:
 		perc95 = float(np.percentile(finite_deaths, 95))
 		death_bound = min(float(np.max(finite_deaths)), 2 * perc95)
 	return max(0.0, birth_bound, death_bound) or 1.0
+
+
+def _get_subfiltration_indices(
+	boundary_matrix: list[tuple[list[int], int, float, list[int]]],
+	simplex_handles: list[dict[int, Simplex]],
+	select: Callable[[Simplex, int], bool] | None = None,
+	*,
+	include_faces: bool = True,
+) -> frozenset[int]:
+	selected = set()
+	for index, (boundary, label, _, _) in enumerate(boundary_matrix):
+		dimension = len(boundary) - 1 if boundary else 0
+		simplex = simplex_handles[dimension][label]
+		if dimension > 2 or (select is not None and not select(simplex, index)):  # noqa: PLR2004
+			continue
+		selected.add(index)
+	if include_faces:
+		for index in reversed(range(len(boundary_matrix))):
+			if index in selected:
+				selected.update(boundary_matrix[index][0])
+	return frozenset(selected)
