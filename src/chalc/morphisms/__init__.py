@@ -405,7 +405,7 @@ class KChromaticInclusion(FiltrationInclusion):
 
 
 class FiltrationGluing(FiltrationMorphism, ABC):
-	"""Represents the gluing map of a disjoint union of subfiltrations.
+	r"""Represents the gluing map of a disjoint union of subfiltrations.
 
 	This is an abstract class. To specify a gluing map, use one
 	of its concrete subclasses or create your own. To implement
@@ -430,17 +430,17 @@ class FiltrationGluing(FiltrationMorphism, ABC):
 	following keys:
 
 	#. ``domain_indices`` and ``codomain_indices``: dictionaries that map
-	domain and codomain indices to their indices in the mapping cylinder.
+		domain and codomain indices to their indices in the mapping cylinder.
 	#. ``domain_shift``: dictionary that maps each domain index to the index
-	of its degree-shifted copy in the mapping cylinder.
+		of its degree-shifted copy in the mapping cylinder.
 	#. ``domain_index_to_subfiltration_index``: a list that maps each
-	index in the boundary matrix of the domain of the gluing map to the
-	index of the subfiltration to which this column corresponds.
+		index in the boundary matrix of the domain of the gluing map to the
+		index of the subfiltration to which this column corresponds.
 	#. ``domain_index_to_codomain_index``: a list of integers that completely
-	describes the gluing map; the list entry at index ``i`` is the index of
-	the codomain simplex that is the image of the ``i``th domain simplex.
-	Multiple domain indices map to the same codomain index, one for each
-	subfiltration.
+		describes the gluing map; the list entry at index ``i`` is the index of
+		the codomain simplex that is the image of the ``i``\th domain simplex.
+		Multiple domain indices map to the same codomain index, one for each
+		subfiltration.
 
 	See Also:
 		:class:`SubChromaticGluing`, :class:`KChromaticGluing`.
