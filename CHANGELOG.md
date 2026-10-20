@@ -1,5 +1,10 @@
 # Changelog
 
+## 15.0.1
+
+### Fixed
+- Prevent the legend in `plot_sixpack` from overlapping with the axes of diagrams.
+
 ## 15.0.0
 
 Changes since 14.2.0.

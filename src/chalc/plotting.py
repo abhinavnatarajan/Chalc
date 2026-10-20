@@ -97,7 +97,7 @@ def plot_sixpack(
 		fig.legend(
 			handles=[legends[key] for key in sorted(legends)],
 			labels=sorted(legends),
-			loc="lower center",
+			loc="outside lower center",
 			ncol=5,
 		)
 	return fig, axes

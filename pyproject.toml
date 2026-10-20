@@ -1,6 +1,6 @@
 [project]
 name = "chalc"
-version = "15.0.0"
+version = "15.0.1"
 description = "Persistent homology of chromatic Delaunay filtrations"
 readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.13"
