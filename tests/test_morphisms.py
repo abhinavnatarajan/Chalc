@@ -22,7 +22,7 @@ random_seed = 44
 
 
 @pytest.mark.gudhi
-def test_kchromatic_inclusion_vs_quotient(
+def test_kchromatic_inclusion_vs_gluing(
 	bottleneck_distance: Callable[[np.ndarray, np.ndarray], float],
 ) -> None:
 	"""Test that k-chromatic inclusion and k-chromatic gluing map yield same result when k=1."""
@@ -38,15 +38,15 @@ def test_kchromatic_inclusion_vs_quotient(
 			filtration,
 			1,
 		).sixpack()
-		dgms_quotient = ch.morphisms.KChromaticQuotient(
+		dgms_gluing = ch.morphisms.KChromaticGluing(
 			filtration,
 			1,
 		).sixpack()
-		assert dgms_inclusion.max_nonempty_degree() == dgms_quotient.max_nonempty_degree()
+		assert dgms_inclusion.max_nonempty_degree() == dgms_gluing.max_nonempty_degree()
 		dists = [
 			bottleneck_distance(
 				getattr(dgms_inclusion, name).intervals(d),
-				getattr(dgms_quotient, name).intervals(d),
+				getattr(dgms_gluing, name).intervals(d),
 			)
 			for name, _ in dgms_inclusion
 			for d in range(dgms_inclusion.max_nonempty_degree() + 1)
@@ -94,10 +94,10 @@ def test_kchromatic_vs_subchromatic_inclusion(
 
 
 @pytest.mark.gudhi
-def test_kchromatic_vs_subchromatic_quotient(
+def test_kchromatic_vs_subchromatic_gluing(
 	bottleneck_distance: Callable[[np.ndarray, np.ndarray], float],
 ) -> None:
-	"""Test that k-chromatic and subchromatic quotients agree when appropriate."""
+	"""Test that k-chromatic and subchromatic gluings agree when appropriate."""
 	rng = np.random.default_rng(random_seed)
 	num_points = 500
 	dims = [1, 2, 3]
@@ -112,11 +112,11 @@ def test_kchromatic_vs_subchromatic_quotient(
 				colours,
 				max_num_threads=0,
 			)
-			dgms_kchromatic = ch.morphisms.KChromaticQuotient(
+			dgms_kchromatic = ch.morphisms.KChromaticGluing(
 				filtration,
 				k,
 			).sixpack()
-			dgms_subchromatic = ch.morphisms.SubChromaticQuotient(
+			dgms_subchromatic = ch.morphisms.SubChromaticGluing(
 				filtration,
 				colour_combos,
 			).sixpack()
@@ -133,10 +133,10 @@ def test_kchromatic_vs_subchromatic_quotient(
 
 
 @pytest.mark.gudhi
-def test_subchromatic_inclusion_vs_quotient(
+def test_subchromatic_inclusion_vs_gluing(
 	bottleneck_distance: Callable[[np.ndarray, np.ndarray], float],
 ) -> None:
-	"""Test that the subchromatic inclusion and quotient agree for a single subfiltration."""
+	"""Test that the subchromatic inclusion and gluing agree for a single subfiltration."""
 	rng = np.random.default_rng(random_seed)
 	num_points = 500
 	dims = [1, 2]
@@ -159,15 +159,15 @@ def test_subchromatic_inclusion_vs_quotient(
 			filtration,
 			tau,
 		).sixpack()
-		dgms_quotient = ch.morphisms.SubChromaticQuotient(
+		dgms_gluing = ch.morphisms.SubChromaticGluing(
 			filtration,
 			[tau],
 		).sixpack()
-		assert dgms_inclusion.max_nonempty_degree() == dgms_quotient.max_nonempty_degree()
+		assert dgms_inclusion.max_nonempty_degree() == dgms_gluing.max_nonempty_degree()
 		dists = [
 			bottleneck_distance(
 				getattr(dgms_inclusion, name).intervals(d),
-				getattr(dgms_quotient, name).intervals(d),
+				getattr(dgms_gluing, name).intervals(d),
 			)
 			for name, _ in dgms_inclusion
 			for d in range(dgms_inclusion.max_nonempty_degree() + 1)
@@ -177,7 +177,7 @@ def test_subchromatic_inclusion_vs_quotient(
 
 @pytest.mark.parametrize(
 	"morphism_type",
-	[ch.morphisms.KChromaticInclusion, ch.morphisms.KChromaticQuotient],
+	[ch.morphisms.KChromaticInclusion, ch.morphisms.KChromaticGluing],
 )
 @pytest.mark.parametrize("get_representatives", [False, True])
 def test_sixpack_degree_limit(morphism_type: type, *, get_representatives: bool) -> None:
@@ -202,9 +202,9 @@ def test_sixpack_degree_limit(morphism_type: type, *, get_representatives: bool)
 
 
 @pytest.mark.parametrize("get_representatives", [False, True])
-def test_quotient_retains_relative_degree_above_filtration(*, get_representatives: bool) -> None:
+def test_gluing_retains_relative_degree_above_filtration(*, get_representatives: bool) -> None:
 	filtration = ch.filtration.standard_simplex(0)
-	morphism = ch.morphisms.SubChromaticQuotient(filtration, [[{0}], [{0}]])
+	morphism = ch.morphisms.SubChromaticGluing(filtration, [[{0}], [{0}]])
 	pack = morphism.sixpack(get_representatives=get_representatives)
 	assert pack.max_nonempty_degree() == 1
 	np.testing.assert_array_equal(pack.relative.intervals(1), [[0.0, np.inf]])
@@ -223,7 +223,7 @@ def test_quotient_retains_relative_degree_above_filtration(*, get_representative
 
 @pytest.mark.parametrize(
 	"morphism_type",
-	[ch.morphisms.KChromaticInclusion, ch.morphisms.KChromaticQuotient],
+	[ch.morphisms.KChromaticInclusion, ch.morphisms.KChromaticGluing],
 )
 @pytest.mark.parametrize("max_homological_degree", [None, 0])
 def test_sixpack_representatives_and_maps(
@@ -329,7 +329,7 @@ def test_kernel_map_retained_at_degree_limit() -> None:
 
 @pytest.mark.parametrize(
 	"morphism_type",
-	[ch.morphisms.KChromaticInclusion, ch.morphisms.KChromaticQuotient],
+	[ch.morphisms.KChromaticInclusion, ch.morphisms.KChromaticGluing],
 )
 def test_sixpack_negative_limit_on_zero_dimensional_filtration(morphism_type: type) -> None:
 	morphism = morphism_type(ch.filtration.standard_simplex(0), 1)

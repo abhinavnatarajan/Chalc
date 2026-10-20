@@ -226,9 +226,9 @@ def _make_morphism(
 		return ch.morphisms.SubChromaticInclusion(filtration, [{0}])
 	if kind == "k_inclusion":
 		return ch.morphisms.KChromaticInclusion(filtration, 1)
-	if kind == "sub_quotient":
-		return ch.morphisms.SubChromaticQuotient(filtration, [[{0}], [{1}]])
-	return ch.morphisms.KChromaticQuotient(filtration, 1)
+	if kind == "sub_gluing":
+		return ch.morphisms.SubChromaticGluing(filtration, [[{0}], [{1}]])
+	return ch.morphisms.KChromaticGluing(filtration, 1)
 
 
 def _assert_same_pack(actual: ch.morphisms.SixPack, expected: ch.morphisms.SixPack) -> None:
@@ -245,7 +245,7 @@ def _assert_same_pack(actual: ch.morphisms.SixPack, expected: ch.morphisms.SixPa
 			np.testing.assert_array_equal(intervals, reference.intervals(degree))
 
 
-@pytest.mark.parametrize("kind", ["sub_inclusion", "k_inclusion", "sub_quotient", "k_quotient"])
+@pytest.mark.parametrize("kind", ["sub_inclusion", "k_inclusion", "sub_gluing", "k_gluing"])
 def test_shared_morphism_sixpack_calls(kind: str) -> None:
 	filtration = _make_filtration()
 	before = _filtration_snapshot(filtration)

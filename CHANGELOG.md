@@ -8,6 +8,8 @@ Changes since 14.2.0.
 
 - Move persistence types and filtration morphisms from `chalc.sixpack` to
   `chalc.morphisms`.
+- Rename `FiltrationQuotient` to `FiltrationGluing`, `SubChromaticQuotient` to
+  `SubChromaticGluing`, and `KChromaticQuotient` to `KChromaticGluing`.
 - Replace `SimplexPairings` with `AugmentedPersistenceModule`, which associates
   interval pairings with endpoint entrance times and homological degrees. Use
   `module.intervals(degrees)` to obtain birth/death arrays: an integer selects
@@ -62,17 +64,17 @@ Changes since 14.2.0.
   all six modules and the natural maps between kernel, domain, image, codomain,
   and cokernel. Access them through `pack.representatives` and `pack.morphisms`.
   Generator indices are local to each module. For inclusions, all representative
-  supports use codomain boundary-matrix indices. For quotients, kernel and domain
-  supports use domain indices, while image, codomain, and cokernel supports use
-  codomain indices.
+  supports use codomain boundary-matrix indices. For gluing maps, kernel and
+  domain supports use domain indices, while image, codomain, and cokernel
+  supports use codomain indices.
 - Represent relative cycles by pairs of chains `(a, b)` satisfying `da = 0`
-  and `f(a) = db`. For quotients, `a` uses domain indices and `b` uses codomain
+  and `f(a) = db`. For gluing maps, `a` uses domain indices and `b` uses codomain
   indices; for inclusions, both use codomain indices.
 - Preserve modules, original pairings, representatives, maps, and the endpoint
   relabelling through HDF5 round trips, including both chains of each relative
   representative. Add `AugmentedPersistenceModule.to_hdf5` for writing individual
   modules. Consumer `pack.metadata` is assigned directly and is not serialized.
-  Quotient metadata records the maps into the mapping cylinder, the subfiltration
+  Gluing metadata records the maps into the mapping cylinder, the subfiltration
   containing each domain simplex, and the domain-to-codomain simplex map.
 - Add `ChromaticSheaf.from_chromatic_points` to construct persistence modules
   indexed by subsets of colours, restricted by `max_num_colours`. Query modules
@@ -99,8 +101,8 @@ Changes since 14.2.0.
 
 ### Fixed
 
-- Apply homological degree limits correctly to kernel intervals and quotient
-  relative homology, accounting for shifted degrees in the mapping cylinder.
+- Apply homological degree limits correctly to kernel intervals and the relative
+  homology of gluing maps, accounting for shifted degrees in the mapping cylinder.
 - Validate interval indices, entrance-time ordering, and degrees before
   filtering; reject representatives and maps that refer to invalid generators.
   Reject malformed HDF5 datasets with a `RuntimeError`, including mismatched

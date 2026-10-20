@@ -23,18 +23,19 @@ from chalc.morphisms.types import (
 
 __all__ = [
 	"AugmentedPersistenceModule",
+	"FiltrationGluing",
 	"FiltrationInclusion",
 	"FiltrationMorphism",
 	"IndexArray",
+	"KChromaticGluing",
 	"KChromaticInclusion",
-	"KChromaticQuotient",
 	"PersistenceModuleName",
 	"SixPack",
 	"SixPackMorphisms",
 	"SixPackPairings",
 	"SixPackRepresentatives",
+	"SubChromaticGluing",
 	"SubChromaticInclusion",
-	"SubChromaticQuotient",
 ]
 
 # A face of the simplex of colours.
@@ -60,8 +61,8 @@ class FiltrationMorphism(ABC):
 	See Also:
 		:class:`SubChromaticInclusion`,
 		:class:`KChromaticInclusion`,
-		:class:`SubChromaticQuotient`,
-		:class:`KChromaticQuotient`.
+		:class:`SubChromaticGluing`,
+		:class:`KChromaticGluing`.
 	"""
 
 	__slots__ = ("_filtration",)
@@ -294,7 +295,7 @@ class SubChromaticInclusion(FiltrationInclusion, Sized):
 	                SubChromaticInclusion(filtration, [[0, 1], [1, 2]]).sixpack()
 
 	See Also:
-		:class:`KChromaticInclusion`, :class:`KChromaticQuotient`, :class:`SubChromaticQuotient`.
+		:class:`KChromaticInclusion`, :class:`KChromaticGluing`, :class:`SubChromaticGluing`.
 
 	"""
 
@@ -374,7 +375,7 @@ class KChromaticInclusion(FiltrationInclusion):
 	                KChromaticInclusion(filtration, 2).sixpack()
 
 	See Also:
-		:class:`SubChromaticInclusion`, :class:`KChromaticQuotient`, :class:`SubChromaticQuotient`.
+		:class:`SubChromaticInclusion`, :class:`KChromaticGluing`, :class:`SubChromaticGluing`.
 
 	"""
 
@@ -403,27 +404,27 @@ class KChromaticInclusion(FiltrationInclusion):
 		return len(column[3]) <= self.k
 
 
-class FiltrationQuotient(FiltrationMorphism, ABC):
+class FiltrationGluing(FiltrationMorphism, ABC):
 	"""Represents the gluing map of a disjoint union of subfiltrations.
 
-	This is an abstract class. To specify a quotient map, use one
+	This is an abstract class. To specify a gluing map, use one
 	of its concrete subclasses or create your own. To implement
-	a quotient map, you need to implement the ``simplex_in_filtration``
+	a gluing map, you need to implement the ``simplex_in_filtration``
 	method, and make sure that ``self.num_subfiltrations`` is initialized
-	before :meth:`sixpack <chalc.morphisms.FiltrationQuotient.sixpack>` is called.
+	before :meth:`sixpack <chalc.morphisms.FiltrationGluing.sixpack>` is called.
 
 	Persistence computations are reduced to the case of a filtered inclusion
 	by constructing a mapping cylinder. Therefore, pairing indices in the
 	returned sixpack correspond to mapping cylinder indices, not original indices.
 
 	Representative cycles, if requested in the call to
-	:meth:``sixpack <chalc.morphisms.FiltrationInclusion.sixpack>``, are given as numpy arrays
+	:meth:`sixpack <chalc.morphisms.FiltrationInclusion.sixpack>`, are given as numpy arrays
 	of int64 indices. These indices identify simplices in either the domain or codomain
 	by their index in the corresponding boundary matrix. Representative cycles for the kernel
 	and domain are arrays of domain indices, while cycle representatives for the image, codomain
 	and cokernel are codomain simplices. The representative cycle for each interval in the relative
 	module is given as a pair of chains ``(a, b)`` where ``da= 0`` and ``f(a) = db`` (here ``f`` is
-	the quotient map). The indices for ``a`` and ``b`` are domain and codomain indices respectively.
+	the gluing map). The indices for ``a`` and ``b`` are domain and codomain indices respectively.
 
 	The sixpack returned by this class contains a ``metadata`` dictionary with the
 	following keys:
@@ -433,16 +434,16 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 	#. ``domain_shift``: dictionary that maps each domain index to the index
 	of its degree-shifted copy in the mapping cylinder.
 	#. ``domain_index_to_subfiltration_index``: a list that maps each
-	index in the boundary matrix of the domain of the quotient map to the
+	index in the boundary matrix of the domain of the gluing map to the
 	index of the subfiltration to which this column corresponds.
 	#. ``domain_index_to_codomain_index``: a list of integers that completely
-	describes the quotient map; the list entry at index ``i`` is the index of
+	describes the gluing map; the list entry at index ``i`` is the index of
 	the codomain simplex that is the image of the ``i``th domain simplex.
 	Multiple domain indices map to the same codomain index, one for each
 	subfiltration.
 
 	See Also:
-		:class:`SubChromaticQuotient`, :class:`KChromaticQuotient`.
+		:class:`SubChromaticGluing`, :class:`KChromaticGluing`.
 
 	"""
 
@@ -498,8 +499,8 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 		if max_homological_degree is None:
 			max_homological_degree = filtration.dimension + 1
 
-		codomain_matrix: FiltrationQuotient.BoundaryMatrix = []
-		domain_matrix: FiltrationQuotient.BoundaryMatrix = []
+		codomain_matrix: FiltrationGluing.BoundaryMatrix = []
+		domain_matrix: FiltrationGluing.BoundaryMatrix = []
 		# List of mappings from domain columns to codomain indices.
 		mapping: list[list[int]] = []
 
@@ -580,7 +581,7 @@ class FiltrationQuotient(FiltrationMorphism, ABC):
 		return sixpack
 
 
-class SubChromaticQuotient(FiltrationQuotient):
+class SubChromaticGluing(FiltrationGluing):
 	r"""Represents a gluing map in a chromatic filtration.
 
 	Let :math:`\{0, \ldots, s\}` be a set of colours, let :math:`\Delta^s` be the
@@ -591,7 +592,7 @@ class SubChromaticQuotient(FiltrationQuotient):
 	and a colouring :math:`\mu:V \to \{0, \ldots, s\}` of :math:`V`,
 	let :math:`K/\tau_i`  denote the subfiltration of :math:`K`
 	comprising simplices :math:`\sigma \in K` satisfying :math:`\mu(\sigma) \in \tau_i`
-	(:math:`1 \leq i \leq m`). This class represents the quotient map
+	(:math:`1 \leq i \leq m`). This class represents the gluing map
 
 	.. math::
 
@@ -607,8 +608,8 @@ class SubChromaticQuotient(FiltrationQuotient):
 		6-pack of persistence modules, corresponding to
 		the inclusion of all simplices spanned by colours 0 and 1::
 
-	                # Using SubChromaticQuotient
-	                SubChromaticQuotient(
+	                # Using SubChromaticGluing
+	                SubChromaticGluing(
 	                    filtration,
 	                    [
 	                        [[0, 1]],  # tau_0 = {{0,1}, {0}, {1}}
@@ -624,8 +625,8 @@ class SubChromaticQuotient(FiltrationQuotient):
 		If the :math:`\tau_i` are disjoint, then this class produces the
 		same result as :class:`SubChromaticInclusion`::
 
-	                # Using SubChromaticQuotient
-	                SubChromaticQuotient(
+	                # Using SubChromaticGluing
+	                SubChromaticGluing(
 	                    filtration,
 	                    [
 	                        [
@@ -649,8 +650,8 @@ class SubChromaticQuotient(FiltrationQuotient):
 
 		In general this is not necessarily the case::
 
-	                # Using SubChromaticQuotient - gluing two subfiltrations
-	                SubChromaticQuotient(
+	                # Using SubChromaticGluing - gluing two subfiltrations
+	                SubChromaticGluing(
 	                    filtration,
 	                    [
 	                        [
@@ -674,7 +675,7 @@ class SubChromaticQuotient(FiltrationQuotient):
 
 
 	See Also:
-		:class:`SubChromaticInclusion`, :class:`KChromaticInclusion`, :class:`KChromaticQuotient`.
+		:class:`SubChromaticInclusion`, :class:`KChromaticInclusion`, :class:`KChromaticGluing`.
 	"""
 
 	__slots__ = ("_tau",)
@@ -706,39 +707,36 @@ class SubChromaticQuotient(FiltrationQuotient):
 		return any(frozenset(column[3]).issubset(face) for face in self._tau[i])
 
 
-class KChromaticQuotient(FiltrationQuotient):
+class KChromaticGluing(FiltrationGluing):
 	r"""
 	Corresponds to gluing all subfiltrations spanned by :math:`k` colours.
 
-	This represents a special case of :class:`SubChromaticQuotient`.
-	Using the notation from :class:`SubChromaticQuotient`, this class
+	This represents a special case of :class:`SubChromaticGluing`.
+	Using the notation from :class:`SubChromaticGluing`, this class
 	corresponds to having the :math:`\tau_i` range over all combinations of
 	:math:`k` colours from the set of colours :math:`\{0, \ldots, s\}`.
 
 	In practical terms, the following code::
 
-	        KChromaticQuotient(filtration, k).sixpack()
+	        KChromaticGluing(filtration, k).sixpack()
 
 	should give the same 6-pack of persistence modules as this::
 
-		n_colours = len(set(colours))
-		SubChromaticQuotient(
-			filtration,
-			tuple(
-				(combination,)
-				for combination in combinations(range(n_colours), k))
-			)
-		)
+	        n_colours = len(set(colours))
+	        SubChromaticGluing(
+	            filtration,
+	            tuple((combination,) for combination in combinations(range(n_colours), k)),
+	        ).sixpack()
 
 	Note:
-		``KChromaticQuotient(1)`` is essentially the same as
+		``KChromaticGluing(1)`` is essentially the same as
 		``KChromaticInclusion(1)`` since both represent the inclusion of all
 		monochromatic simplices. You should prefer to use ``KChromaticInclusion(1)``
-		for performance reasons, since ``KChromaticQuotient(1)`` will compute
+		for performance reasons, since ``KChromaticGluing(1)`` will compute
 		the mapping cylinder of the inclusion map, which is unnecessary.
 
 	See Also:
-		:class:`KChromaticInclusion`, :class:`SubChromaticInclusion`, :class:`SubChromaticQuotient`.
+		:class:`KChromaticInclusion`, :class:`SubChromaticInclusion`, :class:`SubChromaticGluing`.
 
 	"""
 
@@ -750,7 +748,7 @@ class KChromaticQuotient(FiltrationQuotient):
 	def __init__(self, filtration: Filtration, k: int) -> None:
 		"""Initialise this method."""
 		if not isinstance(k, int) or k <= 0:
-			errmsg = "KChromaticQuotient must be initialised with a positive integer."
+			errmsg = "KChromaticGluing must be initialised with a positive integer."
 			raise ValueError(errmsg)
 		self.k = k
 

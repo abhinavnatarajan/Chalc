@@ -13,7 +13,7 @@ from chalc import chromatic
 from chalc.filtration import Filtration, Simplex, complete_complex
 from chalc.morphisms import (
 	AugmentedPersistenceModule,
-	KChromaticQuotient,
+	KChromaticGluing,
 	SixPack,
 	SixPackPairings,
 	SubChromaticInclusion,
@@ -272,17 +272,15 @@ def test_draw_requires_one_2d_point_per_vertex(
 		draw_filtration(filtration, np.zeros(shape))
 
 
-@pytest.mark.parametrize("quotient", [False, True])
-def test_draw_kernel_representatives(*, quotient: bool) -> None:
+@pytest.mark.parametrize("gluing", [False, True])
+def test_draw_kernel_representatives(*, gluing: bool) -> None:
 	points = np.array([[0.0, 1.0, 1.0, 0.0, 0.5], [0.0, 0.0, 1.0, 1.0, 0.5]])
 	filtration = chromatic.alpha(points, [0, 0, 0, 0, 1], max_num_threads=1)
-	morphism = (
-		KChromaticQuotient(filtration, 1) if quotient else SubChromaticInclusion(filtration, {0})
-	)
+	morphism = KChromaticGluing(filtration, 1) if gluing else SubChromaticInclusion(filtration, {0})
 	pack = morphism.sixpack(get_representatives=True)
 	assert pack.representatives is not None
 	matrix = filtration.boundary_matrix()
-	if quotient:
+	if gluing:
 		assert pack.metadata is not None
 		index_map = pack.metadata["domain_index_to_codomain_index"]
 	else:

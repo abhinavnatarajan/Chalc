@@ -91,8 +91,8 @@ you need while holding the lock if you want to use them independently later.
 Filtration morphisms
 --------------------
 
-``SubChromaticInclusion``, ``KChromaticInclusion``, ``SubChromaticQuotient``, and
-``KChromaticQuotient`` retain the filtration supplied to their constructor.
+``SubChromaticInclusion``, ``KChromaticInclusion``, ``SubChromaticGluing``, and
+``KChromaticGluing`` retain the filtration supplied to their constructor.
 Creating two morphisms from the same filtration does not make two independent
 filtrations.
 
