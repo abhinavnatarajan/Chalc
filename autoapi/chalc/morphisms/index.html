@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html"><link rel="next" title="chalc.morphisms.sheaf" href="sheaf/index.html"><link rel="prev" title="chalc.filtration" href="../filtration/index.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
-        <title>chalc.morphisms - chalc 15.0.0 documentation</title>
+        <title>chalc.morphisms - chalc 15.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
@@ -164,7 +164,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">chalc 15.0.0 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">chalc 15.0.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -185,7 +185,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
-  <span class="sidebar-brand-text">chalc 15.0.0 documentation</span>
+  <span class="sidebar-brand-text">chalc 15.0.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -461,18 +461,32 @@ module is given as a pair of chains <code class="docutils literal notranslate"><
 the gluing map). The indices for <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code> are domain and codomain indices respectively.</p>
 <p>The sixpack returned by this class contains a <code class="docutils literal notranslate"><span class="pre">metadata</span></code> dictionary with the
 following keys:</p>
-<p>#. <code class="docutils literal notranslate"><span class="pre">domain_indices</span></code> and <code class="docutils literal notranslate"><span class="pre">codomain_indices</span></code>: dictionaries that map
-domain and codomain indices to their indices in the mapping cylinder.
-#. <code class="docutils literal notranslate"><span class="pre">domain_shift</span></code>: dictionary that maps each domain index to the index
-of its degree-shifted copy in the mapping cylinder.
-#. <code class="docutils literal notranslate"><span class="pre">domain_index_to_subfiltration_index</span></code>: a list that maps each
-index in the boundary matrix of the domain of the gluing map to the
-index of the subfiltration to which this column corresponds.
-#. <code class="docutils literal notranslate"><span class="pre">domain_index_to_codomain_index</span></code>: a list of integers that completely
-describes the gluing map; the list entry at index <code class="docutils literal notranslate"><span class="pre">i</span></code> is the index of
-the codomain simplex that is the image of the <a href="#id1"><span class="problematic" id="id2">``</span></a>i``th domain simplex.
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">domain_indices</span></code> and <code class="docutils literal notranslate"><span class="pre">codomain_indices</span></code>: dictionaries that map</dt><dd><p>domain and codomain indices to their indices in the mapping cylinder.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">domain_shift</span></code>: dictionary that maps each domain index to the index</dt><dd><p>of its degree-shifted copy in the mapping cylinder.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">domain_index_to_subfiltration_index</span></code>: a list that maps each</dt><dd><p>index in the boundary matrix of the domain of the gluing map to the
+index of the subfiltration to which this column corresponds.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">domain_index_to_codomain_index</span></code>: a list of integers that completely</dt><dd><p>describes the gluing map; the list entry at index <code class="docutils literal notranslate"><span class="pre">i</span></code> is the index of
+the codomain simplex that is the image of the <code class="docutils literal notranslate"><span class="pre">i</span></code>th domain simplex.
 Multiple domain indices map to the same codomain index, one for each
 subfiltration.</p>
+</dd>
+</dl>
+</li>
+</ol>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="#chalc.morphisms.SubChromaticGluing" title="chalc.morphisms.SubChromaticGluing"><code class="xref py py-class docutils literal notranslate"><span class="pre">SubChromaticGluing</span></code></a>, <a class="reference internal" href="#chalc.morphisms.KChromaticGluing" title="chalc.morphisms.KChromaticGluing"><code class="xref py py-class docutils literal notranslate"><span class="pre">KChromaticGluing</span></code></a>.</p>
@@ -1437,7 +1451,7 @@ This column has the same format as the columns returned by
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=8d0b4638"></script>
+</div><script src="../../../_static/documentation_options.js?v=2973c221"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
