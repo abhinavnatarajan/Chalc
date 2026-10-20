@@ -1,6 +1,6 @@
 # Changelog
 
-## 15.0.0 (unreleased)
+## 15.0.0
 
 Changes since 14.2.0.
 
