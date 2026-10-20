@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  VCPKG_COMMIT: 9e593bb18ea69cc5095e012465dcd675a822ed0d # 2026-07-29 release
+  VCPKG_COMMIT: 37bb045f3c7a747d3e5d1c13b6fe6a0aec4b5d00 # Fix GMP autoconf download (vcpkg#53437)
 
 defaults:
   run:

@@ -1,7 +1,7 @@
 {
 	"$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
 	"description": "A package to compute the chromatic alpha complex of coloured point clouds in Euclidean space",
-	"builtin-baseline": "9e593bb18ea69cc5095e012465dcd675a822ed0d",
+	"builtin-baseline": "37bb045f3c7a747d3e5d1c13b6fe6a0aec4b5d00",
 	"dependencies": [
 		{
 			"name": "cgal",

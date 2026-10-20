@@ -6,7 +6,7 @@ on:
     # run on all tags
 
 env:
-  VCPKG_COMMIT: 9e593bb18ea69cc5095e012465dcd675a822ed0d
+  VCPKG_COMMIT: 37bb045f3c7a747d3e5d1c13b6fe6a0aec4b5d00 # Fix GMP autoconf download (vcpkg#53437)
 
 jobs:
   docs:
@@ -26,6 +26,7 @@ jobs:
       - name: Setup uv
         uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
         with:
+          python-version: "3.14"
           enable-cache: true
           cache-dependency-glob: ""
 
